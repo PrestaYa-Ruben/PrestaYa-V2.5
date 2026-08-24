@@ -11765,6 +11765,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       renderizarResultadosBusqueda();
       screenBusqueda.style.display = 'block';
     }else{
+      // CORREGIDO: mismo ajuste que la lupa de búsqueda, aplicado ahora a
+      // la barra "Buscar cliente..." propia de esta pantalla — antes el
+      // texto escrito se quedaba ahí al volver de un cliente; ahora
+      // vuelve en blanco, con la lista completa de clientes de nuevo.
+      if(buscadorClientes) buscadorClientes.value = '';
       screenClientes.style.display = 'block';
       bottomNav.style.display = 'flex';
     }
