@@ -19313,7 +19313,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     icono.style.transform = 'rotate(360deg)';
     setTimeout(()=>{ icono.style.transition = 'none'; icono.style.transform = 'rotate(0deg)'; }, 500);
     try{
-      refrescarVistasConFiltroRutas();
+      // CORREGIDO: antes refrescaba todas las tarjetas de golpe sin
+      // recordar el scroll — si alguna tarjeta de arriba cambiaba de
+      // alto, la pantalla "brincaba" y tapaba lo que estabas viendo.
+      // Mismo arreglo ya aplicado a los filtros de ruta/fecha.
+      mantenerScrollAlFiltrar(refrescarVistasConFiltroRutas);
     }catch(err){
       console.error('[Refrescar manual] Falló incluso el refresco manual de Inicio:', err);
       alert('No se pudo refrescar la pantalla. Intenta cerrar y volver a abrir la app.');
@@ -19326,7 +19330,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     icono.style.transform = 'rotate(360deg)';
     setTimeout(()=>{ icono.style.transition = 'none'; icono.style.transform = 'rotate(0deg)'; }, 500);
     try{
-      renderizarClientes(clientesFiltrados());
+      // CORREGIDO: mismo arreglo — mantiene el scroll exacto donde estaba
+      // en vez de dejar que la lista recién redibujada empuje la pantalla.
+      mantenerScrollAlFiltrar(()=> renderizarClientes(clientesFiltrados()));
     }catch(err){
       console.error('[Refrescar manual] Falló incluso el refresco manual:', err);
       alert('No se pudo refrescar la lista. Intenta cerrar y volver a abrir la app.');
