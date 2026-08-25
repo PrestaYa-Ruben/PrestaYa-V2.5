@@ -3485,6 +3485,26 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .cliente-estado-badge.activo{ background:var(--success-light); color:var(--success); }
 .cliente-estado-badge.inhabilitado{ background:var(--danger-light); color:var(--danger); }
 
+/* NUEVO: "Nivel del Cliente" — insignia puramente informativa (no afecta
+   ningún cálculo real) que sube o baja sola según el historial de pago.
+   CSS integrado literal según especificación. */
+.cliente-nivel-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  font-size:12.5px;
+  font-weight:700;
+  letter-spacing:0.3px;
+  padding:5px 13px;
+  border-radius:999px;
+  margin:8px 0 2px 6px;
+}
+.cliente-nivel-badge.nivel-nuevo{ background:#EEF0F4; color:#5B6472; }
+.cliente-nivel-badge.nivel-bronce{ background:#F5E4D7; color:#9A5B26; }
+.cliente-nivel-badge.nivel-plata{ background:#E9EDF2; color:#5B6B80; }
+.cliente-nivel-badge.nivel-oro{ background:#FBF0D2; color:#9A7B0A; }
+.cliente-nivel-badge.nivel-premium{ background:#EEE3FA; color:#7A34C4; }
+
 /* Botón "Inhabilitar Cliente" (naranja, acción de precaución) /
    "Habilitar Cliente" (verde, acción positiva) — mismo componente
    .btn-outline-share, solo cambia el color según el estado actual */
@@ -4643,6 +4663,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <span class="cliente-estado-badge activo" id="cliente-estado-badge">
           <span class="dot"></span>ACTIVO
         </span>
+        <!-- NUEVO: "Nivel del Cliente" — insignia informativa, sube/baja
+             sola según el historial de pago (ver recalcularNivelCliente). -->
+        <span class="cliente-nivel-badge nivel-nuevo" id="cliente-nivel-badge">NUEVO</span>
       </div>
 
       <!-- NUEVO: el resto de los datos queda colapsado hasta tocar el nombre -->
@@ -11720,6 +11743,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     detalleFecha.textContent = isNaN(fechaRegistro) ? '--' : formatearFechaCorta(fechaRegistro);
 
     actualizarBadgeEstadoCliente(cliente); // NUEVO: Inhabilitar/Habilitar Cliente
+    actualizarBadgeNivelCliente(cliente); // NUEVO: Nivel del Cliente
 
     // Préstamos del cliente (estadísticas + lista)
     // NUEVO: siempre arranca en la pestaña "Activos" al entrar a la ficha
@@ -13771,6 +13795,50 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }
 
   // ==========================================================
+  // NUEVO — "Nivel del Cliente": insignia puramente informativa en la
+  // ficha del cliente que sube o baja sola según su comportamiento de
+  // pago histórico. NO afecta ningún cálculo real del sistema (montos,
+  // cupos, cartera, nada) — es solo una etiqueta visual. Código
+  // integrado literal según especificación — reutiliza moraCobradaPrestamo(),
+  // clientesGuardados y guardarClientes() que ya existían en el proyecto
+  // con estos mismos nombres, sin necesidad de adaptar ningún nombre.
+  // ==========================================================
+  const NIVELES_CLIENTE_ORDEN = ['nuevo', 'bronce', 'plata', 'oro', 'premium'];
+
+  function recalcularNivelCliente(cliente, prestamoRecienFinalizado){
+    if(!cliente || !prestamoRecienFinalizado) return;
+
+    let indiceActual = NIVELES_CLIENTE_ORDEN.indexOf(cliente.nivelCliente || 'nuevo');
+    if(indiceActual === -1) indiceActual = 0;
+
+    // "Tuvo mora" = se cobró algún recargo por mora en ese crédito.
+    const tuvoMora = moraCobradaPrestamo(prestamoRecienFinalizado) > 0;
+
+    if(tuvoMora){
+      cliente.nivelRachaSinAtraso = 0;
+      if(indiceActual > 0) indiceActual -= 1; // NUEVO es el piso, no baja más
+    }else{
+      cliente.nivelRachaSinAtraso = (cliente.nivelRachaSinAtraso || 0) + 1;
+      if(cliente.nivelRachaSinAtraso >= 2){
+        cliente.nivelRachaSinAtraso = 0;
+        if(indiceActual < NIVELES_CLIENTE_ORDEN.length - 1) indiceActual += 1; // PREMIUM es el techo
+      }
+    }
+
+    cliente.nivelCliente = NIVELES_CLIENTE_ORDEN[indiceActual];
+  }
+
+  // Pinta la insignia con el nivel actual — se llama cada vez que se abre
+  // o refresca la ficha del cliente.
+  function actualizarBadgeNivelCliente(cliente){
+    const badgeNivel = document.getElementById('cliente-nivel-badge');
+    if(!badgeNivel) return;
+    const nivel = cliente.nivelCliente || 'nuevo'; // clientes ya existentes sin el campo = NUEVO
+    badgeNivel.className = 'cliente-nivel-badge nivel-' + nivel;
+    badgeNivel.textContent = nivel.toUpperCase();
+  }
+
+  // ==========================================================
   // NUEVO — "Descuento": una rebaja que se le concede a un cliente sobre
   // lo que debe (ej. perdonar un recargo de mora, o cerrar un crédito con
   // un pago negociado menor al saldo real) — SIN que entre dinero real a
@@ -15697,6 +15765,14 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // historial de créditos). Solo se fija la primera vez que se finaliza.
     if(todasPagadas && !prestamosGuardados[indice].fechaFinalizacion){
       prestamosGuardados[indice].fechaFinalizacion = fechaISO;
+      // NUEVO: "Nivel del Cliente" — se recalcula solo la primera vez que
+      // el préstamo se marca finalizado (esta misma condición ya lo
+      // garantiza, por el "!...fechaFinalizacion" de arriba).
+      const clienteDelNivel = clientesGuardados.find(c => c.id === prestamosGuardados[indice].clienteId);
+      if(clienteDelNivel){
+        recalcularNivelCliente(clienteDelNivel, prestamosGuardados[indice]);
+        guardarClientes(clientesGuardados);
+      }
     }else if(!todasPagadas){
       delete prestamosGuardados[indice].fechaFinalizacion;
     }
@@ -16237,6 +16313,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     prestamo.estado = todasPagadas ? 'finalizado' : 'activo';
     if(todasPagadas && !prestamo.fechaFinalizacion){
       prestamo.fechaFinalizacion = pago.fecha;
+      // NUEVO: "Nivel del Cliente" — misma lógica que al registrar un
+      // abono nuevo: solo se dispara la primera vez que se finaliza.
+      const clienteDelNivel = clientesGuardados.find(c => c.id === prestamo.clienteId);
+      if(clienteDelNivel){
+        recalcularNivelCliente(clienteDelNivel, prestamo);
+        guardarClientes(clientesGuardados);
+      }
     }else if(!todasPagadas){
       delete prestamo.fechaFinalizacion;
     }
