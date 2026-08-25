@@ -1573,7 +1573,10 @@ body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-
   padding:5px 12px;
   border-radius:var(--radius-full);
   color:#fff;
+  cursor:pointer; /* NUEVO: ahora es tocable — abre el Ticket de Crédito */
+  transition:transform .12s ease;
 }
+.loan-badge:active{ transform:scale(0.93); }
 .loan-badge.activo{ background:var(--success); }
 .loan-badge.finalizado{ background:var(--text-secondary); }
 .loan-badge.vencido{ background:var(--danger); }
@@ -6667,6 +6670,24 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     </a>
     <button type="button" class="btn-outline-share documento-preview-btn-descargar" id="btn-documento-preview-descargar" style="width:100%;">Descargar imagen</button>
     <button type="button" class="btn-outline-share" id="btn-cerrar-documento-preview" style="width:100%; margin-top:10px;">Cerrar</button>
+  </div>
+</div>
+
+<!-- ==========================================================
+     NUEVO: "Ticket de Crédito" — se abre al tocar el badge de estado
+     (Activo/Vencido/Finalizado) de una tarjeta de préstamo. Reutiliza
+     el mismo patrón visual que las demás vistas previas de imagen del
+     proyecto (imagen-comprobante-card sobre confirm-modal-overlay).
+     ========================================================== -->
+<div id="ticket-prestamo-overlay" class="confirm-modal-overlay" style="display:none;">
+  <div class="imagen-comprobante-card">
+    <img id="ticket-prestamo-img" src="" alt="Ticket de crédito">
+    <p class="compartir-comprobante-ayuda">Mantén presionada la imagen para guardarla en tu galería.</p>
+    <button type="button" class="primary-button" id="btn-compartir-ticket-enviar" style="width:100%; margin-top:10px; display:flex; align-items:center; justify-content:center; gap:8px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+      Compartir
+    </button>
+    <button type="button" class="btn-outline-share" id="btn-cerrar-ticket-prestamo" style="width:100%; margin-top:10px;">Cerrar</button>
   </div>
 </div>
 
@@ -13534,6 +13555,205 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     return prestamo.cuotaMostrada || 0;
   }
 
+  // ==========================================================
+  // NUEVO — "Ticket de Crédito": se abre al tocar el badge de estado
+  // (Activo/Vencido/Finalizado) de una tarjeta de préstamo, en cualquier
+  // pantalla donde aparezca (tarjeta compacta o detalle ampliado).
+  // Código integrado literal según especificación — reutiliza las
+  // funciones/datos que ya existían en el proyecto con estos MISMOS
+  // nombres (formatearPesos, nombresFrecuencia, cuotaRealPrestamo,
+  // prepararCanvasNitido, clientesGuardados), sin necesidad de adaptar
+  // ningún nombre.
+  // ==========================================================
+
+  // Traza un rectángulo con esquinas redondeadas — el marco exterior
+  // del ticket (se le aplica trazo sólido o punteado por fuera de esta función).
+  function trazarMarcoRedondeadoTicket(ctx, x, y, w, h, radio){
+    ctx.beginPath();
+    ctx.moveTo(x + radio, y);
+    ctx.lineTo(x + w - radio, y);
+    ctx.arcTo(x + w, y, x + w, y + radio, radio);
+    ctx.lineTo(x + w, y + h - radio);
+    ctx.arcTo(x + w, y + h, x + w - radio, y + h, radio);
+    ctx.lineTo(x + radio, y + h);
+    ctx.arcTo(x, y + h, x, y + h - radio, radio);
+    ctx.lineTo(x, y + radio);
+    ctx.arcTo(x, y, x + radio, y, radio);
+    ctx.closePath();
+  }
+
+  // Línea horizontal punteada — separadores internos y margen interior
+  function dibujarLineaPunteadaTicket(ctx, x1, x2, y){
+    ctx.save();
+    ctx.strokeStyle = 'rgba(120,108,90,0.55)';
+    ctx.lineWidth = 1.4;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    ctx.moveTo(x1, y);
+    ctx.lineTo(x2, y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  const DIAS_SEMANA_TICKET = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const MESES_TICKET = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  // Fecha larga sin hora, en minúsculas — ej. "viernes 15 de noviembre"
+  function formatearFechaLargaTicket(fecha){
+    return DIAS_SEMANA_TICKET[fecha.getDay()] + ' ' + fecha.getDate() + ' de ' + MESES_TICKET[fecha.getMonth()];
+  }
+
+  const ESCALA_TICKET = 8; // resolución más alta del sistema
+
+  function generarCanvasTicketPrestamo(prestamo, cliente){
+    const anchoTicket = 430;
+    const padX = 30;
+    const FUENTE = '"Helvetica Neue", Arial, sans-serif';
+
+    const filasCuerpo = [
+      ['Cliente', cliente ? cliente.nombre : '—'],
+      ['Monto solicitado', formatearPesos(prestamo.valor)],
+      ['Frecuencia de pago', nombresFrecuencia[prestamo.frecuencia] || prestamo.frecuencia],
+      // "Número de cuotas": total de cuotas + valor de cada una — ej. "2 cuotas de $55.000"
+      ['Número de cuotas', prestamo.cuotas + ' cuotas de ' + formatearPesos(cuotaRealPrestamo(prestamo))]
+    ];
+
+    const ALTO_HEADER = 96;
+    const ALTO_FILA_FECHA = 44;
+    const ALTO_FILA_CUERPO = 30;
+    const ALTO_FILA_OTORGADO = 56;
+    const altoTotal = ALTO_HEADER + ALTO_FILA_FECHA + (filasCuerpo.length * ALTO_FILA_CUERPO) + ALTO_FILA_OTORGADO;
+
+    const canvas = document.createElement('canvas');
+    const ctx = prepararCanvasNitido(canvas, anchoTicket, altoTotal, ESCALA_TICKET);
+
+    // ---- Fondo blanco hueso, marco redondeado ----
+    trazarMarcoRedondeadoTicket(ctx, 1, 1, anchoTicket - 2, altoTotal - 2, 22);
+    ctx.fillStyle = '#FEFEFD';
+    ctx.fill();
+    ctx.save();
+    ctx.strokeStyle = 'rgba(120,108,90,0.5)';
+    ctx.lineWidth = 1.6;
+    // Borde exterior SÓLIDO y limpio (sin setLineDash)
+    ctx.stroke();
+    ctx.restore();
+
+    // Margen punteada interior, desplazada hacia adentro del borde exterior
+    const margenInterior = 10;
+    ctx.save();
+    trazarMarcoRedondeadoTicket(ctx, margenInterior, margenInterior, anchoTicket - margenInterior * 2, altoTotal - margenInterior * 2, 14);
+    ctx.strokeStyle = 'rgba(120,108,90,0.4)';
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([5, 4]);
+    ctx.stroke();
+    ctx.restore();
+
+    let y = 46;
+
+    // ---- Encabezado: logo "PrestaYa" (Presta azul oscuro + Ya verde) ----
+    ctx.textAlign = 'center';
+    ctx.font = '900 27px Arial, sans-serif';
+    const textoPresta = 'Presta', textoYa = 'Ya';
+    const anchoPresta = ctx.measureText(textoPresta).width;
+    const anchoYa = ctx.measureText(textoYa).width;
+    const inicioX = anchoTicket / 2 - (anchoPresta + anchoYa) / 2;
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#0B1F5C';
+    ctx.fillText(textoPresta, inicioX, y);
+    ctx.fillStyle = '#2E9E4F';
+    ctx.fillText(textoYa, inicioX + anchoPresta, y);
+
+    y += 22;
+    ctx.textAlign = 'center';
+    ctx.font = `400 14px ${FUENTE}`;
+    ctx.fillStyle = '#1A1A1A';
+    ctx.fillText('Tu solución al instante', anchoTicket / 2, y);
+
+    y += 28;
+    dibujarLineaPunteadaTicket(ctx, padX, anchoTicket - padX, y); // cierra ALTO_HEADER (46+22+28=96)
+
+    // ---- Fila "Fecha del prestamo" (entre líneas punteadas) ----
+    y += 26;
+    ctx.textAlign = 'left';
+    ctx.font = `400 14px ${FUENTE}`;
+    ctx.fillStyle = '#1A1A1A';
+    ctx.fillText('Fecha del prestamo', padX, y);
+    ctx.textAlign = 'right';
+    ctx.font = `600 14px ${FUENTE}`; // más peso que la etiqueta
+    ctx.fillText(formatearFechaLargaTicket(new Date(prestamo.fecha + 'T00:00:00')), anchoTicket - padX, y);
+    y += 18;
+    dibujarLineaPunteadaTicket(ctx, padX, anchoTicket - padX, y); // cierra ALTO_FILA_FECHA (26+18=44)
+
+    // ---- Cuerpo: etiquetas a la izquierda, valores a la derecha ----
+    y += 22;
+    filasCuerpo.forEach(([etiqueta, valor], indice)=>{
+      ctx.textAlign = 'left';
+      ctx.font = `400 14px ${FUENTE}`;
+      ctx.fillStyle = '#1A1A1A';
+      ctx.fillText(etiqueta, padX, y);
+      ctx.textAlign = 'right';
+      ctx.font = `600 14px ${FUENTE}`; // más peso que la etiqueta
+      ctx.fillText(String(valor), anchoTicket - padX, y);
+      if(indice < filasCuerpo.length - 1) y += ALTO_FILA_CUERPO;
+    });
+    y += ALTO_FILA_CUERPO - 22; // cierra el bloque de cuerpo (22 + (n-1)×30 + 8 = n×30)
+    dibujarLineaPunteadaTicket(ctx, padX, anchoTicket - padX, y);
+
+    // ---- Fila resaltada: "Monto otorgado" en negrita fuerte ----
+    y += ALTO_FILA_OTORGADO / 2 + 8;
+    ctx.textAlign = 'left';
+    ctx.font = `800 19px ${FUENTE}`;
+    ctx.fillStyle = '#141208';
+    ctx.fillText('Monto otorgado', padX, y);
+    ctx.textAlign = 'right';
+    ctx.fillText(formatearPesos(prestamo.valor), anchoTicket - padX, y);
+
+    return canvas;
+  }
+
+  let canvasTicketActual = null;
+  const ticketPrestamoOverlay = document.getElementById('ticket-prestamo-overlay');
+  const ticketPrestamoImg = document.getElementById('ticket-prestamo-img');
+
+  function abrirTicketPrestamo(prestamo){
+    const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId);
+    canvasTicketActual = generarCanvasTicketPrestamo(prestamo, cliente);
+    ticketPrestamoImg.src = canvasTicketActual.toDataURL('image/png');
+    ticketPrestamoOverlay.style.display = 'flex';
+  }
+
+  document.getElementById('btn-cerrar-ticket-prestamo').addEventListener('click', ()=>{
+    ticketPrestamoOverlay.style.display = 'none';
+  });
+  ticketPrestamoOverlay.addEventListener('click', (e)=>{
+    if(e.target === ticketPrestamoOverlay) ticketPrestamoOverlay.style.display = 'none';
+  });
+
+  document.getElementById('btn-compartir-ticket-enviar').addEventListener('click', async ()=>{
+    if(!canvasTicketActual) return;
+    const blob = await new Promise(resolve => canvasTicketActual.toBlob(resolve, 'image/png', 1));
+    if(!blob){ alert('No se pudo generar la imagen. Intenta de nuevo.'); return; }
+
+    const nombreArchivo = 'ticket-credito.png';
+    const archivo = new File([blob], nombreArchivo, { type: 'image/png' });
+
+    if(navigator.share && navigator.canShare && navigator.canShare({ files: [archivo] })){
+      try{ await navigator.share({ files: [archivo], title: 'Ticket de crédito' }); return; }
+      catch(err){
+        if(err && err.name === 'AbortError') return;
+        console.warn('navigator.share no funcionó, se usa la descarga como respaldo:', err);
+      }
+    }
+
+    const url = URL.createObjectURL(blob);
+    const enlace = document.createElement('a');
+    enlace.href = url;
+    enlace.download = nombreArchivo;
+    document.body.appendChild(enlace);
+    enlace.click();
+    document.body.removeChild(enlace);
+    setTimeout(()=> URL.revokeObjectURL(url), 60000);
+  });
+
   function interesTotalPrestamo(prestamo){
     return (prestamo.plan || []).reduce((s, c) => s + c.interes, 0);
   }
@@ -14514,6 +14734,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       });
     }
 
+    // NUEVO: badge de estado (Activo/Vencido/Finalizado) — abre el
+    // "Ticket de Crédito". stopPropagation() para que el clic no dispare
+    // también el clic de la tarjeta completa (que abre el detalle).
+    const badgeEstadoTarjeta = card.querySelector('.loan-badge');
+    if(badgeEstadoTarjeta){
+      badgeEstadoTarjeta.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        abrirTicketPrestamo(prestamo);
+      });
+    }
+
     return card;
   }
 
@@ -14827,6 +15058,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         </div>
       </div>
     `;
+
+    // NUEVO: badge de estado (Activo/Vencido/Finalizado) — abre el
+    // "Ticket de Crédito". stopPropagation() por si en el futuro se
+    // agrega algún clic sobre el encabezado de la tarjeta.
+    const badgeEstadoDetalle = loanDetailCardContainer.querySelector('.loan-badge');
+    if(badgeEstadoDetalle){
+      badgeEstadoDetalle.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        abrirTicketPrestamo(prestamo);
+      });
+    }
   }
 
   // Renderiza la lista de Cuotas (con estado, badge y acción pagar/compartir)
