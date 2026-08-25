@@ -9,7 +9,7 @@
 // (ej. 'prestaya-v2', 'prestaya-v3'...). Eso obliga a los teléfonos
 // que ya instalaron la app a bajar los archivos nuevos en vez de
 // seguir usando la copia vieja guardada en caché.
-const CACHE_NAME = 'prestaya-v21';
+const CACHE_NAME = 'prestaya-v22';
 
 const ARCHIVOS_APP_SHELL = [
   './',

@@ -4149,33 +4149,15 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         </div>
         <span>Cartera</span>
       </button>
-      <button class="quick-item" id="btn-accion-modo-cobro">
-        <div class="icon-container naranja" style="position:relative;">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
-          <span class="pagan-hoy-badge" id="modo-cobro-badge" style="display:none;">0</span>
+      <button type="button" class="quick-item" id="btn-abrir-cobros">
+        <div class="icon-container blue" style="position:relative;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="m9 16 2 2 4-4"></path></svg>
+          <span class="pagan-hoy-badge" id="banner-cobros-badge" style="display:none;">0</span>
         </div>
-        <span>Modo Cobro</span>
+        <span>Cobros</span>
       </button>
     </div>
   </section>
-
-  <!-- ==========================================================
-       COBROS
-       ========================================================== -->
-  <!-- CAMBIO: la sección "Cobros" se movió a su propia pantalla dedicada
-       (ver screen-cobros) — aquí queda solo el botón de acceso, para no
-       ocupar tanto espacio en Inicio. -->
-  <button type="button" class="banner-acceso-cobros" id="btn-abrir-cobros">
-    <div class="icon-container blue" style="background:rgba(47,107,255,0.12);">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="m9 16 2 2 4-4"></path></svg>
-    </div>
-    <div class="banner-acceso-cobros-texto">
-      <div class="banner-acceso-cobros-titulo">Cobros</div>
-      <div class="banner-acceso-cobros-subtitulo">Ver clientes de hoy, ayer y mañana</div>
-    </div>
-    <span class="banner-acceso-cobros-badge" id="banner-cobros-badge" style="display:none;">0</span>
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="banner-acceso-cobros-flecha"><polyline points="9 18 15 12 9 6"></polyline></svg>
-  </button>
 
 </div>
 
@@ -15903,7 +15885,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const altoCard = yLinea3 + alturaFooter;
 
     const canvas = document.createElement('canvas');
-    const ctx = prepararCanvasNitido(canvas, anchoCard, altoCard, 3);
+    // CORREGIDO: bajado de escala 3x a 2x (la misma nitidez estándar que
+    // ya usa el resto de imágenes de la app) — sigue viéndose nítida en
+    // el teléfono, pero al ser un lienzo más chico, se codifica más
+    // rápido como PNG y el panel de compartir de Android se abre antes.
+    const ctx = prepararCanvasNitido(canvas, anchoCard, altoCard, 2);
 
     // Fondo blanco con esquinas redondeadas
     ctx.fillStyle = '#FFFFFF';
@@ -18198,8 +18184,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }
 
   function actualizarBadgeModoCobro(){
+    // CORREGIDO: el botón de acceso rápido "Modo Cobro" se quitó de
+    // Inicio (a pedido) — se deja esta función protegida por si algo la
+    // sigue llamando, en vez de que truene buscando un badge que ya no
+    // existe en el HTML.
     const cantidad = calcularListaModoCobro().length;
     const badge = document.getElementById('modo-cobro-badge');
+    if(!badge) return;
     badge.textContent = cantidad > 99 ? '99+' : String(cantidad);
     badge.style.display = cantidad > 0 ? 'flex' : 'none';
   }
@@ -18226,15 +18217,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     actualizarBadgeModoCobro();
   }
 
-  document.getElementById('btn-accion-modo-cobro').addEventListener('click', ()=>{
-    fechaModoCobro = claveFechaConOffset(0); // siempre arranca en hoy al abrir la pantalla
-    actualizarTextoBotonFechaModoCobro();
-    renderizarModoCobro();
-    screenInicio.style.display = 'none';
-    screenModoCobro.style.display = 'block';
-    bottomNav.style.display = 'none';
-    window.scrollTo(0, 0);
-  });
+  // CORREGIDO: se quitó el botón de acceso rápido "Modo Cobro" de Inicio
+  // (a pedido, ya no se necesitaba) — la pantalla screen-modo-cobro y su
+  // lógica se dejan intactas por si se quiere reactivar más adelante,
+  // solo ya no tiene ninguna entrada visible en Inicio.
 
   // NUEVO: selector de fecha de "Modo de Cobro" — reutiliza el mismo
   // calendario personalizado del resto de la app.
