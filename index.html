@@ -11693,6 +11693,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   const btnEditarCliente = document.getElementById('btn-editar-cliente');
 
   let clienteEnDetalle = null; // referencia al cliente actualmente abierto
+  // NUEVO: recuerda qué cliente se tocó para entrar al detalle, así al
+  // volver la lista se desplaza hasta ESE cliente en vez de saltar al
+  // comienzo de la fila.
+  let clienteIdParaRestaurarScroll = null;
 
   // NUEVO: tocar el nombre expande/colapsa el resto de los datos de la
   // tarjeta de perfil (teléfono, documento, ruta, dirección, notas).
@@ -11708,6 +11712,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
   function abrirDetalleCliente(cliente){
     clienteEnDetalle = cliente;
+    clienteIdParaRestaurarScroll = cliente.id; // NUEVO: para volver a esta misma fila al cerrar
 
     // NUEVO: la tarjeta de perfil siempre arranca colapsada (solo nombre +
     // estado) — se despliega al tocar el nombre.
@@ -11791,6 +11796,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       inputBusquedaGlobal.value = '';
       renderizarResultadosBusqueda();
       screenBusqueda.style.display = 'block';
+      window.scrollTo(0,0);
     }else{
       // CORREGIDO: mismo ajuste que la lupa de búsqueda, aplicado ahora a
       // la barra "Buscar cliente..." propia de esta pantalla — antes el
@@ -11799,9 +11805,22 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       if(buscadorClientes) buscadorClientes.value = '';
       screenClientes.style.display = 'block';
       bottomNav.style.display = 'flex';
+      renderizarClientes(clientesFiltrados()); // NUEVO: refresca la insignia/saldo con datos frescos
+
+      // NUEVO: en vez de saltar siempre al comienzo de la fila, se
+      // desplaza hasta el cliente del que se acaba de salir, para que
+      // quede visible justo donde estaba antes de entrar a su ficha.
+      const filaCliente = clienteIdParaRestaurarScroll != null
+        ? listaClientes.querySelector(`.client-row[data-id="${clienteIdParaRestaurarScroll}"]`)
+        : null;
+      if(filaCliente){
+        filaCliente.scrollIntoView({ block: 'center' });
+      }else{
+        window.scrollTo(0,0);
+      }
+      clienteIdParaRestaurarScroll = null;
+      return; // ya se hizo el propio scroll de arriba — no pisarlo con el de abajo
     }
-    renderizarClientes(clientesFiltrados()); // NUEVO: refresca la insignia/saldo con datos frescos
-    window.scrollTo(0,0);
   }
 
   btnCerrarDetalleCliente.addEventListener('click', cerrarDetalleCliente);
@@ -15338,6 +15357,15 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     }else{
       screenDetalleCliente.style.display = 'block';
       bottomNav.style.display = 'none';
+      // CORREGIDO: un pago recién guardado puede haber finalizado el
+      // crédito y cambiado el Nivel del Cliente (o simplemente sumado un
+      // abono) — antes la ficha se quedaba mostrando los datos viejos
+      // hasta salir y volver a entrar. Ahora se refresca la insignia y
+      // la lista de créditos con los datos ya actualizados.
+      if(clienteEnDetalle){
+        actualizarBadgeNivelCliente(clienteEnDetalle);
+        if(typeof renderizarPrestamosCliente === 'function') renderizarPrestamosCliente(clienteEnDetalle.id);
+      }
     }
     window.scrollTo(0,0);
   });
