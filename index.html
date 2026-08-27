@@ -9908,17 +9908,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       alert('No hay cuotas vencidas para exportar con este filtro.');
       return;
     }
-    const totalCuotas = items.reduce((s, it) => s + it.cuotasVencidasPlan.length, 0);
-    const totalMonto = items.reduce((s, it) => s + it.montoVencido, 0);
 
-    let texto = 'CUOTAS VENCIDAS — PrestaYa\n';
-    texto += 'Préstamos vencidos: ' + items.length + '\n';
-    texto += 'Cuotas vencidas: ' + totalCuotas + '\n';
-    texto += 'Monto total vencido: ' + formatearPesos(totalMonto) + '\n\n';
-    items.forEach(it=>{
-      const nombreCliente = it.cliente ? it.cliente.nombre : 'Cliente eliminado';
-      texto += '• ' + nombreCliente + ' — ' + it.cuotasVencidasPlan.length + ' cuota(s) — ' + formatearPesos(it.montoVencido) + ' — desde ' + formatearFechaCorta(new Date(it.fechaMasAntigua)) + '\n';
-    });
+    // CORREGIDO: a pedido, la exportación ahora incluye ÚNICAMENTE el
+    // nombre del cliente (sin cuotas, montos, fechas, ni encabezados) —
+    // un nombre por línea.
+    const texto = items
+      .map(it => it.cliente ? it.cliente.nombre : 'Cliente eliminado')
+      .join('\n');
 
     if(navigator.share){
       try{ await navigator.share({ title: 'Cuotas vencidas', text: texto }); }
