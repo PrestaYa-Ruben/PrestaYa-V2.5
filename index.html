@@ -242,6 +242,7 @@ a{ text-decoration:none; color:inherit; }
 .icon-container.green{ background:none; color:var(--success); }
 .icon-container.red{ background:none; color:var(--danger); }
 .icon-container.orange{ background:none; color:var(--warning); }
+.icon-container.gris{ background:none; color:var(--text-secondary); }
 .icon-container svg{ width:20px; height:20px; stroke:currentColor; flex-shrink:0; }
 
 /* --- Botón primario --- */
@@ -1905,6 +1906,28 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .accion-prestamo-chip:active{ transform:scale(0.96); }
 #btn-aplicar-descuento.accion-prestamo-chip{ border-color:var(--text-secondary); }
 
+/* NUEVO: botón único "Más opciones" del préstamo — reemplaza las 2 filas
+   de 3 botones cada una (Cronograma/Historial/Descuento y
+   Eliminar/Recordar/Editar) que había antes. */
+.btn-mas-opciones-prestamo{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  margin:14px 0;
+  padding:13px;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-md);
+  background:var(--surface);
+  color:var(--text);
+  font-weight:600;
+  font-size:14px;
+  transition:transform .15s ease;
+}
+.btn-mas-opciones-prestamo svg{ width:20px; height:20px; stroke:var(--text-secondary); flex-shrink:0; }
+.btn-mas-opciones-prestamo:active{ transform:scale(0.98); }
+
 /* --- Tabs Cuotas / Pagos --- */
 .loan-tabs{
   display:flex;
@@ -1980,6 +2003,7 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .cuota-info{ flex:1; min-width:0; }
 .cuota-monto{ font-size:16px; font-weight:600; color:var(--text); margin-bottom:3px; letter-spacing:-0.2px; }
 .cuota-fecha{ font-size:13px; color:var(--text-secondary); font-weight:400; }
+.cuota-fecha.cuota-fecha-pago{ color:var(--success); font-weight:500; margin-top:1px; }
 
 .cuota-badge{
   font-size:12px;
@@ -5028,30 +5052,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     <div id="loan-detail-card-container"></div>
 
-    <!-- CAMBIO: los 3 accesos (antes 3 botones apilados de ancho completo)
-         ahora van en una sola fila, como chips compactos. -->
-    <div class="acciones-prestamo-fila">
-      <button type="button" class="accion-prestamo-chip" id="btn-compartir-cronograma">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-        <span>Cronograma</span>
-      </button>
-
-      <!-- NUEVO: Estado/Historial de crédito — imagen con los datos del
-           crédito y la tabla de pagos YA registrados (distinto del
-           cronograma, que es el plan teórico). -->
-      <button type="button" class="accion-prestamo-chip" id="btn-compartir-historial">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
-        <span>Historial</span>
-      </button>
-
-      <!-- NUEVO: "Descuento" — rebaja del saldo sin que entre dinero a caja
-           (perdonar mora, cerrar con pago negociado, etc.). Ver
-           descuentosDe()/totalDescontadoPrestamo() más abajo. -->
-      <button type="button" class="accion-prestamo-chip" id="btn-aplicar-descuento" style="color:var(--text-secondary);">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
-        <span>Descuento</span>
-      </button>
-    </div>
+    <!-- CORREGIDO: antes había 6 botones repartidos en 2 filas (Cronograma
+         / Historial / Descuento, y Eliminar / Recordar / Editar) — a
+         pedido, se consolidan en un solo botón "Más opciones" que abre
+         un menú con las 5 acciones (Cronograma, Historial, Descuento,
+         Editar, Eliminar). El botón "Recordar" por WhatsApp se quitó por
+         completo: esa misma función ya está al tocar el número de
+         cualquier cuota pendiente (Recordatorio Amistoso). -->
+    <button type="button" class="btn-mas-opciones-prestamo" id="btn-mas-opciones-prestamo">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle><circle cx="5" cy="12" r="1.5"></circle></svg>
+      <span>Más opciones</span>
+    </button>
 
     <div class="loan-tabs">
       <button type="button" class="loan-tab active" id="tab-cuotas" data-tab="cuotas">Cuotas (<span id="tab-cuotas-count">0</span>)</button>
@@ -5063,25 +5074,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <div id="pagos-lista" style="display:none;"></div>
     </div>
 
-    <!-- CAMBIO: los 3 botones ahora van juntos en una sola fila —
-         Eliminar (izquierda), Recordar (medio), Editar (derecha) —
-         a pedido explícito del usuario, con imagen de referencia. -->
-    <div style="display:flex; gap:8px; margin-top:16px;">
-      <button type="button" class="btn-eliminar-prestamo" id="btn-eliminar-prestamo-detalle" style="margin-top:0; flex:1; padding:12px 6px; font-size:12.5px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-        Eliminar
-      </button>
-
-      <button type="button" class="btn-whatsapp-recordar" id="btn-recordar-whatsapp" style="margin-top:0; flex:1; padding:12px 6px; font-size:12.5px;">
-        <svg viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.79 14.02c-.24.68-1.4 1.3-1.93 1.38-.49.08-1.11.11-1.79-.11-.41-.13-.94-.3-1.62-.6-2.85-1.23-4.71-4.1-4.85-4.29-.14-.19-1.16-1.54-1.16-2.94s.72-2.09.98-2.38c.24-.27.53-.33.71-.33.18 0 .35 0 .5.01.16.01.38-.06.59.45.24.58.81 2 .88 2.14.07.14.12.31.02.5-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.29.75 1.24 1.62 2.01 1.11.99 2.05 1.3 2.34 1.44.29.15.46.13.63-.05.17-.19.72-.84.92-1.13.19-.29.38-.24.63-.14.26.1 1.65.78 1.93.92.29.15.48.22.55.34.07.13.07.71-.17 1.39z"></path></svg>
-        Recordar
-      </button>
-
-      <button type="button" class="btn-editar-prestamo" id="btn-editar-prestamo-detalle" style="margin-top:0; flex:1; padding:12px 6px; font-size:12.5px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M17.5 4.5a2.121 2.121 0 0 1 3 3L12 16l-4 1 1-4Z"></path><path d="M11 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path></svg>
-        Editar
-      </button>
-    </div>
+    <!-- Eliminar / Editar ahora viven dentro del menú "Más opciones" de
+         arriba — ver #menu-mas-opciones-prestamo-overlay. -->
 
     <!-- NUEVO: interruptores para la imagen del Comprobante de Pago (el
          que se comparte al pagar/ver cada abono desde el menú "..." de
@@ -6993,6 +6987,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 <div id="menu-cuota-pendiente-overlay" class="action-sheet-overlay" style="display:none;">
   <div class="action-sheet-wrap">
     <div class="action-sheet-card">
+      <!-- NUEVO: antes esta acción vivía en un icono suelto dentro de la
+           fila de la cuota — ahora toda la fila abre este mismo menú, así
+           que "Pagar" pasa a ser la primera opción de aquí. -->
+      <div class="action-sheet-item" id="accion-pagar-cuota-pendiente">
+        <div class="icon-container green">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="3"></circle></svg>
+        </div>
+        <span>Pagar esta cuota</span>
+      </div>
+
       <div class="action-sheet-item" id="accion-editar-fecha-pendiente">
         <div class="icon-container blue">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><line x1="12" y1="14" x2="12" y2="18"></line><line x1="10" y1="16" x2="14" y2="16"></line></svg>
@@ -7010,6 +7014,62 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     <div class="action-sheet-card action-sheet-cancelar">
       <div class="action-sheet-item centrado" id="accion-cancelar-menu-cuota-pendiente">
+        <span>Cancelar</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================================
+     NUEVO: "Más opciones" del préstamo — consolida Cronograma,
+     Historial, Descuento, Editar y Eliminar en un solo menú (antes eran
+     6 botones sueltos repartidos en 2 filas). Se reutilizan los MISMOS
+     ids de botón que ya tenían su lógica funcionando (btn-compartir-
+     cronograma, btn-compartir-historial, btn-aplicar-descuento,
+     btn-editar-prestamo-detalle, btn-eliminar-prestamo-detalle), así que
+     no hizo falta tocar esos manejadores de clic.
+     ========================================================== -->
+<div id="menu-mas-opciones-prestamo-overlay" class="action-sheet-overlay" style="display:none;">
+  <div class="action-sheet-wrap">
+    <div class="action-sheet-card">
+      <div class="action-sheet-item" id="btn-compartir-cronograma">
+        <div class="icon-container blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+        </div>
+        <span>Cronograma</span>
+      </div>
+
+      <div class="action-sheet-item" id="btn-compartir-historial">
+        <div class="icon-container blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+        </div>
+        <span>Historial</span>
+      </div>
+
+      <div class="action-sheet-item" id="btn-aplicar-descuento">
+        <div class="icon-container gris">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
+        </div>
+        <span>Descuento</span>
+      </div>
+
+      <div class="action-sheet-item" id="btn-editar-prestamo-detalle">
+        <div class="icon-container blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 4.5a2.121 2.121 0 0 1 3 3L12 16l-4 1 1-4Z"></path><path d="M11 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path></svg>
+        </div>
+        <span>Editar</span>
+      </div>
+
+      <div class="action-sheet-item danger" id="btn-eliminar-prestamo-detalle">
+        <div class="icon-container red">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        </div>
+        <span>Eliminar</span>
+      </div>
+    </div>
+
+    <div class="action-sheet-card action-sheet-cancelar">
+      <div class="action-sheet-item centrado" id="accion-cancelar-menu-mas-opciones-prestamo">
         <span>Cancelar</span>
       </div>
     </div>
@@ -13542,6 +13602,15 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     return pagosDeCuota(prestamo, numeroCuota).reduce((s, p) => s + (p.monto || 0), 0);
   }
 
+  // NUEVO: fecha en que se terminó de pagar una cuota — la más reciente
+  // entre los abonos que cuentan para ella (si tuvo varios pagos
+  // parciales antes de completarse, se toma la fecha del último).
+  function fechaPagoCuota(prestamo, numeroCuota){
+    const pagos = pagosDeCuota(prestamo, numeroCuota);
+    if(pagos.length === 0) return null;
+    return pagos.reduce((masReciente, p) => new Date(p.fecha) > new Date(masReciente.fecha) ? p : masReciente, pagos[0]).fecha;
+  }
+
   function pendienteDeCuota(prestamo, cuotaPlan){
     return Math.max(cuotaPlan.total - sumaAbonadaCuota(prestamo, cuotaPlan.numero), 0);
   }
@@ -15000,7 +15069,6 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   const cuotasLista = document.getElementById('cuotas-lista');
   const pagosLista = document.getElementById('pagos-lista');
   const btnCompartirCronograma = document.getElementById('btn-compartir-cronograma');
-  const btnRecordarWhatsapp = document.getElementById('btn-recordar-whatsapp');
   const btnEditarPrestamoDetalle = document.getElementById('btn-editar-prestamo-detalle');
   const btnEliminarPrestamoDetalle = document.getElementById('btn-eliminar-prestamo-detalle');
   const btnPagarFab = document.getElementById('btn-pagar-fab');
@@ -15150,39 +15218,41 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
       const item = document.createElement('div');
       item.className = 'cuota-item';
+      const fechaDePago = pagada ? fechaPagoCuota(prestamo, cuota.numero) : null;
       item.innerHTML = `
         <div class="cuota-numero ${estadoClase}">${cuota.numero}</div>
         <div class="cuota-info">
           <div class="cuota-monto">${formatearPesos(cuota.total)}</div>
           <div class="cuota-fecha">Vence: ${formatearFechaCorta(new Date(cuota.fechaISO))}</div>
+          ${fechaDePago ? `<div class="cuota-fecha cuota-fecha-pago">Pago: ${formatearFechaCorta(new Date(fechaDePago))}</div>` : ''}
           ${esAbonada ? `<div class="cuota-dias-atraso abonada">Abonado ${formatearPesos(abonadoParcial)} de ${formatearPesos(cuota.total)}</div>` : ''}
         </div>
         <div class="cuota-estado-col">
           <div class="cuota-badge ${estadoClase}">${estadoTexto}</div>
           ${vencida ? `<div class="cuota-dias-atraso">${dias} ${dias === 1 ? 'día' : 'días'} de atraso</div>` : ''}
         </div>
-        ${!pagada ? `
-        <div class="cuota-accion pagar" role="button" aria-label="Pagar esta cuota">
-          ${iconoPagarMini()}
-        </div>
-        <div class="cuota-accion mas" role="button" aria-label="Más opciones">
-          ${iconoMasVerticalMini()}
-        </div>` : `
+        ${pagada ? `
         <div class="cuota-accion compartir" role="button" aria-label="Compartir comprobante">
           ${iconoCompartirMini()}
-        </div>`}
+        </div>` : ''}
       `;
       if(!pagada){
-        item.querySelector('.cuota-accion.pagar').addEventListener('click', ()=>{
-          abrirAgregarAbono(prestamo, cuota.numero);
-        });
-        item.querySelector('.cuota-accion.mas').addEventListener('click', ()=>{
-          abrirMenuCuotaPendiente(prestamo, cuota);
-        });
-        // NUEVO: tocar el círculo del número genera y comparte la imagen
-        // de "Recordatorio Amistoso" con los datos de esa cuota.
-        item.querySelector('.cuota-numero').style.cursor = 'pointer';
-        item.querySelector('.cuota-numero').addEventListener('click', ()=>{
+        // CORREGIDO: antes cada cuota pendiente tenía 2 iconos sueltos
+        // (pagar / más opciones), además del botón flotante "Pagar" que
+        // ya existe abajo — a pedido, se simplificó: toda la fila es
+        // tocable y abre el mismo menú de siempre (que ahora también
+        // incluye "Pagar esta cuota", para poder pagar una cuota
+        // puntual y no solo la próxima que ya cubre el botón flotante).
+        item.style.cursor = 'pointer';
+        item.addEventListener('click', ()=> abrirMenuCuotaPendiente(prestamo, cuota));
+        // Tocar el círculo del número sigue siendo un atajo directo para
+        // compartir el "Recordatorio Amistoso" de esta cuota — se queda
+        // exactamente igual, con stopPropagation() para no abrir también
+        // el menú de la fila.
+        const circuloNumero = item.querySelector('.cuota-numero');
+        circuloNumero.style.cursor = 'pointer';
+        circuloNumero.addEventListener('click', (e)=>{
+          e.stopPropagation();
           compartirRecordatorioCuota(prestamo, cuota);
         });
       }else{
@@ -16194,6 +16264,32 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }
   menuCuotaPendienteOverlay.addEventListener('click', (e)=>{ if(e.target === menuCuotaPendienteOverlay) cerrarMenuCuotaPendiente(); });
   document.getElementById('accion-cancelar-menu-cuota-pendiente').addEventListener('click', cerrarMenuCuotaPendiente);
+
+  // NUEVO: "Más opciones" del préstamo — un solo botón que abre un menú
+  // con Cronograma / Historial / Descuento / Editar / Eliminar (antes
+  // eran 6 botones sueltos en 2 filas). Los 5 ids de adentro ya tienen
+  // su propio manejador de clic (definido más abajo en el archivo, sin
+  // cambios) — acá solo se agrega que, al tocar cualquiera de ellos,
+  // el menú se cierre después.
+  const menuMasOpcionesPrestamoOverlay = document.getElementById('menu-mas-opciones-prestamo-overlay');
+  document.getElementById('btn-mas-opciones-prestamo').addEventListener('click', ()=>{
+    menuMasOpcionesPrestamoOverlay.style.display = 'flex';
+  });
+  function cerrarMenuMasOpcionesPrestamo(){
+    menuMasOpcionesPrestamoOverlay.style.display = 'none';
+  }
+  menuMasOpcionesPrestamoOverlay.addEventListener('click', (e)=>{ if(e.target === menuMasOpcionesPrestamoOverlay) cerrarMenuMasOpcionesPrestamo(); });
+  document.getElementById('accion-cancelar-menu-mas-opciones-prestamo').addEventListener('click', cerrarMenuMasOpcionesPrestamo);
+  menuMasOpcionesPrestamoOverlay.querySelectorAll('.action-sheet-item').forEach(item=>{
+    item.addEventListener('click', cerrarMenuMasOpcionesPrestamo);
+  });
+
+  document.getElementById('accion-pagar-cuota-pendiente').addEventListener('click', ()=>{
+    if(!cuotaPendienteMenuActiva) return;
+    const { prestamo, cuota } = cuotaPendienteMenuActiva;
+    cerrarMenuCuotaPendiente();
+    abrirAgregarAbono(prestamo, cuota.numero);
+  });
 
   document.getElementById('accion-editar-fecha-pendiente').addEventListener('click', ()=>{
     if(!cuotaPendienteMenuActiva) return;
@@ -17580,25 +17676,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(typeof actualizarReportes === 'function') actualizarReportes();
   });
 
-  // ---------- Recordar por WhatsApp (próxima cuota pendiente) ----------
-  btnRecordarWhatsapp.addEventListener('click', ()=>{
-    if(!prestamoEnDetalle || !clienteEnDetalle) return;
-    const telefono = clienteEnDetalle.telefono ? clienteEnDetalle.telefono.replace(/[^\d]/g, '') : '';
-    if(!telefono){
-      alert('Este cliente no tiene un teléfono registrado.');
-      return;
-    }
-    const pendientes = (prestamoEnDetalle.plan || []).filter(c => !estaCuotaPagada(prestamoEnDetalle, c.numero));
-    let mensaje;
-    if(pendientes.length === 0){
-      mensaje = 'Hola ' + clienteEnDetalle.nombre + ', te confirmamos que tu préstamo ' + (prestamoEnDetalle.codigo || '') + ' ya está completamente pagado. ¡Gracias!';
-    }else{
-      const siguiente = pendientes.reduce((min, c) => c.numero < min.numero ? c : min, pendientes[0]);
-      mensaje = 'Hola ' + clienteEnDetalle.nombre + ', te recordamos que tu cuota ' + siguiente.numero + ' de ' + prestamoEnDetalle.cuotas +
-        ' por ' + formatearPesos(siguiente.total) + ' vence el ' + formatearFechaCorta(new Date(siguiente.fechaISO)) + '. ¡Gracias por tu pago puntual!';
-    }
-    window.open('https://wa.me/' + telefono + '?text=' + encodeURIComponent(mensaje), '_blank');
-  });
+  // CORREGIDO: se quitó por completo "Recordar por WhatsApp" a nivel de
+  // préstamo — esa misma función ya existe al tocar el número de
+  // cualquier cuota pendiente (compartirRecordatorioCuota), que además
+  // comparte una imagen con la marca en vez de solo texto plano.
 
   // ---------- Editar préstamo ----------
   btnEditarPrestamoDetalle.addEventListener('click', ()=>{
