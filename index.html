@@ -785,6 +785,13 @@ body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-
   overflow-x:auto;
   scroll-snap-type:x proximity;
   scrollbar-width:none;
+  /* NUEVO: desplazamiento táctil fluido, con inercia real (clave sobre
+     todo en iOS/Safari, donde sin esto el scroll se siente "tosco" en
+     vez de deslizarse con impulso natural). */
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;
+  overscroll-behavior-x:contain; /* evita que el deslizamiento "arrastre" el resto de la página */
+  touch-action:pan-x; /* le dice al navegador de entrada que este gesto es horizontal, responde más rápido */
 }
 .dias-strip::-webkit-scrollbar{ display:none; }
 
@@ -803,6 +810,7 @@ body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-
 .cobros-buscador-wrap input::placeholder{ color:var(--text-secondary); }
 
 .dia-card{
+  position:relative;
   scroll-snap-align:center;
   flex:0 0 auto;
   min-width:60px;
@@ -824,6 +832,25 @@ body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-
 .dia-card.active .dia-numero,
 .dia-card.active .dia-semana{ color:#fff; }
 .dia-card:active{ transform:scale(0.95); }
+/* NUEVO: insignia con la cantidad de cuotas/clientes de ese día — misma
+   idea visual que ya se usa para los demás contadores rojos de la app. */
+.dia-card-badge{
+  position:absolute;
+  top:-6px;
+  right:-6px;
+  min-width:20px;
+  height:20px;
+  padding:0 5px;
+  border-radius:var(--radius-full);
+  background:var(--danger);
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:2px solid var(--surface);
+}
 
 .client-card{
   margin:0 14px;
@@ -6829,6 +6856,26 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <span class="header-spacer"></span>
   </header>
 
+  <!-- NUEVO: filtro de ruta en chips horizontales (mismo patrón ya usado
+       en Cuotas Vencidas y las demás pantallas). -->
+  <div class="tabs" id="chips-rutas-pagan-hoy"></div>
+
+  <!-- NUEVO: carrusel de días deslizable (misma pieza ya usada en
+       Cobros), con la cantidad de cuotas que vencen cada día en una
+       insignia roja — así se ve de un vistazo qué días están más
+       cargados sin tener que entrar uno por uno. -->
+  <section class="cobros" style="padding-top:14px;">
+    <div class="cobros-fecha-fila">
+      <button type="button" class="cobros-fecha-header-btn" id="btn-seleccionar-fecha-pagan-hoy" aria-label="Elegir otra fecha">
+        <span id="pagan-hoy-fecha-titulo">Hoy</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <button type="button" class="cobros-btn-hoy" id="btn-pagan-hoy-ir-hoy" style="display:none;">Hoy</button>
+    </div>
+
+    <div class="dias-strip" id="pagan-hoy-dias-strip"></div>
+  </section>
+
   <section class="detail-body">
     <div id="lista-pagan-hoy"></div>
   </section>
@@ -7454,6 +7501,23 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   </div>
 </div>
 
+<!-- NUEVO: mismo selector de fecha libre de arriba, pero para el
+     carrusel de "Pagan Hoy" (independiente del de Cobros). -->
+<div id="pagan-hoy-fecha-overlay" class="confirm-modal-overlay" style="display:none;">
+  <div class="mora-hoy-card" id="pagan-hoy-fecha-card">
+    <div class="confirm-modal-icon" style="background:var(--primary-light); color:var(--primary);">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+    </div>
+    <div class="confirm-modal-title">Seleccionar fecha</div>
+    <div class="form-field" style="text-align:left; margin-bottom:16px;">
+      <label class="field-label" for="input-pagan-hoy-fecha">Ver cuotas que vencen el día</label>
+      <input class="field-input" id="input-pagan-hoy-fecha" type="date">
+    </div>
+    <button type="button" class="primary-button" id="btn-aplicar-pagan-hoy-fecha" style="width:100%; margin-bottom:10px;">Ver esta fecha</button>
+    <button type="button" class="confirm-modal-btn cancelar" id="btn-cerrar-pagan-hoy-fecha" style="width:100%;">Cancelar</button>
+  </div>
+</div>
+
 <!-- ==========================================================
      MODAL: Aplicar Descuento — rebaja el saldo pendiente de un préstamo
      SIN registrar ningún ingreso de caja (perdonar mora, cerrar un
@@ -7707,14 +7771,26 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // a mano: si estás arriba del todo y el dedo sigue bajando, se cancela
   // el gesto antes de que el navegador llegue a activar la recarga.
   let pullToRefreshInicioY = 0;
+  let pullToRefreshInicioX = 0;
   document.addEventListener('touchstart', (e)=>{
-    if(e.touches.length === 1) pullToRefreshInicioY = e.touches[0].clientY;
+    if(e.touches.length === 1){
+      pullToRefreshInicioY = e.touches[0].clientY;
+      pullToRefreshInicioX = e.touches[0].clientX;
+    }
   }, { passive: true });
   document.addEventListener('touchmove', (e)=>{
     if(e.touches.length !== 1) return;
     const yActual = e.touches[0].clientY;
+    const xActual = e.touches[0].clientX;
+    const deltaY = yActual - pullToRefreshInicioY;
+    const deltaX = xActual - pullToRefreshInicioX;
+    // NUEVO: si el gesto es más horizontal que vertical (como deslizar el
+    // carrusel de días), se deja pasar de largo sin tocarlo — antes este
+    // bloqueo corría en CADA movimiento del dedo sin distinguir
+    // dirección, lo que le restaba fluidez al deslizar el carrusel.
+    if(Math.abs(deltaX) > Math.abs(deltaY)) return;
     const arribaDelTodo = (window.scrollY || document.documentElement.scrollTop || document.body.scrollTop) <= 0;
-    if(arribaDelTodo && yActual > pullToRefreshInicioY){
+    if(arribaDelTodo && deltaY > 0){
       e.preventDefault();
     }
   }, { passive: false });
@@ -18246,6 +18322,91 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       .sort((a, b) => a.cliente.nombre.localeCompare(b.cliente.nombre));
   }
 
+  // NUEVO: cuenta cuántos clientes pagan cada día, en UNA sola pasada por
+  // todos los préstamos — para pintar la insignia de cada tarjeta del
+  // carrusel sin repetir el recorrido completo 46 veces (una por día
+  // visible en la tira).
+  function contarClientesPaganHoyPorFecha(){
+    const mapa = new Map();
+    prestamosGuardados.filter(p => p.estado === 'activo' && clienteEstaActivo(p.clienteId)).forEach(prestamo=>{
+      (prestamo.plan || []).forEach(cuota=>{
+        if(estaCuotaPagada(prestamo, cuota.numero)) return;
+        if(!cuota.fechaISO) return;
+        const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId);
+        if(!cliente) return;
+        if(rutasFiltroActivas && !rutasFiltroActivas.has(cliente.ruta || '')) return;
+        const clave = claveFechaLocal(new Date(cuota.fechaISO));
+        mapa.set(clave, (mapa.get(clave) || 0) + 1);
+      });
+    });
+    return mapa;
+  }
+
+  // NUEVO: día único seleccionado en el carrusel de "Pagan Hoy" (mismo
+  // patrón ya usado en Cobros) — arranca en hoy cada vez que se abre la
+  // pantalla.
+  let paganHoyFechaSeleccionada = claveFechaConOffset(0);
+
+  function fechaClavePaganHoyActual(){
+    return paganHoyFechaSeleccionada;
+  }
+
+  function actualizarTituloFechaPaganHoy(){
+    const d = new Date(paganHoyFechaSeleccionada + 'T00:00:00');
+    const hoyClave = claveFechaConOffset(0);
+    const esHoy = paganHoyFechaSeleccionada === hoyClave;
+    const tituloEl = document.getElementById('pagan-hoy-fecha-titulo');
+    if(tituloEl) tituloEl.textContent = esHoy ? 'Hoy' : (d.getDate() + ' ' + MESES_LARGOS_COBROS[d.getMonth()] + ' ' + d.getFullYear());
+    const btnIrHoy = document.getElementById('btn-pagan-hoy-ir-hoy');
+    if(btnIrHoy) btnIrHoy.style.display = esHoy ? 'none' : 'block';
+  }
+
+  // Genera el carrusel de días alrededor de fechaBase, con la cantidad de
+  // clientes que pagan cada día en una insignia roja (ver imagen de
+  // referencia dada por el usuario).
+  function generarDiasStripPaganHoy(fechaBase){
+    const strip = document.getElementById('pagan-hoy-dias-strip');
+    if(!strip) return;
+    const base = new Date(fechaBase + 'T00:00:00');
+    const conteos = contarClientesPaganHoyPorFecha(); // una sola pasada para los 46 días
+    strip.innerHTML = '';
+    for(let i = -COBROS_DIAS_ANTES; i <= COBROS_DIAS_DESPUES; i++){
+      const d = new Date(base);
+      d.setDate(d.getDate() + i);
+      const anio = d.getFullYear();
+      const mes = String(d.getMonth() + 1).padStart(2, '0');
+      const dia = String(d.getDate()).padStart(2, '0');
+      const clave = anio + '-' + mes + '-' + dia;
+      const cantidad = conteos.get(clave) || 0;
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'dia-card' + (clave === paganHoyFechaSeleccionada ? ' active' : '');
+      btn.dataset.fecha = clave;
+      btn.innerHTML = `
+        <span class="dia-mes">${MESES_ABREV_MIN[d.getMonth()]}</span>
+        <span class="dia-numero">${d.getDate()}</span>
+        <span class="dia-semana">${DIAS_ABREV_COBROS[d.getDay()]}</span>
+        ${cantidad > 0 ? `<span class="dia-card-badge">${cantidad > 99 ? '99+' : cantidad}</span>` : ''}
+      `;
+      btn.addEventListener('click', ()=>{
+        if(clave === paganHoyFechaSeleccionada) return;
+        paganHoyFechaSeleccionada = clave;
+        strip.querySelectorAll('.dia-card.active').forEach(c=>c.classList.remove('active'));
+        btn.classList.add('active');
+        actualizarTituloFechaPaganHoy();
+        renderizarPaganHoy();
+      });
+      strip.appendChild(btn);
+    }
+  }
+
+  function centrarDiaSeleccionadoPaganHoy(){
+    const strip = document.getElementById('pagan-hoy-dias-strip');
+    const activo = strip ? strip.querySelector('.dia-card.active') : null;
+    if(activo) activo.scrollIntoView({ behavior:'auto', inline:'center', block:'nearest' });
+  }
+
   function actualizarBadgePaganHoy(){
     const cantidad = clientesPaganHoy().length;
     const badge = document.getElementById('pagan-hoy-badge');
@@ -18256,6 +18417,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   function crearTarjetaPaganHoy({ cliente, prestamo, cuota }){
     const card = document.createElement('div');
     card.className = 'card client-card';
+    // NUEVO: el texto de vencimiento ahora refleja el día que se está
+    // viendo en el carrusel, no siempre "hoy" a secas.
+    const esHoy = paganHoyFechaSeleccionada === claveFechaConOffset(0);
+    const textoVence = esHoy ? 'Vence hoy' : ('Vence ' + formatearFechaCorta(new Date(cuota.fechaISO)));
     card.innerHTML = `
       <div class="icon-container blue">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
@@ -18263,7 +18428,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <div class="info">
         <div class="name">${escaparHtml(cliente.nombre)}</div>
         <div class="quota">Cuota #${cuota.numero} de ${prestamo.cuotas} · ${formatearPesos(cuota.total)}</div>
-        <div class="due">Vence hoy</div>
+        <div class="due">${textoVence}</div>
       </div>
       <div class="actions">
         <div class="chevron">
@@ -18276,15 +18441,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }
 
   function renderizarPaganHoy(){
-    const items = clientesPaganHoy();
+    const items = clientesPaganHoy(paganHoyFechaSeleccionada);
     listaPaganHoy.innerHTML = '';
 
     if(items.length === 0){
       const vacio = document.createElement('div');
       vacio.className = 'empty-state';
+      const esHoy = paganHoyFechaSeleccionada === claveFechaConOffset(0);
       vacio.innerHTML = `
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-        <p>Ningún cliente tiene cuota programada para hoy.</p>
+        <p>${esHoy ? 'Ningún cliente tiene cuota programada para hoy.' : 'Ningún cliente tiene cuota programada para ese día.'}</p>
       `;
       listaPaganHoy.appendChild(vacio);
     }else{
@@ -18293,11 +18459,48 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }
 
   document.getElementById('btn-pagan-hoy').addEventListener('click', ()=>{
+    // NUEVO: cada vez que se abre la pantalla, el carrusel arranca
+    // centrado en el día de hoy.
+    paganHoyFechaSeleccionada = claveFechaConOffset(0);
+    generarDiasStripPaganHoy(paganHoyFechaSeleccionada);
+    actualizarTituloFechaPaganHoy();
     renderizarPaganHoy();
     screenInicio.style.display = 'none';
     screenPaganHoy.style.display = 'block';
     bottomNav.style.display = 'none';
     window.scrollTo(0, 0);
+    requestAnimationFrame(centrarDiaSeleccionadoPaganHoy);
+  });
+
+  // NUEVO: botón "Hoy" — vuelve directo al día actual sin deslizar a mano.
+  document.getElementById('btn-pagan-hoy-ir-hoy').addEventListener('click', ()=>{
+    paganHoyFechaSeleccionada = claveFechaConOffset(0);
+    generarDiasStripPaganHoy(paganHoyFechaSeleccionada);
+    requestAnimationFrame(centrarDiaSeleccionadoPaganHoy);
+    actualizarTituloFechaPaganHoy();
+    renderizarPaganHoy();
+  });
+
+  // NUEVO: "Elegir otra fecha" — mismo overlay/patrón que ya usa Cobros,
+  // por si el día buscado está muy lejos para deslizar hasta él.
+  const paganHoyFechaOverlay = document.getElementById('pagan-hoy-fecha-overlay');
+  const inputPaganHoyFecha = document.getElementById('input-pagan-hoy-fecha');
+  document.getElementById('btn-seleccionar-fecha-pagan-hoy').addEventListener('click', ()=>{
+    inputPaganHoyFecha.value = fechaClavePaganHoyActual();
+    paganHoyFechaOverlay.style.display = 'flex';
+  });
+  document.getElementById('btn-cerrar-pagan-hoy-fecha').addEventListener('click', ()=>{
+    paganHoyFechaOverlay.style.display = 'none';
+  });
+  paganHoyFechaOverlay.addEventListener('click', (e)=>{ if(e.target === paganHoyFechaOverlay) paganHoyFechaOverlay.style.display = 'none'; });
+  document.getElementById('btn-aplicar-pagan-hoy-fecha').addEventListener('click', ()=>{
+    if(!inputPaganHoyFecha.value) return;
+    paganHoyFechaSeleccionada = inputPaganHoyFecha.value;
+    generarDiasStripPaganHoy(paganHoyFechaSeleccionada);
+    requestAnimationFrame(centrarDiaSeleccionadoPaganHoy);
+    actualizarTituloFechaPaganHoy();
+    paganHoyFechaOverlay.style.display = 'none';
+    renderizarPaganHoy();
   });
 
   document.getElementById('btn-cerrar-pagan-hoy').addEventListener('click', ()=>{
@@ -19549,7 +19752,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   const CONTENEDORES_CHIPS_RUTAS = [
     'chips-rutas-inicio', 'chips-rutas-clientes', 'chips-rutas-reportes',
     'chips-rutas-prestamos', 'chips-rutas-pagos', 'chips-rutas-cuotas-vencidas',
-    'chips-rutas-modo-cobro'
+    'chips-rutas-modo-cobro', 'chips-rutas-pagan-hoy'
   ];
 
   // ==========================================================
@@ -19620,6 +19823,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       ['Préstamos', renderizarListaPrestamos],
       ['Pagos', renderizarListaPagosGlobal],
       ['Cuotas Vencidas', renderizarCuotasVencidas],
+      ['Pagan Hoy', () => {
+        if(typeof generarDiasStripPaganHoy === 'function' && typeof paganHoyFechaSeleccionada !== 'undefined'){
+          generarDiasStripPaganHoy(paganHoyFechaSeleccionada);
+        }
+        if(typeof renderizarPaganHoy === 'function') renderizarPaganHoy();
+      }],
       ['Modo de Cobro', () => { if(typeof renderizarModoCobro === 'function') renderizarModoCobro(); }]
     ];
     pasos.forEach(([nombre, fn])=>{
