@@ -1588,6 +1588,23 @@ body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-
 .loan-card-finalizado{ opacity:0.72; }
 .loan-card-finalizado .loan-progress-fill{ background:var(--text-secondary); }
 
+/* NUEVO: diferenciar rápidamente cada tarjeta de crédito según su estado
+   (a pedido) — combina 3 ideas:
+   1) Más elevación/sombra que el resto de tarjetas de la página, para
+      que se sienta como el contenido principal.
+   2) Tinte de fondo muy suave según el estado (rosado si vencido,
+      verdoso si activo al día).
+   3) Borde completo del mismo color, reforzando la diferencia.
+   El orden en la hoja de estilos importa: la sombra va primero (aplica a
+   TODAS las tarjetas de crédito) y el color de fondo/borde por estado va
+   después, para que si un crédito está vencido, su borde de color gane
+   sobre el borde por defecto. */
+.loan-card-full{
+  box-shadow:0 6px 16px rgba(20,30,60,0.14);
+}
+.loan-card-vencido{ background:#FDECEC; border:2px solid #EFB4B4; }
+.loan-card-activo{ background:#EBF7EF; border:2px solid #A9DDBC; }
+
 .loan-card-top{
   display:flex;
   align-items:center;
@@ -1691,7 +1708,7 @@ body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-
 .loan-progress-track{
   width:100%;
   height:8px;
-  background:var(--border);
+  background:#D7DCE4; /* CORREGIDO: antes var(--border), un gris casi blanco que se perdía; ahora se nota bien el espacio restante */
   border-radius:var(--radius-full);
   overflow:hidden;
 }
@@ -2907,6 +2924,28 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   align-items:center;
   gap:10px;
   padding:0 14px 18px;
+}
+/* NUEVO: en la pantalla de Clientes, la barra de búsqueda y los chips de
+   ruta quedan fijos justo debajo del encabezado al deslizar hacia abajo
+   o hacia arriba — así el buscador siempre está a mano, sin tener que
+   volver a subir hasta el principio de la lista para usarlo. Se limita
+   a #screen-clientes para no afectar el buscador de otras pantallas
+   (Préstamos, etc.) que reutilizan esta misma clase. */
+#screen-clientes .search-row{
+  position:sticky;
+  top:81px; /* justo debajo del header (altura real medida) */
+  z-index:15;
+  background:var(--background);
+  padding-top:12px;
+  margin-top:-12px;
+}
+#screen-clientes #chips-rutas-clientes{
+  position:sticky;
+  top:163px; /* CORREGIDO: debajo del header (81px) + la barra de búsqueda ya fija (82px) = 163px exactos, medido en el navegador */
+  z-index:14;
+  background:var(--background);
+  padding-top:4px;
+  margin-top:-4px;
 }
 .search-box{
   flex:1;
@@ -7750,6 +7789,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
      Sin lógica de datos, cálculos ni persistencia todavía.
      ========================================================== -->
 <script>
+  // ---------- NUEVO: la app siempre arranca mostrando la parte de arriba ----------
+  // CORREGIDO: al reabrir la app (sobre todo instalada como PWA), el
+  // navegador a veces "recuerda" en qué parte de la pantalla de Inicio te
+  // habías quedado la última vez, y la abre ya desplazada hacia abajo —
+  // en vez de mostrar el saludo "PrestaYa" de arriba. Esto le dice al
+  // navegador que NO restaure ese scroll automáticamente, y fuerza el
+  // inicio siempre arriba del todo.
+  if('scrollRestoration' in history){
+    history.scrollRestoration = 'manual';
+  }
+  window.scrollTo(0, 0);
+  window.addEventListener('load', ()=> window.scrollTo(0, 0));
+
   // ---------- Red de seguridad global contra pantallas en blanco ----------
   // CORREGIDO A FONDO: además de aislar cada función de refresco por
   // separado (ver refrescarVistasConFiltroRutas), esto es un último
