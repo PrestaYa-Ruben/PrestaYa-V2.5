@@ -1595,10 +1595,23 @@ body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-
   margin-bottom:2px;
 }
 .loan-code{
-  font-size:14px;
-  font-weight:600;
+  font-size:13px;
+  font-weight:500;
   color:var(--text-secondary);
   letter-spacing:0.2px;
+  margin-top:2px;
+}
+/* NUEVO: el nombre del cliente ahora es el texto principal de la
+   tarjeta (donde antes iba el código de préstamo) — mismo tratamiento
+   visual que el nombre en las tarjetas de la lista de Clientes. */
+.loan-card-nombre-principal{
+  font-size:16px;
+  font-weight:700;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:220px;
 }
 .loan-badge{
   font-size:12.5px;
@@ -1660,7 +1673,8 @@ body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-
 .loan-row .loan-row-label{ color:var(--text-secondary); font-weight:400; }
 .loan-row .loan-row-value{ color:var(--text); font-weight:600; }
 .loan-row .loan-row-value .loan-freq{ font-weight:600; color:var(--text); }
-.loan-row .loan-row-value.loan-saldo{ color:var(--primary); }
+.loan-row .loan-row-value.loan-saldo{ color:var(--danger); }
+.loan-row .loan-row-value.loan-abonado{ color:var(--primary); }
 
 .loan-progress-header{
   display:flex;
@@ -1672,6 +1686,8 @@ body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-
   padding-top:1px;
   margin-bottom:2px;
 }
+/* NUEVO: porcentaje de avance, junto al conteo de cuotas ("1/4 cuotas · 25%") */
+.loan-progress-porcentaje{ font-weight:700; color:var(--success); }
 .loan-progress-track{
   width:100%;
   height:8px;
@@ -1739,30 +1755,11 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   display:flex;
   align-items:center;
   gap:8px;
-  cursor:pointer;
   margin:10px 0 0;
 }
 .loan-detail-amount-toggle .loan-detail-amount{ margin:0; }
-.loan-detail-amount-toggle svg{
-  width:18px;
-  height:18px;
-  stroke:var(--text-secondary);
-  flex-shrink:0;
-  transition:transform .25s ease;
-}
 .loan-detail-collapsible{
-  max-height:0;
-  overflow:hidden;
-  opacity:0;
-  transition:max-height .35s ease, opacity .25s ease;
-}
-.loan-detail-card.expandido .loan-detail-collapsible{
-  max-height:2000px;
-  opacity:1;
   margin-top:16px;
-}
-.loan-detail-card.expandido .loan-detail-amount-toggle svg{
-  transform:rotate(180deg);
 }
 
 .loan-detail-grid{
@@ -14879,15 +14876,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const fechaInicioTexto = formatearFechaCorta(new Date(prestamo.fecha + 'T00:00:00'));
     const nombreFrecuencia = nombresFrecuencia[prestamo.frecuencia] || prestamo.frecuencia;
     const estadoVisual = estadoVisualPrestamo(prestamo);
-    const clienteTarjeta = mostrarCliente ? clientesGuardados.find(c => c.id === prestamo.clienteId) : null;
+    // NUEVO: el nombre del cliente ahora se busca siempre (antes solo si
+    // mostrarCliente=true) — se muestra arriba como texto principal, en
+    // el lugar donde antes iba el código de préstamo. El código no
+    // desaparece: pasa a ser una línea secundaria más chica, debajo.
+    const clienteTarjeta = clientesGuardados.find(c => c.id === prestamo.clienteId);
 
     const card = document.createElement('div');
     card.className = 'card loan-card-full loan-card-' + estadoVisual;
     card.innerHTML = `
       <div class="loan-card-top">
         <div>
+          <div class="loan-card-nombre-principal">${clienteTarjeta ? escaparHtml(clienteTarjeta.nombre) : 'Cliente eliminado'}</div>
           <div class="loan-code">${prestamo.codigo || ''}</div>
-          ${clienteTarjeta ? `<div class="loan-detail-client">${clienteTarjeta.nombre}</div>` : ''}
         </div>
         <div class="loan-card-top-derecha">
           <div class="loan-badge ${estadoVisual}">${etiquetaEstadoVisual(estadoVisual)}</div>
@@ -14913,7 +14914,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       </div>
       <div class="loan-row">
         <span class="loan-row-label">Total abonado:</span>
-        <span class="loan-row-value">${formatearPesos(totalAbonado)}</span>
+        <span class="loan-row-value loan-abonado">${formatearPesos(totalAbonado)}</span>
       </div>
       <div class="loan-row">
         <span class="loan-row-label">Saldo pendiente:</span>
@@ -14922,7 +14923,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <hr class="loan-divider">
       <div class="loan-progress-header">
         <span>Progreso</span>
-        <span>${cuotasPagadas} / ${prestamo.cuotas} cuotas</span>
+        <span>${cuotasPagadas} / ${prestamo.cuotas} cuotas <span class="loan-progress-porcentaje">· ${Math.round(porcentajeProgreso)}%</span></span>
       </div>
       <div class="loan-progress-track">
         <div class="loan-progress-fill" style="width:${porcentajeProgreso}%"></div>
@@ -15136,16 +15137,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   const btnCerrarDetallePrestamo = document.getElementById('btn-cerrar-detalle-prestamo');
   const loanDetailCardContainer = document.getElementById('loan-detail-card-container');
 
-  // NUEVO: tocar el valor grande expande/colapsa el resto de los datos de
-  // la tarjeta (Tasa, Cuotas, Frecuencia, Cuota, Total a pagar, Saldo,
-  // Interés, Progreso). Delegación de eventos porque la tarjeta se vuelve
-  // a construir (innerHTML) cada vez que se abre un préstamo.
-  loanDetailCardContainer.addEventListener('click', (e)=>{
-    if(e.target.closest('#loan-detail-amount-toggle')){
-      const card = loanDetailCardContainer.querySelector('.loan-detail-card');
-      if(card) card.classList.toggle('expandido');
-    }
-  });
+  // CORREGIDO: a pedido, la tarjeta grande de detalle ya no es
+  // desplegable — queda siempre abierta, con todos sus datos visibles de
+  // una vez (ver clase "expandido" fija en la plantilla de abajo, y el
+  // ícono de flecha ya quitado del encabezado).
+
   const tabCuotas = document.getElementById('tab-cuotas');
   const tabPagos = document.getElementById('tab-pagos');
   const cuotasLista = document.getElementById('cuotas-lista');
@@ -15192,7 +15188,6 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
         <div class="loan-detail-amount-toggle" id="loan-detail-amount-toggle">
           <div class="loan-detail-amount">${formatearPesos(prestamo.valor)}</div>
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
 
         <div class="loan-detail-collapsible">
@@ -15224,11 +15219,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           </div>
           <div class="loan-detail-item">
             <div class="loan-detail-label">Total abonado</div>
-            <div class="loan-detail-value success">${formatearPesos(totalAbonadoPrestamo(prestamo))}</div>
+            <div class="loan-detail-value primary">${formatearPesos(totalAbonadoPrestamo(prestamo))}</div>
           </div>
           <div class="loan-detail-item">
             <div class="loan-detail-label">Saldo pendiente</div>
-            <div class="loan-detail-value warning">${formatearPesos(saldo)}</div>
+            <div class="loan-detail-value danger">${formatearPesos(saldo)}</div>
           </div>
           <div class="loan-detail-item">
             <div class="loan-detail-label">Capital recuperado</div>
