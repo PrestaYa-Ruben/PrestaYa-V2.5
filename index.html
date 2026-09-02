@@ -591,7 +591,7 @@ a{ text-decoration:none; color:inherit; }
   align-items:flex-end;
   gap:5px;
   flex:1; /* CAMBIO: antes height:68px fijo — ahora crece para ocupar el espacio vacío de la tarjeta */
-  min-height:68px; /* nunca queda más bajo que el alto original */
+  min-height:130px; /* CORREGIDO: antes 68px — tarjeta más alta a pedido, para que el gráfico se vea con más presencia */
   overflow-x:auto;
   scrollbar-width:none;
   padding-bottom:2px;
@@ -4112,7 +4112,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
        actualizarMediosPagoDashboard), así que ese JS no cambió.
        ========================================================== -->
   <div class="card" style="padding:20px 18px; margin:0 14px; position:relative;">
-    <button type="button" class="info-tarjeta-btn" data-info-titulo="Total Prestado y Recaudado" data-info-texto="Total Prestado: la suma de los créditos nuevos otorgados en el período seleccionado (tocá el monto para ver a quién se le prestó). Total Recaudado: la suma de todos los abonos cobrados (efectivo + transferencia) en ese mismo período.">
+    <button type="button" class="info-tarjeta-btn" data-info-titulo="Total Prestado y Recaudado" data-info-texto="Total Prestado: la suma de los créditos nuevos otorgados en el período seleccionado (tocá el monto para ver a quién se le prestó). Total Recaudado: la suma de todos los abonos cobrados (efectivo + transferencia) en ese mismo período. Balance: Total Recaudado menos Total Prestado — en verde si recaudaste más de lo que prestaste en el período, en rojo si prestaste más de lo que recaudaste.">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
     </button>
     <div class="loan-detail-grid" style="grid-template-columns:1fr 1fr;">
@@ -4124,6 +4124,14 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <div class="loan-detail-label">Total Recaudado</div>
         <div class="loan-detail-value success" id="dashboard-total-recaudado-periodo">$0</div>
       </div>
+    </div>
+    <!-- NUEVO: Balance = Total Recaudado - Total Prestado — verde si es
+         positivo (recaudaste más de lo que prestaste), rojo si es
+         negativo (prestaste más de lo que recaudaste). -->
+    <hr class="loan-divider" style="margin:16px 0;">
+    <div class="loan-detail-item">
+      <div class="loan-detail-label">Balance</div>
+      <div class="loan-detail-value success" id="dashboard-balance-periodo">$0</div>
     </div>
   </div>
 
@@ -12057,6 +12065,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     return '$' + Math.round(numero).toLocaleString('es-CO');
   }
 
+  // NUEVO: igual que formatearPesos, pero para valores que SÍ pueden ser
+  // negativos (como el Balance) — pone el signo "-" antes del "$", en vez
+  // de "$-50.000" que se ve raro con toLocaleString.
+  function formatearPesosConSigno(numero){
+    return (numero < 0 ? '-' : '') + formatearPesos(Math.abs(numero));
+  }
+
   // NUEVO: efecto de conteo — anima un valor en pesos desde su número
   // actual hasta el nuevo, en vez de cambiarlo de golpe. Guarda el último
   // valor mostrado en el propio elemento (dataset) para poder animar
@@ -13403,20 +13418,46 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const tamIcono = 42;
     let y = yInicioFilas;
 
-    function dibujarCeldaResumen(x, yFila, etiqueta, valor){
+    // NUEVO: mismo ajuste automático de texto que en el Comprobante de
+    // Pago — si una etiqueta o un valor no entra en el ancho disponible
+    // de su columna, primero se achica la letra y, si aun así no entra,
+    // se corta con "…", para que nunca se monte sobre el ícono vecino.
+    const margenEntreColumnasResumen = 10;
+    const anchoDisponibleIzqResumen = (colDerX - margenEntreColumnasResumen) - (colIzqX + tamIcono + 12);
+    const anchoDisponibleDerResumen = (cardX + anchoCard - 25) - (colDerX + tamIcono + 12);
+
+    function ajustarTextoAAnchoResumen(texto, tamBase, tamMinimo, negrita, anchoDisponible){
+      const prefijo = negrita ? 'bold ' : '';
+      let tam = tamBase;
+      ctx.font = prefijo + tam + 'px Arial, sans-serif';
+      while(ctx.measureText(texto).width > anchoDisponible && tam > tamMinimo){
+        tam -= 1;
+        ctx.font = prefijo + tam + 'px Arial, sans-serif';
+      }
+      let textoFinal = texto;
+      while(ctx.measureText(textoFinal + '…').width > anchoDisponible && textoFinal.length > 1){
+        textoFinal = textoFinal.slice(0, -1);
+      }
+      if(textoFinal !== texto) textoFinal += '…';
+      return { texto: textoFinal, tam };
+    }
+
+    function dibujarCeldaResumen(x, yFila, etiqueta, valor, anchoDisponible){
       dibujarIconoComprobante(ctx, x, yFila, tamIcono, iconoParaEtiquetaComprobante(etiqueta), colorAcento, colorIconoFondo);
       const xTexto = x + tamIcono + 12;
+      const etiquetaAjustada = ajustarTextoAAnchoResumen(etiqueta, 15, 12, false, anchoDisponible);
+      const valorAjustado = ajustarTextoAAnchoResumen(String(valor), 20, 14, true, anchoDisponible);
       ctx.fillStyle = colorTextoGris;
-      ctx.font = '15px Arial, sans-serif';
-      ctx.fillText(etiqueta, xTexto, yFila + 17);
+      ctx.font = etiquetaAjustada.tam + 'px Arial, sans-serif';
+      ctx.fillText(etiquetaAjustada.texto, xTexto, yFila + 17);
       ctx.fillStyle = etiqueta === 'Estado' ? '#22A559' : colorTextoOscuro;
-      ctx.font = 'bold 20px Arial, sans-serif';
-      ctx.fillText(String(valor), xTexto, yFila + 41);
+      ctx.font = 'bold ' + valorAjustado.tam + 'px Arial, sans-serif';
+      ctx.fillText(valorAjustado.texto, xTexto, yFila + 41);
     }
 
     for(let i = 0; i < filas.length; i += 2){
-      if(filas[i]) dibujarCeldaResumen(colIzqX, y, filas[i][0], filas[i][1]);
-      if(filas[i + 1]) dibujarCeldaResumen(colDerX, y, filas[i + 1][0], filas[i + 1][1]);
+      if(filas[i]) dibujarCeldaResumen(colIzqX, y, filas[i][0], filas[i][1], anchoDisponibleIzqResumen);
+      if(filas[i + 1]) dibujarCeldaResumen(colDerX, y, filas[i + 1][0], filas[i + 1][1], anchoDisponibleDerResumen);
 
       if(i + 2 < filas.length){
         ctx.strokeStyle = '#EDF0F4';
@@ -14495,6 +14536,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const elTotal = document.getElementById('dashboard-medios-total');
     const elTotalPrestado = document.getElementById('dashboard-total-prestado-periodo');
     const elTotalRecaudado = document.getElementById('dashboard-total-recaudado-periodo');
+    const elBalance = document.getElementById('dashboard-balance-periodo'); // NUEVO
     if(!elTransferencia || !elEfectivo || !elTotal) return;
 
     let efectivo = 0, transferencia = 0;
@@ -14513,11 +14555,20 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     animarValorPesos(elEfectivo, efectivo);
     animarValorPesos(elTotal, efectivo + transferencia);
 
-    if(elTotalRecaudado) animarValorPesos(elTotalRecaudado, efectivo + transferencia);
+    const totalRecaudado = efectivo + transferencia;
+    if(elTotalRecaudado) animarValorPesos(elTotalRecaudado, totalRecaudado);
 
-    if(elTotalPrestado){
-      const totalPrestado = prestamosOtorgadosPeriodo().reduce((s, item) => s + (item.prestamo.valor || 0), 0);
-      animarValorPesos(elTotalPrestado, totalPrestado);
+    const totalPrestado = prestamosOtorgadosPeriodo().reduce((s, item) => s + (item.prestamo.valor || 0), 0);
+    if(elTotalPrestado) animarValorPesos(elTotalPrestado, totalPrestado);
+
+    // NUEVO: Balance = Total Recaudado - Total Prestado. Verde si
+    // recaudaste igual o más de lo que prestaste en el período, rojo si
+    // prestaste más de lo que recaudaste.
+    if(elBalance){
+      const balance = totalRecaudado - totalPrestado;
+      elBalance.textContent = formatearPesosConSigno(balance);
+      elBalance.classList.toggle('danger', balance < 0);
+      elBalance.classList.toggle('success', balance >= 0);
     }
   }
 
@@ -16901,6 +16952,35 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const tamIcono = 42;
     let y = yInicioFilas;
 
+    // NUEVO: ancho de texto realmente disponible en cada columna, antes de
+    // llegar a la columna vecina (izquierda) o al borde de la tarjeta
+    // (derecha) — se usa para que un nombre/concepto largo nunca se monte
+    // encima del ícono de al lado.
+    const margenEntreColumnas = 10;
+    const anchoDisponibleIzq = (colDerX - margenEntreColumnas) - (colIzqX + tamIcono + 12);
+    const anchoDisponibleDer = (cardX + anchoCard - 25) - (colDerX + tamIcono + 12);
+
+    // NUEVO: si el texto (etiqueta o valor) no entra en el ancho
+    // disponible de su columna, primero se reduce el tamaño de letra poco
+    // a poco (sin llegar a verse ilegible) y, si aun así no entra, se
+    // corta con "…" — así un nombre o concepto largo nunca invade la
+    // columna vecina ni se monta sobre su ícono.
+    function ajustarTextoAAncho(texto, tamBase, tamMinimo, negrita, anchoDisponible){
+      const prefijo = negrita ? 'bold ' : '';
+      let tam = tamBase;
+      ctx.font = prefijo + tam + 'px Arial, sans-serif';
+      while(ctx.measureText(texto).width > anchoDisponible && tam > tamMinimo){
+        tam -= 1;
+        ctx.font = prefijo + tam + 'px Arial, sans-serif';
+      }
+      let textoFinal = texto;
+      while(ctx.measureText(textoFinal + '…').width > anchoDisponible && textoFinal.length > 1){
+        textoFinal = textoFinal.slice(0, -1);
+      }
+      if(textoFinal !== texto) textoFinal += '…';
+      return { texto: textoFinal, tam, prefijo };
+    }
+
     // NUEVO: color del valor según la etiqueta — "Estado" y "Abono
     // realizado"/"Valor abonado" (pago confirmado) van en el mismo verde;
     // el resto se mantiene en el tono oscuro estándar.
@@ -16913,7 +16993,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // sin pareja porque ahí antes iba "Saldo pendiente", ya eliminado), esa
     // celda se centra usando TODO el ancho de la tarjeta en vez de quedar
     // pegada a la izquierda con un hueco visible del lado derecho.
-    function dibujarCeldaComprobante(x, yFila, etiqueta, valor, centrada){
+    function dibujarCeldaComprobante(x, yFila, etiqueta, valor, centrada, anchoDisponible){
       let xDibujoIcono = x;
       let xTexto = x + tamIcono + 12;
       if(centrada){
@@ -16926,23 +17006,29 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         xDibujoIcono = centroX - anchoBloque / 2;
         xTexto = xDibujoIcono + tamIcono + 12;
       }
+      // NUEVO: el ancho disponible para centrada=true es más generoso (casi
+      // toda la tarjeta) porque esa celda ya ocupa las 2 columnas juntas.
+      const anchoTope = centrada ? (anchoCard - 50 - tamIcono - 12) : anchoDisponible;
+      const etiquetaAjustada = ajustarTextoAAncho(etiqueta, 15, 12, false, anchoTope);
+      const valorAjustado = ajustarTextoAAncho(String(valor), 20, 14, true, anchoTope);
+
       dibujarIconoComprobante(ctx, xDibujoIcono, yFila, tamIcono, iconoParaEtiquetaComprobante(etiqueta), colorAcento, colorIconoFondo);
       ctx.fillStyle = colorTextoGris;
-      ctx.font = '15px Arial, sans-serif';
-      ctx.fillText(etiqueta, xTexto, yFila + 17);
+      ctx.font = etiquetaAjustada.tam + 'px Arial, sans-serif';
+      ctx.fillText(etiquetaAjustada.texto, xTexto, yFila + 17);
       ctx.fillStyle = colorValorCelda(etiqueta);
-      ctx.font = 'bold 20px Arial, sans-serif';
-      ctx.fillText(String(valor), xTexto, yFila + 41);
+      ctx.font = 'bold ' + valorAjustado.tam + 'px Arial, sans-serif';
+      ctx.fillText(valorAjustado.texto, xTexto, yFila + 41);
     }
 
     for(let i = 0; i < filas.length; i += 2){
       // CAMBIO: la fila que queda sola (ej. "Modalidad de pago") ya no se
       // centra — se alinea igual que el resto, en la columna izquierda.
       if(filas[i]){
-        dibujarCeldaComprobante(colIzqX, y, filas[i][0], filas[i][1], false);
+        dibujarCeldaComprobante(colIzqX, y, filas[i][0], filas[i][1], false, anchoDisponibleIzq);
       }
       if(filas[i + 1]){
-        dibujarCeldaComprobante(colDerX, y, filas[i + 1][0], filas[i + 1][1], false);
+        dibujarCeldaComprobante(colDerX, y, filas[i + 1][0], filas[i + 1][1], false, anchoDisponibleDer);
       }
 
       if(i + 2 < filas.length){
