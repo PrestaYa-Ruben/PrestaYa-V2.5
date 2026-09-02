@@ -1589,19 +1589,13 @@ body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-
 .loan-card-finalizado .loan-progress-fill{ background:var(--text-secondary); }
 
 /* NUEVO: diferenciar rápidamente cada tarjeta de crédito según su estado
-   (a pedido) — combina 3 ideas:
-   1) Más elevación/sombra que el resto de tarjetas de la página, para
-      que se sienta como el contenido principal.
-   2) Tinte de fondo muy suave según el estado (rosado si vencido,
+   (a pedido) — combina 2 ideas:
+   1) Tinte de fondo muy suave según el estado (rosado si vencido,
       verdoso si activo al día).
-   3) Borde completo del mismo color, reforzando la diferencia.
-   El orden en la hoja de estilos importa: la sombra va primero (aplica a
-   TODAS las tarjetas de crédito) y el color de fondo/borde por estado va
-   después, para que si un crédito está vencido, su borde de color gane
-   sobre el borde por defecto. */
-.loan-card-full{
-  box-shadow:0 6px 16px rgba(20,30,60,0.14);
-}
+   2) Borde completo del mismo color, reforzando la diferencia.
+   CORREGIDO: se quitó la sombra extra que había antes (a pedido) — la
+   tarjeta ya no lleva más elevación que el resto de tarjetas de la
+   página, solo el tinte de fondo y el borde de color. */
 .loan-card-vencido{ background:#FDECEC; border:2px solid #EFB4B4; }
 .loan-card-activo{ background:#EBF7EF; border:2px solid #A9DDBC; }
 
