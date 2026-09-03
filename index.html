@@ -921,6 +921,11 @@ body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-
   font-weight:600;
   vertical-align:middle;
 }
+/* NUEVO: mismo tratamiento de tinte + borde aplicado también a las
+   tarjetas de recordatorio de Cobros — naranja mientras está pendiente,
+   verde una vez gestionado (mismos colores ya usados en Cuotas). */
+.recordatorio-card[data-estado="pendiente"]{ background:#FBF0E3; border-color:#EFCB9E; }
+.recordatorio-card[data-estado="gestionado"]{ background:#EBF7EF; border-color:#A9DDBC; }
 .recordatorio-card[data-estado="gestionado"] .recordatorio-linea{ color:var(--success); }
 .recordatorio-card[data-estado="gestionado"] .recordatorio-dot{ background:var(--success); }
 .recordatorio-card[data-estado="gestionado"] .recordatorio-chip{ background:var(--success-light); color:var(--success); }
@@ -1715,13 +1720,13 @@ body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-
 
 .loan-note{
   margin-top:10px;
-  padding:10px 12px 10px 14px;
-  background:var(--background);
+  padding:12px 14px;
+  background:var(--primary-light); /* CORREGIDO: antes var(--background), casi invisible sobre el fondo de la página; ahora un tinte azul claro que la hace notoria de un vistazo */
   border-radius:var(--radius-md);
-  border-left:3px solid var(--primary);
-  font-size:13px;
-  color:var(--text-secondary);
-  font-weight:400;
+  border-left:4px solid var(--primary);
+  font-size:13.5px;
+  color:var(--text);
+  font-weight:500;
   line-height:1.4;
   display:flex;
   gap:8px;
@@ -2011,14 +2016,43 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 
 .cuotas-pagos-card{ padding:6px 16px; }
 
-.cuota-item, .pago-item{
+/* NUEVO: cada cuota es ahora su propia "tarjetica" con tinte de fondo y
+   borde de color según su estado (mismo tratamiento ya aplicado a las
+   tarjetas de crédito) — verde=Pagada, naranja=Pendiente, rojo=Vencida,
+   azul=Abonada (pago parcial). Antes eran solo filas separadas por una
+   línea fina. */
+.cuota-item{
   display:flex;
   align-items:center;
   gap:12px;
-  padding:14px 0;
-  border-bottom:1px solid var(--border);
+  padding:14px 16px;
+  border-radius:var(--radius-lg);
+  margin-bottom:8px;
+  background:#EBF7EF;
+  border:2px solid #A9DDBC;
 }
-.cuota-item:last-child, .pago-item:last-child{ border-bottom:none; }
+.cuota-item:last-child{ margin-bottom:0; }
+.cuota-item.pendiente{ background:#FBF0E3; border-color:#EFCB9E; }
+.cuota-item.vencida{ background:#FDECEC; border-color:#EFB4B4; }
+.cuota-item.abonada{ background:#EAF0FF; border-color:#A8C2FF; }
+
+/* NUEVO: mismo tratamiento que .cuota-item, aplicado ahora también a
+   "Pagadas" — verde para un pago normal, rojo para un recargo por mora,
+   azul para un abono (mismos colores que ya usaba el círculo del
+   número en cada fila). */
+.pago-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px 16px;
+  border-radius:var(--radius-lg);
+  margin-bottom:8px;
+  background:#EBF7EF;
+  border:2px solid #A9DDBC;
+}
+.pago-item:last-child{ margin-bottom:0; }
+.pago-item.recargo{ background:#FDECEC; border-color:#EFB4B4; }
+.pago-item.abono{ background:#EAF0FF; border-color:#A8C2FF; }
 .pago-item-clickable{ cursor:pointer; transition:opacity .12s ease; }
 .pago-item-clickable:active{ opacity:0.7; }
 
@@ -15391,7 +15425,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       const estadoClase = pagada ? 'pagada' : (vencida ? 'vencida' : (esAbonada ? 'abonada' : 'pendiente'));
 
       const item = document.createElement('div');
-      item.className = 'cuota-item';
+      item.className = 'cuota-item ' + estadoClase;
       const fechaDePago = pagada ? fechaPagoCuota(prestamo, cuota.numero) : null;
       item.innerHTML = `
         <div class="cuota-numero ${estadoClase}">${cuota.numero}</div>
@@ -15457,7 +15491,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       const esRecargoMora = pago.aplicarA === 'mora';
       const esAbono = pago.aplicarA === 'abono';
       const item = document.createElement('div');
-      item.className = 'pago-item pago-item-clickable';
+      item.className = 'pago-item pago-item-clickable' + (esRecargoMora ? ' recargo' : '') + (esAbono ? ' abono' : '');
       item.innerHTML = `
         <div class="cuota-numero${esRecargoMora ? ' recargo' : ''}${esAbono ? ' abono' : ''}">${esRecargoMora ? 'R' : (esAbono ? 'A' : pago.cuota)}</div>
         <div class="cuota-info">
@@ -17446,6 +17480,194 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(e.target === compartirComprobanteOverlay) compartirComprobanteOverlay.style.display = 'none';
   });
 
+  // ==========================================================
+  // NUEVO — genera la imagen para compartir replicando EXACTAMENTE el
+  // diseño de la pantalla "Detalle del Pago" (a pedido, con imagen de
+  // referencia): tarjeta única de borde a borde, sin fondo de página
+  // detrás, esquinas muy suaves, logo sin franja de color, montón en
+  // verde centrado, filas con ícono a la izquierda (sin cuadro de fondo,
+  // igual que en pantalla) y el mismo mensaje de agradecimiento/nota al
+  // pie. Reutiliza los mismos interruptores de "qué incluir" que ya
+  // usa la pantalla en vivo (mostrarReciboSaldo, obtenerReciboMostrarMetodo,
+  // etc.), así que lo que ves en pantalla es lo que se comparte.
+  function generarCanvasDetallePagoPantalla(prestamo, cuota, pago){
+    const anchoCard = 430;
+    const padX = 20;
+    const FUENTE = '"Helvetica Neue", Arial, sans-serif';
+    const colorFondoCard = '#FEFDFB';
+    const colorGris = '#7B8794';
+    const colorOscuro = '#151A23';
+    const colorVerde = '#22A559';
+    const colorAzul = '#2F6BFF';
+    const tamIcono = 38;
+
+    const esRecargoMora = pago.aplicarA === 'mora';
+    const esAbono = pago.aplicarA === 'abono';
+
+    // Mismas filas, en el mismo orden, que ya arma abrirDetallePago() en pantalla
+    const filas = [];
+    filas.push(['Cliente', clienteEnDetalle ? clienteEnDetalle.nombre : '—']);
+    filas.push(['Fecha del pago', formatearFechaHoraCorta(new Date(pago.fecha))]);
+    if(obtenerReciboMostrarCuota()){
+      const textoCuota = esRecargoMora ? 'Recargo · Cuota ' + cuota.numero + ' de ' + prestamo.cuotas :
+        esAbono ? 'Abono' : cuota.numero + ' de ' + prestamo.cuotas;
+      filas.push(['Cuota', textoCuota]);
+    }
+    if(obtenerReciboMostrarMetodo()){
+      filas.push(['Método de pago', nombresMetodoPago[pago.metodoPago] || pago.metodoPago || 'Efectivo']);
+    }
+    if(pago.nota){
+      filas.push(['Nota', pago.nota]);
+    }
+    if(mostrarReciboSaldo()){
+      filas.push(['Saldo pendiente', formatearPesos(saldoPendientePrestamo(prestamo))]);
+    }
+    if(mostrarReciboProximo()){
+      const proxima = proximaCuotaPendiente(prestamo);
+      filas.push(['Fecha próximo pago', proxima ? formatearFechaCorta(new Date(proxima.fechaISO)) : 'Crédito al día']);
+    }
+
+    const nombreNegocio = obtenerNombreNegocio();
+    const esMarcaPrestaYa = nombreNegocio === 'PrestaYa';
+    const notaPie = obtenerNotaPieRecibo();
+    const anchoTextoFila = anchoCard - padX * 2 - tamIcono - 14;
+
+    // ---- Primera pasada: medir con un contexto temporal cuántas líneas
+    // ocupa cada valor (solo la Nota puede ser larga) y así calcular el
+    // alto total exacto ANTES de crear el canvas real. ----
+    const medidor = document.createElement('canvas').getContext('2d');
+    const lineasPorFila = filas.map(([etiqueta, valor])=>{
+      medidor.font = '600 15.5px ' + FUENTE;
+      return envolverTextoCanvas(medidor, String(valor), anchoTextoFila);
+    });
+    medidor.font = '400 12px ' + FUENTE;
+    const lineasNotaPie = notaPie ? envolverTextoCanvas(medidor, notaPie, anchoCard - padX * 2) : [];
+
+    const ALTO_MARCA = 34 + 24;      // logo + su margen inferior
+    const ALTO_MONTO = 28 + 4;       // monto grande
+    const ALTO_SUBTITULO = 14 + 16;  // "Interés y Capital" + aire antes de la línea
+    const ALTO_DIVISOR = 1 + 16 * 2; // línea + su margen arriba/abajo
+    const ALTO_FILA_PAD = 16;        // padding:8px arriba y abajo de cada fila
+    const ALTO_LINEA_VALOR = 15.5 * 1.28;
+    const alturaFilas = filas.reduce((suma, _, i)=>{
+      const nLineas = lineasPorFila[i].length;
+      const altoTexto = 12.5 + 2 + nLineas * ALTO_LINEA_VALOR;
+      return suma + Math.max(tamIcono, altoTexto) + ALTO_FILA_PAD;
+    }, 0);
+    const ALTO_REGISTRADO = 12 * 1.3 + 4;
+    const ALTO_NOTA_PIE = lineasNotaPie.length ? (4 + lineasNotaPie.length * 12 * 1.3) : 0;
+    const padSuperior = 26, padInferior = 20;
+
+    const altoTotal = padSuperior + ALTO_MARCA + ALTO_MONTO + ALTO_SUBTITULO + ALTO_DIVISOR +
+      alturaFilas + ALTO_DIVISOR + ALTO_REGISTRADO + ALTO_NOTA_PIE + padInferior;
+
+    // ---- Segunda pasada: dibujar de verdad, ya con el alto exacto ----
+    const canvas = document.createElement('canvas');
+    const ctx = prepararCanvasNitido(canvas, anchoCard, altoTotal, 3);
+
+    // Tarjeta única, de borde a borde — SIN margen ni fondo de página
+    // detrás (a pedido: "sin márgenes, limpia por sus bordes"), con
+    // esquinas muy suaves.
+    trazarRectRedondeado(ctx, 0, 0, anchoCard, altoTotal, 26);
+    ctx.fillStyle = colorFondoCard;
+    ctx.fill();
+
+    let y = padSuperior;
+
+    // ---- Logo (centrado, sin franja de color detrás) ----
+    ctx.textAlign = 'center';
+    if(esMarcaPrestaYa){
+      ctx.font = '700 34px Arial, sans-serif';
+      const tPresta = 'Presta', tYa = 'Ya';
+      const wPresta = ctx.measureText(tPresta).width;
+      const wYa = ctx.measureText(tYa).width;
+      const inicioX = anchoCard / 2 - (wPresta + wYa) / 2;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#0B1F5C';
+      ctx.fillText(tPresta, inicioX, y + 30);
+      ctx.fillStyle = '#2E9E4F';
+      ctx.fillText(tYa, inicioX + wPresta, y + 30);
+      ctx.textAlign = 'center';
+    }else{
+      ctx.font = '700 34px ' + FUENTE;
+      ctx.fillStyle = colorOscuro;
+      ctx.fillText(nombreNegocio, anchoCard / 2, y + 30);
+    }
+    y += ALTO_MARCA;
+
+    // ---- Monto grande + subtítulo (Interés y Capital / Abono / etc.) ----
+    ctx.font = '600 28px ' + FUENTE;
+    ctx.fillStyle = colorVerde;
+    ctx.fillText(formatearPesos(pago.monto), anchoCard / 2, y + 24);
+    y += ALTO_MONTO;
+
+    ctx.font = '500 14px ' + FUENTE;
+    ctx.fillStyle = colorGris;
+    ctx.fillText(nombresAplicarA[pago.aplicarA] || 'Interés y Capital', anchoCard / 2, y + 12);
+    y += ALTO_SUBTITULO;
+
+    dibujarLineaPunteadaDetallePago(ctx, padX, anchoCard - padX, y + 16, false);
+    y += ALTO_DIVISOR;
+
+    // ---- Filas: ícono a la izquierda (sin cuadro de fondo, transparente
+    // igual que en pantalla), etiqueta arriba gris, valor abajo oscuro ----
+    ctx.textAlign = 'left';
+    filas.forEach(([etiqueta, valor], i)=>{
+      const nLineas = lineasPorFila[i].length;
+      const altoTexto = 12.5 + 2 + nLineas * ALTO_LINEA_VALOR;
+      const altoFila = Math.max(tamIcono, altoTexto);
+      const yIcono = y + ALTO_FILA_PAD / 2;
+      // Mismo color de ícono siempre azul (icon-container.blue), sin
+      // cuadro de fondo detrás — se pasa el color de la propia tarjeta
+      // como "fondo" para que el cuadro quede invisible.
+      dibujarIconoComprobante(ctx, padX, yIcono, tamIcono, iconoParaEtiquetaComprobante(etiqueta === 'Fecha del pago' ? 'Fecha de pago' : etiqueta), colorAzul, colorFondoCard);
+
+      const xTexto = padX + tamIcono + 14;
+      const yTextoBase = y + ALTO_FILA_PAD / 2 + Math.max(0, (tamIcono - altoTexto) / 2);
+      ctx.font = '500 12.5px ' + FUENTE;
+      ctx.fillStyle = colorGris;
+      ctx.fillText(etiqueta, xTexto, yTextoBase + 11);
+      ctx.font = '600 15.5px ' + FUENTE;
+      ctx.fillStyle = colorOscuro;
+      lineasPorFila[i].forEach((linea, li)=>{
+        ctx.fillText(linea, xTexto, yTextoBase + 11 + 2 + 15.5 + li * ALTO_LINEA_VALOR);
+      });
+      y += altoFila + ALTO_FILA_PAD;
+    });
+
+    dibujarLineaPunteadaDetallePago(ctx, padX, anchoCard - padX, y + 16, false);
+    y += ALTO_DIVISOR;
+
+    // ---- "¡Gracias por su abono!" + nota al pie personalizable, centrados ----
+    ctx.textAlign = 'center';
+    ctx.font = '400 12px ' + FUENTE;
+    ctx.fillStyle = colorGris;
+    ctx.fillText('¡Gracias por su abono!', anchoCard / 2, y + 9);
+    y += ALTO_REGISTRADO;
+
+    if(lineasNotaPie.length){
+      lineasNotaPie.forEach((linea, li)=>{
+        ctx.fillText(linea, anchoCard / 2, y + 4 + 9 + li * 12 * 1.3);
+      });
+    }
+
+    return canvas;
+  }
+
+  // Línea horizontal SÓLIDA (no punteada) — separadores de Detalle del
+  // Pago, para que coincida exactamente con <hr class="loan-divider">
+  // de la pantalla en vivo.
+  function dibujarLineaPunteadaDetallePago(ctx, x1, x2, y){
+    ctx.save();
+    ctx.strokeStyle = '#EDF0F4';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x1, y);
+    ctx.lineTo(x2, y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
   document.getElementById('btn-detalle-compartir-comprobante').addEventListener('click', async ()=>{
     if(!pagoEnDetalle) return;
     const { prestamo, cuota, pago } = pagoEnDetalle;
@@ -17457,7 +17679,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       return;
     }
 
-    const canvas = generarCanvasComprobante(prestamo, cuota, pago);
+    const canvas = generarCanvasDetallePagoPantalla(prestamo, cuota, pago);
     if(!canvas){
       alert('No se pudo generar el comprobante. Intenta de nuevo.');
       return;
@@ -17495,7 +17717,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   document.getElementById('btn-detalle-comprobante-imagen').addEventListener('click', ()=>{
     if(!pagoEnDetalle) return;
     const { prestamo, cuota, pago } = pagoEnDetalle;
-    const canvas = generarCanvasComprobante(prestamo, cuota, pago);
+    const canvas = generarCanvasDetallePagoPantalla(prestamo, cuota, pago);
     imagenComprobanteImg.src = canvas.toDataURL('image/png');
     imagenComprobanteOverlay.style.display = 'flex';
   });
