@@ -563,7 +563,7 @@ a{ text-decoration:none; color:inherit; }
    vacío abajo. El encabezado y el texto "Toca una barra..." mantienen
    su tamaño natural (no son flex:1). */
 #tarjeta-grafico-ganancias{ margin:14px 14px 0; display:flex; flex-direction:column; }
-#tarjeta-donut-capital-ruta{ margin:14px 14px 0; }
+#tarjeta-top-rutas-capital{ margin:14px 14px 0; }
 .grafico-ganancias-header{ display:flex; align-items:center; justify-content:space-between; }
 .grafico-ganancias-selector-mes{ display:flex; align-items:center; gap:6px; }
 .grafico-ganancias-selector-mes span{ font-size:13px; font-weight:600; color:var(--text-secondary); min-width:98px; text-align:center; }
@@ -3833,61 +3833,139 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   *{ transition:none !important; animation:none !important; }
 }
 
-/* REDISEÑADO: "Capital por Ruta" (Inicio) — antes un donut circular,
-   ahora un velocímetro con un bloque 3D por ruta (todas del mismo
-   tamaño entre sí — el tamaño ya NO representa el monto, eso se ve al
-   tocar el bloque) y una aguja que se posiciona sobre la ruta tocada.
-   Reutiliza los mismos datos/colores de calcularCarteraPorRuta(). */
-#tarjeta-donut-capital-ruta{
-  overflow:hidden;
-  box-sizing:border-box;
+/* NUEVO: "Capital por Ruta" (Inicio) — lista de rutas ordenadas por
+   capital en la calle, de mayor a menor: medalla de posición, punto de
+   color + nombre, monto, porcentaje y barra de progreso. Reemplaza al
+   velocímetro anterior (a pedido, con imagen de referencia). Reutiliza
+   los mismos datos/colores de calcularCarteraPorRuta()/colorParaRuta(). */
+.top-rutas-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:16px;
 }
-.donut-capital-ruta-wrap{
-  position:relative;
-  width:100%;
-  max-width:300px;
-  margin:0 auto 2px;
+.top-rutas-icono{
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  background:#F1E8FE;
+  color:#8B34D9;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
 }
-.donut-capital-ruta-svg{ width:100%; height:auto; display:block; overflow:visible; }
-.donut-capital-ruta-centro{
-  position:absolute;
-  left:50%;
-  top:55.6%; /* NUEVO: en % (no px) para escalar correctamente con el ancho responsivo del SVG — ubicado justo encima del eje de la aguja */
-  transform:translateX(-50%);
-  text-align:center;
-  pointer-events:none; /* deja pasar el toque hacia los bloques del SVG que está debajo */
-}
-.donut-capital-ruta-total{ font-size:18px; font-weight:800; color:var(--text); letter-spacing:-0.4px; transition:color .15s ease; }
-.donut-capital-ruta-etiqueta{ font-size:11px; color:var(--text-secondary); font-weight:600; margin-top:1px; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-/* NUEVO: animación breve al mostrar el valor de una ruta tocada */
-@keyframes donutCentroPop{
-  0%{ transform:scale(0.82); opacity:0; }
-  55%{ transform:scale(1.08); opacity:1; }
-  100%{ transform:scale(1); opacity:1; }
-}
-.donut-capital-ruta-centro-pop .donut-capital-ruta-total,
-.donut-capital-ruta-centro-pop .donut-capital-ruta-etiqueta{
-  animation:donutCentroPop .32s cubic-bezier(.22,1,.36,1);
-}
-/* La leyenda solo muestra color + nombre — sirve como "botón" adicional
-   (junto con tocar el propio bloque) para disparar la misma animación
-   con el valor de esa ruta en el centro. */
-.donut-capital-ruta-leyenda{ display:flex; flex-direction:row; flex-wrap:nowrap; gap:14px; max-width:100%; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; margin-top:8px; }
-.donut-capital-ruta-leyenda::-webkit-scrollbar{ display:none; }
-.donut-capital-ruta-leyenda-fila{ display:flex; align-items:center; gap:6px; flex:0 0 auto; cursor:pointer; padding:2px 0; -webkit-tap-highlight-color:transparent; }
-.donut-capital-ruta-leyenda-fila:active{ opacity:.65; }
-.donut-capital-ruta-dot{ width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-.donut-capital-ruta-leyenda-nombre{ font-size:13.5px; font-weight:600; color:var(--text); white-space:nowrap; }
-.donut-capital-ruta-vacio{ font-size:13px; color:var(--text-secondary); text-align:center; font-weight:500; padding:6px 0; }
+.top-rutas-icono svg{ width:18px; height:18px; stroke:currentColor; }
 
-/* NUEVO: bloques 3D del velocímetro, con efecto "push" al tocarlos */
-.gauge-rt-seg{ cursor:pointer; }
-.gauge-rt-top{ transition: transform .11s cubic-bezier(.3,.7,.4,1), filter .11s ease; }
-.gauge-rt-seg.pressed .gauge-rt-top,
-.gauge-rt-seg.pressed .gauge-rt-shine{ transform: translateY(7px) scale(0.985); filter: brightness(0.85); }
-.gauge-rt-seg:not(.pressed) .gauge-rt-top,
-.gauge-rt-seg:not(.pressed) .gauge-rt-shine{ transition: transform .3s cubic-bezier(.34,1.56,.64,1), filter .2s ease; }
-.gauge-needle-group{ transition: transform .35s cubic-bezier(.22,1,.36,1); }
+.top-ruta-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 0;
+}
+.top-ruta-item + .top-ruta-item{ border-top:1px solid var(--border); }
+.top-ruta-rank{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+  font-weight:800;
+  flex-shrink:0;
+  background:#EEF0F4;
+  color:#5B6472;
+}
+.top-ruta-rank.rank-1{ background:#EEF0F4; color:#3A4250; }
+.top-ruta-rank.rank-2{ background:#E7EBFC; color:#3B5BDB; }
+.top-ruta-rank.rank-3{ background:#FCE4E8; color:#D6336C; }
+.top-ruta-cuerpo{ flex:1; min-width:0; }
+.top-ruta-fila-superior{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:6px;
+}
+.top-ruta-nombre{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:15.5px;
+  font-weight:700;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.top-ruta-dot{ width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.top-ruta-monto{
+  font-size:16px;
+  font-weight:800;
+  color:var(--text);
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.top-ruta-fila-inferior{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.top-ruta-barra-track{
+  flex:1;
+  height:7px;
+  background:#EDF0F4;
+  border-radius:var(--radius-full);
+  overflow:hidden;
+}
+.top-ruta-barra-fill{
+  height:100%;
+  border-radius:var(--radius-full);
+  transition:width .3s ease;
+}
+.top-ruta-porcentaje{
+  font-size:14px;
+  font-weight:700;
+  flex-shrink:0;
+  min-width:36px;
+  text-align:right;
+}
+.top-rutas-vacio{ font-size:13px; color:var(--text-secondary); text-align:center; font-weight:500; padding:12px 0; }
+
+/* NUEVO: "Capital en Calle" (Inicio) — tarjeta pequeña con tinte azul,
+   a pedido con imagen de referencia. */
+.tarjeta-capital-calle{
+  padding:16px 18px;
+  background:#E3ECFC;
+  border-color:#B9CDF2;
+}
+.capital-calle-etiqueta{
+  font-size:14px;
+  font-weight:700;
+  color:#2F4FA8;
+  margin-bottom:6px;
+}
+.capital-calle-monto{
+  font-size:30px;
+  font-weight:800;
+  color:var(--text);
+  letter-spacing:-0.6px;
+  margin-bottom:14px;
+}
+.capital-calle-barra-track{
+  width:100%;
+  height:9px;
+  background:#C4D5F6;
+  border-radius:var(--radius-full);
+  overflow:hidden;
+}
+.capital-calle-barra-fill{
+  height:100%;
+  background:#3B5FE0;
+  border-radius:var(--radius-full);
+  transition:width .3s ease;
+}
 
 /* NUEVO: banner de acceso a "Cobros" (reemplaza la sección inline que
    antes vivía directo en Inicio) */
@@ -4263,22 +4341,34 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <div class="grafico-ganancias-barras" id="grafico-ganancias-barras"></div>
   </div>
 
+  <!-- NUEVO: "Capital en Calle" — tarjeta pequeña con el total pendiente
+       por cobrar (misma cifra que ya suma calcularCarteraPorRuta(), sin
+       inventar ningún cálculo nuevo) y una barra que muestra qué parte
+       de TODO lo prestado históricamente sigue sin recuperarse. Ubicada
+       justo antes de "Capital por Ruta" porque esa tarjeta es, en el
+       fondo, el desglose por ruta de este mismo total. -->
+  <div class="card tarjeta-capital-calle" id="tarjeta-capital-calle" style="margin:14px 14px 0;">
+    <div class="capital-calle-etiqueta">Capital en calle</div>
+    <div class="capital-calle-monto" id="capital-calle-monto">$0</div>
+    <div class="capital-calle-barra-track">
+      <div class="capital-calle-barra-fill" id="capital-calle-barra-fill" style="width:0%;"></div>
+    </div>
+  </div>
+
   <!-- REDISEÑADO: "Capital por Ruta" — antes donut circular, ahora
        velocímetro con un bloque 3D por ruta. Reutiliza calcularCarteraPorRuta()
        y la misma paleta de colores que ya usa la pantalla Cartera. -->
-  <div class="card" id="tarjeta-donut-capital-ruta" style="padding:16px; position:relative;">
-    <button type="button" class="info-tarjeta-btn" data-info-titulo="Capital por Ruta" data-info-texto="Muestra cómo se reparte, entre tus distintas rutas o cobradores, el capital que actualmente está en la calle (pendiente por cobrar). Toca un bloque para ver el monto de esa ruta.">
+  <div class="card" id="tarjeta-top-rutas-capital" style="padding:16px; position:relative;">
+    <button type="button" class="info-tarjeta-btn" data-info-titulo="Capital por Ruta" data-info-texto="Muestra cómo se reparte, entre tus distintas rutas o cobradores, el capital que actualmente está en la calle (pendiente por cobrar), ordenado de mayor a menor.">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
     </button>
-    <div class="section-title" style="margin-bottom:14px;">Capital por Ruta</div>
-    <div class="donut-capital-ruta-wrap">
-      <svg viewBox="0 0 360 230" class="donut-capital-ruta-svg" id="donut-capital-ruta-svg"></svg>
-      <div class="donut-capital-ruta-centro" id="donut-capital-ruta-centro">
-        <div class="donut-capital-ruta-total" id="donut-capital-ruta-total">$0</div>
-        <div class="donut-capital-ruta-etiqueta" id="donut-capital-ruta-etiqueta">en la calle</div>
+    <div class="top-rutas-header">
+      <div class="top-rutas-icono">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16 3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"></path><path d="M5 16h14v3H5z"></path></svg>
       </div>
+      <div class="section-title" style="margin-bottom:0;">Capital por Ruta</div>
     </div>
-    <div class="donut-capital-ruta-leyenda" id="donut-capital-ruta-leyenda"></div>
+    <div id="top-rutas-lista"></div>
   </div>
 
   <!-- ==========================================================
@@ -9439,184 +9529,72 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     return { capitalTotal, grupos, nombres };
   }
 
-  // NUEVO: guarda el total general para poder volver a mostrarlo en el
-  // centro del gráfico después de que el usuario toca una ruta puntual.
-  let donutCapitalTotalActual = 0;
-  let donutRutaTimeoutRevertir = null;
-  // NUEVO: guarda el ángulo medio de cada bloque del último render, para
-  // que tocar la leyenda (no solo el bloque) también mueva la aguja.
-  let donutSegmentosActuales = {};
-
-  // Geometría del velocímetro (ver maqueta aprobada): centro/pivote fijo,
-  // radio exterior fijo, grosor FIJO para todos los bloques (el tamaño ya
-  // no representa el monto — eso se muestra al tocar el bloque).
-  const GAUGE_CX = 180, GAUGE_CY = 210, GAUGE_OUTER_R = 168, GAUGE_GAP_DEG = 3.4, GAUGE_THICK = 56;
-
-  function gaugePunto(r, angleDeg){
-    const rad = angleDeg * Math.PI / 180;
-    return { x: GAUGE_CX + r * Math.cos(rad), y: GAUGE_CY - r * Math.sin(rad) };
-  }
-  function gaugeArcoPath(r, a0, a1){
-    const p0 = gaugePunto(r, a0), p1 = gaugePunto(r, a1);
-    return `M ${p0.x} ${p0.y} A ${r} ${r} 0 0 1 ${p1.x} ${p1.y}`;
-  }
-  function moverAgujaCapitalRuta(angleDeg){
-    const aguja = document.getElementById('donut-capital-ruta-aguja');
-    if(aguja) aguja.style.transform = `rotate(${90 - angleDeg}deg)`;
-  }
-  function dibujarAgujaCapitalRutaSvg(){
-    const hubY = GAUGE_CY;
-    const largoAguja = GAUGE_OUTER_R - GAUGE_THICK - 62;
-    return `<g class="gauge-needle-group" id="donut-capital-ruta-aguja" style="transform-origin:${GAUGE_CX}px ${hubY}px;">
-      <path d="M ${GAUGE_CX - 6} ${hubY} L ${GAUGE_CX} ${hubY - largoAguja} L ${GAUGE_CX + 6} ${hubY} Z" fill="#1F2430"></path>
-      <circle cx="${GAUGE_CX}" cy="${hubY}" r="11" fill="#1F2430"></circle>
-      <circle cx="${GAUGE_CX}" cy="${hubY}" r="4" fill="#4A5568"></circle>
-    </g>`;
-  }
-
-  // Anima el centro del velocímetro mostrando el valor de UNA ruta puntual
-  // (al tocar su bloque en el arco o su nombre en la leyenda) y mueve la
-  // aguja hacia ese bloque; luego de un momento vuelve a mostrar el total
-  // general automáticamente.
-  function mostrarValorRutaDonut(nombreRuta, valor, color){
-    const centro = document.getElementById('donut-capital-ruta-centro');
-    const totalEl = document.getElementById('donut-capital-ruta-total');
-    const etiquetaEl = document.getElementById('donut-capital-ruta-etiqueta');
-    if(!centro || !totalEl || !etiquetaEl) return;
-
-    clearTimeout(donutRutaTimeoutRevertir);
-    totalEl.textContent = formatearPesos(valor);
-    totalEl.style.color = color;
-    etiquetaEl.textContent = nombreRuta;
-
-    const seg = donutSegmentosActuales[nombreRuta];
-    if(seg) moverAgujaCapitalRuta(seg.aMid);
-
-    // Reinicia la animación aunque se toque otra ruta antes de que termine
-    centro.classList.remove('donut-capital-ruta-centro-pop');
-    void centro.offsetWidth; // fuerza reflow
-    centro.classList.add('donut-capital-ruta-centro-pop');
-
-    donutRutaTimeoutRevertir = setTimeout(()=>{
-      totalEl.textContent = formatearPesos(donutCapitalTotalActual);
-      totalEl.style.color = '';
-      etiquetaEl.textContent = 'en la calle';
-      moverAgujaCapitalRuta(90);
-    }, 2200);
-  }
-
-  // REDISEÑADO: "Capital por Ruta" en Inicio — antes un donut circular,
-  // ahora un velocímetro con un bloque 3D por ruta (todos del mismo
-  // tamaño — el tamaño ya NO representa el monto; eso se ve al tocar el
-  // bloque, que además dispara un efecto "push" y mueve la aguja hasta
-  // esa ruta). Reutiliza exactamente los mismos datos que ya calcula
-  // calcularCarteraPorRuta() y la misma paleta de colores que ya usa la
-  // pantalla Cartera.
-  function renderizarDonutCapitalRuta(){
+  // NUEVO: "Capital por Ruta" (Inicio) — lista ordenada de rutas por
+  // capital en la calle, de mayor a menor (a pedido, con imagen de
+  // referencia). Reutiliza calcularCarteraPorRuta()/colorParaRuta() tal
+  // cual, sin inventar ningún cálculo nuevo — solo cambia cómo se
+  // presenta. Se muestran hasta 5 rutas (la lista ya viene ordenada por
+  // calcularCarteraPorRuta()); "Sin asignar" no entra en el ranking.
+  function renderizarTopRutasCapital(){
+    const lista = document.getElementById('top-rutas-lista');
+    if(!lista) return;
     const { capitalTotal, grupos, nombres } = calcularCarteraPorRuta();
-    const svg = document.getElementById('donut-capital-ruta-svg');
-    const leyenda = document.getElementById('donut-capital-ruta-leyenda');
-    if(!svg || !leyenda) return; // por si esta pantalla no llegó a cargar (defensivo)
+    lista.innerHTML = '';
 
-    clearTimeout(donutRutaTimeoutRevertir);
-    donutCapitalTotalActual = capitalTotal;
-    donutSegmentosActuales = {};
-    const totalEl = document.getElementById('donut-capital-ruta-total');
-    const etiquetaEl = document.getElementById('donut-capital-ruta-etiqueta');
-    totalEl.textContent = formatearPesos(capitalTotal);
-    totalEl.style.color = '';
-    etiquetaEl.textContent = 'en la calle';
-    leyenda.innerHTML = '';
+    const rutasConNombre = nombres.filter(r => r !== '').slice(0, 5);
 
-    const rutasConCapital = nombres.filter(r => grupos[r].capital > 0);
-
-    if(capitalTotal <= 0 || rutasConCapital.length === 0){
-      const rGris = GAUGE_OUTER_R - GAUGE_THICK / 2;
-      svg.innerHTML = `<path d="${gaugeArcoPath(rGris, 179.9, 0.1)}" fill="none" stroke="var(--border)" stroke-width="${GAUGE_THICK}" stroke-linecap="butt"></path>` + dibujarAgujaCapitalRutaSvg();
-      leyenda.innerHTML = '<div class="donut-capital-ruta-vacio">Todavía no hay créditos activos</div>';
-      moverAgujaCapitalRuta(90);
+    if(rutasConNombre.length === 0){
+      lista.innerHTML = '<div class="top-rutas-vacio">Todavía no hay créditos activos.</div>';
       return;
     }
 
-    const N = rutasConCapital.length;
-    const segSpan = 180 / N;
-    const radio = GAUGE_OUTER_R - GAUGE_THICK / 2;
-    const bloques = [];
-
-    // Sombra difusa compartida debajo de todo el conjunto
-    let cuerpo = `<ellipse cx="${GAUGE_CX}" cy="${GAUGE_CY + 10}" rx="${GAUGE_OUTER_R * 0.86}" ry="18" fill="#1E2A5C" opacity="0.08" filter="url(#donut-capital-ruta-blur)"></ellipse>`;
-
-    rutasConCapital.forEach((ruta, indice)=>{
+    rutasConNombre.forEach((ruta, indice)=>{
       const datos = grupos[ruta];
-      const color = colorParaRuta(ruta, indice); // NUEVO: centralizado (respeta colores fijos de rutas puntuales)
-      const nombreMostrar = ruta === '' ? 'Sin asignar' : ruta;
-      const a0 = 180 - indice * segSpan - GAUGE_GAP_DEG / 2;
-      const a1 = 180 - (indice + 1) * segSpan + GAUGE_GAP_DEG / 2;
-      const aMid = (a0 + a1) / 2;
-      const path = gaugeArcoPath(radio, a0, a1);
-      const pathId = 'donut-capital-ruta-path-' + indice;
+      const porcentaje = capitalTotal > 0 ? (datos.capital / capitalTotal) * 100 : 0;
+      const color = colorParaRuta(ruta, indice);
+      const rank = indice + 1;
 
-      donutSegmentosActuales[nombreMostrar] = { aMid };
-      bloques.push({ nombreMostrar, datos, color, aMid });
-
-      // pared (sombra 3D) + cara de color + brillo superior + área de
-      // toque (más ancha que el trazo visible) + nombre curvo sobre el arco
-      cuerpo += `<g class="gauge-rt-seg">
-        <path id="${pathId}" d="${path}" fill="none" stroke="transparent" stroke-width="${GAUGE_THICK}"></path>
-        <path d="${path}" fill="none" stroke="#B9C2D4" stroke-width="${GAUGE_THICK}" stroke-linecap="butt" transform="translate(0,6)"></path>
-        <path class="gauge-rt-top" d="${path}" fill="none" stroke="${color}" stroke-width="${GAUGE_THICK}" stroke-linecap="butt"></path>
-        <path class="gauge-rt-shine" d="${path}" fill="none" stroke="#FFFFFF" stroke-opacity="0.32" stroke-width="${GAUGE_THICK * 0.26}" stroke-linecap="butt" transform="translate(0,${-GAUGE_THICK * 0.3})"></path>
-        <path class="gauge-rt-hit" d="${path}" fill="none" stroke="transparent" stroke-width="${GAUGE_THICK + 18}"></path>
-        <text font-size="12" font-weight="700" fill="#FFFFFF" style="pointer-events:none;">
-          <textPath href="#${pathId}" startOffset="50%" text-anchor="middle" id="donut-capital-ruta-textpath-${indice}">${escaparHtml(nombreMostrar)}</textPath>
-        </text>
-      </g>`;
-    });
-
-    cuerpo += dibujarAgujaCapitalRutaSvg();
-    svg.innerHTML = `<defs><filter id="donut-capital-ruta-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2"></feGaussianBlur></filter></defs>` + cuerpo;
-
-    // NUEVO: si el nombre de una ruta es largo (rutas reales pueden ser
-    // más largas que "Ruta Centro"), se comprime el texto para que no se
-    // desborde fuera de su bloque.
-    bloques.forEach((b, indice)=>{
-      const textEl = document.getElementById('donut-capital-ruta-textpath-' + indice);
-      const pathEl = document.getElementById('donut-capital-ruta-path-' + indice);
-      if(!textEl || !pathEl) return;
-      const largoDisponible = pathEl.getTotalLength() * 0.86;
-      const largoTexto = textEl.getComputedTextLength();
-      if(largoTexto > largoDisponible){
-        textEl.setAttribute('textLength', largoDisponible);
-        textEl.setAttribute('lengthAdjust', 'spacingAndGlyphs');
-      }
-    });
-
-    // Conecta cada bloque ya insertado en el DOM con su acción (push +
-    // mostrar valor) y arma la fila correspondiente en la leyenda.
-    svg.querySelectorAll('.gauge-rt-seg').forEach((g, indice)=>{
-      const b = bloques[indice];
-      const activar = ()=>{
-        g.classList.add('pressed');
-        mostrarValorRutaDonut(b.nombreMostrar, b.datos.capital, b.color);
-      };
-      const soltar = ()=> g.classList.remove('pressed');
-      g.addEventListener('pointerdown', activar);
-      g.addEventListener('pointerup', soltar);
-      g.addEventListener('pointerleave', soltar);
-      g.addEventListener('pointercancel', soltar);
-
-      const fila = document.createElement('div');
-      fila.className = 'donut-capital-ruta-leyenda-fila';
-      fila.innerHTML = `
-        <span class="donut-capital-ruta-dot" style="background:${b.color};"></span>
-        <span class="donut-capital-ruta-leyenda-nombre">${escaparHtml(b.nombreMostrar)}</span>
+      const item = document.createElement('div');
+      item.className = 'top-ruta-item';
+      item.innerHTML = `
+        <div class="top-ruta-rank rank-${rank <= 3 ? rank : 'otro'}">${rank}</div>
+        <div class="top-ruta-cuerpo">
+          <div class="top-ruta-fila-superior">
+            <div class="top-ruta-nombre"><span class="top-ruta-dot" style="background:${color};"></span>${escaparHtml(ruta)}</div>
+            <div class="top-ruta-monto">${formatearPesos(datos.capital)}</div>
+          </div>
+          <div class="top-ruta-fila-inferior">
+            <div class="top-ruta-barra-track"><div class="top-ruta-barra-fill" style="width:${porcentaje}%; background:${color};"></div></div>
+            <div class="top-ruta-porcentaje" style="color:${color};">${Math.round(porcentaje)}%</div>
+          </div>
+        </div>
       `;
-      fila.addEventListener('click', ()=> mostrarValorRutaDonut(b.nombreMostrar, b.datos.capital, b.color));
-      leyenda.appendChild(fila);
+      lista.appendChild(item);
     });
-
-    moverAgujaCapitalRuta(90);
   }
+
+  // NUEVO: "Capital en Calle" (Inicio) — tarjeta pequeña, a pedido con
+  // imagen de referencia. El monto es el mismo total que ya calcula
+  // calcularCarteraPorRuta() (capital pendiente por cobrar de todos los
+  // créditos activos), sin inventar ningún cálculo nuevo. La barra
+  // muestra qué proporción representa ese capital en calle frente a
+  // TODO lo prestado alguna vez (activos + finalizados) — así se ve de
+  // un vistazo qué tan "cargada" está la cartera hoy frente al histórico.
+  function renderizarCapitalEnCalle(){
+    const elMonto = document.getElementById('capital-calle-monto');
+    const elBarra = document.getElementById('capital-calle-barra-fill');
+    if(!elMonto || !elBarra) return;
+
+    const { capitalTotal } = calcularCarteraPorRuta();
+    const totalPrestadoHistorico = prestamosGuardados
+      .filter(p => clienteEstaActivo(p.clienteId))
+      .reduce((s, p) => s + (p.valor || 0), 0);
+    const porcentaje = totalPrestadoHistorico > 0 ? Math.min(100, (capitalTotal / totalPrestadoHistorico) * 100) : 0;
+
+    elMonto.textContent = formatearPesos(capitalTotal);
+    elBarra.style.width = porcentaje + '%';
+  }
+
 
 
   function renderizarCartera(){
@@ -11082,7 +11060,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const altoCard = yFirmas + alturaFirmas + alturaPie;
 
     const canvas = document.createElement('canvas');
-    const ctx = prepararCanvasNitido(canvas, anchoCard, altoCard, 3);
+    const ctx = prepararCanvasNitido(canvas, anchoCard, altoCard, 2); // CORREGIDO: antes 3, se generaba más lento de lo necesario
 
     ctx.fillStyle = '#FFFFFF';
     trazarRectRedondeado(ctx, cardX, cardY, anchoCard, altoCard, 24);
@@ -11159,7 +11137,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const altoCard = yFirmas + alturaFirmas + alturaPie;
 
     const canvas = document.createElement('canvas');
-    const ctx = prepararCanvasNitido(canvas, anchoCard, altoCard, 3);
+    const ctx = prepararCanvasNitido(canvas, anchoCard, altoCard, 2); // CORREGIDO: antes 3, se generaba más lento de lo necesario
 
     ctx.fillStyle = '#FFFFFF';
     trazarRectRedondeado(ctx, cardX, cardY, anchoCard, altoCard, 24);
@@ -13428,7 +13406,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const yFinFilas = yInicioFilas + numFilasVisuales * alturaFilaPar;
     const altoCard = (yFinFilas - cardY) + alturaPie;
     const altoLogicoResumen = altoCard;
-    const ctx = prepararCanvasNitido(canvas, anchoLogicoResumen, altoLogicoResumen, 4);
+    const ctx = prepararCanvasNitido(canvas, anchoLogicoResumen, altoLogicoResumen, 2);
 
     const colorAcento = obtenerColorEncabezadoRecibo();
     const colorIconoFondo = 'rgba(30, 42, 92, 0.08)';
@@ -13910,7 +13888,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     return DIAS_SEMANA_TICKET[fecha.getDay()] + ' ' + fecha.getDate() + ' de ' + MESES_TICKET[fecha.getMonth()];
   }
 
-  const ESCALA_TICKET = 8; // resolución más alta del sistema
+  const ESCALA_TICKET = 2; // CORREGIDO: antes 8 (un canvas hasta 16 veces más pesado de generar) — con 2 sigue viéndose nítido y se genera mucho más rápido
 
   function generarCanvasTicketPrestamo(prestamo, cliente){
     const anchoTicket = 430;
@@ -14561,7 +14539,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const elGanancias = document.getElementById('dashboard-ganancias');
     if(elGanancias) animarValorPesos(elGanancias, interesCobradoHoyTotal() + moraCobradaTotal());
     renderizarGraficoGanancias(); // NUEVO: mantiene el gráfico de barras sincronizado
-    if(typeof renderizarDonutCapitalRuta === 'function') renderizarDonutCapitalRuta(); // NUEVO: mantiene el donut de Capital por Ruta sincronizado
+    if(typeof renderizarTopRutasCapital === 'function') renderizarTopRutasCapital(); // NUEVO: mantiene la lista de Capital por Ruta sincronizada
+    if(typeof renderizarCapitalEnCalle === 'function') renderizarCapitalEnCalle(); // NUEVO: mantiene la tarjeta de Capital en Calle sincronizada
     actualizarMediosPagoDashboard(); // NUEVO: mantiene las tarjetas de Total Prestado/Recaudado y Medios de Pago sincronizadas
     sincronizarAlturaMediosPagoYGanancias(); // NUEVO: iguala el alto de "Medios de Pago" y "Ganancias del Mes"
   }
@@ -16940,7 +16919,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // CAMBIO: este comprobante se comparte directo por WhatsApp, así que
     // pide MÁS nitidez que el resto de imágenes del sistema (escala 4x
     // en vez de la estándar 2x) — ver prepararCanvasNitido().
-    const ctx = prepararCanvasNitido(canvas, anchoLogicoComprobante, altoLogicoComprobante, 4);
+    const ctx = prepararCanvasNitido(canvas, anchoLogicoComprobante, altoLogicoComprobante, 2);
 
     // NUEVO: el comprobante de RECARGO POR MORA siempre usa el rojo fijo
     // de la paleta (#E4032E), sin importar el color que esté elegido en
@@ -17581,7 +17560,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     // ---- Segunda pasada: dibujar de verdad, ya con el alto exacto ----
     const canvas = document.createElement('canvas');
-    const ctx = prepararCanvasNitido(canvas, anchoCard, altoTotal, 3);
+    const ctx = prepararCanvasNitido(canvas, anchoCard, altoTotal, 2);
 
     // Tarjeta única, de borde a borde — SIN margen ni fondo de página
     // detrás (a pedido: "sin márgenes, limpia por sus bordes"), con
