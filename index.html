@@ -3260,11 +3260,23 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .client-row{ cursor:pointer; transition:transform .12s ease; }
 .client-row:active{ transform:scale(0.98); }
 
-/* NUEVO: cliente con alguna cuota vencida — sombra roja muy sutil en la
-   parte inferior de la tarjeta, como señal de alerta discreta (no tan
-   fuerte como un badge o un color de fondo, solo un detalle visual). */
+/* NUEVO: mismo tratamiento de tinte + borde ya usado en las tarjetas de
+   crédito y de cuota, aplicado ahora también a cada cliente de la lista
+   — rojo si tiene alguna cuota vencida, verde si está al día, gris si
+   está inhabilitado. El orden de estas 3 reglas importa: "inhabilitado"
+   va al final para que gane sobre los otros 2 si coinciden (un cliente
+   inhabilitado no debería verse "al día" en verde). */
 .client-row.client-row-mora{
-  border-bottom:1.5px solid rgba(229,72,72,0.55);
+  background:#FDECEC;
+  border-color:#EFB4B4;
+}
+.client-row.client-row-al-dia{
+  background:#EBF7EF;
+  border-color:#A9DDBC;
+}
+.client-row.client-row-inhabilitado{
+  background:#F1F2F5;
+  border-color:#D7DCE4;
 }
 
 /* Insignia de préstamos activos, esquina superior derecha de la tarjeta */
@@ -11422,6 +11434,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     name.textContent = cliente.nombre;
 
     // NUEVO: indicador visual "Inhabilitado" en la tarjeta de la lista
+    // (chip + tinte gris de fondo, mismo tratamiento que el resto de
+    // estados de tarjeta ya usados en la app).
+    card.classList.toggle('client-row-inhabilitado', cliente.estadoCliente === 'inhabilitado');
     if(cliente.estadoCliente === 'inhabilitado'){
       const chipInhabilitado = document.createElement('span');
       chipInhabilitado.className = 'chip-inhabilitado';
@@ -11461,13 +11476,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       card.appendChild(badge);
 
       // NUEVO: si alguno de los préstamos activos del cliente tiene una
-      // cuota vencida (mora), la tarjeta recibe una sombra roja muy sutil
-      // en la parte inferior — mismo criterio que ya usa "Cuotas Vencidas"
-      // (cuotaVencida), sin inventar ningún cálculo nuevo.
+      // cuota vencida (mora), la tarjeta se tiñe de rojo — mismo criterio
+      // que ya usa "Cuotas Vencidas" (cuotaVencida), sin inventar ningún
+      // cálculo nuevo. Si NO tiene ninguna vencida, se tiñe de verde
+      // ("al día") — mismo tratamiento ya usado en las tarjetas de
+      // crédito y de cuota.
       const tieneCuotaVencida = prestamosActivosCliente.some(p =>
         (p.plan || []).some(c => !estaCuotaPagada(p, c.numero) && cuotaVencida(p, c))
       );
       card.classList.toggle('client-row-mora', tieneCuotaVencida);
+      card.classList.toggle('client-row-al-dia', !tieneCuotaVencida);
 
       const saldoTotal = prestamosActivosCliente.reduce((s, p) => s + saldoPendientePrestamo(p), 0);
       if(saldoTotal > 0){
