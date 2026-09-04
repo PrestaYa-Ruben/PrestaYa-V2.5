@@ -21082,11 +21082,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // NUEVO: contadores de las pestañas "Pagaron hoy" / "Pagan hoy" / "Vencidos"
   function actualizarContadoresFiltroClientes(){
     const hoyClave = claveFechaConOffset(0);
-    const pagaronHoy = clientesGuardados.filter(c =>
+    // CORREGIDO: "Pagaron hoy" y "Vencidos" no tenían en cuenta el filtro
+    // de ruta activo (rutasFiltroActivas) — el contador siempre mostraba
+    // el total general, sin importar la ruta seleccionada. "Pagan hoy" sí
+    // lo respetaba (clientesPaganHoy() ya lo filtraba por dentro); ahora
+    // los otros dos siguen exactamente el mismo criterio.
+    const coincideRuta = c => !rutasFiltroActivas || rutasFiltroActivas.has(c.ruta || '');
+    const pagaronHoy = clientesGuardados.filter(c => coincideRuta(c) &&
       prestamosGuardados.some(prestamo => prestamo.clienteId === c.id && pagosDe(prestamo).some(pago => claveFechaLocal(new Date(pago.fecha)) === hoyClave))
     ).length;
     const paganHoy = new Set(clientesPaganHoy().map(item => item.cliente.id)).size;
-    const vencidos = clientesGuardados.filter(c =>
+    const vencidos = clientesGuardados.filter(c => coincideRuta(c) &&
       prestamosGuardados.some(p => p.clienteId === c.id && p.estado === 'activo' && (p.plan || []).some(cuota => cuotaVencida(p, cuota)))
     ).length;
     document.getElementById('conteo-clientes-pagaron-hoy').textContent = pagaronHoy;
