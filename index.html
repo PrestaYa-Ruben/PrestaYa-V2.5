@@ -1065,6 +1065,8 @@ body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-
   resize:none;
   min-height:88px;
   line-height:1.5;
+  -webkit-overflow-scrolling:touch; /* CORREGIDO: sin esto, el scroll dentro del área de texto se siente "trabado" en iOS al escribir documentos largos */
+  overscroll-behavior:contain; /* evita que, al llegar al final del texto, el gesto se lo lleve el resto de la página */
 }
 
 .btn-guardar-cliente{
@@ -10821,7 +10823,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         { id:'nombreDocumento', label:'Nombre del documento', tipo:'texto', requerido:true, placeholder:'Ej: Contrato Juan Pérez' }
       ],
       firmas: [],
-      tituloDocumento: 'Documento'
+      tituloDocumento: '' // CORREGIDO: a pedido, se oculta el subtítulo genérico "Documento" bajo el logo
     }
   };
 
@@ -11451,7 +11453,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     ctx.fillStyle = '#7B8794';
     ctx.font = '15px Arial, sans-serif';
-    ctx.fillText(tituloDocumento, cardX + 25, cardY + 66);
+    if(tituloDocumento) ctx.fillText(tituloDocumento, cardX + 25, cardY + 66);
 
     ctx.strokeStyle = '#EDF0F4';
     ctx.lineWidth = 1;
@@ -11466,7 +11468,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const cardX = 0, cardY = 0, anchoCard = ANCHO_DOCUMENTO;
     const alturaHeader = 92;
     const alturaFilaPar = 60;
-    const alturaFirmas = 120;
+    const alturaFirmas = tipo.firmas.length > 0 ? 120 : 0; // CORREGIDO: antes fijo en 120, dejaba un hueco vacío grande cuando el tipo no tiene firmas
     const alturaPie = 40;
     const anchoTextoMax = anchoCard - 50;
 
@@ -11482,7 +11484,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const numFilasVisuales = Math.ceil(filas.length / 2);
     const yInicioFilas = cardY + alturaHeader + alturaLeyenda;
     const yFinFilas = yInicioFilas + numFilasVisuales * alturaFilaPar;
-    const yFirmas = yFinFilas + 20;
+    const yFirmas = yFinFilas + (tipo.firmas.length > 0 ? 20 : 0);
     const altoCard = yFirmas + alturaFirmas + alturaPie;
 
     const canvas = document.createElement('canvas');
@@ -11545,7 +11547,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const cardX = 0, cardY = 0, anchoCard = ANCHO_DOCUMENTO;
     const alturaHeader = 92;
     const anchoTextoMax = anchoCard - 50;
-    const alturaFirmas = 120;
+    const alturaFirmas = tipo.firmas.length > 0 ? 120 : 0; // CORREGIDO: antes fijo en 120, dejaba un hueco vacío grande en Documento libre (sin firmas)
     const alturaPie = 40;
 
     // NUEVO: tamaño/estilo del cuerpo elegido en "Documento libre" (los
@@ -11570,7 +11572,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     const yInicioCuerpo = cardY + alturaHeader + 30;
     const altoCuerpo = lineas.length * alturaLinea;
-    const yFirmas = yInicioCuerpo + altoCuerpo + 20;
+    const yFirmas = yInicioCuerpo + altoCuerpo + (tipo.firmas.length > 0 ? 20 : 0);
     const altoCard = yFirmas + alturaFirmas + alturaPie;
 
     const canvas = document.createElement('canvas');
