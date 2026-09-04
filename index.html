@@ -550,8 +550,8 @@ a{ text-decoration:none; color:inherit; }
 .dashboard{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:6px;
-  padding:22px 14px 8px;
+  gap:5px;
+  padding:22px 14px 5px;
 }
 
 /* ==========================================================
@@ -562,8 +562,8 @@ a{ text-decoration:none; color:inherit; }
    todo el alto disponible de la tarjeta, en vez de dejar un espacio
    vacío abajo. El encabezado y el texto "Toca una barra..." mantienen
    su tamaño natural (no son flex:1). */
-#tarjeta-grafico-ganancias{ margin:14px 14px 0; display:flex; flex-direction:column; }
-#tarjeta-top-rutas-capital{ margin:14px 14px 0; }
+#tarjeta-grafico-ganancias{ margin:9px 14px 0; display:flex; flex-direction:column; }
+#tarjeta-top-rutas-capital{ margin:9px 14px 0; }
 .grafico-ganancias-header{ display:flex; align-items:center; justify-content:space-between; }
 .grafico-ganancias-selector-mes{ display:flex; align-items:center; gap:6px; }
 .grafico-ganancias-selector-mes span{ font-size:13px; font-weight:600; color:var(--text-secondary); min-width:98px; text-align:center; }
@@ -957,7 +957,7 @@ body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-
 /* ==========================================================
    8. ACCIONES RÁPIDAS
    ========================================================== */
-.quick-actions{ padding:30px 0 10px; }
+.quick-actions{ padding:20px 0 10px; }
 
 .quick-grid{
   display:grid;
@@ -2712,7 +2712,7 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   inset:0;
   background:rgba(20,30,60,0.45);
   display:flex;
-  align-items:flex-end;
+  align-items:center; /* CORREGIDO: antes flex-end (pegado abajo) — a pedido, ahora centrado a mitad de pantalla */
   justify-content:center;
   z-index:210;
 }
@@ -4113,6 +4113,29 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   border-radius:var(--radius-md);
 }
 
+/* NUEVO: selector de tamaño/estilo del texto en "Documento libre" */
+.documento-estilo-botones{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.documento-estilo-btn{
+  padding:8px 14px;
+  border-radius:var(--radius-full);
+  border:1.5px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  font-size:13.5px;
+  font-weight:600;
+  font-family:inherit;
+  cursor:pointer;
+}
+.documento-estilo-btn.activo{
+  background:var(--primary);
+  border-color:var(--primary);
+  color:#fff;
+}
+
 /* Bloque de firma dentro del formulario */
 .firma-slot{ margin-bottom:18px; }
 .firma-preview-box{
@@ -4318,7 +4341,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
        apiladas (una fila debajo de otra) en vez de en columnas, con
        clases propias "mdp-*" y paddings reducidos para que quede lo más
        compacta posible. -->
-  <div class="card" id="tarjeta-medios-pago-inicio" style="padding:14px 16px; margin:14px 14px 0;">
+  <div class="card" id="tarjeta-medios-pago-inicio" style="padding:14px 16px; margin:9px 14px 0;">
     <div class="section-title" style="margin-bottom:6px;">Medios de Pago</div>
     <div class="mdp-fila">
       <div class="mdp-icono verde">
@@ -4369,7 +4392,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
        de TODO lo prestado históricamente sigue sin recuperarse. Ubicada
        justo antes de "Capital por Ruta" porque esa tarjeta es, en el
        fondo, el desglose por ruta de este mismo total. -->
-  <div class="card tarjeta-capital-calle" id="tarjeta-capital-calle" style="margin:14px 14px 0;">
+  <div class="card tarjeta-capital-calle" id="tarjeta-capital-calle" style="margin:9px 14px 0;">
     <div class="capital-calle-fila-superior">
       <div class="capital-calle-etiqueta">Capital en calle</div>
       <!-- NUEVO: ojito para ocultar/mostrar el monto — a pedido, arranca
@@ -6209,6 +6232,20 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       </div>
     </div>
 
+    <!-- NUEVO: "📊 Estadísticas" — pantalla independiente con el
+         rendimiento, cartera, recaudo y comportamiento de los créditos,
+         calculado 100% a partir de datos ya existentes. -->
+    <div class="card settings-item" id="item-estadisticas" role="button" tabindex="0">
+      <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></div>
+      <div class="info">
+        <div class="title">📊 Estadísticas</div>
+        <div class="subtitle">Rendimiento, cartera, recaudo y comportamiento</div>
+      </div>
+      <div class="trailing chevron">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+    </div>
+
     <div class="card settings-item" id="item-cuotas-vencidas" role="button" tabindex="0">
       <div class="icon-container orange"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15.5 14"></polyline></svg></div>
       <div class="info">
@@ -6670,6 +6707,151 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
      registrado con aplicarA:'mora' (el mismo criterio que usa el resto
      de la app para identificar recargos por mora).
      ========================================================== -->
+<!-- ==========================================================
+     NUEVO: "📊 Estadísticas" — pantalla independiente, solo lectura.
+     Reutiliza el mismo patrón visual de tarjetas ya usado en Centro
+     Financiero (.loan-detail-grid / .loan-detail-item), sin CSS nuevo
+     salvo el necesario para separar las 8 secciones. Todos los valores
+     salen de calcularEstadisticasGenerales(), que a su vez reutiliza
+     las funciones de cálculo que el sistema ya tenía.
+     ========================================================== -->
+<div class="app" id="screen-estadisticas" style="display:none;">
+
+  <header class="header">
+    <button class="back-btn" id="btn-cerrar-estadisticas" aria-label="Volver">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </button>
+    <h1>📊 Estadísticas</h1>
+    <span class="header-spacer"></span>
+  </header>
+
+  <div class="tabs" id="tabs-estadisticas-periodo" style="padding:14px 14px 4px;">
+    <button type="button" class="tab-button active" data-periodo="hoy">Hoy</button>
+    <button type="button" class="tab-button" data-periodo="semana">Semana</button>
+    <button type="button" class="tab-button" data-periodo="mes">Mes</button>
+    <button type="button" class="tab-button" data-periodo="todo">Todo</button>
+  </div>
+
+  <section class="detail-body" style="padding-top:4px;">
+
+    <div class="section-title" style="margin-top:8px;">💰 Resumen de Cartera</div>
+    <div class="card" style="padding:18px 18px 4px;">
+      <div class="loan-detail-grid">
+        <div class="loan-detail-item"><div class="loan-detail-label">Total prestado</div><div class="loan-detail-value" id="est-total-prestado">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Total recaudado</div><div class="loan-detail-value success" id="est-total-recaudado">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Capital pendiente</div><div class="loan-detail-value warning" id="est-capital-pendiente">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Intereses generados</div><div class="loan-detail-value success" id="est-intereses-generados">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Cartera activa</div><div class="loan-detail-value primary" id="est-cartera-activa">0</div></div>
+      </div>
+    </div>
+
+    <div class="section-title">💳 Estado de los Créditos</div>
+    <div class="card" style="padding:18px 18px 4px;">
+      <div class="loan-detail-grid">
+        <div class="loan-detail-item"><div class="loan-detail-label">Activos</div><div class="loan-detail-value success" id="est-creditos-activos">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Pagados</div><div class="loan-detail-value primary" id="est-creditos-pagados">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Vencidos</div><div class="loan-detail-value warning" id="est-creditos-vencidos">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">En mora</div><div class="loan-detail-value danger" id="est-creditos-mora">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Próximos a vencer</div><div class="loan-detail-value warning" id="est-creditos-proximos">0</div></div>
+      </div>
+    </div>
+
+    <div class="section-title">💵 Recaudo</div>
+    <div class="card" style="padding:18px 18px 14px;">
+      <div class="loan-detail-grid">
+        <div class="loan-detail-item"><div class="loan-detail-label">Recaudado hoy</div><div class="loan-detail-value success" id="est-recaudado-hoy">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Recaudado esta semana</div><div class="loan-detail-value success" id="est-recaudado-semana">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Recaudado este mes</div><div class="loan-detail-value success" id="est-recaudado-mes">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Pendiente por cobrar</div><div class="loan-detail-value warning" id="est-pendiente-cobrar">$0</div></div>
+      </div>
+      <hr class="loan-divider">
+      <div class="loan-row">
+        <span class="loan-row-label">Próximo recaudo:</span>
+        <span class="loan-row-value" id="est-proximo-recaudo">—</span>
+      </div>
+    </div>
+
+    <div class="section-title">👥 Clientes</div>
+    <div class="card" style="padding:18px 18px 4px;">
+      <div class="loan-detail-grid">
+        <div class="loan-detail-item"><div class="loan-detail-label">Total de clientes</div><div class="loan-detail-value" id="est-clientes-total">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Activos</div><div class="loan-detail-value success" id="est-clientes-activos">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Con crédito</div><div class="loan-detail-value primary" id="est-clientes-con-credito">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Sin crédito</div><div class="loan-detail-value" id="est-clientes-sin-credito">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Nuevos</div><div class="loan-detail-value primary" id="est-clientes-nuevos">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">En mora</div><div class="loan-detail-value danger" id="est-clientes-mora">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Bloqueados</div><div class="loan-detail-value" id="est-clientes-bloqueados">0</div></div>
+      </div>
+    </div>
+
+    <div class="section-title">⚠️ Mora y Riesgo</div>
+    <div class="card" style="padding:18px 18px 14px;">
+      <div class="loan-detail-grid">
+        <div class="loan-detail-item"><div class="loan-detail-label">Valor total en mora</div><div class="loan-detail-value danger" id="est-valor-mora">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Cuotas vencidas</div><div class="loan-detail-value warning" id="est-cuotas-vencidas">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Clientes morosos</div><div class="loan-detail-value danger" id="est-clientes-morosos">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Cartera en riesgo</div><div class="loan-detail-value danger" id="est-cartera-riesgo">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">% cartera en mora</div><div class="loan-detail-value danger" id="est-pct-mora">0%</div></div>
+      </div>
+      <hr class="loan-divider">
+      <div class="loan-row">
+        <span class="loan-row-label">Mayor saldo pendiente:</span>
+        <span class="loan-row-value" id="est-mayor-saldo">—</span>
+      </div>
+      <div class="loan-row">
+        <span class="loan-row-label">Mayor atraso:</span>
+        <span class="loan-row-value" id="est-mayor-atraso">—</span>
+      </div>
+    </div>
+
+    <div class="section-title">⭐ Comportamiento de Pago</div>
+    <div class="card" style="padding:18px 18px 14px;">
+      <div class="loan-detail-grid">
+        <div class="loan-detail-item"><div class="loan-detail-label">Pagos puntuales</div><div class="loan-detail-value success" id="est-pagos-puntuales">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Pagos atrasados</div><div class="loan-detail-value warning" id="est-pagos-atrasados">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">% de puntualidad</div><div class="loan-detail-value primary" id="est-pct-puntualidad">0%</div></div>
+      </div>
+      <hr class="loan-divider">
+      <div style="font-size:12px; color:var(--text-secondary); font-weight:700; letter-spacing:0.3px; margin-bottom:12px; text-transform:uppercase;">Según Nivel del Cliente</div>
+      <div class="loan-detail-grid">
+        <div class="loan-detail-item"><div class="loan-detail-label">Nuevo</div><div class="loan-detail-value" id="est-nivel-nuevo">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Bronce</div><div class="loan-detail-value" id="est-nivel-bronce">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Plata</div><div class="loan-detail-value" id="est-nivel-plata">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Oro</div><div class="loan-detail-value" id="est-nivel-oro">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Premium</div><div class="loan-detail-value" id="est-nivel-premium">0</div></div>
+      </div>
+    </div>
+
+    <div class="section-title">📈 Rendimiento</div>
+    <div class="card" style="padding:18px 18px 4px;">
+      <div class="loan-detail-grid">
+        <div class="loan-detail-item"><div class="loan-detail-label">Tasa de recuperación</div><div class="loan-detail-value success" id="est-tasa-recuperacion">0%</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">% créditos pagados</div><div class="loan-detail-value primary" id="est-pct-pagados">0%</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Prom. prestado/cliente</div><div class="loan-detail-value" id="est-promedio-prestado">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Promedio de cuota</div><div class="loan-detail-value" id="est-promedio-cuota">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Prom. días de atraso</div><div class="loan-detail-value warning" id="est-promedio-atraso">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Intereses generados</div><div class="loan-detail-value success" id="est-intereses-rendimiento">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Ganancia estimada</div><div class="loan-detail-value success" id="est-ganancia-estimada">$0</div></div>
+      </div>
+    </div>
+
+    <div class="section-title">🏆 Resumen General</div>
+    <div class="card" style="padding:20px 18px 6px; border:1.5px solid var(--primary); background:var(--primary-light);">
+      <div class="loan-detail-grid">
+        <div class="loan-detail-item"><div class="loan-detail-label">Capital colocado</div><div class="loan-detail-value" id="est-rg-capital-colocado">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Capital recuperado</div><div class="loan-detail-value success" id="est-rg-capital-recuperado">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Capital pendiente</div><div class="loan-detail-value warning" id="est-rg-capital-pendiente">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Intereses generados</div><div class="loan-detail-value success" id="est-rg-intereses">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Cartera en mora</div><div class="loan-detail-value danger" id="est-rg-cartera-mora">$0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Índice de recuperación</div><div class="loan-detail-value primary" id="est-rg-indice">0%</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Clientes activos</div><div class="loan-detail-value" id="est-rg-clientes-activos">0</div></div>
+        <div class="loan-detail-item"><div class="loan-detail-label">Créditos activos</div><div class="loan-detail-value" id="est-rg-creditos-activos">0</div></div>
+      </div>
+    </div>
+
+  </section>
+</div>
+
 <div class="app" id="screen-cuotas-vencidas" style="display:none;">
 
   <header class="header">
@@ -6787,6 +6969,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         </div>
         <span>Pagaré</span>
       </div>
+      <!-- NUEVO: documento libre, sin campos ni cálculos -->
+      <div class="action-sheet-item" data-tipo="libre">
+        <div class="icon-container orange">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+        </div>
+        <span>Documento libre</span>
+      </div>
     </div>
     <div class="action-sheet-card action-sheet-cancelar">
       <div class="action-sheet-item centrado" id="accion-cancelar-tipo-documento">
@@ -6845,7 +7034,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
   <form class="form-section" id="form-documento-editor">
 
-    <div class="form-field">
+    <div class="form-field" id="documento-cliente-relacionado-wrap">
       <label class="field-label" for="input-documento-cliente">Cliente relacionado (opcional)</label>
       <input class="field-input" id="input-documento-cliente" type="text" placeholder="Escribe para buscar un cliente" autocomplete="off">
       <div id="documento-cliente-resultados" class="documento-cliente-resultados"></div>
@@ -6853,17 +7042,31 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     <div id="documento-campos-dinamicos"></div>
 
-    <!-- Solo para Contrato / Pagaré: cuerpo largo editable -->
+    <!-- Solo para Contrato / Pagaré / Documento libre: cuerpo largo editable -->
     <div id="documento-cuerpo-wrap" style="display:none;">
       <button type="button" class="btn-outline-share" id="btn-generar-cuerpo-documento" style="width:100%; margin:6px 0 14px; display:flex; align-items:center; justify-content:center; gap:8px;">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M21 12a9 9 0 1 1-3-6.7"></path><polyline points="21 3 21 9 15 9"></polyline></svg>
         Generar texto con estos datos
       </button>
+      <!-- NUEVO: tamaño/estilo del texto — solo para tipos con
+           permiteEstilo:true (por ahora, Documento libre). Aplica al
+           CUERPO COMPLETO del documento (no es texto enriquecido por
+           selección, es un único estilo general), así la imagen final se
+           genera de forma simple y confiable. -->
+      <div class="form-field" id="documento-estilo-wrap" style="display:none;">
+        <label class="field-label">Contenido</label>
+        <div class="documento-estilo-botones">
+          <button type="button" class="documento-estilo-btn" data-estilo="negrita"><b>N</b> Negrita</button>
+          <button type="button" class="documento-estilo-btn activo" data-estilo="normal">Normal</button>
+          <button type="button" class="documento-estilo-btn" data-estilo="grande">Grande</button>
+          <button type="button" class="documento-estilo-btn" data-estilo="mas_grande">Más grande</button>
+        </div>
+      </div>
       <div class="form-field">
-        <label class="field-label" for="documento-cuerpo-editable">Texto del documento (editable)</label>
+        <label class="field-label" for="documento-cuerpo-editable" id="label-documento-cuerpo-editable">Texto del documento (editable)</label>
         <textarea class="field-input field-textarea" id="documento-cuerpo-editable" rows="12" placeholder="Toca &quot;Generar texto con estos datos&quot; para crear un borrador, o escribe aquí directamente."></textarea>
       </div>
-      <p class="documento-nota-legal">Plantilla base editable. Antes de usarla formalmente, te recomendamos hacerla revisar por un abogado.</p>
+      <p class="documento-nota-legal" id="documento-nota-legal">Plantilla base editable. Antes de usarla formalmente, te recomendamos hacerla revisar por un abogado.</p>
     </div>
 
     <div id="documento-firmas-contenedor"></div>
@@ -10049,6 +10252,122 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   });
 
   // ==========================================================
+  // NUEVO — "📊 Estadísticas": pinta en el DOM todo lo que ya calculó
+  // calcularEstadisticasGenerales(). Solo escribe texto — no toca datos.
+  // ==========================================================
+  let periodoEstadisticasActivo = 'hoy';
+  const screenEstadisticas = document.getElementById('screen-estadisticas'); // CORREGIDO: faltaba esta declaración
+
+  function formatearDiasAtraso(numero){
+    const redondeado = Math.round(numero);
+    return redondeado + (redondeado === 1 ? ' día' : ' días');
+  }
+
+  function renderizarEstadisticas(){
+    const d = calcularEstadisticasGenerales(periodoEstadisticasActivo);
+    const set = (id, texto) => { const el = document.getElementById(id); if(el) el.textContent = texto; };
+    const pct = (n) => (Math.round(n * 10) / 10) + '%';
+
+    // 1. Resumen de cartera
+    set('est-total-prestado', formatearPesos(d.totalPrestadoHistorico));
+    set('est-total-recaudado', formatearPesos(d.totalRecaudadoHistorico));
+    set('est-capital-pendiente', formatearPesos(d.capitalPendiente));
+    set('est-intereses-generados', formatearPesos(d.interesGeneradoHistorico));
+    set('est-cartera-activa', d.creditosActivos);
+
+    // 2. Estado de los créditos
+    set('est-creditos-activos', d.creditosActivos);
+    set('est-creditos-pagados', d.creditosFinalizados);
+    set('est-creditos-vencidos', d.creditosVencidosSinMora);
+    set('est-creditos-mora', d.creditosEnMora);
+    set('est-creditos-proximos', d.creditosProximosVencer);
+
+    // 3. Recaudo
+    set('est-recaudado-hoy', formatearPesos(d.recaudadoHoy));
+    set('est-recaudado-semana', formatearPesos(d.recaudadoSemana));
+    set('est-recaudado-mes', formatearPesos(d.recaudadoMes));
+    set('est-pendiente-cobrar', formatearPesos(d.capitalPendiente));
+    set('est-proximo-recaudo', d.proximoRecaudoFecha
+      ? formatearFechaCorta(new Date(d.proximoRecaudoFecha + 'T00:00:00')) + ' · ' + formatearPesos(d.proximoRecaudoMonto)
+      : 'Sin cuotas pendientes');
+
+    // 4. Clientes
+    set('est-clientes-total', d.totalClientes);
+    set('est-clientes-activos', d.clientesActivos);
+    set('est-clientes-con-credito', d.clientesConCredito);
+    set('est-clientes-sin-credito', d.clientesSinCredito);
+    set('est-clientes-nuevos', d.clientesNuevosPeriodo);
+    set('est-clientes-mora', d.clientesMorosos);
+    set('est-clientes-bloqueados', d.clientesBloqueados);
+
+    // 5. Mora y riesgo
+    set('est-valor-mora', formatearPesos(d.valorTotalEnMora));
+    set('est-cuotas-vencidas', d.totalCuotasVencidas);
+    set('est-clientes-morosos', d.clientesMorosos);
+    set('est-cartera-riesgo', formatearPesos(d.carteraEnRiesgo));
+    set('est-pct-mora', pct(d.porcentajeCarteraEnMora));
+    set('est-mayor-saldo', d.mayorSaldoPendiente > 0 ? formatearPesos(d.mayorSaldoPendiente) + ' — ' + d.mayorSaldoPendienteCliente : 'Sin datos');
+    set('est-mayor-atraso', d.mayorAtrasoDias > 0 ? formatearDiasAtraso(d.mayorAtrasoDias) : 'Sin atrasos');
+
+    // 6. Comportamiento de pago
+    set('est-pagos-puntuales', d.pagosPuntuales);
+    set('est-pagos-atrasados', d.pagosAtrasados);
+    set('est-pct-puntualidad', pct(d.porcentajePuntualidad));
+    set('est-nivel-nuevo', d.nivelesConteo.nuevo);
+    set('est-nivel-bronce', d.nivelesConteo.bronce);
+    set('est-nivel-plata', d.nivelesConteo.plata);
+    set('est-nivel-oro', d.nivelesConteo.oro);
+    set('est-nivel-premium', d.nivelesConteo.premium);
+
+    // 7. Rendimiento
+    set('est-tasa-recuperacion', pct(d.tasaRecuperacion));
+    set('est-pct-pagados', pct(d.porcentajeCreditosPagados));
+    set('est-promedio-prestado', formatearPesos(d.promedioPrestadoPorCliente));
+    set('est-promedio-cuota', formatearPesos(d.promedioCuota));
+    set('est-promedio-atraso', d.promedioDiasAtraso > 0 ? formatearDiasAtraso(d.promedioDiasAtraso) : '0 días');
+    set('est-intereses-rendimiento', formatearPesos(d.interesGeneradoPeriodo));
+    set('est-ganancia-estimada', formatearPesos(d.gananciaEstimadaPeriodo));
+
+    // 8. Resumen general
+    set('est-rg-capital-colocado', formatearPesos(d.totalPrestadoHistorico));
+    set('est-rg-capital-recuperado', formatearPesos(d.totalRecaudadoHistorico));
+    set('est-rg-capital-pendiente', formatearPesos(d.capitalPendiente));
+    set('est-rg-intereses', formatearPesos(d.interesGeneradoHistorico));
+    set('est-rg-cartera-mora', formatearPesos(d.valorTotalEnMora));
+    set('est-rg-indice', pct(d.tasaRecuperacion));
+    set('est-rg-clientes-activos', d.clientesActivos);
+    set('est-rg-creditos-activos', d.creditosActivos);
+  }
+
+  document.getElementById('item-estadisticas').addEventListener('click', ()=>{
+    periodoEstadisticasActivo = 'hoy';
+    document.querySelectorAll('#tabs-estadisticas-periodo .tab-button').forEach(b=>{
+      b.classList.toggle('active', b.dataset.periodo === 'hoy');
+    });
+    renderizarEstadisticas();
+    screenAjustes.style.display = 'none';
+    screenEstadisticas.style.display = 'block';
+    window.scrollTo(0, 0);
+  });
+
+  document.getElementById('btn-cerrar-estadisticas').addEventListener('click', ()=>{
+    screenEstadisticas.style.display = 'none';
+    screenAjustes.style.display = 'block';
+    window.scrollTo(0, 0);
+  });
+
+  document.querySelectorAll('#tabs-estadisticas-periodo .tab-button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      mantenerScrollAlFiltrar(()=>{
+        document.querySelectorAll('#tabs-estadisticas-periodo .tab-button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        periodoEstadisticasActivo = btn.dataset.periodo;
+        renderizarEstadisticas();
+      });
+    });
+  });
+
+  // ==========================================================
   // NUEVO — "Cuotas vencidas" (Ajustes → Cuotas vencidas). Reutiliza
   // cuotaVencida()/sumaAbonadaCuota()/pagosDe() y el filtro de rutas
   // compartido (rutasFiltroActivas) — no crea ningún cálculo financiero
@@ -10484,6 +10803,25 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           'El no pago de este pagaré en la fecha de su vencimiento faculta a su tenedor legítimo para exigir el pago por la vía ejecutiva, junto con los intereses de mora y los gastos de cobranza a que haya lugar.\n\n' +
           'Se suscribe en ' + (datos.ciudad || '____________') + ', a ' + formatearFechaLarga(datos.fecha) + '.';
       }
+    },
+    // NUEVO: "Documento libre" — a pedido, totalmente independiente del
+    // resto del sistema (sin cálculos ni datos financieros): el usuario
+    // escribe o pega cualquier texto, le pone un nombre y lo guarda. No
+    // tiene campos estructurados ni firmas ni "generarCuerpo" (por eso el
+    // botón "Generar texto con estos datos" se oculta solo — ver
+    // renderizarCamposDocumento). Sí admite elegir el tamaño/estilo del
+    // texto (permiteEstilo:true), algo que ningún otro tipo usa.
+    libre: {
+      id: 'libre',
+      nombre: 'Documento libre',
+      icono: 'documento',
+      largo: true,
+      permiteEstilo: true,
+      campos: [
+        { id:'nombreDocumento', label:'Nombre del documento', tipo:'texto', requerido:true, placeholder:'Ej: Contrato Juan Pérez' }
+      ],
+      firmas: [],
+      tituloDocumento: 'Documento'
     }
   };
 
@@ -10505,6 +10843,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(tipoId === 'bloqueo_perfil') return 'red';
     if(tipoId === 'tope_maximo') return 'orange';
     if(tipoId === 'paz_y_salvo') return 'green';
+    if(tipoId === 'libre') return 'orange';
     return 'blue';
   }
 
@@ -10516,7 +10855,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       .filter(doc=>{
         if(!filtro) return true;
         const tipo = TIPOS_DOCUMENTO[doc.tipo];
-        const nombreCliente = (doc.campos && (doc.campos.clienteNombre || doc.campos.referenciaNombre)) || '';
+        const nombreCliente = (doc.campos && (doc.campos.clienteNombre || doc.campos.referenciaNombre || doc.campos.nombreDocumento)) || '';
         return nombreCliente.toLowerCase().includes(filtro) || (tipo && tipo.nombre.toLowerCase().includes(filtro));
       });
 
@@ -10532,7 +10871,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     lista.forEach(doc=>{
       const tipo = TIPOS_DOCUMENTO[doc.tipo];
       if(!tipo) return;
-      const nombreCliente = (doc.campos && (doc.campos.clienteNombre || doc.campos.referenciaNombre)) || 'Sin cliente asociado';
+      const nombreCliente = (doc.campos && (doc.campos.clienteNombre || doc.campos.referenciaNombre || doc.campos.nombreDocumento)) || 'Sin cliente asociado';
 
       const card = document.createElement('div');
       card.className = 'card documento-item';
@@ -10737,6 +11076,26 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     tipo.campos.forEach(campo=> contenedorCamposDinamicos.appendChild(crearCampoHtml(campo)));
     documentoCuerpoWrap.style.display = tipo.largo ? 'block' : 'none';
     if(!tipo.largo) documentoCuerpoEditable.value = '';
+
+    // NUEVO: "Cliente relacionado" no aplica a un documento libre (no
+    // tiene por qué estar atado a ningún cliente).
+    document.getElementById('documento-cliente-relacionado-wrap').style.display = (tipoId === 'libre') ? 'none' : '';
+
+    // NUEVO: sin generarCuerpo (caso de "libre") no hay nada que
+    // autogenerar, así que ese botón no tendría sentido — se oculta.
+    document.getElementById('btn-generar-cuerpo-documento').style.display = tipo.generarCuerpo ? '' : 'none';
+
+    // NUEVO: selector de tamaño/estilo del texto, solo si el tipo lo permite.
+    document.getElementById('documento-estilo-wrap').style.display = tipo.permiteEstilo ? '' : 'none';
+    if(tipo.permiteEstilo){
+      document.getElementById('label-documento-cuerpo-editable').style.display = 'none';
+      document.getElementById('documento-cuerpo-editable').placeholder = 'Pega o escribe aquí el contenido del documento...';
+      document.getElementById('documento-nota-legal').style.display = 'none';
+    }else{
+      document.getElementById('label-documento-cuerpo-editable').style.display = '';
+      document.getElementById('label-documento-cuerpo-editable').textContent = 'Texto del documento (editable)';
+      document.getElementById('documento-nota-legal').style.display = '';
+    }
   }
 
   function leerValoresCampos(tipoId){
@@ -10754,6 +11113,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(!tipo || !tipo.generarCuerpo) return;
     const datos = leerValoresCampos(tipoDocumentoActivo);
     documentoCuerpoEditable.value = tipo.generarCuerpo(datos);
+  });
+
+  // NUEVO: selector de tamaño/estilo del texto (Documento libre) — un
+  // único estilo para todo el cuerpo, no texto enriquecido por tramos.
+  let estiloContenidoActual = 'normal';
+  document.querySelectorAll('.documento-estilo-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      estiloContenidoActual = btn.dataset.estilo;
+      document.querySelectorAll('.documento-estilo-btn').forEach(b=> b.classList.toggle('activo', b === btn));
+    });
   });
 
   // ---------- Firmas ----------
@@ -10918,6 +11287,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     renderizarCamposDocumento(tipoId);
     renderizarFirmasDocumento(tipoId);
 
+    // NUEVO: restaurar (al editar) o reiniciar a "Normal" (documento
+    // nuevo) el tamaño/estilo de texto elegido.
+    estiloContenidoActual = (documentoExistente && documentoExistente.estiloContenido) || 'normal';
+    document.querySelectorAll('.documento-estilo-btn').forEach(b=> b.classList.toggle('activo', b.dataset.estilo === estiloContenidoActual));
+
     if(documentoExistente){
       const datos = documentoExistente.campos || {};
       tipo.campos.forEach(campo=>{
@@ -10966,6 +11340,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       documento.campos = datos;
       documento.firmas = Object.assign({}, firmasActuales);
       if(tipo.largo) documento.cuerpo = documentoCuerpoEditable.value;
+      if(tipo.permiteEstilo) documento.estiloContenido = estiloContenidoActual;
       documento.fechaModificacion = ahora;
     }else{
       documento = {
@@ -10974,6 +11349,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         campos: datos,
         firmas: Object.assign({}, firmasActuales),
         cuerpo: tipo.largo ? documentoCuerpoEditable.value : '',
+        estiloContenido: tipo.permiteEstilo ? estiloContenidoActual : undefined,
         fechaCreacion: ahora,
         fechaModificacion: ahora
       };
@@ -11049,39 +11425,40 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }
 
   // Encabezado + logo, idéntico en espíritu al de los comprobantes de pago.
+  // CORREGIDO: a pedido, el encabezado de cada documento ahora muestra el
+  // nombre del negocio EXACTAMENTE como se ve en la bienvenida de Inicio
+  // — "Presta" en azul marino + "Ya" en verde, sin franja de color detrás
+  // (antes era texto blanco sobre una franja de color configurable). Si
+  // el negocio no es "PrestaYa" (usuario lo cambió en Ajustes), se
+  // respeta su nombre tal cual, en un solo color oscuro.
   function dibujarEncabezadoDocumento(ctx, cardX, cardY, anchoCard, alturaHeader, colorAcento, tituloDocumento){
-    ctx.beginPath();
-    ctx.moveTo(cardX, cardY + alturaHeader);
-    ctx.lineTo(cardX, cardY + 26);
-    ctx.arcTo(cardX, cardY, cardX + 26, cardY, 26);
-    ctx.lineTo(cardX + anchoCard - 26, cardY);
-    ctx.arcTo(cardX + anchoCard, cardY, cardX + anchoCard, cardY + 26, 26);
-    ctx.lineTo(cardX + anchoCard, cardY + alturaHeader);
-    ctx.closePath();
-    ctx.fillStyle = colorAcento;
-    ctx.fill();
+    const nombreNegocio = obtenerNombreNegocio();
+    const esMarcaPrestaYa = nombreNegocio === 'PrestaYa';
 
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 26px Arial, sans-serif';
-    ctx.fillText(obtenerNombreNegocio(), cardX + 25, cardY + 42);
-    ctx.font = '16px Arial, sans-serif';
-    ctx.globalAlpha = 0.9;
-    ctx.fillText(tituloDocumento, cardX + 25, cardY + 68);
-    ctx.globalAlpha = 1;
+    if(esMarcaPrestaYa){
+      ctx.font = 'bold 28px Arial, sans-serif';
+      const tPresta = 'Presta', tYa = 'Ya';
+      const wPresta = ctx.measureText(tPresta).width;
+      ctx.fillStyle = '#0B1F5C';
+      ctx.fillText(tPresta, cardX + 25, cardY + 40);
+      ctx.fillStyle = '#2E9E4F';
+      ctx.fillText(tYa, cardX + 25 + wPresta, cardY + 40);
+    }else{
+      ctx.fillStyle = '#151A23';
+      ctx.font = 'bold 26px Arial, sans-serif';
+      ctx.fillText(nombreNegocio, cardX + 25, cardY + 40);
+    }
 
-    const logoCx = cardX + anchoCard - 46, logoCy = cardY + alturaHeader / 2;
-    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-    ctx.lineWidth = 2;
+    ctx.fillStyle = '#7B8794';
+    ctx.font = '15px Arial, sans-serif';
+    ctx.fillText(tituloDocumento, cardX + 25, cardY + 66);
+
+    ctx.strokeStyle = '#EDF0F4';
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.arc(logoCx, logoCy, 22, 0, Math.PI * 2);
+    ctx.moveTo(cardX + 25, cardY + alturaHeader - 4);
+    ctx.lineTo(cardX + anchoCard - 25, cardY + alturaHeader - 4);
     ctx.stroke();
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 22px Arial, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('P', logoCx + 1, logoCy + 2);
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
   }
 
   function generarCanvasDocumentoCorto(doc, tipo){
@@ -11168,15 +11545,26 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const cardX = 0, cardY = 0, anchoCard = ANCHO_DOCUMENTO;
     const alturaHeader = 92;
     const anchoTextoMax = anchoCard - 50;
-    const alturaLinea = 21;
     const alturaFirmas = 120;
     const alturaPie = 40;
+
+    // NUEVO: tamaño/estilo del cuerpo elegido en "Documento libre" (los
+    // demás tipos no tienen este selector y usan 'normal' por defecto,
+    // igual que antes — no cambia nada para Contrato/Pagaré).
+    const ESTILOS_CONTENIDO = {
+      negrita:    { fuente: 'bold 14px Arial, sans-serif', alturaLinea: 21 },
+      normal:     { fuente: '14px Arial, sans-serif',      alturaLinea: 21 },
+      grande:     { fuente: '17px Arial, sans-serif',      alturaLinea: 25 },
+      mas_grande: { fuente: '20px Arial, sans-serif',      alturaLinea: 29 }
+    };
+    const estilo = ESTILOS_CONTENIDO[doc.estiloContenido] || ESTILOS_CONTENIDO.normal;
+    const alturaLinea = estilo.alturaLinea;
 
     // Paso 1: medir cuántas líneas ocupará el cuerpo, con un contexto de
     // medición (mismo font que se usará al dibujar de verdad).
     const medCanvas = document.createElement('canvas');
     const medCtx = medCanvas.getContext('2d');
-    medCtx.font = '14px Arial, sans-serif';
+    medCtx.font = estilo.fuente;
     const cuerpo = doc.cuerpo || '';
     const lineas = envolverTextoCanvas(medCtx, cuerpo, anchoTextoMax);
 
@@ -11196,7 +11584,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     dibujarEncabezadoDocumento(ctx, cardX, cardY, anchoCard, alturaHeader, colorAcento, tipo.tituloDocumento);
 
     ctx.fillStyle = '#151A23';
-    ctx.font = '14px Arial, sans-serif';
+    ctx.font = estilo.fuente;
     let y = yInicioCuerpo;
     lineas.forEach(linea=>{
       if(linea) ctx.fillText(linea, cardX + 25, y);
@@ -14269,6 +14657,193 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // se filtran por fecha — son la situación ACTUAL, no un flujo de un período.
   // Solo los "movimientos del período" (intereses, mora, gastos, etc.) respetan
   // el rango elegido.
+  // ==========================================================
+  // NUEVO — "📊 Estadísticas" (Ajustes). Todo lo que sigue son cálculos
+  // NUEVOS que solo LEEN datos ya existentes (clientesGuardados,
+  // prestamosGuardados) y reutilizan, sin modificarlas, las funciones
+  // que el sistema ya tenía: calcularListaCuotasVencidas(),
+  // clienteEstaActivo(), estaCuotaPagada(), diasDeAtraso(),
+  // cuotaVencida(), prestamoTieneMora(), carteraPendientePrestamo(),
+  // moraCobradaPrestamo(), interesCobradoPrestamo(), nivelCliente, etc.
+  // No se toca ni una línea de esas funciones — esta es 100% código
+  // nuevo y aparte, que solo las llama.
+  function calcularEstadisticasGenerales(clavePeriodo){
+    // 'todo' = sin rango (cuenta todo el historial); el resto reutiliza
+    // exactamente calcularRangoFechas(), la misma que ya usa el resto
+    // de la app para "Hoy/Semana/Mes".
+    const rango = clavePeriodo === 'todo' ? null : calcularRangoFechas(clavePeriodo);
+    const dentroDelRango = (fechaISO) => !rango || (new Date(fechaISO) >= rango.inicio && new Date(fechaISO) <= rango.fin);
+
+    // ---------- 1 pasada única sobre todos los préstamos ----------
+    let totalPrestadoHistorico = 0, totalPrestadoPeriodo = 0;
+    let totalRecaudadoHistorico = 0, totalRecaudadoPeriodo = 0;
+    let recaudadoHoy = 0, recaudadoSemana = 0, recaudadoMes = 0;
+    let capitalPendiente = 0;
+    let interesGeneradoHistorico = 0, interesGeneradoPeriodo = 0;
+    let moraCobradaHistorico = 0, moraCobradaPeriodo = 0;
+    let creditosActivos = 0, creditosFinalizados = 0;
+    let creditosProximosVencer = 0;
+    let pagosPuntuales = 0, pagosAtrasados = 0;
+    let sumaDiasAtraso = 0, cantAtrasos = 0;
+    let sumaCuotas = 0, cantCuotas = 0;
+    let mayorSaldoPendiente = 0, mayorSaldoPendienteCliente = '';
+    let gastosPeriodo = 0;
+
+    const rangoHoy = calcularRangoFechas('hoy');
+    const rangoSemana = calcularRangoFechas('semana');
+    const rangoMes = calcularRangoFechas('mes');
+    const dentro = (fechaISO, r) => new Date(fechaISO) >= r.inicio && new Date(fechaISO) <= r.fin;
+
+    const clientesConCreditoSet = new Set();
+    const clientesMorosoSet = new Set();
+
+    prestamosGuardados.forEach(prestamo=>{
+      const clienteActivo = clienteEstaActivo(prestamo.clienteId);
+      totalPrestadoHistorico += prestamo.valor || 0;
+      if(dentroDelRango(prestamo.fecha + 'T00:00:00')) totalPrestadoPeriodo += prestamo.valor || 0;
+
+      if(clienteActivo){
+        if(prestamo.estado === 'activo'){
+          creditosActivos++;
+          clientesConCreditoSet.add(prestamo.clienteId);
+          capitalPendiente += carteraPendientePrestamo(prestamo);
+          const saldo = saldoPendientePrestamo(prestamo);
+          if(saldo > mayorSaldoPendiente){
+            mayorSaldoPendiente = saldo;
+            const c = clientesGuardados.find(cl => cl.id === prestamo.clienteId);
+            mayorSaldoPendienteCliente = c ? c.nombre : '—';
+          }
+          // Próximo a vencer: la próxima cuota pendiente vence dentro de los próximos 3 días, sin estar ya vencida
+          const proxima = proximaCuotaPendiente(prestamo);
+          if(proxima && !cuotaVencida(prestamo, proxima)){
+            const dias = (new Date(proxima.fechaISO) - new Date()) / (1000*60*60*24);
+            if(dias >= 0 && dias <= 3) creditosProximosVencer++;
+          }
+          (prestamo.plan || []).forEach(c=>{ sumaCuotas += cuotaRealPrestamo(prestamo); cantCuotas++; });
+        }else if(prestamo.estado === 'finalizado'){
+          creditosFinalizados++;
+        }
+      }
+
+      interesGeneradoHistorico += interesCobradoPrestamo(prestamo);
+      moraCobradaHistorico += moraCobradaPrestamo(prestamo);
+
+      pagosDe(prestamo).forEach(pago=>{
+        const montoPago = pago.monto || 0;
+        totalRecaudadoHistorico += montoPago;
+        if(dentroDelRango(pago.fecha)){
+          totalRecaudadoPeriodo += montoPago;
+          if(pago.aplicarA === 'mora') moraCobradaPeriodo += montoPago;
+          else interesGeneradoPeriodo += pago.interesPagado || 0;
+        }
+        if(dentro(pago.fecha, rangoHoy)) recaudadoHoy += montoPago;
+        if(dentro(pago.fecha, rangoSemana)) recaudadoSemana += montoPago;
+        if(dentro(pago.fecha, rangoMes)) recaudadoMes += montoPago;
+
+        // Puntualidad: se compara la fecha real del pago contra la fecha
+        // programada de ESA cuota (si el pago es de una cuota puntual,
+        // no un recargo ni un abono libre, que no tienen "fecha límite" propia).
+        if(pago.aplicarA !== 'mora' && pago.aplicarA !== 'abono' && pago.cuota != null){
+          const cuotaPlan = (prestamo.plan || []).find(c => c.numero === pago.cuota);
+          if(cuotaPlan){
+            const diasDif = (new Date(pago.fecha) - new Date(cuotaPlan.fechaISO)) / (1000*60*60*24);
+            if(diasDif <= 0){ pagosPuntuales++; }
+            else{ pagosAtrasados++; sumaDiasAtraso += diasDif; cantAtrasos++; }
+          }
+        }
+      });
+    });
+
+    movimientosCajaGuardados.filter(m => m.tipo === 'gasto' && !m.anulado && dentroDelRango(m.fecha))
+      .forEach(m => gastosPeriodo += m.monto || 0);
+
+    // ---------- Vencidas / mora / riesgo (reutiliza calcularListaCuotasVencidas tal cual) ----------
+    const itemsVencidos = calcularListaCuotasVencidas();
+    const creditosVencidosSinMora = itemsVencidos.filter(it => !it.tieneMora).length;
+    const creditosEnMora = itemsVencidos.filter(it => it.tieneMora).length;
+    let totalCuotasVencidas = 0, valorTotalEnMora = 0, carteraEnRiesgo = 0, mayorAtrasoDias = 0;
+    itemsVencidos.forEach(it=>{
+      totalCuotasVencidas += it.cuotasVencidasPlan.length;
+      if(it.tieneMora){
+        valorTotalEnMora += it.montoVencido;
+        carteraEnRiesgo += carteraPendientePrestamo(it.prestamo);
+        clientesMorosoSet.add(it.prestamo.clienteId);
+      }
+      it.cuotasVencidasPlan.forEach(c=>{
+        const dias = diasDeAtraso(c);
+        if(dias > mayorAtrasoDias) mayorAtrasoDias = dias;
+      });
+    });
+    const porcentajeCarteraEnMora = capitalPendiente > 0 ? (valorTotalEnMora / capitalPendiente) * 100 : 0;
+
+    // ---------- Clientes ----------
+    const totalClientes = clientesGuardados.length;
+    const clientesActivos = clientesGuardados.filter(c => clienteEstaActivo(c.id)).length;
+    const clientesBloqueados = totalClientes - clientesActivos;
+    const clientesConCredito = clientesConCreditoSet.size;
+    const clientesSinCredito = totalClientes - clientesConCredito;
+    const clientesNuevosPeriodo = clientesGuardados.filter(c => dentroDelRango(new Date(c.id).toISOString())).length;
+
+    // ---------- Comportamiento de pago (reutiliza el Nivel del Cliente ya existente, sin recalcularlo distinto) ----------
+    const nivelesConteo = { nuevo:0, bronce:0, plata:0, oro:0, premium:0 };
+    clientesGuardados.forEach(c=>{
+      const n = c.nivelCliente || 'nuevo';
+      if(nivelesConteo[n] !== undefined) nivelesConteo[n]++;
+    });
+    const totalPagosEvaluados = pagosPuntuales + pagosAtrasados;
+    const porcentajePuntualidad = totalPagosEvaluados > 0 ? (pagosPuntuales / totalPagosEvaluados) * 100 : 0;
+
+    // ---------- Rendimiento ----------
+    const tasaRecuperacion = totalPrestadoHistorico > 0 ? (totalRecaudadoHistorico / totalPrestadoHistorico) * 100 : 0;
+    const totalCreditos = creditosActivos + creditosFinalizados;
+    const porcentajeCreditosPagados = totalCreditos > 0 ? (creditosFinalizados / totalCreditos) * 100 : 0;
+    const promedioPrestadoPorCliente = clientesConCredito > 0 ? totalPrestadoHistorico / clientesConCredito : 0;
+    const promedioCuota = cantCuotas > 0 ? sumaCuotas / cantCuotas : 0;
+    const promedioDiasAtraso = cantAtrasos > 0 ? sumaDiasAtraso / cantAtrasos : 0;
+    const gananciaEstimadaPeriodo = interesGeneradoPeriodo + moraCobradaPeriodo - gastosPeriodo;
+
+    // ---------- Próximo recaudo: la fecha más próxima con cuotas pendientes, y cuánto suma ese día ----------
+    let proximoRecaudoFecha = null, proximoRecaudoMonto = 0;
+    const mapaFechas = new Map();
+    prestamosGuardados.forEach(prestamo=>{
+      if(prestamo.estado !== 'activo' || !clienteEstaActivo(prestamo.clienteId)) return;
+      (prestamo.plan || []).forEach(c=>{
+        if(estaCuotaPagada(prestamo, c.numero)) return;
+        if(new Date(c.fechaISO) < new Date()) return; // ya vencida, no es "próxima"
+        const clave = c.fechaISO.slice(0,10);
+        mapaFechas.set(clave, (mapaFechas.get(clave) || 0) + (c.total - sumaAbonadaCuota(prestamo, c.numero)));
+      });
+    });
+    if(mapaFechas.size > 0){
+      const claves = [...mapaFechas.keys()].sort();
+      proximoRecaudoFecha = claves[0];
+      proximoRecaudoMonto = mapaFechas.get(claves[0]);
+    }
+
+    return {
+      // 1. Resumen de cartera
+      totalPrestadoHistorico, totalPrestadoPeriodo, totalRecaudadoHistorico, totalRecaudadoPeriodo,
+      capitalPendiente, interesGeneradoHistorico, interesGeneradoPeriodo, creditosActivos,
+      // 2. Estado de los créditos
+      creditosFinalizados, creditosVencidosSinMora, creditosEnMora, creditosProximosVencer,
+      // 3. Recaudo
+      recaudadoHoy, recaudadoSemana, recaudadoMes, proximoRecaudoFecha, proximoRecaudoMonto,
+      // 4. Clientes
+      totalClientes, clientesActivos, clientesConCredito, clientesSinCredito, clientesNuevosPeriodo,
+      clientesMorosos: clientesMorosoSet.size, clientesBloqueados,
+      // 5. Mora y riesgo
+      valorTotalEnMora, totalCuotasVencidas, mayorSaldoPendiente, mayorSaldoPendienteCliente,
+      mayorAtrasoDias, carteraEnRiesgo, porcentajeCarteraEnMora,
+      // 6. Comportamiento de pago
+      pagosPuntuales, pagosAtrasados, porcentajePuntualidad, nivelesConteo,
+      // 7. Rendimiento
+      tasaRecuperacion, porcentajeCreditosPagados, promedioPrestadoPorCliente, promedioCuota,
+      promedioDiasAtraso, gananciaEstimadaPeriodo,
+      // 8. Resumen general (reutiliza varios de los anteriores)
+      moraCobradaHistorico, moraCobradaPeriodo
+    };
+  }
+
   function calcularCentroFinanciero(rango){
     const dentroDelRango = (fechaISO) => !rango || (new Date(fechaISO) >= rango.inicio && new Date(fechaISO) <= rango.fin);
 
