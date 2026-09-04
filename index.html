@@ -4593,22 +4593,32 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   </button>
 
   <!-- NUEVO: pestañas de filtro rápido — "Con crédito" es la predeterminada -->
+  <!-- CORREGIDO: se agregó "tab-pequeno" (variante compacta que ya existía
+       en la app, usada en los chips de ruta) para que estos filtros
+       ocupen menos espacio. -->
   <div class="tabs" id="tabs-filtro-clientes">
-    <button type="button" class="tab-button active" data-filtro-cliente="todos">
+    <button type="button" class="tab-button tab-pequeno active" data-filtro-cliente="todos">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-2px; margin-right:3px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
       Todos
     </button>
-    <button type="button" class="tab-button tab-green" data-filtro-cliente="pagaron-hoy">
+    <button type="button" class="tab-button tab-pequeno tab-green" data-filtro-cliente="pagaron-hoy">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-2px; margin-right:3px;"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>
       Pagaron hoy (<span id="conteo-clientes-pagaron-hoy">0</span>)
     </button>
-    <button type="button" class="tab-button tab-orange" data-filtro-cliente="pagan-hoy">
+    <button type="button" class="tab-button tab-pequeno tab-orange" data-filtro-cliente="pagan-hoy">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-2px; margin-right:3px;"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
       Pagan hoy (<span id="conteo-clientes-pagan-hoy">0</span>)
     </button>
-    <button type="button" class="tab-button" data-filtro-cliente="con-credito">Con crédito</button>
-    <button type="button" class="tab-button" data-filtro-cliente="sin-credito">Sin crédito</button>
-    <button type="button" class="tab-button tab-red" data-filtro-cliente="inhabilitados">Inhabilitados</button>
+    <button type="button" class="tab-button tab-pequeno" data-filtro-cliente="con-credito">Con crédito</button>
+    <button type="button" class="tab-button tab-pequeno" data-filtro-cliente="sin-credito">Sin crédito</button>
+    <!-- NUEVO: clientes con al menos una cuota vencida en algún crédito
+         activo — misma lógica ya usada para el tinte rojo de la tarjeta
+         (cuotaVencida), sin inventar ningún criterio nuevo. -->
+    <button type="button" class="tab-button tab-pequeno tab-red" data-filtro-cliente="vencidos">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-2px; margin-right:3px;"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15.5 14"></polyline></svg>
+      Vencidos (<span id="conteo-clientes-vencidos">0</span>)
+    </button>
+    <button type="button" class="tab-button tab-pequeno tab-red" data-filtro-cliente="inhabilitados">Inhabilitados</button>
   </div>
 
   <!-- LISTA DE CLIENTES -->
@@ -21051,6 +21061,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         if(filtroClienteActivo === 'pagan-hoy'){
           return idsPaganHoy.has(c.id);
         }
+        if(filtroClienteActivo === 'vencidos'){
+          // NUEVO: mismo criterio ya usado para el tinte rojo de la
+          // tarjeta de cliente (cuotaVencida) — al menos una cuota sin
+          // pagar y con fecha ya pasada, en algún crédito activo.
+          return prestamosGuardados.some(p => p.clienteId === c.id && p.estado === 'activo' &&
+            (p.plan || []).some(cuota => cuotaVencida(p, cuota)));
+        }
         return true; // 'todos'
       }).sort((a, b) => ordenClientesAZ
         ? (a.nombre || '').localeCompare((b.nombre || ''), 'es')
@@ -21062,15 +21079,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     }
   }
 
-  // NUEVO: contadores de las pestañas "Pagaron hoy" / "Pagan hoy"
+  // NUEVO: contadores de las pestañas "Pagaron hoy" / "Pagan hoy" / "Vencidos"
   function actualizarContadoresFiltroClientes(){
     const hoyClave = claveFechaConOffset(0);
     const pagaronHoy = clientesGuardados.filter(c =>
       prestamosGuardados.some(prestamo => prestamo.clienteId === c.id && pagosDe(prestamo).some(pago => claveFechaLocal(new Date(pago.fecha)) === hoyClave))
     ).length;
     const paganHoy = new Set(clientesPaganHoy().map(item => item.cliente.id)).size;
+    const vencidos = clientesGuardados.filter(c =>
+      prestamosGuardados.some(p => p.clienteId === c.id && p.estado === 'activo' && (p.plan || []).some(cuota => cuotaVencida(p, cuota)))
+    ).length;
     document.getElementById('conteo-clientes-pagaron-hoy').textContent = pagaronHoy;
     document.getElementById('conteo-clientes-pagan-hoy').textContent = paganHoy;
+    document.getElementById('conteo-clientes-vencidos').textContent = vencidos;
   }
 
   document.getElementById('tabs-filtro-clientes').querySelectorAll('.tab-button').forEach(btn=>{
