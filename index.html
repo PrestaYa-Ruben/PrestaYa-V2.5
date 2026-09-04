@@ -3722,6 +3722,67 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   gap:14px;
 }
 
+/* NUEVO — "🏆 Ranking de Clientes" */
+.ranking-clientes-intro{
+  font-size:13px;
+  color:var(--text-secondary);
+  line-height:1.5;
+  margin:0 2px 14px;
+}
+/* Las 16 categorías reutilizan .settings-item tal cual (mismo estilo que
+   el resto de Ajustes) — solo se agrega esta variante para que el icono
+   sea un emoji de texto en vez de un SVG. */
+.icon-container.emoji{ font-size:21px; background:var(--background); }
+.ranking-cliente-fila{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px 2px;
+  cursor:pointer;
+}
+.ranking-cliente-fila + .ranking-cliente-fila{ border-top:1px solid var(--border); }
+.ranking-cliente-fila:active{ opacity:.7; }
+.ranking-cliente-rank{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:var(--background);
+  color:var(--text-secondary);
+  font-size:13px;
+  font-weight:800;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.ranking-cliente-rank.top1{ background:#FEF3C7; color:#B45309; }
+.ranking-cliente-rank.top2{ background:#E7EBFC; color:#3B5BDB; }
+.ranking-cliente-rank.top3{ background:#FCE4E8; color:#D6336C; }
+.ranking-cliente-info{ flex:1; min-width:0; }
+.ranking-cliente-nombre{
+  font-size:15px;
+  font-weight:700;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.ranking-cliente-metrica{
+  font-size:12.5px;
+  color:var(--text-secondary);
+  font-weight:500;
+  margin-top:2px;
+  line-height:1.4;
+}
+.ranking-cliente-fila svg.chevron{ width:18px; height:18px; stroke:var(--text-secondary); flex-shrink:0; }
+.ranking-clientes-vacio{
+  text-align:center;
+  color:var(--text-secondary);
+  font-size:13.5px;
+  padding:28px 8px;
+  line-height:1.5;
+}
+
 /* NUEVO — Reordenar tarjetas de Ajustes (mantener presionada y arrastrar) */
 .settings-list.modo-orden .settings-item{ cursor:grab; }
 .settings-list.modo-orden .settings-item .trailing.chevron{ visibility:hidden; }
@@ -6262,6 +6323,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       </div>
     </div>
 
+    <div class="card settings-item" id="item-ranking-clientes" role="button" tabindex="0">
+      <div class="icon-container orange"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"></path><path d="M7 6H4a2 2 0 0 0 2 4h1"></path><path d="M17 6h3a2 2 0 0 1-2 4h-1"></path></svg></div>
+      <div class="info">
+        <div class="title">🏆 Ranking de Clientes</div>
+        <div class="subtitle">Clasificación y comportamiento de tu cartera</div>
+      </div>
+      <div class="trailing chevron">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+    </div>
+
     <div class="card settings-item" id="item-cuotas-vencidas" role="button" tabindex="0">
       <div class="icon-container orange"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15.5 14"></polyline></svg></div>
       <div class="info">
@@ -6865,6 +6937,44 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       </div>
     </div>
 
+  </section>
+</div>
+
+<!-- ==========================================================
+     NUEVO — "🏆 Ranking de Clientes": listado de 16 categorías (estilo
+     Ajustes, sin tarjetas grandes) que al tocarlas abren el Top 5
+     correspondiente. Reutiliza clientesGuardados/prestamosGuardados y
+     las mismas funciones de cálculo ya existentes (estaCuotaPagada,
+     cuotaVencida, diasDeAtraso, totalAbonadoPrestamo,
+     interesCobradoPrestamo, moraCobradaPrestamo, saldoPendientePrestamo,
+     fechaPagoCuota) — no se inventa ningún dato ni fórmula nueva de
+     negocio, solo se combinan estos datos ya reales en una puntuación.
+     ========================================================== -->
+<div class="app" id="screen-ranking-clientes" style="display:none;">
+  <header class="header">
+    <button class="back-btn" id="btn-cerrar-ranking-clientes" aria-label="Volver">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </button>
+    <h1>🏆 Ranking de Clientes</h1>
+    <span class="header-spacer"></span>
+  </header>
+  <section class="detail-body" style="padding-top:6px;">
+    <p class="ranking-clientes-intro">Clasificación y comportamiento de tu cartera, calculado en tiempo real con tus datos.</p>
+    <div id="ranking-categorias-lista"></div>
+  </section>
+</div>
+
+<div class="app" id="screen-ranking-detalle" style="display:none;">
+  <header class="header">
+    <button class="back-btn" id="btn-cerrar-ranking-detalle" aria-label="Volver">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </button>
+    <h1 id="ranking-detalle-titulo">Ranking</h1>
+    <span class="header-spacer"></span>
+  </header>
+  <section class="detail-body" style="padding-top:6px;">
+    <p class="ranking-clientes-intro" id="ranking-detalle-subtitulo"></p>
+    <div class="card" id="ranking-detalle-lista-card" style="padding:4px 16px;"></div>
   </section>
 </div>
 
@@ -10371,6 +10481,248 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   document.getElementById('btn-cerrar-estadisticas').addEventListener('click', ()=>{
     screenEstadisticas.style.display = 'none';
     screenAjustes.style.display = 'block';
+    window.scrollTo(0, 0);
+  });
+
+  // ==========================================================
+  // NUEVO — "🏆 Ranking de Clientes". Todo se calcula a partir de datos
+  // reales ya existentes (clientesGuardados, prestamosGuardados) y de
+  // funciones que YA usaba el resto del sistema (estaCuotaPagada,
+  // cuotaVencida, diasDeAtraso, fechaPagoCuota, totalAbonadoPrestamo,
+  // interesCobradoPrestamo, moraCobradaPrestamo, saldoPendientePrestamo).
+  // No se inventa ningún dato: un cliente sin créditos simplemente no
+  // entra en ningún ranking (no se le asigna una puntuación ficticia).
+  // ==========================================================
+
+  // ---------- Puntuación 0-100 de un cliente ----------
+  // Fórmula transparente y auditable, en 3 componentes que suman 100:
+  //   · Puntualidad  (hasta 60 pts) — % de cuotas pagadas EN LA FECHA
+  //     pactada o antes, sobre el total de cuotas que ya pagó. Un
+  //     cliente que aún no ha pagado nada arranca con el máximo (60),
+  //     dándole el beneficio de la duda hasta que tenga historial.
+  //   · Mora          (hasta 30 pts) — se le resta a partir de 30: 2
+  //     puntos por cada día de atraso que tenga HOY en cuotas vencidas,
+  //     y 5 puntos fijos si alguna vez se le cobró mora (historial).
+  //   · Experiencia   (hasta 10 pts) — 2 puntos por cada crédito que ya
+  //     terminó de pagar por completo, hasta 5 créditos (10 pts).
+  function calcularEstadisticasCliente(cliente){
+    const prestamosCliente = prestamosGuardados.filter(p => p.clienteId === cliente.id);
+    if(prestamosCliente.length === 0) return null; // sin historial: no entra en ningún ranking
+
+    const creditosActivos = prestamosCliente.filter(p => p.estado === 'activo');
+    const creditosPagados = prestamosCliente.filter(p => p.estado === 'finalizado');
+
+    let totalAbonado = 0, interesGenerado = 0, moraCobrada = 0, saldoPendiente = 0;
+    let cuotasPagadasTotal = 0, cuotasPagadasATiempo = 0, diasAtrasoActual = 0;
+
+    prestamosCliente.forEach(p=>{
+      totalAbonado += totalAbonadoPrestamo(p);
+      interesGenerado += interesCobradoPrestamo(p);
+      moraCobrada += moraCobradaPrestamo(p);
+      if(p.estado === 'activo') saldoPendiente += saldoPendientePrestamo(p);
+
+      (p.plan || []).forEach(cuota=>{
+        if(estaCuotaPagada(p, cuota.numero)){
+          cuotasPagadasTotal++;
+          const fechaPago = fechaPagoCuota(p, cuota.numero);
+          if(fechaPago && new Date(fechaPago) <= new Date(cuota.fechaISO)) cuotasPagadasATiempo++;
+        }else if(cuotaVencida(p, cuota)){
+          diasAtrasoActual += diasDeAtraso(cuota);
+        }
+      });
+    });
+
+    const puntualidadPct = cuotasPagadasTotal > 0 ? Math.round((cuotasPagadasATiempo / cuotasPagadasTotal) * 100) : 100;
+
+    const componentePuntualidad = (cuotasPagadasTotal > 0 ? (cuotasPagadasATiempo / cuotasPagadasTotal) : 1) * 60;
+    const componenteMora = Math.max(0, 30 - Math.min(30, diasAtrasoActual * 2) - (moraCobrada > 0 ? 5 : 0));
+    const componenteExperiencia = Math.min(10, creditosPagados.length * 2);
+    let puntuacion = Math.round(componentePuntualidad + componenteMora + componenteExperiencia);
+    puntuacion = Math.max(0, Math.min(100, puntuacion));
+
+    let clasificacion;
+    if(puntuacion >= 90) clasificacion = 'excelente';
+    else if(puntuacion >= 80) clasificacion = 'muy_bueno';
+    else if(puntuacion >= 70) clasificacion = 'bueno';
+    else if(puntuacion >= 60) clasificacion = 'regular';
+    else clasificacion = 'malo';
+
+    // Crecimiento: créditos del cliente ordenados por fecha — ¿cada uno
+    // pidió más que el anterior? (dato real: prestamo.valor y prestamo.fecha)
+    const ordenadosPorFecha = [...prestamosCliente].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+    let creciente = ordenadosPorFecha.length >= 2;
+    for(let i = 1; i < ordenadosPorFecha.length && creciente; i++){
+      if((ordenadosPorFecha[i].valor || 0) <= (ordenadosPorFecha[i - 1].valor || 0)) creciente = false;
+    }
+    const primerValor = ordenadosPorFecha[0] ? (ordenadosPorFecha[0].valor || 0) : 0;
+    const ultimoValor = ordenadosPorFecha[ordenadosPorFecha.length - 1] ? (ordenadosPorFecha[ordenadosPorFecha.length - 1].valor || 0) : 0;
+    const crecimientoPct = creciente && primerValor > 0 ? Math.round(((ultimoValor - primerValor) / primerValor) * 100) : 0;
+
+    const fechaPrimerCredito = ordenadosPorFecha.length ? new Date(ordenadosPorFecha[0].fecha) : null;
+    const diasDesdePrimerCredito = fechaPrimerCredito ? Math.round((new Date() - fechaPrimerCredito) / 86400000) : 0;
+    const esNuevo = prestamosCliente.length === 1 && diasDesdePrimerCredito <= 60;
+
+    return {
+      cliente, creditosTotal: prestamosCliente.length, creditosActivos: creditosActivos.length,
+      creditosPagados: creditosPagados.length, totalAbonado, interesGenerado, moraCobrada, saldoPendiente,
+      cuotasPagadasTotal, cuotasPagadasATiempo, puntualidadPct, diasAtrasoActual,
+      creciente, crecimientoPct, esNuevo, puntuacion, clasificacion
+    };
+  }
+
+  function calcularTodosClientesConEstadisticas(){
+    return clientesGuardados.map(c => calcularEstadisticasCliente(c)).filter(s => s !== null);
+  }
+
+  const EMOJI_CLASIFICACION = { excelente:'⭐', muy_bueno:'🟢', bueno:'🟢', regular:'🟡', malo:'🔴' };
+
+  // ---------- Las 16 categorías: id, emoji, título, subtítulo, filtro+orden ----------
+  const CATEGORIAS_RANKING = [
+    { id:'mejores', emoji:'🏆', titulo:'Mejores Clientes', subtitulo:'Top 5 clientes con mejor comportamiento',
+      obtener(t){ return t.slice().sort((a,b)=> b.puntuacion - a.puntuacion); } },
+    { id:'buenos', emoji:'🟢', titulo:'Clientes Buenos', subtitulo:'Top 5 clientes con buen historial de pago',
+      obtener(t){ return t.filter(s=> s.clasificacion==='muy_bueno' || s.clasificacion==='bueno').sort((a,b)=> b.puntuacion - a.puntuacion); } },
+    { id:'regulares', emoji:'🟡', titulo:'Clientes Regulares', subtitulo:'Top 5 clientes con comportamiento intermedio',
+      obtener(t){ return t.filter(s=> s.clasificacion==='regular').sort((a,b)=> b.puntuacion - a.puntuacion); } },
+    { id:'malos', emoji:'🔴', titulo:'Clientes Malos', subtitulo:'Top 5 clientes con peor comportamiento',
+      obtener(t){ return t.filter(s=> s.clasificacion==='malo').sort((a,b)=> a.puntuacion - b.puntuacion); } },
+    { id:'mora', emoji:'⚠️', titulo:'Clientes en Mora', subtitulo:'Top 5 clientes con mayor situación de mora',
+      obtener(t){ return t.filter(s=> s.diasAtrasoActual>0).sort((a,b)=> b.moraCobrada - a.moraCobrada); } },
+    { id:'rentables', emoji:'💰', titulo:'Más Rentables', subtitulo:'Top 5 clientes que más rentabilidad han generado',
+      obtener(t){ return t.filter(s=> s.interesGenerado>0).sort((a,b)=> b.interesGenerado - a.interesGenerado); } },
+    { id:'recaudo', emoji:'💳', titulo:'Mayor Recaudo', subtitulo:'Top 5 clientes que más dinero han abonado',
+      obtener(t){ return t.filter(s=> s.totalAbonado>0).sort((a,b)=> b.totalAbonado - a.totalAbonado); } },
+    { id:'renovadores', emoji:'🔄', titulo:'Más Renovadores', subtitulo:'Top 5 clientes con mayor número de créditos tomados',
+      obtener(t){ return t.filter(s=> s.creditosTotal>=2).sort((a,b)=> b.creditosTotal - a.creditosTotal); } },
+    { id:'crecimiento', emoji:'📈', titulo:'Mayor Crecimiento', subtitulo:'Top 5 clientes cuyo monto de crédito ha aumentado progresivamente',
+      obtener(t){ return t.filter(s=> s.creciente).sort((a,b)=> b.crecimientoPct - a.crecimientoPct); } },
+    { id:'premium', emoji:'⭐', titulo:'Clientes Premium', subtitulo:'Top 5 clientes con excelente historial y bajo riesgo',
+      obtener(t){ return t.filter(s=> s.cliente.nivelCliente==='premium').sort((a,b)=> b.puntuacion - a.puntuacion); } },
+    { id:'puntuales', emoji:'📅', titulo:'Más Puntuales', subtitulo:'Top 5 clientes con mayor porcentaje de puntualidad',
+      obtener(t){ return t.filter(s=> s.cuotasPagadasTotal>0).sort((a,b)=> b.puntualidadPct - a.puntualidadPct); } },
+    { id:'aumentar_cupo', emoji:'🚀', titulo:'Para Aumentar Cupo', subtitulo:'Top 5 clientes candidatos para aumento de cupo',
+      obtener(t){ return t.filter(s=> s.puntuacion>=85 && s.creditosPagados>=1 && s.diasAtrasoActual===0).sort((a,b)=> b.puntuacion - a.puntuacion); } },
+    { id:'seguimiento', emoji:'👀', titulo:'Para Seguimiento', subtitulo:'Top 5 clientes que presentan señales de riesgo',
+      obtener(t){ return t.filter(s=> s.diasAtrasoActual>0 || s.puntualidadPct<70).sort((a,b)=> a.puntuacion - b.puntuacion); } },
+    { id:'dias_mora', emoji:'⏰', titulo:'Más Días de Mora', subtitulo:'Top 5 clientes con mayor cantidad de días de atraso',
+      obtener(t){ return t.filter(s=> s.diasAtrasoActual>0).sort((a,b)=> b.diasAtrasoActual - a.diasAtrasoActual); } },
+    { id:'saldo_pendiente', emoji:'💵', titulo:'Mayor Saldo Pendiente', subtitulo:'Top 5 clientes con mayor saldo pendiente',
+      obtener(t){ return t.filter(s=> s.saldoPendiente>0).sort((a,b)=> b.saldoPendiente - a.saldoPendiente); } },
+    { id:'nuevos', emoji:'🆕', titulo:'Mejores Clientes Nuevos', subtitulo:'Top 5 clientes nuevos con mejor comportamiento',
+      obtener(t){ return t.filter(s=> s.esNuevo).sort((a,b)=> b.puntuacion - a.puntuacion); } }
+  ];
+
+  function formatearMetricaRanking(s, categoriaId){
+    const base = '⭐ ' + s.puntuacion + '/100';
+    const diasTxt = s.diasAtrasoActual + (s.diasAtrasoActual === 1 ? ' día' : ' días') + ' de mora';
+    const creditosTxt = s.creditosTotal + (s.creditosTotal === 1 ? ' crédito' : ' créditos');
+    switch(categoriaId){
+      case 'mora': case 'dias_mora':
+        return (s.diasAtrasoActual + (s.diasAtrasoActual === 1 ? ' día' : ' días') + ' de atraso') + ' · ' + formatearPesos(s.moraCobrada) + ' en mora cobrada · ' + base;
+      case 'seguimiento':
+        return (s.diasAtrasoActual > 0 ? diasTxt : 'Puntualidad ' + s.puntualidadPct + '%') + ' · ' + base;
+      case 'rentables':
+        return formatearPesos(s.interesGenerado) + ' en intereses generados · ' + base;
+      case 'recaudo':
+        return formatearPesos(s.totalAbonado) + ' abonados en total · ' + creditosTxt;
+      case 'renovadores':
+        return creditosTxt + ' tomados · ' + base;
+      case 'crecimiento':
+        return '+' + s.crecimientoPct + '% en el monto de sus créditos · ' + base;
+      case 'premium':
+        return '⭐ Nivel Premium · ' + base;
+      case 'puntuales':
+        return 'Puntualidad ' + s.puntualidadPct + '% · ' + s.cuotasPagadasATiempo + '/' + s.cuotasPagadasTotal + ' cuotas a tiempo';
+      case 'aumentar_cupo':
+        return base + ' · ' + s.creditosPagados + ' créditos pagados · sin atraso actual';
+      case 'saldo_pendiente':
+        return formatearPesos(s.saldoPendiente) + ' pendiente · ' + base;
+      default:
+        return base + ' · Puntualidad ' + s.puntualidadPct + '% · ' + creditosTxt + ' · ' + diasTxt;
+    }
+  }
+
+  function renderizarCategoriasRanking(){
+    const lista = document.getElementById('ranking-categorias-lista');
+    lista.innerHTML = '';
+    CATEGORIAS_RANKING.forEach(cat=>{
+      const fila = document.createElement('div');
+      fila.className = 'card settings-item';
+      fila.setAttribute('role', 'button');
+      fila.setAttribute('tabindex', '0');
+      fila.innerHTML = `
+        <div class="icon-container emoji">${cat.emoji}</div>
+        <div class="info">
+          <div class="title">${cat.titulo}</div>
+          <div class="subtitle">${cat.subtitulo}</div>
+        </div>
+        <div class="trailing chevron">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+      `;
+      fila.addEventListener('click', ()=> abrirRankingDetalle(cat.id));
+      lista.appendChild(fila);
+    });
+  }
+
+  function abrirRankingDetalle(categoriaId){
+    const categoria = CATEGORIAS_RANKING.find(c => c.id === categoriaId);
+    if(!categoria) return;
+    const todos = calcularTodosClientesConEstadisticas();
+    const top5 = categoria.obtener(todos).slice(0, 5);
+
+    document.getElementById('ranking-detalle-titulo').textContent = categoria.emoji + ' ' + categoria.titulo;
+    document.getElementById('ranking-detalle-subtitulo').textContent = categoria.subtitulo;
+
+    const listaCard = document.getElementById('ranking-detalle-lista-card');
+    listaCard.innerHTML = '';
+    if(top5.length === 0){
+      listaCard.innerHTML = '<div class="ranking-clientes-vacio">Todavía no hay datos suficientes para este ranking.</div>';
+    }else{
+      top5.forEach((s, indice)=>{
+        const rank = indice + 1;
+        const fila = document.createElement('div');
+        fila.className = 'ranking-cliente-fila';
+        fila.innerHTML = `
+          <div class="ranking-cliente-rank ${rank <= 3 ? 'top' + rank : ''}">${rank}</div>
+          <div class="ranking-cliente-info">
+            <div class="ranking-cliente-nombre">${escaparHtml(s.cliente.nombre)}</div>
+            <div class="ranking-cliente-metrica">${formatearMetricaRanking(s, categoriaId)}</div>
+          </div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        `;
+        fila.addEventListener('click', ()=>{
+          screenRankingDetalle.style.display = 'none';
+          screenRankingClientes.style.display = 'none';
+          screenAjustes.style.display = 'none';
+          abrirDetalleCliente(s.cliente);
+        });
+        listaCard.appendChild(fila);
+      });
+    }
+
+    screenRankingClientes.style.display = 'none';
+    screenRankingDetalle.style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+
+  const screenRankingClientes = document.getElementById('screen-ranking-clientes');
+  const screenRankingDetalle = document.getElementById('screen-ranking-detalle');
+
+  document.getElementById('item-ranking-clientes').addEventListener('click', ()=>{
+    renderizarCategoriasRanking();
+    screenAjustes.style.display = 'none';
+    screenRankingClientes.style.display = 'block';
+    window.scrollTo(0, 0);
+  });
+  document.getElementById('btn-cerrar-ranking-clientes').addEventListener('click', ()=>{
+    screenRankingClientes.style.display = 'none';
+    screenAjustes.style.display = 'block';
+    window.scrollTo(0, 0);
+  });
+  document.getElementById('btn-cerrar-ranking-detalle').addEventListener('click', ()=>{
+    screenRankingDetalle.style.display = 'none';
+    screenRankingClientes.style.display = 'block';
     window.scrollTo(0, 0);
   });
 
