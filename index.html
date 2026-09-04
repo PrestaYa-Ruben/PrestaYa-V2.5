@@ -3946,6 +3946,28 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   color:#2F4FA8;
   margin-bottom:6px;
 }
+.capital-calle-fila-superior{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:6px;
+}
+.capital-calle-fila-superior .capital-calle-etiqueta{ margin-bottom:0; }
+.capital-calle-ojo{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  flex-shrink:0;
+  background:rgba(47,79,168,0.12);
+  color:#2F4FA8;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:none;
+  cursor:pointer;
+}
+.capital-calle-ojo svg{ width:15px; height:15px; stroke:currentColor; }
+.capital-calle-ojo:active{ opacity:.7; }
 .capital-calle-monto{
   font-size:30px;
   font-weight:800;
@@ -4348,8 +4370,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
        justo antes de "Capital por Ruta" porque esa tarjeta es, en el
        fondo, el desglose por ruta de este mismo total. -->
   <div class="card tarjeta-capital-calle" id="tarjeta-capital-calle" style="margin:14px 14px 0;">
-    <div class="capital-calle-etiqueta">Capital en calle</div>
-    <div class="capital-calle-monto" id="capital-calle-monto">$0</div>
+    <div class="capital-calle-fila-superior">
+      <div class="capital-calle-etiqueta">Capital en calle</div>
+      <!-- NUEVO: ojito para ocultar/mostrar el monto — a pedido, arranca
+           siempre oculto cada vez que se abre la app (no se recuerda de
+           una sesión a otra). -->
+      <button type="button" class="capital-calle-ojo" id="btn-capital-calle-ojo" aria-label="Mostrar el monto">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+      </button>
+    </div>
+    <div class="capital-calle-monto" id="capital-calle-monto">••••••</div>
     <div class="capital-calle-barra-track">
       <div class="capital-calle-barra-fill" id="capital-calle-barra-fill" style="width:0%;"></div>
     </div>
@@ -9580,9 +9610,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // muestra qué proporción representa ese capital en calle frente a
   // TODO lo prestado alguna vez (activos + finalizados) — así se ve de
   // un vistazo qué tan "cargada" está la cartera hoy frente al histórico.
+  //
+  // NUEVO: ojito para ocultar/mostrar el monto — a pedido, arranca
+  // SIEMPRE oculto (esta variable no se guarda en localStorage a
+  // propósito, así que cada vez que se abre la app vuelve a empezar
+  // oculto, sin recordar lo que el usuario eligió la vez anterior).
+  let capitalCalleOculto = true;
+  const ICONO_OJO_ABIERTO = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+  const ICONO_OJO_CERRADO = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+
   function renderizarCapitalEnCalle(){
     const elMonto = document.getElementById('capital-calle-monto');
     const elBarra = document.getElementById('capital-calle-barra-fill');
+    const btnOjo = document.getElementById('btn-capital-calle-ojo');
     if(!elMonto || !elBarra) return;
 
     const { capitalTotal } = calcularCarteraPorRuta();
@@ -9591,9 +9631,18 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       .reduce((s, p) => s + (p.valor || 0), 0);
     const porcentaje = totalPrestadoHistorico > 0 ? Math.min(100, (capitalTotal / totalPrestadoHistorico) * 100) : 0;
 
-    elMonto.textContent = formatearPesos(capitalTotal);
+    elMonto.textContent = capitalCalleOculto ? '••••••' : formatearPesos(capitalTotal);
     elBarra.style.width = porcentaje + '%';
+    if(btnOjo){
+      btnOjo.innerHTML = capitalCalleOculto ? ICONO_OJO_CERRADO : ICONO_OJO_ABIERTO;
+      btnOjo.setAttribute('aria-label', capitalCalleOculto ? 'Mostrar el monto' : 'Ocultar el monto');
+    }
   }
+
+  document.getElementById('btn-capital-calle-ojo').addEventListener('click', ()=>{
+    capitalCalleOculto = !capitalCalleOculto;
+    renderizarCapitalEnCalle();
+  });
 
 
 
@@ -14955,6 +15004,15 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     return sumaAbonadaCuota(prestamo, numeroCuota) >= cuotaPlan.total - 1; // tolerancia por redondeo
   }
 
+  // NUEVO: cuántas cuotas del plan ya están completamente pagadas — para
+  // mostrar en los comprobantes/pantallas de RECARGO el progreso general
+  // del crédito ("Cuota N.° 1 de 5") en vez de a qué cuota puntual se le
+  // aplicó ese recargo (esto último confundía al cliente, que lo leía
+  // como si esa fuera la cuota que se estaba pagando).
+  function cuotasPagadasPrestamo(prestamo){
+    return (prestamo.plan || []).filter(c => estaCuotaPagada(prestamo, c.numero)).length;
+  }
+
   // NUEVO: primera cuota del plan que todavía no está pagada (null si el
   // préstamo ya está completamente saldado). La usan los interruptores de
   // "Fecha próximo pago" del recibo.
@@ -16834,7 +16892,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     let filas = esRecargoMora ? [
       ['Cliente', nombreCliente],
       ['Concepto', 'Recargo por mora'],
-      ['Recargo por la', 'Cuota N.° ' + cuota.numero + ' de ' + prestamo.cuotas],
+      ['Cuota', cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas],
       ['Valor abonado', formatearPesos(montoAbonado)],
       ['Método de pago', metodo],
       ['Fecha de pago', fechaTexto]
@@ -16916,9 +16974,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const yFinFilas = yInicioFilas + numFilasVisuales * alturaFilaPar;
     const altoCard = (yFinFilas - cardY) + alturaPie;
     const altoLogicoComprobante = altoCard; // CAMBIO: sin margen inferior extra
-    // CAMBIO: este comprobante se comparte directo por WhatsApp, así que
-    // pide MÁS nitidez que el resto de imágenes del sistema (escala 4x
-    // en vez de la estándar 2x) — ver prepararCanvasNitido().
+    // CORREGIDO: este comprobante se comparte directo por WhatsApp — antes
+    // usaba una nitidez más alta de lo necesario (escala 4x), lo que lo
+    // hacía tardar notoriamente más en generarse; ahora usa la misma
+    // escala estándar y rápida que el resto de imágenes del sistema (ver
+    // prepararCanvasNitido()).
     const ctx = prepararCanvasNitido(canvas, anchoLogicoComprobante, altoLogicoComprobante, 2);
 
     // NUEVO: el comprobante de RECARGO POR MORA siempre usa el rojo fijo
@@ -17366,7 +17426,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     document.getElementById('detalle-pago-cliente').textContent = clienteEnDetalle ? clienteEnDetalle.nombre : '—';
     document.getElementById('detalle-pago-fecha').textContent = formatearFechaHoraCorta(new Date(pago.fecha));
     document.getElementById('detalle-pago-cuota').textContent =
-      pago.aplicarA === 'mora' ? 'Recargo · Cuota ' + cuota.numero + ' de ' + prestamo.cuotas :
+      pago.aplicarA === 'mora' ? cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas :
       pago.aplicarA === 'abono' ? 'Abono' :
       cuota.numero + ' de ' + prestamo.cuotas;
     document.getElementById('detalle-pago-registrado').textContent = '¡Gracias por su abono!';
@@ -17506,7 +17566,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     filas.push(['Cliente', clienteEnDetalle ? clienteEnDetalle.nombre : '—']);
     filas.push(['Fecha del pago', formatearFechaHoraCorta(new Date(pago.fecha))]);
     if(obtenerReciboMostrarCuota()){
-      const textoCuota = esRecargoMora ? 'Recargo · Cuota ' + cuota.numero + ' de ' + prestamo.cuotas :
+      const textoCuota = esRecargoMora ? cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas :
         esAbono ? 'Abono' : cuota.numero + ' de ' + prestamo.cuotas;
       filas.push(['Cuota', textoCuota]);
     }
@@ -17731,7 +17791,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     // NUEVO: campos a incluir (Ajustes → Plantilla de recibo)
     if(esRecargoMora){
-      texto += obtenerReciboMostrarCuota() ? '\nConcepto: Recargo por mora (Cuota #' + cuota.numero + ')' : '\nConcepto: Recargo por mora';
+      texto += obtenerReciboMostrarCuota() ? '\nCuota: ' + cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas + '\nConcepto: Recargo por mora' : '\nConcepto: Recargo por mora';
     }else if(esAbono){
       // NUEVO: un abono genérico no corresponde a una cuota específica, pero
       // se indica hacia cuál se está aplicando (si el interruptor lo permite)
