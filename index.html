@@ -3237,7 +3237,7 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .clients-list{
   display:flex;
   flex-direction:column;
-  gap:12px;
+  gap:7px; /* CORREGIDO: antes 12px, a pedido */
   padding:0 14px 30px;
 }
 
@@ -3272,6 +3272,7 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   user-select:none;
   -webkit-touch-callout:none;
   position:relative;
+  box-shadow:none; /* CORREGIDO: a pedido, sin sombra/reflejo — con el espacio entre tarjetas ya reducido, se ve más limpio solo con el borde */
 }
 .client-row .info{ flex:1; min-width:0; }
 .client-row .info .name{
