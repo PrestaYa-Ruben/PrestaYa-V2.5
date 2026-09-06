@@ -3016,6 +3016,34 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 }
 .search-box input::placeholder{ color:var(--text-secondary); }
 
+/* NUEVO: botón de micrófono para búsqueda por voz, se agrega por
+   JavaScript dentro de cada buscador si el navegador la soporta. */
+.mic-search-btn{
+  flex-shrink:0;
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  border:none;
+  background:none;
+  color:var(--text-secondary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+.mic-search-btn svg{ width:18px; height:18px; stroke:currentColor; }
+.mic-search-btn.escuchando{
+  background:var(--danger);
+  color:#fff;
+  animation:micPulso 1.1s ease-in-out infinite;
+}
+@keyframes micPulso{
+  0%, 100%{ box-shadow:0 0 0 0 rgba(229,72,72,0.35); }
+  50%{ box-shadow:0 0 0 6px rgba(229,72,72,0); }
+}
+
 .add-client-btn{
   width:52px;
   height:52px;
@@ -8302,6 +8330,66 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }
   window.scrollTo(0, 0);
   window.addEventListener('load', ()=> window.scrollTo(0, 0));
+
+  // ==========================================================
+  // NUEVO — Búsqueda por voz (ícono de micrófono) en todos los
+  // buscadores del sistema. Usa la Web Speech API nativa del navegador
+  // (webkitSpeechRecognition), sin ningún servicio externo ni costo
+  // adicional — funciona mejor en Android/Chrome (necesita internet para
+  // reconocer la voz). Si el navegador no la soporta (ej. algunos
+  // navegadores de iPhone), el botón simplemente no se agrega — el
+  // buscador sigue funcionando normal, escribiendo a mano.
+  // ==========================================================
+  const ReconocimientoVoz = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  function agregarBusquedaPorVoz(inputEl){
+    if(!inputEl || !ReconocimientoVoz) return;
+
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = 'mic-search-btn';
+    boton.setAttribute('aria-label', 'Buscar por voz');
+    boton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>';
+    inputEl.insertAdjacentElement('afterend', boton);
+
+    let reconociendo = null;
+    boton.addEventListener('click', (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      if(reconociendo){
+        reconociendo.stop();
+        return;
+      }
+      reconociendo = new ReconocimientoVoz();
+      reconociendo.lang = 'es-CO';
+      reconociendo.interimResults = false;
+      reconociendo.maxAlternatives = 1;
+
+      reconociendo.onstart = ()=>{ boton.classList.add('escuchando'); };
+      reconociendo.onend = ()=>{ boton.classList.remove('escuchando'); reconociendo = null; };
+      reconociendo.onerror = (ev)=>{
+        boton.classList.remove('escuchando');
+        reconociendo = null;
+        if(ev.error === 'not-allowed' || ev.error === 'permission-denied'){
+          alert('Para buscar por voz, permite el acceso al micrófono en los ajustes del navegador.');
+        }
+        // 'no-speech' / 'aborted' se ignoran en silencio — no vale la pena interrumpir con una alerta
+      };
+      reconociendo.onresult = (ev)=>{
+        const texto = ev.results[0][0].transcript;
+        inputEl.value = texto;
+        inputEl.dispatchEvent(new Event('input', { bubbles:true }));
+        inputEl.focus();
+      };
+
+      try{ reconociendo.start(); }
+      catch(err){ reconociendo = null; }
+    });
+  }
+
+  ['buscador-clientes', 'buscador-prestamos', 'buscador-movimientos-negocio',
+   'buscador-documentos', 'input-busqueda-global', 'cobros-buscador'
+  ].forEach(id => agregarBusquedaPorVoz(document.getElementById(id)));
 
   // ---------- Red de seguridad global contra pantallas en blanco ----------
   // CORREGIDO A FONDO: además de aislar cada función de refresco por
