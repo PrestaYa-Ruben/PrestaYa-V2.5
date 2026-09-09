@@ -41,37 +41,41 @@
    No deben cambiarse arbitrariamente en futuras versiones.
    ========================================================== */
 :root{
-  /* Azul — acciones principales, información, navegación */
-  --primary:#2F6BFF;
-  --primary-dark:#1E4FD6;
+  /* CORREGIDO — a pedido: "Presta" (azul navy) pasa a ser el color
+     --primary de toda la app (botones, pestañas activas, enlaces), en
+     vez del azul vibrante que tenía antes. El azul vibrante sigue vivo
+     en la tarjeta "Capital Cobrado" (ver .stat-card.tinte-morado), solo
+     que ya no es --primary. La navegación inferior y el botón flotante
+     de calculadora ya usaban este mismo navy de forma fija (#1E2A5C),
+     así que quedan perfectamente coherentes sin tocarlos. */
+  --primary:#1F2F68;
+  --primary-dark:#141D45;
   --primary-light:#E8EFFF;
 
   /* Verde — pagos, dinero, cobros, estados correctos */
-  --success:#22A559;
+  --success:#18C968;
   --success-light:#E5F7EC;
 
   /* Rojo — vencimientos, alertas, mora */
-  --danger:#E54848;
+  --danger:#F0444D;
   --danger-light:#FDECEC;
 
   /* Ámbar — variante cálida usada en Ajustes (recordatorios, configuraciones especiales) */
-  --warning:#E08A3C;
+  --warning:#F59E0B;
   --warning-light:#FBEEDF;
 
   /* Superficies y neutros */
-  --background:#F4F6FA;
-  --surface:#FEFDFB; /* CAMBIO: blanco hueso muy suave, casi imperceptible */
-  --text:#151A23;
-  --text-secondary:#7B8794;
-  --border:#EDF0F4;
-  --shadow: none; /* CAMBIO: sin sombra, look plano como la referencia */
-  --shadow-sm: none;
+  --background:#F7F8FC;
+  --surface:#FFFFFF;
+  --text:#18202F;
+  --text-secondary:#7A8494;
+  --border:#E5E8EF;
+  --shadow: 0 4px 14px rgba(20,30,60,0.07);
+  --shadow-sm: 0 2px 8px rgba(20,30,60,0.05);
 
   /* Radios y espaciados globales */
-  /* CAMBIO: esquinas mucho menos redondeadas en toda la app (antes 18px/13px)
-     — look más limpio y compacto, como el de la pantalla de referencia. */
-  --radius-lg: 8px;
-  --radius-md: 6px;
+  --radius-lg: 10px; /* CORREGIDO: antes 16px — a pedido, esquinas mucho menos redondeadas en TODAS las tarjetas */
+  --radius-md: 10px; /* CORREGIDO: antes 12px — mismo criterio, para que todo el sistema use un único radio consistente */
   --radius-full: 999px;
 }
 
@@ -161,7 +165,7 @@ a{ text-decoration:none; color:inherit; }
 .card{
   background:var(--surface);
   border-radius:var(--radius-lg);
-  box-shadow:0 1px 3px rgba(20,30,60,0.04); /* CAMBIO: sombra más fina, look limpio */
+  box-shadow:var(--shadow); /* CORREGIDO: antes un valor fijo sin usar la variable — ahora toda la app comparte una sola sombra premium */
   border:1.5px solid rgba(20,30,60,0.18);
 }
 
@@ -226,19 +230,16 @@ a{ text-decoration:none; color:inherit; }
 }
 .icon-container.blue{ background:none; color:var(--primary); }
 
-/* CAMBIO: valores de las 4 tarjetas del dashboard en negro (los iconos
-   mantienen su color de fondo suave); antes cada valor tenía su propio
-   color (morado, naranja, verde, rojo). */
-#tarjeta-capital-cobrado .value{ color:var(--text); }
-#tarjeta-capital-cobrado .icon-container{ background:none; color:#7411bf; }
+/* CORREGIDO: estas reglas por ID (más específicas que las de clase)
+   forzaban el valor a texto oscuro y el ícono de Capital Cobrado a
+   morado fijo — venían de un diseño anterior y le ganaban por
+   especificidad al nuevo rediseño de tarjetas vibrantes (que necesita
+   texto e íconos en su propio color, según la imagen de referencia).
+   Se quitan para que .stat-card.tinte-* controle estos 4 colores. */
 
-/* NUEVO: colores propios para Interés Cobrado (naranja vivo en el valor,
-   icono suave ya cubierto por .icon-container.orange), Ganancias (verde,
-   icono suave por .icon-container.green) y Mora Cobrada (rojo en el valor,
-   icono se deja tal cual). */
-#tarjeta-interes-cobrado .value{ color:var(--text); }
-#tarjeta-ganancias .value{ color:var(--text); }
-#tarjeta-mora-cobrada .value{ color:var(--text); }
+/* NUEVO: colores suaves de fondo para los iconos cuando el tinte
+   vibrante NO está activo (o sea, dentro de otras pantallas que también
+   usan .icon-container.blue/green/red/orange, como Reportes). */
 .icon-container.green{ background:none; color:var(--success); }
 .icon-container.red{ background:none; color:var(--danger); }
 .icon-container.orange{ background:none; color:var(--warning); }
@@ -672,48 +673,125 @@ a{ text-decoration:none; color:inherit; }
 .ganancias-fila-horizontal.hoy .ganancias-fila-valor{ color:var(--primary); }
 
 .stat-card{
-  padding:6px 16px; /* CAMBIO: antes 12px 16px — reduce el alto sin tocar el ancho */
+  padding:18px 16px 20px; /* CAMBIO: a pedido — rediseño premium con degradado, más aire que antes */
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center; /* NUEVO: centra el contenido verticalmente dentro del nuevo alto, más bajo */
+  justify-content:center;
   text-align:center;
-  gap:3px; /* CAMBIO: antes 8px — menos espacio entre ícono/valor/etiqueta, para bajar el alto total */
+  gap:5px;
+  position:relative;
+  overflow:hidden;
+  border:none;
+  border-radius:10px; /* CORREGIDO: antes 18px — a pedido, esquinas mucho menos redondeadas */
+  box-shadow:0 10px 22px -6px rgba(20,30,60,0.22);
 }
-.stat-card .icon-container{ width:48px; height:48px; }
-.stat-card .icon-container svg{ width:26px; height:26px; }
+.stat-card .icon-container{ width:44px; height:44px; }
+.stat-card .icon-container svg{ width:24px; height:24px; }
 .stat-card .icon-container{ margin-bottom:2px; }
 .stat-card .value{
-  font-size:21px;
-  font-weight:600;
+  font-size:23px;
+  font-weight:800; /* CAMBIO: antes 600 — "números grandes y gruesos" a pedido */
   letter-spacing:-0.6px;
   color:var(--text);
+  position:relative;
+  z-index:1;
 }
 .stat-card .label{
-  font-size:13px;
+  font-size:12.5px;
   color:var(--text-secondary);
-  font-weight:400;
-  letter-spacing:-0.1px;
+  font-weight:600;
+  letter-spacing:-0.05px;
+  position:relative;
+  z-index:1;
 }
 
 /* ==========================================================
-   NUEVO: Tinte pastel de las tarjetas del dashboard de Inicio
-   (Capital Cobrado, Interés Cobrado, Ganancias, Mora Cobrada).
-   Apagado por defecto — solo se aplica cuando el <body> tiene la
-   clase "tinte-dashboard-activo" (ver Ajustes → Apariencia).
-   CAMBIO: antes reutilizaba las variables *-light compartidas con el
-   resto de la app (badges, chips, etc.) — a pedido del usuario, ahora
-   usa tonos propios mucho más suaves/pálidos, y el borde también pasa
-   de color sólido a un tono pastel a juego (no la marca al 100%), para
-   que la tarjeta se sienta más delicada en vez de "pintada" fuerte.
+   REDISEÑADO — a pedido, con especificación de colores exacta: las 4
+   tarjetas del dashboard de Inicio (Capital Cobrado, Interés Cobrado,
+   Ganancias, Mora Cobrada) pasan de un tinte pastel opcional a un
+   degradado vibrante SIEMPRE visible — look "app financiera premium".
+   Los nombres de clase (tinte-morado, tinte-ambar, etc.) se conservan
+   tal cual estaban en el HTML para no tocar ninguna otra parte del
+   sistema; solo cambia lo que dibujan.
    ========================================================== */
-body.tinte-dashboard-activo .stat-card.tinte-azul{ background:#F3F6FF; border-color:#C9D9FF; }
-body.tinte-dashboard-activo .stat-card.tinte-verde{ background:#F1FAF4; border-color:#BFE8CE; }
-body.tinte-dashboard-activo .stat-card.tinte-rojo{ background:#FDF3F3; border-color:#F5C6C6; }
-body.tinte-dashboard-activo .stat-card.tinte-ambar{ background:#FDF6EE; border-color:#F3D4AC; }
-body.tinte-dashboard-activo .stat-card.tinte-morado{ background:#F6F1FA; border-color:#DBC2EE; }
+.stat-card.tinte-morado{ background:linear-gradient(135deg, #087FF5 0%, #168BFF 100%); } /* Capital Cobrado — azul intenso */
+.stat-card.tinte-ambar{ background:linear-gradient(135deg, #F59E0B 0%, #FFAA00 100%); } /* Interés Cobrado — naranja/dorado elegante, menos amarillo */
+.stat-card.tinte-verde{ background:linear-gradient(135deg, #16B95F 0%, #18C968 100%); } /* Ganancias — verde moderno */
+.stat-card.tinte-rojo{ background:linear-gradient(135deg, #F0444D 0%, #FF4D55 100%); } /* Mora Cobrada — rojo/coral elegante, no fluorescente */
+
+.stat-card.tinte-morado .value, .stat-card.tinte-morado .label,
+.stat-card.tinte-ambar .value, .stat-card.tinte-ambar .label,
+.stat-card.tinte-verde .value, .stat-card.tinte-verde .label,
+.stat-card.tinte-rojo .value, .stat-card.tinte-rojo .label{
+  color:#fff;
+}
+.stat-card.tinte-morado .label, .stat-card.tinte-ambar .label,
+.stat-card.tinte-verde .label, .stat-card.tinte-rojo .label{
+  opacity:0.92;
+}
+/* CORREGIDO: según tu imagen de referencia — el círculo detrás del
+   ícono es claro (no transparente), y el ícono usa el color propio de
+   cada tarjeta (no blanco). Antes era al revés. */
+.stat-card.tinte-morado .icon-container{ background:rgba(255,255,255,0.9); color:#087FF5; }
+.stat-card.tinte-ambar .icon-container{ background:rgba(255,255,255,0.85); color:#F59E0B; }
+.stat-card.tinte-verde .icon-container{ background:rgba(255,255,255,0.85); color:#16B95F; }
+.stat-card.tinte-rojo .icon-container{ background:rgba(255,255,255,0.85); color:#F0444D; }
+
+/* Decoración sutil tipo "ola" en la parte inferior de cada tarjeta —
+   un solo SVG reutilizado en las 4, tintado en blanco muy transparente
+   para que no compita con el número. */
+.stat-card.tinte-morado::after,
+.stat-card.tinte-ambar::after,
+.stat-card.tinte-verde::after,
+.stat-card.tinte-rojo::after{
+  content:'';
+  position:absolute;
+  left:0; right:0; bottom:0;
+  height:34px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 40' preserveAspectRatio='none'%3E%3Cpath d='M0 22 Q50 2 100 20 T200 16 V40 H0 Z' fill='white' fill-opacity='0.12'/%3E%3C/svg%3E");
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+  pointer-events:none;
+  z-index:0;
+}
 .stat-card.clickeable{ cursor:pointer; transition:transform .12s ease; }
 .stat-card.clickeable:active{ transform:scale(0.96); }
+
+/* NUEVO: "Tarjetas de Inicio en tono sobrio" (Ajustes → Apariencia) —
+   por defecto las 4 tarjetas son vibrantes (arriba); si el usuario
+   prefiere algo más neutro, este interruptor las devuelve a un estilo
+   plano con solo el ícono a color, conservando la opción de personalizar
+   que ya existía (antes era al revés: el tinte pastel era la opción). */
+body.tinte-dashboard-activo .stat-card.tinte-morado,
+body.tinte-dashboard-activo .stat-card.tinte-ambar,
+body.tinte-dashboard-activo .stat-card.tinte-verde,
+body.tinte-dashboard-activo .stat-card.tinte-rojo{
+  background:var(--surface);
+  box-shadow:var(--shadow-sm);
+}
+body.tinte-dashboard-activo .stat-card.tinte-morado::after,
+body.tinte-dashboard-activo .stat-card.tinte-ambar::after,
+body.tinte-dashboard-activo .stat-card.tinte-verde::after,
+body.tinte-dashboard-activo .stat-card.tinte-rojo::after{
+  display:none;
+}
+body.tinte-dashboard-activo .stat-card.tinte-morado .value, body.tinte-dashboard-activo .stat-card.tinte-morado .label,
+body.tinte-dashboard-activo .stat-card.tinte-ambar .value, body.tinte-dashboard-activo .stat-card.tinte-ambar .label,
+body.tinte-dashboard-activo .stat-card.tinte-verde .value, body.tinte-dashboard-activo .stat-card.tinte-verde .label,
+body.tinte-dashboard-activo .stat-card.tinte-rojo .value, body.tinte-dashboard-activo .stat-card.tinte-rojo .label{
+  color:var(--text);
+  opacity:1;
+}
+body.tinte-dashboard-activo .stat-card.tinte-morado .label,
+body.tinte-dashboard-activo .stat-card.tinte-ambar .label,
+body.tinte-dashboard-activo .stat-card.tinte-verde .label,
+body.tinte-dashboard-activo .stat-card.tinte-rojo .label{ color:var(--text-secondary); }
+body.tinte-dashboard-activo .stat-card.tinte-morado .icon-container{ background:none; color:var(--primary); }
+body.tinte-dashboard-activo .stat-card.tinte-ambar .icon-container{ background:none; color:var(--warning); }
+body.tinte-dashboard-activo .stat-card.tinte-verde .icon-container{ background:none; color:var(--success); }
+body.tinte-dashboard-activo .stat-card.tinte-rojo .icon-container{ background:none; color:var(--danger); }
+
 
 /* ==========================================================
    7. SECCIÓN COBROS
@@ -2325,7 +2403,7 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   padding:20px 15px 10px;
   text-align:center;
   background:var(--sim-tarjeta);
-  border-radius:20px;
+  border-radius:10px; /* CORREGIDO: antes 20px — a pedido, mismo radio que el resto del sistema */
   border:none;
   box-shadow:0 1px 3px rgba(27,42,69,0.06);
 }
@@ -2728,7 +2806,7 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 }
 .action-sheet-card{
   background:var(--surface);
-  border-radius:16px;
+  border-radius:10px; /* CORREGIDO: antes 16px — a pedido */
   overflow:hidden;
   box-shadow:0 -6px 24px rgba(0,0,0,0.16);
 }
@@ -4262,7 +4340,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 /* Modal de firma (pad de dibujo) */
 .firma-pad-card{
   background:var(--surface);
-  border-radius:20px;
+  border-radius:10px; /* CORREGIDO: antes 20px — a pedido */
   padding:22px;
   width:calc(100% - 48px);
   max-width:400px;
@@ -6443,7 +6521,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <div class="mora-toggle-title" style="margin-bottom:2px;">Color de acento</div>
       <div class="mora-toggle-subtitle" style="margin-bottom:14px;">El color principal de botones, iconos activos y enlaces en toda la app.</div>
       <div class="selector-acento" id="selector-acento">
-        <button type="button" class="acento-swatch" data-acento="azul" style="background:#2F6BFF;" aria-label="Azul">
+        <button type="button" class="acento-swatch" data-acento="azul" style="background:#1F2F68;" aria-label="Azul marino (predeterminado)">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
         </button>
         <button type="button" class="acento-swatch" data-acento="morado" style="background:#7411bf;" aria-label="Morado">
@@ -6497,10 +6575,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <div class="card" style="padding:16px 16px;">
       <div class="mora-toggle-row" style="padding:0;">
         <div class="mora-toggle-text">
-          <div class="mora-toggle-title">Tinte pastel en tarjetas de Inicio</div>
-          <div class="mora-toggle-subtitle">Colorea muy suavemente las tarjetas de Capital Cobrado, Interés Cobrado, Ganancias y Mora Cobrada, según su icono.</div>
+          <div class="mora-toggle-title">Tarjetas de Inicio en tono sobrio</div>
+          <div class="mora-toggle-subtitle">Por defecto, Capital Cobrado, Interés Cobrado, Ganancias y Mora Cobrada usan colores vibrantes. Actívalo si prefieres un estilo más neutro.</div>
         </div>
-        <button type="button" class="toggle-switch" id="toggle-tinte-dashboard" role="switch" aria-checked="false" aria-label="Activar tinte pastel en las tarjetas de Inicio"></button>
+        <button type="button" class="toggle-switch" id="toggle-tinte-dashboard" role="switch" aria-checked="false" aria-label="Activar tono sobrio en las tarjetas de Inicio"></button>
       </div>
     </div>
 
@@ -9011,11 +9089,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
   // ==========================================================
   // NUEVO — Pantalla "Apariencia" (se abre desde Ajustes).
-  // Por ahora solo trae el interruptor de tinte pastel para las
-  // 4 tarjetas del dashboard de Inicio. La preferencia se guarda en
+  // Interruptor de "tono sobrio" para las 4 tarjetas del dashboard de
+  // Inicio — por defecto son vibrantes (rediseño premium); si el usuario
+  // lo activa, vuelven a un estilo neutro. La preferencia se guarda en
   // localStorage y se aplica con una sola clase en <body>
   // ("tinte-dashboard-activo"), que activa el CSS ya definido
-  // (ver ".stat-card.tinte-azul/verde/rojo" en la hoja de estilos).
+  // (ver ".stat-card.tinte-morado/verde/rojo/ambar" en la hoja de estilos).
   // ==========================================================
   const screenApariencia = document.getElementById('screen-apariencia');
   const itemApariencia = document.getElementById('item-apariencia');
