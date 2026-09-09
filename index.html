@@ -682,9 +682,9 @@ a{ text-decoration:none; color:inherit; }
   gap:2px; /* CORREGIDO: antes 5px */
   position:relative;
   overflow:hidden;
-  border:none;
+  border:1.6px solid transparent; /* NUEVO: color propio por tarjeta, ver .tinte-* más abajo */
   border-radius:10px;
-  box-shadow:0 10px 22px -6px rgba(20,30,60,0.22);
+  box-shadow:0 3px 10px rgba(20,30,60,0.06); /* CORREGIDO: antes una sombra fuerte pensada para fondo vibrante — a pedido, "sombras muy suaves" sobre el nuevo fondo pastel */
 }
 .stat-card .icon-container{ width:36px; height:36px; } /* CORREGIDO: antes 44px */
 .stat-card .icon-container svg{ width:20px; height:20px; } /* CORREGIDO: antes 24px */
@@ -707,74 +707,59 @@ a{ text-decoration:none; color:inherit; }
 }
 
 /* ==========================================================
-   REDISEÑADO — a pedido, con especificación de colores exacta: las 4
-   tarjetas del dashboard de Inicio (Capital Cobrado, Interés Cobrado,
-   Ganancias, Mora Cobrada) pasan de un tinte pastel opcional a un
-   degradado vibrante SIEMPRE visible — look "app financiera premium".
+   REDISEÑADO — a pedido, con imagen de referencia: las 4 tarjetas
+   pasan del degradado vibrante a un estilo PASTEL suave tipo banca
+   Premium — fondo pastel muy claro, ícono en círculo ligeramente más
+   intenso que el fondo, título y valor en azul marino (no blanco).
    Los nombres de clase (tinte-morado, tinte-ambar, etc.) se conservan
    tal cual estaban en el HTML para no tocar ninguna otra parte del
    sistema; solo cambia lo que dibujan.
    ========================================================== */
-.stat-card.tinte-morado{ background:linear-gradient(135deg, #087FF5 0%, #168BFF 100%); } /* Capital Cobrado — azul intenso */
-.stat-card.tinte-ambar{ background:linear-gradient(135deg, #F59E0B 0%, #FFAA00 100%); } /* Interés Cobrado — naranja/dorado elegante, menos amarillo */
-.stat-card.tinte-verde{ background:linear-gradient(135deg, #16B95F 0%, #18C968 100%); } /* Ganancias — verde moderno */
-.stat-card.tinte-rojo{ background:linear-gradient(135deg, #F0444D 0%, #FF4D55 100%); } /* Mora Cobrada — rojo/coral elegante, no fluorescente */
+.stat-card.tinte-morado{ background:#EAF1FC; border-color:#8FB8F0; } /* Capital Cobrado — azul pastel + borde azul marcado */
+.stat-card.tinte-ambar{ background:#FCF3E3; border-color:#EFC272; } /* Interés Cobrado — crema/dorado pastel + borde dorado marcado */
+.stat-card.tinte-verde{ background:#E7F6EC; border-color:#7DD69E; } /* Ganancias — verde pastel + borde verde marcado */
+.stat-card.tinte-rojo{ background:#FBEAEA; border-color:#EEA0A0; } /* Mora Cobrada — rojo/rosado pastel + borde rojo marcado */
 
 .stat-card.tinte-morado .value, .stat-card.tinte-morado .label,
 .stat-card.tinte-ambar .value, .stat-card.tinte-ambar .label,
 .stat-card.tinte-verde .value, .stat-card.tinte-verde .label,
 .stat-card.tinte-rojo .value, .stat-card.tinte-rojo .label{
-  color:#fff;
+  color:var(--primary); /* CORREGIDO: antes blanco — a pedido, azul marino oscuro sobre fondo pastel */
 }
 .stat-card.tinte-morado .label, .stat-card.tinte-ambar .label,
 .stat-card.tinte-verde .label, .stat-card.tinte-rojo .label{
-  opacity:0.92;
+  opacity:0.8;
 }
-/* CORREGIDO: según tu imagen de referencia — el círculo detrás del
-   ícono es claro (no transparente), y el ícono usa el color propio de
-   cada tarjeta (no blanco). Antes era al revés. */
-.stat-card.tinte-morado .icon-container{ background:rgba(255,255,255,0.9); color:#087FF5; }
-.stat-card.tinte-ambar .icon-container{ background:rgba(255,255,255,0.85); color:#F59E0B; }
-.stat-card.tinte-verde .icon-container{ background:rgba(255,255,255,0.85); color:#16B95F; }
-.stat-card.tinte-rojo .icon-container{ background:rgba(255,255,255,0.85); color:#F0444D; }
+/* CORREGIDO: círculo de ícono ligeramente más intenso que el fondo de
+   su propia tarjeta (no blanco), con el ícono en un tono más saturado
+   de ese mismo color — igual que en la imagen de referencia. */
+.stat-card.tinte-morado .icon-container{ background:#C9DBF7; color:#3D72D1; }
+.stat-card.tinte-ambar .icon-container{ background:#F7DFAE; color:#D68C1F; }
+.stat-card.tinte-verde .icon-container{ background:#C3E9CE; color:#2A9D5C; }
+.stat-card.tinte-rojo .icon-container{ background:#F5C9C9; color:#D9534F; }
 
-/* Decoración sutil tipo "ola" en la parte inferior de cada tarjeta —
-   un solo SVG reutilizado en las 4, tintado en blanco muy transparente
-   para que no compita con el número. */
+/* CORREGIDO: a pedido, se quita la onda decorativa — "no exceso de
+   elementos decorativos", look limpio tipo banca Premium. */
 .stat-card.tinte-morado::after,
 .stat-card.tinte-ambar::after,
 .stat-card.tinte-verde::after,
 .stat-card.tinte-rojo::after{
-  content:'';
-  position:absolute;
-  left:0; right:0; bottom:0;
-  height:24px; /* CORREGIDO: antes 34px — proporcional a la tarjeta más baja */
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 40' preserveAspectRatio='none'%3E%3Cpath d='M0 22 Q50 2 100 20 T200 16 V40 H0 Z' fill='white' fill-opacity='0.12'/%3E%3C/svg%3E");
-  background-size:100% 100%;
-  background-repeat:no-repeat;
-  pointer-events:none;
-  z-index:0;
+  display:none;
 }
 .stat-card.clickeable{ cursor:pointer; transition:transform .12s ease; }
 .stat-card.clickeable:active{ transform:scale(0.96); }
 
 /* NUEVO: "Tarjetas de Inicio en tono sobrio" (Ajustes → Apariencia) —
-   por defecto las 4 tarjetas son vibrantes (arriba); si el usuario
-   prefiere algo más neutro, este interruptor las devuelve a un estilo
-   plano con solo el ícono a color, conservando la opción de personalizar
-   que ya existía (antes era al revés: el tinte pastel era la opción). */
+   por defecto las 4 tarjetas usan la paleta pastel de arriba; si el
+   usuario prefiere algo todavía más neutro (blanco liso, solo el ícono
+   a color), este interruptor lo activa. */
 body.tinte-dashboard-activo .stat-card.tinte-morado,
 body.tinte-dashboard-activo .stat-card.tinte-ambar,
 body.tinte-dashboard-activo .stat-card.tinte-verde,
 body.tinte-dashboard-activo .stat-card.tinte-rojo{
   background:var(--surface);
+  border-color:var(--border);
   box-shadow:var(--shadow-sm);
-}
-body.tinte-dashboard-activo .stat-card.tinte-morado::after,
-body.tinte-dashboard-activo .stat-card.tinte-ambar::after,
-body.tinte-dashboard-activo .stat-card.tinte-verde::after,
-body.tinte-dashboard-activo .stat-card.tinte-rojo::after{
-  display:none;
 }
 body.tinte-dashboard-activo .stat-card.tinte-morado .value, body.tinte-dashboard-activo .stat-card.tinte-morado .label,
 body.tinte-dashboard-activo .stat-card.tinte-ambar .value, body.tinte-dashboard-activo .stat-card.tinte-ambar .label,
@@ -6576,7 +6561,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <div class="mora-toggle-row" style="padding:0;">
         <div class="mora-toggle-text">
           <div class="mora-toggle-title">Tarjetas de Inicio en tono sobrio</div>
-          <div class="mora-toggle-subtitle">Por defecto, Capital Cobrado, Interés Cobrado, Ganancias y Mora Cobrada usan colores vibrantes. Actívalo si prefieres un estilo más neutro.</div>
+          <div class="mora-toggle-subtitle">Por defecto, Capital Cobrado, Interés Cobrado, Ganancias y Mora Cobrada usan colores pastel. Actívalo si prefieres un estilo totalmente blanco y neutro.</div>
         </div>
         <button type="button" class="toggle-switch" id="toggle-tinte-dashboard" role="switch" aria-checked="false" aria-label="Activar tono sobrio en las tarjetas de Inicio"></button>
       </div>
