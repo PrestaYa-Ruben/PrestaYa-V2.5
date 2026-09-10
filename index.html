@@ -563,155 +563,192 @@ a{ text-decoration:none; color:inherit; }
    todo el alto disponible de la tarjeta, en vez de dejar un espacio
    vacío abajo. El encabezado y el texto "Toca una barra..." mantienen
    su tamaño natural (no son flex:1). */
-#tarjeta-grafico-ganancias{ margin:9px 14px 0; background:#F7F8FF; border-color:#DEE1F5; } /* NUEVO: tinte lavanda muy sutil, a pedido */
+#tarjeta-grafico-ganancias{ margin:9px 14px 0; background:#F7F8FF; border-color:#B9C2ED; } /* CORREGIDO: borde un poco más marcado, a pedido */
 #tarjeta-top-rutas-capital{ margin:9px 14px 0; }
 /* NUEVO: tinte azul muy suave — a pedido, para diferenciar de "Medios
    de Pago" (que se deja en blanco a propósito). */
-#tarjeta-total-prestado-recaudado{ background:#F5F8FF; border-color:#DCE6FA; }
+#tarjeta-total-prestado-recaudado{ background:#F5F8FF; border-color:#AFC5EF; } /* CORREGIDO: borde un poco más marcado, a pedido */
 .grafico-ganancias-header{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
-.ggm-subtitulo{ font-size:12.5px; color:var(--text-secondary); font-weight:500; margin-top:1px; }
-.grafico-ganancias-selector-mes{ display:flex; align-items:center; gap:6px; flex-shrink:0; }
-.grafico-ganancias-selector-mes span{ font-size:13px; font-weight:600; color:var(--text-secondary); min-width:98px; text-align:center; }
-.grafico-ganancias-selector-mes button{
-  width:24px;
-  height:24px;
-  border-radius:50%;
-  background:var(--background);
+.ggm-subtitulo{ font-size:12px; color:var(--text-secondary); font-weight:500; margin-top:1px; }
+.ggm-icono{
+  width:38px;
+  height:38px;
+  border-radius:11px;
+  background:var(--primary-light);
+  color:var(--primary);
   display:flex;
   align-items:center;
   justify-content:center;
   flex-shrink:0;
 }
-.grafico-ganancias-selector-mes button svg{ width:13px; height:13px; stroke:var(--text-secondary); }
-
-/* NUEVO: fila de 3 indicadores (Total del mes / Promedio diario / Mejor día) */
-.ggm-resumen-fila{
-  display:flex;
-  gap:10px;
-  margin-top:14px;
-  padding-bottom:14px;
-  border-bottom:1px solid var(--border);
-}
-.ggm-resumen-item{ flex:1; min-width:0; }
-.ggm-resumen-label{ font-size:11px; color:var(--text-secondary); font-weight:600; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.ggm-resumen-valor{ font-size:15px; font-weight:800; color:var(--text); letter-spacing:-0.3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.ggm-resumen-sub{ font-size:10.5px; color:var(--text-secondary); font-weight:500; margin-top:1px; }
-
-/* NUEVO: leyenda de color + insignia de variación */
-.ggm-badge-fila{
+.ggm-icono svg{ width:19px; height:19px; stroke:currentColor; }
+.grafico-ganancias-selector-mes{
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  margin-top:12px;
+  gap:4px;
+  flex-shrink:0;
+  background:var(--background);
+  padding:5px 6px 5px 10px;
+  border-radius:var(--radius-full);
 }
-.ggm-leyenda{ display:flex; align-items:center; gap:12px; }
-.ggm-leyenda-item{ display:flex; align-items:center; gap:5px; font-size:12px; color:var(--text-secondary); font-weight:600; }
-.ggm-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.ggm-dot.verde{ background:var(--success); }
-.ggm-dot.azul{ background:#4C7EE8; }
+.grafico-ganancias-selector-mes span{ font-size:12px; font-weight:700; color:var(--primary); min-width:80px; text-align:center; white-space:nowrap; }
+.grafico-ganancias-selector-mes button{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:var(--surface);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.grafico-ganancias-selector-mes button svg{ width:12px; height:12px; stroke:var(--text-secondary); }
 
-/* NUEVO: selector Diario / Semanal / Quincenal / Mensual */
-.ggm-modos{
+/* NUEVO: "Total del mes" + insignia de variación (2 líneas), según la
+   imagen de referencia */
+.ggm-total-fila{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:16px;
+}
+.ggm-total-label{ font-size:12.5px; color:var(--text-secondary); font-weight:600; margin-bottom:3px; }
+.ggm-total-valor{ font-size:25px; font-weight:800; color:var(--text); letter-spacing:-0.6px; }
+.ggm-badge-2l{
+  padding:7px 12px;
+  border-radius:12px;
+  text-align:center;
+  flex-shrink:0;
+}
+.ggm-badge-2l.positiva{ background:var(--success-light); }
+.ggm-badge-2l.negativa{ background:var(--danger-light); }
+.ggm-badge-2l.neutra{ background:var(--background); }
+.ggm-badge-2l-arriba{ display:flex; align-items:center; justify-content:center; gap:3px; font-size:14px; font-weight:800; white-space:nowrap; }
+.ggm-badge-2l-arriba svg{ width:14px; height:14px; }
+.ggm-badge-2l.positiva .ggm-badge-2l-arriba{ color:var(--success); }
+.ggm-badge-2l.negativa .ggm-badge-2l-arriba{ color:var(--danger); }
+.ggm-badge-2l.neutra .ggm-badge-2l-arriba{ color:var(--text-secondary); }
+.ggm-badge-2l.neutra .ggm-badge-2l-arriba svg{ display:none; }
+.ggm-badge-2l-abajo{ font-size:10px; color:var(--text-secondary); font-weight:600; margin-top:1px; white-space:nowrap; }
+
+/* NUEVO: gráfico con eje de valores a la izquierda (fijo, no se
+   desplaza) + barras con scroll horizontal propio */
+.ggm-chart-wrap{
   display:flex;
   gap:6px;
-  margin-top:12px;
-  background:var(--background);
-  padding:3px;
-  border-radius:var(--radius-full);
+  margin-top:18px;
 }
-.ggm-modo-btn{
-  flex:1;
-  padding:6px 4px;
-  border-radius:var(--radius-full);
-  font-size:12px;
-  font-weight:700;
-  color:var(--text-secondary);
-  background:none;
-  border:none;
-  white-space:nowrap;
+.ggm-eje-y{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  align-items:flex-end;
+  flex-shrink:0;
+  height:140px;
+  margin-top:50px; /* alinea con el área de barras, que empieza después del espacio reservado del tooltip */
 }
-.ggm-modo-btn.activo{ background:var(--surface); color:var(--primary); box-shadow:var(--shadow-sm); }
-
-.grafico-ganancias-dia-seleccionado{
-  font-size:12.5px;
-  color:var(--text-secondary);
-  font-weight:500;
-  text-align:center;
-  margin:12px 0 8px;
-  min-height:16px;
-}
-/* NUEVO: el scroll horizontal queda contenido SOLO en esta franja del
-   gráfico — el resto de la pantalla nunca se desplaza de lado. */
+.ggm-eje-y-label{ font-size:9.5px; color:var(--text-secondary); font-weight:500; line-height:1; }
 .ggm-chart-scroll{
   overflow-x:auto;
+  overflow-y:hidden; /* CORREGIDO: el navegador no permite un eje "visible" mientras el otro hace scroll (los iguala a ambos) — por eso el tooltip ahora vive en un espacio YA RESERVADO dentro del contenido, no fuera de él */
   scrollbar-width:none;
-  padding-bottom:2px;
+  flex:1;
+  min-width:0;
 }
 .ggm-chart-scroll::-webkit-scrollbar{ display:none; }
+.ggm-plot-inner{
+  min-width:100%;
+  width:max-content;
+  position:relative;
+}
+.ggm-tooltip-slot{ height:50px; } /* NUEVO: espacio reservado para que el tooltip tenga dónde aparecer sin recortarse */
 .grafico-ganancias-barras{
   display:flex;
   align-items:flex-end;
-  gap:9px;
-  height:125px;
-  min-width:100%;
-  width:max-content;
+  gap:8px;
+  height:140px;
+  /* NUEVO: líneas de cuadrícula horizontales parejas (5 líneas: 0/25/50/75/100%) */
+  background-image:repeating-linear-gradient(to top, var(--border) 0, var(--border) 1px, transparent 1px, transparent 25%);
 }
+.ggm-dias-fila{ display:flex; gap:8px; margin-top:5px; }
 .grafico-ganancias-barra-col{
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:flex-end;
   flex:0 0 auto;
-  width:20px;
+  width:14px;
   height:100%;
-  gap:5px;
   cursor:pointer;
 }
-.ggm-dia-barras{
-  display:flex;
-  align-items:flex-end;
-  gap:2.5px;
-  height:100%;
-}
 .ggm-barra{
-  width:7px;
-  border-radius:3px 3px 0 0;
+  width:10px;
+  border-radius:4px 4px 0 0;
   min-height:3px;
-  transition:height .3s cubic-bezier(.22,1,.36,1), background .15s ease;
+  background:linear-gradient(to top, #1AA872 0%, #22C55E 100%);
+  transition:height .35s cubic-bezier(.22,1,.36,1), opacity .15s ease;
 }
-.ggm-barra.verde{ background:#8CE0AE; }
-.ggm-barra.azul{ background:#AFC7F2; }
-.grafico-ganancias-barra-col.activa .ggm-barra.verde{ background:var(--success); }
-.grafico-ganancias-barra-col.activa .ggm-barra.azul{ background:#4C7EE8; }
+.grafico-ganancias-barra-col:not(.activa) .ggm-barra{ opacity:0.55; }
+.grafico-ganancias-barra-col.activa .ggm-barra{ opacity:1; }
+.ggm-dia-col{ flex:0 0 auto; width:14px; text-align:center; }
 .grafico-ganancias-barra-dia{ font-size:9px; color:var(--text-secondary); font-weight:500; }
-.grafico-ganancias-barra-col.hoy .grafico-ganancias-barra-dia{ color:var(--primary); font-weight:700; }
+.ggm-dia-col.hoy .grafico-ganancias-barra-dia{ color:var(--primary); font-weight:700; }
 
-/* Modos agrupados (semanal/quincenal/mensual) — barras más anchas */
-.grafico-ganancias-barra-col.ggm-ancha{ width:52px; }
-.grafico-ganancias-barra-col.ggm-ancha .ggm-barra{ width:20px; border-radius:5px 5px 0 0; }
-
-/* NUEVO: franja inferior con la diferencia y un mensaje contextual */
-.ggm-resumen-inferior{
-  margin-top:14px;
-  padding-top:12px;
-  border-top:1px solid var(--border);
+/* NUEVO: tooltip flotante — vive DENTRO del espacio de 50px ya
+   reservado arriba de las barras (.ggm-tooltip-slot), así que nunca se
+   recorta; su posición horizontal y vertical exacta se calcula en JS. */
+.ggm-tooltip{
+  position:absolute;
+  top:0;
+  transform:translateX(-50%);
+  background:var(--surface);
+  border-radius:10px;
+  padding:6px 12px;
+  box-shadow:0 8px 20px rgba(20,30,60,0.18);
+  text-align:center;
+  white-space:nowrap;
+  pointer-events:none;
+  z-index:5;
 }
-.ggm-resumen-inferior-fila{
+.ggm-tooltip-valor{ font-size:13px; font-weight:800; color:var(--text); }
+.ggm-tooltip-dia{ font-size:10.5px; color:var(--text-secondary); font-weight:600; }
+.ggm-tooltip-flecha{
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:0; height:0;
+  border-left:6px solid transparent;
+  border-right:6px solid transparent;
+  border-top:6px solid var(--surface);
+}
+
+/* NUEVO: franja inferior verde clara con 3 estadísticas, según la
+   imagen de referencia */
+.ggm-resumen-inferior-verde{
   display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:10px;
+  align-items:stretch;
+  margin-top:16px;
+  border-radius:12px;
+  overflow:hidden; /* NUEVO: para que cada tercio de color respete las esquinas redondeadas del conjunto */
 }
-.ggm-resumen-inferior-label{ font-size:11px; color:var(--text-secondary); font-weight:600; margin-bottom:2px; }
-.ggm-resumen-inferior-pct{ font-size:14px; font-weight:800; }
-.ggm-resumen-inferior-pct.positiva{ color:var(--success); }
-.ggm-resumen-inferior-pct.negativa{ color:var(--danger); }
-.ggm-resumen-inferior-pct.neutra{ color:var(--text-secondary); }
-.ggm-resumen-inferior-diff{ font-size:14px; font-weight:800; color:var(--text); }
-.ggm-resumen-inferior-diff.positiva{ color:var(--success); }
-.ggm-resumen-inferior-diff.negativa{ color:var(--danger); }
-.ggm-resumen-inferior-mensaje{ font-size:12px; color:var(--text-secondary); font-weight:500; margin-top:8px; text-align:center; }
+.ggm-stat{ flex:1; min-width:0; display:flex; align-items:flex-start; gap:6px; padding:12px 10px; }
+.ggm-stat svg{ width:15px; height:15px; flex-shrink:0; margin-top:2px; }
+/* CORREGIDO: a pedido — cada tercio con su propio color, un poco más
+   saturado que el verde plano que tenía antes toda la franja, acorde al
+   sentido de cada título. */
+.ggm-stat-verde{ background:#D9F4E3; }
+.ggm-stat-verde svg{ stroke:#15A04F; }
+.ggm-stat-azul{ background:#DCE7FB; }
+.ggm-stat-azul svg{ stroke:#2F5FD6; }
+.ggm-stat-dorado{ background:#FBEBD1; }
+.ggm-stat-dorado svg{ stroke:#C07F0A; }
+.ggm-stat-texto{ min-width:0; }
+.ggm-stat-label{ font-size:10px; color:var(--text-secondary); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ggm-stat-valor{ font-size:13.5px; font-weight:800; color:var(--text); letter-spacing:-0.3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ggm-stat-sub{ font-size:9.5px; color:var(--text-secondary); font-weight:500; }
+.ggm-stat-divisor{ width:2px; align-self:stretch; background:rgba(20,30,60,0.16); flex-shrink:0; } /* CORREGIDO: antes 1px muy tenue — a pedido, divisores más marcados */
 
 /* CAMBIO: barras HORIZONTALES (estilo hoja de cálculo) — cada fila es un
    día, con el valor de ganancia mostrado siempre al final de su barra,
@@ -4314,58 +4351,176 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
 /* NUEVO: "Capital en Calle" (Inicio) — tarjeta pequeña con tinte azul,
    a pedido con imagen de referencia. */
-.tarjeta-capital-calle{
-  padding:16px 18px;
-  background:#E3ECFC;
-  border-color:#B9CDF2;
+/* REEMPLAZADO — a pedido, con código HTML/CSS exacto proporcionado por
+   el usuario para "Capital en la Calle" (Modo Claro). Se conservan los
+   mismos nombres de clase que me dieron. Se le agregó únicamente el
+   ojito (antes ya existía en el diseño anterior) para no perder esa
+   función de privacidad al integrar el nuevo diseño. */
+.capital-card-light {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 20px 24px;
+  color: #0f172a;
+  font-family: inherit; /* CORREGIDO: hereda la tipografía del resto de PrestaYa en vez de system-ui */
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  overflow: hidden;
+  margin:9px 14px 0; /* CORREGIDO: mismo margen lateral que el resto de tarjetas de Inicio (antes max-width:400px) */
 }
-.capital-calle-etiqueta{
-  font-size:14px;
-  font-weight:700;
-  color:#2F4FA8;
-  margin-bottom:6px;
+
+.card-glow {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
 }
-.capital-calle-fila-superior{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:6px;
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
-.capital-calle-fila-superior .capital-calle-etiqueta{ margin-bottom:0; }
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-wrapper {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #059669;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink:0;
+}
+
+.card-title {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #475569;
+  text-transform: uppercase;
+}
+
+.card-subtitle {
+  margin: 2px 0 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.header-right{ display:flex; align-items:center; gap:8px; flex-shrink:0; } /* NUEVO: agrupa la insignia + el ojito */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #059669;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space:nowrap;
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  background-color: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.2); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* NUEVO: ojito para ocultar/mostrar el monto — misma función que ya
+   existía antes de este rediseño, arranca siempre oculto. */
 .capital-calle-ojo{
   width:26px;
   height:26px;
   border-radius:50%;
   flex-shrink:0;
-  background:rgba(47,79,168,0.12);
-  color:#2F4FA8;
+  background:#ecfdf5;
+  color:#059669;
   display:flex;
   align-items:center;
   justify-content:center;
   border:none;
   cursor:pointer;
 }
-.capital-calle-ojo svg{ width:15px; height:15px; stroke:currentColor; }
+.capital-calle-ojo svg{ width:14px; height:14px; stroke:currentColor; }
 .capital-calle-ojo:active{ opacity:.7; }
-.capital-calle-monto{
-  font-size:30px;
-  font-weight:800;
-  color:var(--text);
-  letter-spacing:-0.6px;
-  margin-bottom:14px;
+
+.card-body {
+  margin-bottom: 18px;
 }
-.capital-calle-barra-track{
-  width:100%;
-  height:9px;
-  background:#C4D5F6;
-  border-radius:var(--radius-full);
-  overflow:hidden;
+
+.amount-container {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  flex-wrap:wrap; /* CORREGIDO: evita desbordamiento en pantallas angostas si el monto es muy largo */
 }
-.capital-calle-barra-fill{
-  height:100%;
-  background:#3B5FE0;
-  border-radius:var(--radius-full);
-  transition:width .3s ease;
+
+.currency-symbol {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.amount-number {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #0f172a;
+}
+
+.currency-code {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  margin-left: 4px;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 12px;
+  color: #64748b;
+  gap:10px;
+}
+
+.footer-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width:0;
+  white-space:nowrap;
+}
+
+.footer-info strong {
+  color: #0f172a;
 }
 
 /* NUEVO: banner de acceso a "Cobros" (reemplaza la sección inline que
@@ -4794,18 +4949,25 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   </div>
 
   <!-- ==========================================================
-       REDISEÑADO — "Ganancias del Mes": ahora compara, día por día,
-       este mes contra el mes calendario pasado (antes solo mostraba
-       una barra por día del mes elegido). Reutiliza EXACTAMENTE la
-       misma fórmula de la tarjeta "Ganancias" de arriba (interés
-       cobrado + mora cobrada) y respeta el mismo filtro de ruta activo
-       en Inicio. Sin librerías externas — barras simples con CSS.
+       REDISEÑADO — "Ganancias del Mes", basado EXACTAMENTE en la
+       imagen de referencia entregada: una sola serie de barras verdes
+       por día (ya no comparación de 2 colores), eje de valores a la
+       izquierda, tooltip flotante sobre la barra tocada, e insignia de
+       variación junto al total. Reutiliza EXACTAMENTE la misma fórmula
+       de la tarjeta "Ganancias" de arriba (interés cobrado + mora
+       cobrada) y respeta el mismo filtro de ruta activo en Inicio. Sin
+       librerías externas.
        ========================================================== -->
   <div class="card" id="tarjeta-grafico-ganancias" style="padding:16px 16px 16px;">
     <div class="grafico-ganancias-header">
-      <div>
-        <div class="section-title" style="margin:0;">Ganancias del Mes</div>
-        <div class="ggm-subtitulo">Evolución diaria de tus ganancias</div>
+      <div style="display:flex; align-items:flex-start; gap:10px; min-width:0;">
+        <div class="ggm-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        </div>
+        <div style="min-width:0;">
+          <div class="section-title" style="margin:0;">Ganancias del Mes</div>
+          <div class="ggm-subtitulo">Evolución diaria de tus ganancias</div>
+        </div>
       </div>
       <div class="grafico-ganancias-selector-mes">
         <button type="button" id="btn-grafico-mes-anterior" aria-label="Mes anterior">
@@ -4818,79 +4980,117 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       </div>
     </div>
 
-    <div class="ggm-resumen-fila">
-      <div class="ggm-resumen-item">
-        <div class="ggm-resumen-label">Total del mes</div>
-        <div class="ggm-resumen-valor" id="ggm-total-mes">$0</div>
+    <div class="ggm-total-fila">
+      <div>
+        <div class="ggm-total-label">Total del mes</div>
+        <div class="ggm-total-valor" id="ggm-total-mes">$0</div>
       </div>
-      <div class="ggm-resumen-item">
-        <div class="ggm-resumen-label">Promedio diario</div>
-        <div class="ggm-resumen-valor" id="ggm-promedio-diario">$0</div>
-      </div>
-      <div class="ggm-resumen-item">
-        <div class="ggm-resumen-label">Mejor día</div>
-        <div class="ggm-resumen-valor" id="ggm-mejor-dia">$0</div>
-        <div class="ggm-resumen-sub" id="ggm-mejor-dia-fecha">—</div>
-      </div>
-    </div>
-
-    <div class="ggm-badge-fila">
-      <div class="ggm-leyenda">
-        <span class="ggm-leyenda-item"><span class="ggm-dot verde"></span>Este mes</span>
-        <span class="ggm-leyenda-item"><span class="ggm-dot azul"></span>Mes pasado</span>
-      </div>
-      <div class="comparativo-ganancias-badge" id="ggm-badge">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="ggm-badge-flecha"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-        <span id="ggm-badge-texto">0,00%</span>
-      </div>
-    </div>
-
-    <div class="ggm-modos" id="ggm-modos">
-      <button type="button" class="ggm-modo-btn activo" data-modo="diario">Diario</button>
-      <button type="button" class="ggm-modo-btn" data-modo="semanal">Semanal</button>
-      <button type="button" class="ggm-modo-btn" data-modo="quincenal">Quincenal</button>
-      <button type="button" class="ggm-modo-btn" data-modo="mensual">Mensual</button>
-    </div>
-
-    <div class="grafico-ganancias-dia-seleccionado" id="grafico-dia-seleccionado">Toca una barra para ver el detalle</div>
-    <div class="ggm-chart-scroll">
-      <div class="grafico-ganancias-barras" id="grafico-ganancias-barras"></div>
-    </div>
-
-    <div class="ggm-resumen-inferior">
-      <div class="ggm-resumen-inferior-fila">
-        <div>
-          <div class="ggm-resumen-inferior-label">Ganancia total</div>
-          <div class="ggm-resumen-inferior-pct" id="ggm-resumen-inferior-pct">0,00% vs. mes pasado</div>
+      <div class="ggm-badge-2l" id="ggm-badge">
+        <div class="ggm-badge-2l-arriba">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="ggm-badge-flecha"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+          <span id="ggm-badge-texto">0,00%</span>
         </div>
-        <div style="text-align:right;">
-          <div class="ggm-resumen-inferior-label">Diferencia</div>
-          <div class="ggm-resumen-inferior-diff" id="ggm-resumen-inferior-diff">$0</div>
+        <div class="ggm-badge-2l-abajo" id="ggm-badge-sub">vs. mes anterior</div>
+      </div>
+    </div>
+
+    <div class="ggm-chart-wrap">
+      <div class="ggm-eje-y" id="ggm-eje-y"></div>
+      <div class="ggm-chart-scroll">
+        <div class="ggm-plot-inner" id="ggm-plot-inner">
+          <div class="ggm-tooltip-slot"></div>
+          <div class="grafico-ganancias-barras" id="grafico-ganancias-barras"></div>
+          <div class="ggm-dias-fila" id="ggm-dias-fila"></div>
+          <div class="ggm-tooltip" id="ggm-tooltip" style="display:none;">
+            <div class="ggm-tooltip-valor" id="ggm-tooltip-valor">$0</div>
+            <div class="ggm-tooltip-dia" id="ggm-tooltip-dia">Día 1</div>
+            <div class="ggm-tooltip-flecha"></div>
+          </div>
         </div>
       </div>
-      <div class="ggm-resumen-inferior-mensaje" id="ggm-resumen-inferior-mensaje">Tus ganancias se mantienen estables.</div>
+    </div>
+
+    <div class="ggm-resumen-inferior-verde">
+      <div class="ggm-stat ggm-stat-verde">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+        <div class="ggm-stat-texto">
+          <div class="ggm-stat-label">Ganancia hoy</div>
+          <div class="ggm-stat-valor" id="ggm-ganancia-hoy">$0</div>
+        </div>
+      </div>
+      <div class="ggm-stat-divisor"></div>
+      <div class="ggm-stat ggm-stat-azul">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <div class="ggm-stat-texto">
+          <div class="ggm-stat-label">Promedio diario</div>
+          <div class="ggm-stat-valor" id="ggm-promedio-diario">$0</div>
+        </div>
+      </div>
+      <div class="ggm-stat-divisor"></div>
+      <div class="ggm-stat ggm-stat-dorado">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+        <div class="ggm-stat-texto">
+          <div class="ggm-stat-label">Mejor día</div>
+          <div class="ggm-stat-valor" id="ggm-mejor-dia">$0</div>
+          <div class="ggm-stat-sub" id="ggm-mejor-dia-fecha">—</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- NUEVO: "Capital en Calle" — tarjeta pequeña con el total pendiente
-       por cobrar (misma cifra que ya suma calcularCarteraPorRuta(), sin
-       inventar ningún cálculo nuevo) y una barra que muestra qué parte
-       de TODO lo prestado históricamente sigue sin recuperarse. Ubicada
-       justo antes de "Capital por Ruta" porque esa tarjeta es, en el
-       fondo, el desglose por ruta de este mismo total. -->
-  <div class="card tarjeta-capital-calle" id="tarjeta-capital-calle" style="margin:9px 14px 0;">
-    <div class="capital-calle-fila-superior">
-      <div class="capital-calle-etiqueta">Capital en calle</div>
-      <!-- NUEVO: ojito para ocultar/mostrar el monto — a pedido, arranca
-           siempre oculto cada vez que se abre la app (no se recuerda de
-           una sesión a otra). -->
-      <button type="button" class="capital-calle-ojo" id="btn-capital-calle-ojo" aria-label="Mostrar el monto">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-      </button>
+  <!-- REEMPLAZADO — a pedido: nueva tarjeta "Capital en la Calle" (Modo
+       Claro), con el HTML/CSS exacto proporcionado. El monto, el conteo
+       de créditos vigentes y el promedio se calculan con datos reales
+       (misma fuente que ya usaba la tarjeta anterior: calcularCarteraPorRuta()
+       y prestamosGuardados) — nada de esto queda fijo. Se conservó el
+       ojito de privacidad que ya existía antes del rediseño. -->
+  <div class="capital-card-light" id="tarjeta-capital-calle">
+    <div class="card-glow"></div>
+
+    <div class="card-header">
+      <div class="header-left">
+        <div class="icon-wrapper">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <div>
+          <span class="card-title">CAPITAL EN LA CALLE</span>
+          <p class="card-subtitle">Dinero activo en préstamo</p>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <span class="status-badge">
+          <span class="pulse-dot"></span>
+          Circulando
+        </span>
+        <button type="button" class="capital-calle-ojo" id="btn-capital-calle-ojo" aria-label="Mostrar el monto">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+        </button>
+      </div>
     </div>
-    <div class="capital-calle-monto" id="capital-calle-monto">••••••</div>
-    <div class="capital-calle-barra-track">
-      <div class="capital-calle-barra-fill" id="capital-calle-barra-fill" style="width:0%;"></div>
+
+    <div class="card-body">
+      <div class="amount-container">
+        <span class="currency-symbol">$</span>
+        <span class="amount-number" id="capital-calle-monto">••••••</span>
+        <span class="currency-code">COP</span>
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <div class="footer-info">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        <span><strong id="capital-calle-creditos">0</strong> créditos vigentes</span>
+      </div>
+      <div class="footer-info">
+        <span>Promedio: <strong id="capital-calle-promedio">$0</strong></span>
+      </div>
     </div>
   </div>
 
@@ -10414,36 +10614,44 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     });
   }
 
-  // NUEVO: "Capital en Calle" (Inicio) — tarjeta pequeña, a pedido con
-  // imagen de referencia. El monto es el mismo total que ya calcula
-  // calcularCarteraPorRuta() (capital pendiente por cobrar de todos los
-  // créditos activos), sin inventar ningún cálculo nuevo. La barra
-  // muestra qué proporción representa ese capital en calle frente a
-  // TODO lo prestado alguna vez (activos + finalizados) — así se ve de
-  // un vistazo qué tan "cargada" está la cartera hoy frente al histórico.
+  // REEMPLAZADO — a pedido, con nuevo diseño HTML/CSS de "Capital en la
+  // Calle". El monto sigue siendo EXACTAMENTE el mismo total que ya
+  // calculaba calcularCarteraPorRuta() (capital pendiente por cobrar de
+  // todos los créditos activos) — no se inventó ningún cálculo nuevo.
+  // Se agregan 2 datos reales más que pedía el nuevo diseño: cantidad de
+  // créditos vigentes y el promedio pendiente por crédito.
   //
-  // NUEVO: ojito para ocultar/mostrar el monto — a pedido, arranca
-  // SIEMPRE oculto (esta variable no se guarda en localStorage a
-  // propósito, así que cada vez que se abre la app vuelve a empezar
-  // oculto, sin recordar lo que el usuario eligió la vez anterior).
+  // Ojito para ocultar/mostrar el monto — arranca SIEMPRE oculto (esta
+  // variable no se guarda en localStorage a propósito, así que cada vez
+  // que se abre la app vuelve a empezar oculto).
   let capitalCalleOculto = true;
   const ICONO_OJO_ABIERTO = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
   const ICONO_OJO_CERRADO = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
 
+  // NUEVO: formato compacto para el promedio ($369k, $1.2M) — mismo
+  // criterio ya usado en el eje del gráfico de Ganancias del Mes.
+  function formatearMontoCompacto(valor){
+    if(valor >= 1000000) return '$' + (valor / 1000000).toLocaleString('es-CO', {maximumFractionDigits:1}) + 'M';
+    if(valor >= 1000) return '$' + Math.round(valor / 1000) + 'k';
+    return formatearPesos(valor);
+  }
+
   function renderizarCapitalEnCalle(){
     const elMonto = document.getElementById('capital-calle-monto');
-    const elBarra = document.getElementById('capital-calle-barra-fill');
+    const elCreditos = document.getElementById('capital-calle-creditos');
+    const elPromedio = document.getElementById('capital-calle-promedio');
     const btnOjo = document.getElementById('btn-capital-calle-ojo');
-    if(!elMonto || !elBarra) return;
+    if(!elMonto) return;
 
     const { capitalTotal } = calcularCarteraPorRuta();
-    const totalPrestadoHistorico = prestamosGuardados
-      .filter(p => clienteEstaActivo(p.clienteId))
-      .reduce((s, p) => s + (p.valor || 0), 0);
-    const porcentaje = totalPrestadoHistorico > 0 ? Math.min(100, (capitalTotal / totalPrestadoHistorico) * 100) : 0;
+    const creditosVigentes = prestamosGuardados.filter(p => p.estado === 'activo').length;
+    const promedio = creditosVigentes > 0 ? capitalTotal / creditosVigentes : 0;
 
-    elMonto.textContent = capitalCalleOculto ? '••••••' : formatearPesos(capitalTotal);
-    elBarra.style.width = porcentaje + '%';
+    // El símbolo "$" ya está fijo en el HTML (currency-symbol), así que
+    // aquí solo va el número, sin duplicar el signo.
+    elMonto.textContent = capitalCalleOculto ? '••••••' : formatearPesos(capitalTotal).replace('$', '');
+    if(elCreditos) elCreditos.textContent = creditosVigentes;
+    if(elPromedio) elPromedio.textContent = capitalCalleOculto ? '••••' : formatearPesos(Math.round(promedio)); // CORREGIDO: antes formatearMontoCompacto (ej. $15,3M) — a pedido, ahora el valor completo
     if(btnOjo){
       btnOjo.innerHTML = capitalCalleOculto ? ICONO_OJO_CERRADO : ICONO_OJO_ABIERTO;
       btnOjo.setAttribute('aria-label', capitalCalleOculto ? 'Mostrar el monto' : 'Ocultar el monto');
@@ -16282,47 +16490,38 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     return datosDiarios.reduce((s, d) => s + d.total, 0);
   }
 
-  // Agrupa la lista diaria según el modo elegido (Diario/Semanal/
-  // Quincenal/Mensual) — reutiliza la MISMA lista diaria como única
-  // fuente de datos, solo cambia cómo se suma y se etiqueta.
-  function agruparDatosGraficoGanancias(datosDiarios, modo){
-    if(modo === 'semanal'){
-      const grupos = [];
-      for(let i = 0; i < datosDiarios.length; i += 7){
-        const trozo = datosDiarios.slice(i, i + 7);
-        grupos.push({
-          etiqueta: trozo.length > 1 ? (trozo[0].dia + '-' + trozo[trozo.length - 1].dia) : String(trozo[0].dia),
-          total: trozo.reduce((s, d) => s + d.total, 0)
-        });
-      }
-      return grupos;
-    }
-    if(modo === 'quincenal'){
-      const primera = datosDiarios.filter(d => d.dia <= 15);
-      const segunda = datosDiarios.filter(d => d.dia > 15);
-      return [
-        { etiqueta: '1-15', total: primera.reduce((s, d) => s + d.total, 0) },
-        { etiqueta: '16-' + datosDiarios.length, total: segunda.reduce((s, d) => s + d.total, 0) }
-      ];
-    }
-    if(modo === 'mensual'){
-      return [{ etiqueta: 'Todo el mes', total: datosDiarios.reduce((s, d) => s + d.total, 0) }];
-    }
-    // 'diario' (por defecto)
-    return datosDiarios.map(d => ({ etiqueta: String(d.dia), total: d.total, dia: d.dia }));
+  // NUEVO: redondea el valor máximo del gráfico a un número "bonito"
+  // (1, 2, 2.5, 5 o 10 × una potencia de 10) para que el eje de valores
+  // se vea limpio — mismo criterio que usan la mayoría de dashboards
+  // financieros en vez de una escala fija.
+  function calcularEscalaEjeY(maxValor){
+    if(maxValor <= 0) return 100000;
+    const magnitud = Math.pow(10, Math.floor(Math.log10(maxValor)));
+    const normalizado = maxValor / magnitud;
+    let escala;
+    if(normalizado <= 1) escala = 1;
+    else if(normalizado <= 2) escala = 2;
+    else if(normalizado <= 2.5) escala = 2.5;
+    else if(normalizado <= 5) escala = 5;
+    else escala = 10;
+    return escala * magnitud;
   }
 
-  let modoGraficoGanancias = 'diario';
-  const FLECHA_ARRIBA_GGM = '<line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline>';
-  const FLECHA_ABAJO_GGM = '<line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline>';
+  // NUEVO: formato compacto para las etiquetas del eje ($1.2M, $500K,
+  // $0) — evita que los números largos empujen el gráfico. Si el valor
+  // no llega a 1.000, usa formatearPesos normal.
+  function formatearEtiquetaEjeY(valor){
+    if(valor === 0) return '$0';
+    if(valor >= 1000000) return '$' + (valor / 1000000).toLocaleString('es-CO', {maximumFractionDigits:1}) + 'M';
+    if(valor >= 1000) return '$' + Math.round(valor / 1000) + 'K';
+    return formatearPesos(valor);
+  }
 
   function renderizarGraficoGanancias(){
     const datosEsteMes = gananciasPorDiaDelMes(mesGraficoGanancias);
-    // NUEVO: "mes pasado" siempre es el mes calendario inmediatamente
-    // anterior al que se está viendo en el selector (no necesariamente
-    // el mes anterior a HOY) — si se navega a agosto, compara contra
-    // julio; JS resuelve solo el cambio de año (mes -1 en enero = 0,
-    // que Date interpreta correctamente como diciembre del año previo).
+    // "Mes anterior" siempre es el mes calendario inmediatamente antes
+    // del que se está viendo en el selector (no necesariamente el
+    // anterior a HOY) — JS resuelve solo el cambio de año.
     const mesPasadoRef = new Date(mesGraficoGanancias.getFullYear(), mesGraficoGanancias.getMonth() - 1, 1);
     const datosMesPasado = gananciasPorDiaDelMes(mesPasadoRef);
 
@@ -16335,8 +16534,34 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const totalMesPasado = totalGananciasLista(datosMesPasado);
     const diferencia = totalEsteMes - totalMesPasado;
 
-    // ---------- Resumen superior: Total del mes / Promedio diario / Mejor día ----------
+    // ---------- Total del mes ----------
     document.getElementById('ggm-total-mes').textContent = formatearPesos(totalEsteMes);
+
+    // ---------- Insignia de variación vs. mes anterior (3 casos especiales) ----------
+    let clase, textoPct;
+    if(totalMesPasado === 0){
+      // NUEVO: pedido explícito — nunca NaN/Infinity/undefined.
+      clase = 'neutra';
+      textoPct = 'Sin comparación';
+    }else{
+      const pct = (diferencia / totalMesPasado) * 100;
+      const pctRedondeado = Math.round(pct * 100) / 100;
+      if(Math.abs(pctRedondeado) < 0.005){ clase = 'neutra'; textoPct = '0,00%'; }
+      else if(pct > 0){ clase = 'positiva'; textoPct = '+' + pctRedondeado.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + '%'; }
+      else{ clase = 'negativa'; textoPct = pctRedondeado.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + '%'; }
+    }
+    const badge = document.getElementById('ggm-badge');
+    badge.className = 'ggm-badge-2l ' + clase;
+    document.getElementById('ggm-badge-texto').textContent = textoPct;
+    document.getElementById('ggm-badge-flecha').innerHTML = (clase === 'negativa')
+      ? '<line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline>'
+      : '<line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline>';
+    document.getElementById('ggm-badge-sub').textContent = (totalMesPasado === 0) ? '' : 'vs. mes anterior';
+
+    // ---------- Resumen inferior: Ganancia hoy / Promedio diario / Mejor día ----------
+    const gananciaHoy = esMesActual ? (datosEsteMes.find(d => d.dia === hoy.getDate()) || {total:0}).total : 0;
+    document.getElementById('ggm-ganancia-hoy').textContent = esMesActual ? formatearPesos(gananciaHoy) : '—';
+
     const promedioDiario = datosEsteMes.length > 0 ? totalEsteMes / datosEsteMes.length : 0;
     document.getElementById('ggm-promedio-diario').textContent = formatearPesos(Math.round(promedioDiario));
 
@@ -16345,90 +16570,63 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     document.getElementById('ggm-mejor-dia').textContent = formatearPesos(mejorDia.total);
     document.getElementById('ggm-mejor-dia-fecha').textContent = mejorDia.total > 0 ? ('Día ' + mejorDia.dia) : '—';
 
-    // ---------- Variación vs. mes pasado (con los 3 casos especiales pedidos) ----------
-    let clase, textoPct, mensaje;
-    if(totalMesPasado === 0){
-      // NUEVO: pedido explícito — nunca NaN/Infinity/undefined cuando el
-      // mes pasado no tiene datos con qué comparar.
-      clase = 'neutra';
-      textoPct = 'No disponible';
-      mensaje = totalEsteMes > 0 ? 'No hay datos del mes pasado para comparar.' : 'Todavía no hay ganancias registradas este mes.';
-    }else{
-      const pct = (diferencia / totalMesPasado) * 100;
-      const pctRedondeado = Math.round(pct * 100) / 100;
-      if(Math.abs(pctRedondeado) < 0.005){
-        clase = 'neutra';
-        textoPct = '0,00%';
-        mensaje = 'Tus ganancias se mantienen estables.';
-      }else if(pct > 0){
-        clase = 'positiva';
-        textoPct = '+' + pctRedondeado.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + '%';
-        mensaje = '¡Excelente! Tus ganancias superan las del mes pasado.';
-      }else{
-        clase = 'negativa';
-        textoPct = pctRedondeado.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + '%';
-        mensaje = 'Las ganancias están por debajo del mes pasado.';
-      }
+    // ---------- Eje de valores (5 etiquetas, escala automática) ----------
+    const maxReal = Math.max(1, ...datosEsteMes.map(d => d.total));
+    const escalaMax = calcularEscalaEjeY(maxReal);
+    const ejeY = document.getElementById('ggm-eje-y');
+    ejeY.innerHTML = '';
+    for(let i = 4; i >= 0; i--){
+      const val = Math.round((escalaMax / 4) * i);
+      const etiqueta = document.createElement('div');
+      etiqueta.className = 'ggm-eje-y-label';
+      etiqueta.textContent = formatearEtiquetaEjeY(val);
+      ejeY.appendChild(etiqueta);
     }
 
-    const badge = document.getElementById('ggm-badge');
-    badge.className = 'comparativo-ganancias-badge ' + clase;
-    document.getElementById('ggm-badge-texto').textContent = textoPct;
-    const badgeFlecha = document.getElementById('ggm-badge-flecha');
-    badgeFlecha.innerHTML = clase === 'negativa' ? FLECHA_ABAJO_GGM : FLECHA_ARRIBA_GGM;
-    badgeFlecha.style.display = (clase === 'neutra') ? 'none' : '';
-
-    const pctInf = document.getElementById('ggm-resumen-inferior-pct');
-    pctInf.className = 'ggm-resumen-inferior-pct ' + clase;
-    pctInf.textContent = textoPct + (totalMesPasado === 0 ? '' : ' vs. mes pasado');
-
-    const diffInf = document.getElementById('ggm-resumen-inferior-diff');
-    diffInf.className = 'ggm-resumen-inferior-diff ' + clase;
-    diffInf.textContent = (diferencia > 0 ? '+' : diferencia < 0 ? '-' : '') + formatearPesos(Math.abs(diferencia));
-
-    document.getElementById('ggm-resumen-inferior-mensaje').textContent = mensaje;
-
-    // ---------- Gráfico de barras comparativo (según el modo elegido) ----------
-    document.getElementById('grafico-dia-seleccionado').textContent = 'Toca una barra para ver el detalle';
-
-    const grupoEsteMes = agruparDatosGraficoGanancias(datosEsteMes, modoGraficoGanancias);
-    const grupoMesPasado = agruparDatosGraficoGanancias(datosMesPasado, modoGraficoGanancias);
-    const maxValor = Math.max(1, ...grupoEsteMes.map(g => g.total), ...grupoMesPasado.map(g => g.total));
-    const esAncha = modoGraficoGanancias !== 'diario';
-
+    // ---------- Barras (una sola serie, verde) ----------
     const contenedor = document.getElementById('grafico-ganancias-barras');
+    const filaDias = document.getElementById('ggm-dias-fila');
+    const tooltip = document.getElementById('ggm-tooltip');
     contenedor.innerHTML = '';
+    filaDias.innerHTML = '';
+    tooltip.style.display = 'none';
 
-    grupoEsteMes.forEach((g, indice)=>{
-      const gPasado = grupoMesPasado[indice] || { total: 0 };
-      const alturaEste = Math.max(3, (g.total / maxValor) * 100);
-      const alturaPasado = Math.max(3, (gPasado.total / maxValor) * 100);
-
+    datosEsteMes.forEach(d=>{
+      const alturaPct = Math.max(1.5, (d.total / escalaMax) * 100);
       const col = document.createElement('div');
-      col.className = 'grafico-ganancias-barra-col' + (esAncha ? ' ggm-ancha' : '');
-      if(!esAncha && esMesActual && g.dia === hoy.getDate()) col.classList.add('hoy');
+      col.className = 'grafico-ganancias-barra-col';
+      col.innerHTML = `<div class="ggm-barra" style="height:${alturaPct}%;"></div>`;
 
-      col.innerHTML = `
-        <div class="ggm-dia-barras">
-          <div class="ggm-barra verde" style="height:${alturaEste}%;"></div>
-          <div class="ggm-barra azul" style="height:${alturaPasado}%;"></div>
-        </div>
-        <div class="grafico-ganancias-barra-dia">${g.etiqueta}</div>
-      `;
-      col.addEventListener('click', ()=>{
+      const colDia = document.createElement('div');
+      colDia.className = 'ggm-dia-col';
+      if(esMesActual && d.dia === hoy.getDate()){ col.classList.add('hoy'); colDia.classList.add('hoy'); }
+      colDia.innerHTML = `<div class="grafico-ganancias-barra-dia">${d.dia}</div>`;
+
+      const mostrarTooltip = ()=>{
         contenedor.querySelectorAll('.grafico-ganancias-barra-col').forEach(c => c.classList.remove('activa'));
         col.classList.add('activa');
-        const diff = g.total - gPasado.total;
-        const signo = diff > 0 ? '+' : diff < 0 ? '-' : '';
-        const etiquetaTexto = modoGraficoGanancias === 'diario' ? ('Día ' + g.etiqueta) : g.etiqueta;
-        document.getElementById('grafico-dia-seleccionado').textContent =
-          etiquetaTexto + ' — Este mes: ' + formatearPesos(g.total) + ' · Mes pasado: ' + formatearPesos(gPasado.total) + ' · Diferencia: ' + signo + formatearPesos(Math.abs(diff));
-      });
+        // NUEVO: tooltip flotante, vive en el espacio ya reservado arriba
+        // de las barras — se centra horizontalmente sobre la columna
+        // tocada y se recorta contra los bordes del gráfico para que
+        // nunca se salga por los costados.
+        document.getElementById('ggm-tooltip-valor').textContent = formatearPesos(d.total);
+        document.getElementById('ggm-tooltip-dia').textContent = 'Día ' + d.dia;
+        const centroCol = col.offsetLeft + (col.offsetWidth / 2);
+        const anchoPlot = document.getElementById('ggm-plot-inner').offsetWidth;
+        tooltip.style.display = 'block';
+        const mitadTooltip = tooltip.offsetWidth / 2;
+        const centroClamp = Math.min(Math.max(centroCol, mitadTooltip + 4), anchoPlot - mitadTooltip - 4);
+        tooltip.style.left = centroClamp + 'px';
+      };
+      col.addEventListener('click', mostrarTooltip);
+      colDia.addEventListener('click', mostrarTooltip);
+
       contenedor.appendChild(col);
+      filaDias.appendChild(colDia);
     });
 
-    // Deja visible el día de hoy al abrir el mes actual (solo en modo diario)
-    if(!esAncha && esMesActual){
+    // Deja visible el día de hoy al abrir el mes actual, sin scroll manual
+    if(esMesActual){
       const colHoy = contenedor.querySelector('.grafico-ganancias-barra-col.hoy');
       if(colHoy) colHoy.scrollIntoView({ inline:'center', block:'nearest' });
     }
@@ -16441,13 +16639,6 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   document.getElementById('btn-grafico-mes-siguiente').addEventListener('click', ()=>{
     mesGraficoGanancias.setMonth(mesGraficoGanancias.getMonth() + 1);
     renderizarGraficoGanancias();
-  });
-  document.querySelectorAll('#ggm-modos .ggm-modo-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      modoGraficoGanancias = btn.dataset.modo;
-      document.querySelectorAll('#ggm-modos .ggm-modo-btn').forEach(b => b.classList.toggle('activo', b === btn));
-      renderizarGraficoGanancias();
-    });
   });
 
   // ==========================================================
