@@ -563,10 +563,14 @@ a{ text-decoration:none; color:inherit; }
    todo el alto disponible de la tarjeta, en vez de dejar un espacio
    vacío abajo. El encabezado y el texto "Toca una barra..." mantienen
    su tamaño natural (no son flex:1). */
-#tarjeta-grafico-ganancias{ margin:9px 14px 0; display:flex; flex-direction:column; }
+#tarjeta-grafico-ganancias{ margin:9px 14px 0; background:#F7F8FF; border-color:#DEE1F5; } /* NUEVO: tinte lavanda muy sutil, a pedido */
 #tarjeta-top-rutas-capital{ margin:9px 14px 0; }
-.grafico-ganancias-header{ display:flex; align-items:center; justify-content:space-between; }
-.grafico-ganancias-selector-mes{ display:flex; align-items:center; gap:6px; }
+/* NUEVO: tinte azul muy suave — a pedido, para diferenciar de "Medios
+   de Pago" (que se deja en blanco a propósito). */
+#tarjeta-total-prestado-recaudado{ background:#F5F8FF; border-color:#DCE6FA; }
+.grafico-ganancias-header{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.ggm-subtitulo{ font-size:12.5px; color:var(--text-secondary); font-weight:500; margin-top:1px; }
+.grafico-ganancias-selector-mes{ display:flex; align-items:center; gap:6px; flex-shrink:0; }
 .grafico-ganancias-selector-mes span{ font-size:13px; font-weight:600; color:var(--text-secondary); min-width:98px; text-align:center; }
 .grafico-ganancias-selector-mes button{
   width:24px;
@@ -579,48 +583,135 @@ a{ text-decoration:none; color:inherit; }
   flex-shrink:0;
 }
 .grafico-ganancias-selector-mes button svg{ width:13px; height:13px; stroke:var(--text-secondary); }
+
+/* NUEVO: fila de 3 indicadores (Total del mes / Promedio diario / Mejor día) */
+.ggm-resumen-fila{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--border);
+}
+.ggm-resumen-item{ flex:1; min-width:0; }
+.ggm-resumen-label{ font-size:11px; color:var(--text-secondary); font-weight:600; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ggm-resumen-valor{ font-size:15px; font-weight:800; color:var(--text); letter-spacing:-0.3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ggm-resumen-sub{ font-size:10.5px; color:var(--text-secondary); font-weight:500; margin-top:1px; }
+
+/* NUEVO: leyenda de color + insignia de variación */
+.ggm-badge-fila{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:12px;
+}
+.ggm-leyenda{ display:flex; align-items:center; gap:12px; }
+.ggm-leyenda-item{ display:flex; align-items:center; gap:5px; font-size:12px; color:var(--text-secondary); font-weight:600; }
+.ggm-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.ggm-dot.verde{ background:var(--success); }
+.ggm-dot.azul{ background:#4C7EE8; }
+
+/* NUEVO: selector Diario / Semanal / Quincenal / Mensual */
+.ggm-modos{
+  display:flex;
+  gap:6px;
+  margin-top:12px;
+  background:var(--background);
+  padding:3px;
+  border-radius:var(--radius-full);
+}
+.ggm-modo-btn{
+  flex:1;
+  padding:6px 4px;
+  border-radius:var(--radius-full);
+  font-size:12px;
+  font-weight:700;
+  color:var(--text-secondary);
+  background:none;
+  border:none;
+  white-space:nowrap;
+}
+.ggm-modo-btn.activo{ background:var(--surface); color:var(--primary); box-shadow:var(--shadow-sm); }
+
 .grafico-ganancias-dia-seleccionado{
   font-size:12.5px;
   color:var(--text-secondary);
   font-weight:500;
   text-align:center;
-  margin:8px 0 10px;
+  margin:12px 0 8px;
   min-height:16px;
 }
-.grafico-ganancias-barras{
-  display:flex;
-  align-items:flex-end;
-  gap:5px;
-  flex:1; /* CAMBIO: antes height:68px fijo — ahora crece para ocupar el espacio vacío de la tarjeta */
-  min-height:130px; /* CORREGIDO: antes 68px — tarjeta más alta a pedido, para que el gráfico se vea con más presencia */
+/* NUEVO: el scroll horizontal queda contenido SOLO en esta franja del
+   gráfico — el resto de la pantalla nunca se desplaza de lado. */
+.ggm-chart-scroll{
   overflow-x:auto;
   scrollbar-width:none;
   padding-bottom:2px;
 }
-.grafico-ganancias-barras::-webkit-scrollbar{ display:none; }
+.ggm-chart-scroll::-webkit-scrollbar{ display:none; }
+.grafico-ganancias-barras{
+  display:flex;
+  align-items:flex-end;
+  gap:9px;
+  height:125px;
+  min-width:100%;
+  width:max-content;
+}
 .grafico-ganancias-barra-col{
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:flex-end;
   flex:0 0 auto;
-  width:16px;
+  width:20px;
   height:100%;
   gap:5px;
   cursor:pointer;
 }
-.grafico-ganancias-barra{
-  width:9px;
-  border-radius:4px 4px 0 0;
-  background:#22C55E;
-  min-height:3px;
-  transition:background .15s ease;
+.ggm-dia-barras{
+  display:flex;
+  align-items:flex-end;
+  gap:2.5px;
+  height:100%;
 }
-.grafico-ganancias-barra-col.activa .grafico-ganancias-barra{ background:var(--primary); }
-.grafico-ganancias-barra-col.negativa .grafico-ganancias-barra{ background:#F0A0A0; }
-.grafico-ganancias-barra-col.negativa.activa .grafico-ganancias-barra{ background:var(--danger); }
+.ggm-barra{
+  width:7px;
+  border-radius:3px 3px 0 0;
+  min-height:3px;
+  transition:height .3s cubic-bezier(.22,1,.36,1), background .15s ease;
+}
+.ggm-barra.verde{ background:#8CE0AE; }
+.ggm-barra.azul{ background:#AFC7F2; }
+.grafico-ganancias-barra-col.activa .ggm-barra.verde{ background:var(--success); }
+.grafico-ganancias-barra-col.activa .ggm-barra.azul{ background:#4C7EE8; }
 .grafico-ganancias-barra-dia{ font-size:9px; color:var(--text-secondary); font-weight:500; }
 .grafico-ganancias-barra-col.hoy .grafico-ganancias-barra-dia{ color:var(--primary); font-weight:700; }
+
+/* Modos agrupados (semanal/quincenal/mensual) — barras más anchas */
+.grafico-ganancias-barra-col.ggm-ancha{ width:52px; }
+.grafico-ganancias-barra-col.ggm-ancha .ggm-barra{ width:20px; border-radius:5px 5px 0 0; }
+
+/* NUEVO: franja inferior con la diferencia y un mensaje contextual */
+.ggm-resumen-inferior{
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid var(--border);
+}
+.ggm-resumen-inferior-fila{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.ggm-resumen-inferior-label{ font-size:11px; color:var(--text-secondary); font-weight:600; margin-bottom:2px; }
+.ggm-resumen-inferior-pct{ font-size:14px; font-weight:800; }
+.ggm-resumen-inferior-pct.positiva{ color:var(--success); }
+.ggm-resumen-inferior-pct.negativa{ color:var(--danger); }
+.ggm-resumen-inferior-pct.neutra{ color:var(--text-secondary); }
+.ggm-resumen-inferior-diff{ font-size:14px; font-weight:800; color:var(--text); }
+.ggm-resumen-inferior-diff.positiva{ color:var(--success); }
+.ggm-resumen-inferior-diff.negativa{ color:var(--danger); }
+.ggm-resumen-inferior-mensaje{ font-size:12px; color:var(--text-secondary); font-weight:500; margin-top:8px; text-align:center; }
 
 /* CAMBIO: barras HORIZONTALES (estilo hoja de cálculo) — cada fila es un
    día, con el valor de ganancia mostrado siempre al final de su barra,
@@ -1938,6 +2029,125 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   margin-top:6px; padding-top:8px; font-size:12.5px; color:var(--text-secondary); font-weight:600;
 }
 .mdp-total span:last-child{ color:var(--text); font-weight:700; font-size:14px; }
+
+/* NUEVO: "Ganancias: este mes vs. mes pasado" */
+.comparativo-ganancias-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:16px;
+}
+.comparativo-ganancias-icono{
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  background:var(--primary-light);
+  color:var(--primary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.comparativo-ganancias-icono svg{ width:18px; height:18px; stroke:currentColor; }
+.comparativo-ganancias-subtitulo{
+  font-size:12.5px;
+  color:var(--text-secondary);
+  font-weight:500;
+  margin-top:1px;
+}
+.comparativo-ganancias-badge{
+  display:flex;
+  align-items:center;
+  gap:3px;
+  padding:5px 10px;
+  border-radius:var(--radius-full);
+  font-size:12.5px;
+  font-weight:700;
+  flex-shrink:0;
+  white-space:nowrap;
+}
+.comparativo-ganancias-badge svg{ width:12px; height:12px; }
+.comparativo-ganancias-badge.positiva{ background:var(--success-light); color:var(--success); }
+.comparativo-ganancias-badge.negativa{ background:var(--danger-light); color:var(--danger); }
+.comparativo-ganancias-badge.neutra{ background:var(--background); color:var(--text-secondary); }
+.comparativo-ganancias-badge.neutra svg{ display:none; }
+
+.comparativo-ganancias-columnas{
+  display:flex;
+  gap:16px;
+  margin-bottom:14px;
+}
+.comparativo-ganancias-col{ flex:1; min-width:0; }
+.comparativo-ganancias-col-label{
+  font-size:12px;
+  color:var(--text-secondary);
+  font-weight:600;
+  margin-bottom:3px;
+}
+.comparativo-ganancias-col-valor{
+  font-size:17px;
+  font-weight:800;
+  color:var(--text);
+  letter-spacing:-0.3px;
+  margin-bottom:7px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.comparativo-ganancias-barra-track{
+  width:100%;
+  height:7px;
+  background:var(--background);
+  border-radius:var(--radius-full);
+  overflow:hidden;
+}
+.comparativo-ganancias-barra-fill{
+  height:100%;
+  border-radius:var(--radius-full);
+  transition:width .3s ease;
+}
+.comparativo-ganancias-barra-fill.verde{ background:var(--success); }
+.comparativo-ganancias-barra-fill.azul{ background:#4C7EE8; }
+
+.comparativo-ganancias-resumen{
+  border-top:1px solid var(--border);
+  padding-top:12px;
+}
+.comparativo-ganancias-resumen-fila{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.comparativo-ganancias-resumen-cifras{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  font-weight:700;
+  font-size:14.5px;
+  color:var(--text);
+  min-width:0;
+}
+.comparativo-ganancias-resumen-cifras svg{ width:15px; height:15px; flex-shrink:0; }
+.comparativo-ganancias-resumen-cifras.positiva{ color:var(--success); }
+.comparativo-ganancias-resumen-cifras.negativa{ color:var(--danger); }
+.comparativo-ganancias-resumen-cifras.neutra{ color:var(--text-secondary); }
+.comparativo-ganancias-resumen-cifras.neutra svg{ display:none; }
+.comparativo-ganancias-resumen-pct{
+  font-size:13.5px;
+  font-weight:700;
+  flex-shrink:0;
+}
+.comparativo-ganancias-resumen-pct.positiva{ color:var(--success); }
+.comparativo-ganancias-resumen-pct.negativa{ color:var(--danger); }
+.comparativo-ganancias-resumen-pct.neutra{ color:var(--text-secondary); }
+.comparativo-ganancias-resumen-texto{
+  font-size:12.5px;
+  color:var(--text-secondary);
+  font-weight:500;
+  margin-top:3px;
+}
 
 .loan-detail-progress{ margin-top:4px; }
 .loan-detail-progress-header{
@@ -4482,7 +4692,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
        dashboard. Los IDs de Medios de Pago se mantienen (ya los usa
        actualizarMediosPagoDashboard), así que ese JS no cambió.
        ========================================================== -->
-  <div class="card" style="padding:20px 18px; margin:0 14px; position:relative;">
+  <div class="card" id="tarjeta-total-prestado-recaudado" style="padding:20px 18px; margin:0 14px; position:relative;">
     <button type="button" class="info-tarjeta-btn" data-info-titulo="Total Prestado y Recaudado" data-info-texto="Total Prestado: la suma de los créditos nuevos otorgados en el período seleccionado (tocá el monto para ver a quién se le prestó). Total Recaudado: la suma de todos los abonos cobrados (efectivo + transferencia) en ese mismo período. Balance: Total Recaudado menos Total Prestado — en verde si recaudaste más de lo que prestaste en el período, en rojo si prestaste más de lo que recaudaste.">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
     </button>
@@ -4533,14 +4743,70 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   </div>
 
   <!-- ==========================================================
-       NUEVO: GRÁFICO DE GANANCIAS DEL MES (barras por día)
-       Reutiliza la misma fórmula de la tarjeta "Ganancias" de arriba
-       (interés cobrado + mora cobrada), desglosada día por día del
-       mes elegido. Sin librerías externas — barras simples con CSS.
+       NUEVO: "Ganancias: este mes vs. mes pasado" — comparativo
+       mensual. Reutiliza EXACTAMENTE la misma fórmula de la tarjeta
+       "Ganancias" de arriba (interesCobradoHoyTotal + moraCobradaTotal),
+       solo que en vez del período de las pestañas Hoy/Ayer/Semana/Mes,
+       usa el mes calendario actual y el mes calendario anterior — y
+       respeta el mismo filtro de ruta ya activo en Inicio. No duplica
+       ningún cálculo de negocio nuevo.
+       ========================================================== -->
+  <div class="card" id="tarjeta-comparativo-ganancias" style="padding:16px 16px 14px; margin:9px 14px 0;">
+    <div class="comparativo-ganancias-header">
+      <div style="display:flex; align-items:flex-start; gap:10px;">
+        <div class="comparativo-ganancias-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        </div>
+        <div>
+          <div class="section-title" style="margin:0;">Ganancias</div>
+          <div class="comparativo-ganancias-subtitulo">Este mes vs. mes pasado</div>
+        </div>
+      </div>
+      <div class="comparativo-ganancias-badge" id="comparativo-ganancias-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="comparativo-ganancias-badge-flecha"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+        <span id="comparativo-ganancias-badge-texto">0,00%</span>
+      </div>
+    </div>
+
+    <div class="comparativo-ganancias-columnas">
+      <div class="comparativo-ganancias-col">
+        <div class="comparativo-ganancias-col-label">Este mes</div>
+        <div class="comparativo-ganancias-col-valor" id="comparativo-ganancias-este-mes">$0</div>
+        <div class="comparativo-ganancias-barra-track"><div class="comparativo-ganancias-barra-fill verde" id="comparativo-ganancias-barra-este" style="width:0%;"></div></div>
+      </div>
+      <div class="comparativo-ganancias-col">
+        <div class="comparativo-ganancias-col-label">Mes pasado</div>
+        <div class="comparativo-ganancias-col-valor" id="comparativo-ganancias-mes-pasado">$0</div>
+        <div class="comparativo-ganancias-barra-track"><div class="comparativo-ganancias-barra-fill azul" id="comparativo-ganancias-barra-pasado" style="width:0%;"></div></div>
+      </div>
+    </div>
+
+    <div class="comparativo-ganancias-resumen">
+      <div class="comparativo-ganancias-resumen-fila">
+        <div class="comparativo-ganancias-resumen-cifras" id="comparativo-ganancias-resumen-cifras">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="comparativo-ganancias-resumen-flecha"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+          <span id="comparativo-ganancias-diferencia">$0</span>
+        </div>
+        <span class="comparativo-ganancias-resumen-pct" id="comparativo-ganancias-resumen-pct">0,00%</span>
+      </div>
+      <div class="comparativo-ganancias-resumen-texto" id="comparativo-ganancias-texto">Las ganancias se mantienen iguales</div>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       REDISEÑADO — "Ganancias del Mes": ahora compara, día por día,
+       este mes contra el mes calendario pasado (antes solo mostraba
+       una barra por día del mes elegido). Reutiliza EXACTAMENTE la
+       misma fórmula de la tarjeta "Ganancias" de arriba (interés
+       cobrado + mora cobrada) y respeta el mismo filtro de ruta activo
+       en Inicio. Sin librerías externas — barras simples con CSS.
        ========================================================== -->
   <div class="card" id="tarjeta-grafico-ganancias" style="padding:16px 16px 16px;">
     <div class="grafico-ganancias-header">
-      <div class="section-title" style="margin:0;">Ganancias del Mes</div>
+      <div>
+        <div class="section-title" style="margin:0;">Ganancias del Mes</div>
+        <div class="ggm-subtitulo">Evolución diaria de tus ganancias</div>
+      </div>
       <div class="grafico-ganancias-selector-mes">
         <button type="button" id="btn-grafico-mes-anterior" aria-label="Mes anterior">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -4551,8 +4817,59 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         </button>
       </div>
     </div>
-    <div class="grafico-ganancias-dia-seleccionado" id="grafico-dia-seleccionado">Toca una barra para ver el total de ese día</div>
-    <div class="grafico-ganancias-barras" id="grafico-ganancias-barras"></div>
+
+    <div class="ggm-resumen-fila">
+      <div class="ggm-resumen-item">
+        <div class="ggm-resumen-label">Total del mes</div>
+        <div class="ggm-resumen-valor" id="ggm-total-mes">$0</div>
+      </div>
+      <div class="ggm-resumen-item">
+        <div class="ggm-resumen-label">Promedio diario</div>
+        <div class="ggm-resumen-valor" id="ggm-promedio-diario">$0</div>
+      </div>
+      <div class="ggm-resumen-item">
+        <div class="ggm-resumen-label">Mejor día</div>
+        <div class="ggm-resumen-valor" id="ggm-mejor-dia">$0</div>
+        <div class="ggm-resumen-sub" id="ggm-mejor-dia-fecha">—</div>
+      </div>
+    </div>
+
+    <div class="ggm-badge-fila">
+      <div class="ggm-leyenda">
+        <span class="ggm-leyenda-item"><span class="ggm-dot verde"></span>Este mes</span>
+        <span class="ggm-leyenda-item"><span class="ggm-dot azul"></span>Mes pasado</span>
+      </div>
+      <div class="comparativo-ganancias-badge" id="ggm-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="ggm-badge-flecha"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+        <span id="ggm-badge-texto">0,00%</span>
+      </div>
+    </div>
+
+    <div class="ggm-modos" id="ggm-modos">
+      <button type="button" class="ggm-modo-btn activo" data-modo="diario">Diario</button>
+      <button type="button" class="ggm-modo-btn" data-modo="semanal">Semanal</button>
+      <button type="button" class="ggm-modo-btn" data-modo="quincenal">Quincenal</button>
+      <button type="button" class="ggm-modo-btn" data-modo="mensual">Mensual</button>
+    </div>
+
+    <div class="grafico-ganancias-dia-seleccionado" id="grafico-dia-seleccionado">Toca una barra para ver el detalle</div>
+    <div class="ggm-chart-scroll">
+      <div class="grafico-ganancias-barras" id="grafico-ganancias-barras"></div>
+    </div>
+
+    <div class="ggm-resumen-inferior">
+      <div class="ggm-resumen-inferior-fila">
+        <div>
+          <div class="ggm-resumen-inferior-label">Ganancia total</div>
+          <div class="ggm-resumen-inferior-pct" id="ggm-resumen-inferior-pct">0,00% vs. mes pasado</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="ggm-resumen-inferior-label">Diferencia</div>
+          <div class="ggm-resumen-inferior-diff" id="ggm-resumen-inferior-diff">$0</div>
+        </div>
+      </div>
+      <div class="ggm-resumen-inferior-mensaje" id="ggm-resumen-inferior-mensaje">Tus ganancias se mantienen estables.</div>
+    </div>
   </div>
 
   <!-- NUEVO: "Capital en Calle" — tarjeta pequeña con el total pendiente
@@ -15688,7 +16005,113 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(typeof renderizarTopRutasCapital === 'function') renderizarTopRutasCapital(); // NUEVO: mantiene la lista de Capital por Ruta sincronizada
     if(typeof renderizarCapitalEnCalle === 'function') renderizarCapitalEnCalle(); // NUEVO: mantiene la tarjeta de Capital en Calle sincronizada
     actualizarMediosPagoDashboard(); // NUEVO: mantiene las tarjetas de Total Prestado/Recaudado y Medios de Pago sincronizadas
-    sincronizarAlturaMediosPagoYGanancias(); // NUEVO: iguala el alto de "Medios de Pago" y "Ganancias del Mes"
+    renderizarComparativoGananciasMensual(); // NUEVO: mantiene "Este mes vs. mes pasado" sincronizado
+    // CORREGIDO: se quitó sincronizarAlturaMediosPagoYGanancias() — forzaba
+    // que "Medios de Pago" y "Ganancias del Mes" tuvieran la MISMA altura,
+    // lo cual dejaba un hueco vacío grande en "Medios de Pago" ahora que
+    // "Ganancias del Mes" es un componente mucho más alto y completo.
+    // Cada tarjeta ahora toma la altura que necesite su propio contenido.
+  }
+
+  // ==========================================================
+  // NUEVO — "Ganancias: este mes vs. mes pasado". Reutiliza tal cual la
+  // MISMA fórmula de la tarjeta "Ganancias" de arriba (interés cobrado +
+  // mora cobrada) — solo que en vez de tomar el período de las pestañas
+  // Hoy/Ayer/Semana/Mes, suma por mes calendario (actual y anterior).
+  // Respeta el mismo filtro de ruta ya activo (rutasFiltroActivas).
+  // ==========================================================
+
+  // Ganancias (interés + mora) entre dos fechas cualquiera, respetando
+  // el filtro de ruta activo — mismo criterio exacto que
+  // interesCobradoHoyTotal()/moraCobradaTotal(), solo que con un rango
+  // de fechas propio en vez del de las pestañas de período.
+  function gananciasEnRangoFechas(inicioMs, finMs){
+    let total = 0;
+    prestamosGuardados.forEach(prestamo=>{
+      const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId);
+      if(rutasFiltroActivas && !(cliente && rutasFiltroActivas.has(cliente.ruta || ''))) return;
+      pagosDe(prestamo).forEach(pago=>{
+        const t = new Date(pago.fecha).getTime();
+        if(t < inicioMs || t > finMs) return;
+        total += (pago.interesPagado || 0);
+        if(pago.aplicarA === 'mora') total += (pago.monto || 0);
+      });
+    });
+    return total;
+  }
+
+  function renderizarComparativoGananciasMensual(){
+    const elEsteMes = document.getElementById('comparativo-ganancias-este-mes');
+    if(!elEsteMes) return; // pantalla todavía no montada
+
+    const ahora = new Date();
+    const inicioEsteMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1, 0, 0, 0, 0).getTime();
+    const inicioMesPasado = new Date(ahora.getFullYear(), ahora.getMonth() - 1, 1, 0, 0, 0, 0).getTime();
+    const finMesPasado = new Date(ahora.getFullYear(), ahora.getMonth(), 0, 23, 59, 59, 999).getTime(); // día 0 del mes actual = último día del mes anterior
+
+    const esteMes = gananciasEnRangoFechas(inicioEsteMes, ahora.getTime());
+    const mesPasado = gananciasEnRangoFechas(inicioMesPasado, finMesPasado);
+    const diferencia = esteMes - mesPasado;
+
+    // ---------- Valores y barras ----------
+    document.getElementById('comparativo-ganancias-este-mes').textContent = formatearPesos(esteMes);
+    document.getElementById('comparativo-ganancias-mes-pasado').textContent = formatearPesos(mesPasado);
+    const mayorValor = Math.max(esteMes, mesPasado, 1); // evita división por 0 en las barras
+    document.getElementById('comparativo-ganancias-barra-este').style.width = Math.min(100, (esteMes / mayorValor) * 100) + '%';
+    document.getElementById('comparativo-ganancias-barra-pasado').style.width = Math.min(100, (mesPasado / mayorValor) * 100) + '%';
+
+    // ---------- Variación (con los 3 casos especiales pedidos) ----------
+    const badge = document.getElementById('comparativo-ganancias-badge');
+    const badgeTexto = document.getElementById('comparativo-ganancias-badge-texto');
+    const badgeFlecha = document.getElementById('comparativo-ganancias-badge-flecha');
+    const resumenCifras = document.getElementById('comparativo-ganancias-resumen-cifras');
+    const resumenFlecha = document.getElementById('comparativo-ganancias-resumen-flecha');
+    const resumenPct = document.getElementById('comparativo-ganancias-resumen-pct');
+    const resumenTexto = document.getElementById('comparativo-ganancias-texto');
+    const elDiferencia = document.getElementById('comparativo-ganancias-diferencia');
+
+    let clase, textoPct, textoResumen, flechaSvg;
+    const FLECHA_ARRIBA = '<line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline>';
+    const FLECHA_ABAJO = '<line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline>';
+
+    if(mesPasado === 0){
+      // NUEVO: pedido explícito — nunca mostrar Infinity/NaN cuando el
+      // mes pasado no tiene datos con los que comparar.
+      clase = 'neutra';
+      textoPct = 'Sin comparación';
+      textoResumen = esteMes > 0 ? 'No hay datos del mes pasado para comparar' : 'Todavía no hay ganancias registradas';
+      flechaSvg = FLECHA_ARRIBA;
+    }else{
+      const pct = (diferencia / mesPasado) * 100;
+      const pctRedondeado = Math.round(pct * 100) / 100;
+      if(Math.abs(pctRedondeado) < 0.005){
+        clase = 'neutra';
+        textoPct = '0,00%';
+        textoResumen = 'Las ganancias se mantienen iguales';
+        flechaSvg = FLECHA_ARRIBA;
+      }else if(pct > 0){
+        clase = 'positiva';
+        textoPct = '+' + pctRedondeado.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + '%';
+        textoResumen = 'Mayor ganancia que el mes pasado';
+        flechaSvg = FLECHA_ARRIBA;
+      }else{
+        clase = 'negativa';
+        textoPct = pctRedondeado.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + '%';
+        textoResumen = 'Menor ganancia que el mes pasado';
+        flechaSvg = FLECHA_ABAJO;
+      }
+    }
+
+    badge.className = 'comparativo-ganancias-badge ' + clase;
+    badgeTexto.textContent = textoPct;
+    badgeFlecha.innerHTML = flechaSvg;
+
+    resumenCifras.className = 'comparativo-ganancias-resumen-cifras ' + clase;
+    resumenFlecha.innerHTML = flechaSvg;
+    elDiferencia.textContent = (diferencia > 0 ? '+' : diferencia < 0 ? '-' : '') + formatearPesos(Math.abs(diferencia));
+    resumenPct.className = 'comparativo-ganancias-resumen-pct ' + clase;
+    resumenPct.textContent = textoPct;
+    resumenTexto.textContent = textoResumen;
   }
 
   // NUEVO — Iguala el ALTO de "Medios de Pago" y "Ganancias del Mes" (el
@@ -15700,30 +16123,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // tenga más contenido en cada momento, siempre terminan exactamente
   // iguales. No toca contenido, texto, íconos, colores, bordes ni
   // sombras de ninguna de las dos — solo su alto.
-  function sincronizarAlturaMediosPagoYGanancias(){
-    requestAnimationFrame(()=>{
-      const tarjetaMedios = document.getElementById('tarjeta-medios-pago-inicio');
-      const tarjetaGanancias = document.getElementById('tarjeta-grafico-ganancias');
-      if(!tarjetaMedios || !tarjetaGanancias) return;
-      // Se limpia el min-height antes de medir, para no arrastrar un
-      // valor viejo más alto de una medición anterior.
-      tarjetaMedios.style.minHeight = '';
-      tarjetaGanancias.style.minHeight = '';
-      const alturaMayor = Math.max(tarjetaMedios.offsetHeight, tarjetaGanancias.offsetHeight);
-      tarjetaMedios.style.minHeight = alturaMayor + 'px';
-      tarjetaGanancias.style.minHeight = alturaMayor + 'px';
-      // CORREGIDO: este cambio de alto mueve el alto real del
-      // contenedor de barras — se recalculan aquí para que sigan
-      // coincidiendo exactamente con el alto final ya asentado.
-      actualizarAlturaBarrasGanancias();
-    });
-  }
-  // Respaldo: si la ventana cambia de tamaño (rotación, resize), reajusta.
-  let temporizadorResizeMediosGanancias = null;
-  window.addEventListener('resize', ()=>{
-    clearTimeout(temporizadorResizeMediosGanancias);
-    temporizadorResizeMediosGanancias = setTimeout(sincronizarAlturaMediosPagoYGanancias, 200);
-  });
+  // CORREGIDO: se retiró por completo la sincronización forzada de
+  // altura entre "Medios de Pago" y "Ganancias del Mes" (antes vivía
+  // aquí) — con el nuevo diseño mucho más alto y completo de "Ganancias
+  // del Mes", esa igualación dejaba un hueco vacío grande en "Medios de
+  // Pago". Ahora cada tarjeta usa la altura natural de su contenido.
 
   // ==========================================================
   // NUEVO — Tarjetas "Total Prestado / Total Recaudado" y "Medios de
@@ -15849,7 +16253,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   mesGraficoGanancias.setHours(0, 0, 0, 0);
 
   // Ganancia (interés + mora) de cada día del mes de referencia — recorre
-  // los pagos ya guardados, sin crear ningún dato ni total nuevo.
+  // los pagos ya guardados, respetando el mismo filtro de ruta activo en
+  // Inicio (rutasFiltroActivas), sin crear ningún dato ni total nuevo.
   function gananciasPorDiaDelMes(fechaRef){
     const anio = fechaRef.getFullYear();
     const mes = fechaRef.getMonth();
@@ -15857,10 +16262,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const totalesPorDia = new Array(diasEnMes + 1).fill(0); // índice 1..diasEnMes
 
     prestamosGuardados.forEach(prestamo=>{
+      const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId);
+      if(rutasFiltroActivas && !(cliente && rutasFiltroActivas.has(cliente.ruta || ''))) return;
       pagosDe(prestamo).forEach(pago=>{
         const f = new Date(pago.fecha);
         if(f.getFullYear() === anio && f.getMonth() === mes){
-          const valor = pago.aplicarA === 'mora' ? (pago.monto || 0) : (pago.interesPagado || 0);
+          const valor = (pago.interesPagado || 0) + (pago.aplicarA === 'mora' ? (pago.monto || 0) : 0);
           totalesPorDia[f.getDate()] += valor;
         }
       });
@@ -15871,85 +16278,160 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     return resultado;
   }
 
+  function totalGananciasLista(datosDiarios){
+    return datosDiarios.reduce((s, d) => s + d.total, 0);
+  }
+
+  // Agrupa la lista diaria según el modo elegido (Diario/Semanal/
+  // Quincenal/Mensual) — reutiliza la MISMA lista diaria como única
+  // fuente de datos, solo cambia cómo se suma y se etiqueta.
+  function agruparDatosGraficoGanancias(datosDiarios, modo){
+    if(modo === 'semanal'){
+      const grupos = [];
+      for(let i = 0; i < datosDiarios.length; i += 7){
+        const trozo = datosDiarios.slice(i, i + 7);
+        grupos.push({
+          etiqueta: trozo.length > 1 ? (trozo[0].dia + '-' + trozo[trozo.length - 1].dia) : String(trozo[0].dia),
+          total: trozo.reduce((s, d) => s + d.total, 0)
+        });
+      }
+      return grupos;
+    }
+    if(modo === 'quincenal'){
+      const primera = datosDiarios.filter(d => d.dia <= 15);
+      const segunda = datosDiarios.filter(d => d.dia > 15);
+      return [
+        { etiqueta: '1-15', total: primera.reduce((s, d) => s + d.total, 0) },
+        { etiqueta: '16-' + datosDiarios.length, total: segunda.reduce((s, d) => s + d.total, 0) }
+      ];
+    }
+    if(modo === 'mensual'){
+      return [{ etiqueta: 'Todo el mes', total: datosDiarios.reduce((s, d) => s + d.total, 0) }];
+    }
+    // 'diario' (por defecto)
+    return datosDiarios.map(d => ({ etiqueta: String(d.dia), total: d.total, dia: d.dia }));
+  }
+
+  let modoGraficoGanancias = 'diario';
+  const FLECHA_ARRIBA_GGM = '<line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline>';
+  const FLECHA_ABAJO_GGM = '<line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline>';
+
   function renderizarGraficoGanancias(){
-    const datos = gananciasPorDiaDelMes(mesGraficoGanancias);
-    const maxValor = Math.max(1, ...datos.map(d => Math.abs(d.total)));
+    const datosEsteMes = gananciasPorDiaDelMes(mesGraficoGanancias);
+    // NUEVO: "mes pasado" siempre es el mes calendario inmediatamente
+    // anterior al que se está viendo en el selector (no necesariamente
+    // el mes anterior a HOY) — si se navega a agosto, compara contra
+    // julio; JS resuelve solo el cambio de año (mes -1 en enero = 0,
+    // que Date interpreta correctamente como diciembre del año previo).
+    const mesPasadoRef = new Date(mesGraficoGanancias.getFullYear(), mesGraficoGanancias.getMonth() - 1, 1);
+    const datosMesPasado = gananciasPorDiaDelMes(mesPasadoRef);
+
     const hoy = new Date();
     const esMesActual = hoy.getFullYear() === mesGraficoGanancias.getFullYear() && hoy.getMonth() === mesGraficoGanancias.getMonth();
 
     document.getElementById('grafico-mes-actual').textContent = NOMBRES_MES_GRAFICO[mesGraficoGanancias.getMonth()] + ' ' + mesGraficoGanancias.getFullYear();
-    document.getElementById('grafico-dia-seleccionado').textContent = 'Toca una barra para ver el total de ese día';
+
+    const totalEsteMes = totalGananciasLista(datosEsteMes);
+    const totalMesPasado = totalGananciasLista(datosMesPasado);
+    const diferencia = totalEsteMes - totalMesPasado;
+
+    // ---------- Resumen superior: Total del mes / Promedio diario / Mejor día ----------
+    document.getElementById('ggm-total-mes').textContent = formatearPesos(totalEsteMes);
+    const promedioDiario = datosEsteMes.length > 0 ? totalEsteMes / datosEsteMes.length : 0;
+    document.getElementById('ggm-promedio-diario').textContent = formatearPesos(Math.round(promedioDiario));
+
+    let mejorDia = datosEsteMes[0] || { dia: 1, total: 0 };
+    datosEsteMes.forEach(d => { if(d.total > mejorDia.total) mejorDia = d; });
+    document.getElementById('ggm-mejor-dia').textContent = formatearPesos(mejorDia.total);
+    document.getElementById('ggm-mejor-dia-fecha').textContent = mejorDia.total > 0 ? ('Día ' + mejorDia.dia) : '—';
+
+    // ---------- Variación vs. mes pasado (con los 3 casos especiales pedidos) ----------
+    let clase, textoPct, mensaje;
+    if(totalMesPasado === 0){
+      // NUEVO: pedido explícito — nunca NaN/Infinity/undefined cuando el
+      // mes pasado no tiene datos con qué comparar.
+      clase = 'neutra';
+      textoPct = 'No disponible';
+      mensaje = totalEsteMes > 0 ? 'No hay datos del mes pasado para comparar.' : 'Todavía no hay ganancias registradas este mes.';
+    }else{
+      const pct = (diferencia / totalMesPasado) * 100;
+      const pctRedondeado = Math.round(pct * 100) / 100;
+      if(Math.abs(pctRedondeado) < 0.005){
+        clase = 'neutra';
+        textoPct = '0,00%';
+        mensaje = 'Tus ganancias se mantienen estables.';
+      }else if(pct > 0){
+        clase = 'positiva';
+        textoPct = '+' + pctRedondeado.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + '%';
+        mensaje = '¡Excelente! Tus ganancias superan las del mes pasado.';
+      }else{
+        clase = 'negativa';
+        textoPct = pctRedondeado.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + '%';
+        mensaje = 'Las ganancias están por debajo del mes pasado.';
+      }
+    }
+
+    const badge = document.getElementById('ggm-badge');
+    badge.className = 'comparativo-ganancias-badge ' + clase;
+    document.getElementById('ggm-badge-texto').textContent = textoPct;
+    const badgeFlecha = document.getElementById('ggm-badge-flecha');
+    badgeFlecha.innerHTML = clase === 'negativa' ? FLECHA_ABAJO_GGM : FLECHA_ARRIBA_GGM;
+    badgeFlecha.style.display = (clase === 'neutra') ? 'none' : '';
+
+    const pctInf = document.getElementById('ggm-resumen-inferior-pct');
+    pctInf.className = 'ggm-resumen-inferior-pct ' + clase;
+    pctInf.textContent = textoPct + (totalMesPasado === 0 ? '' : ' vs. mes pasado');
+
+    const diffInf = document.getElementById('ggm-resumen-inferior-diff');
+    diffInf.className = 'ggm-resumen-inferior-diff ' + clase;
+    diffInf.textContent = (diferencia > 0 ? '+' : diferencia < 0 ? '-' : '') + formatearPesos(Math.abs(diferencia));
+
+    document.getElementById('ggm-resumen-inferior-mensaje').textContent = mensaje;
+
+    // ---------- Gráfico de barras comparativo (según el modo elegido) ----------
+    document.getElementById('grafico-dia-seleccionado').textContent = 'Toca una barra para ver el detalle';
+
+    const grupoEsteMes = agruparDatosGraficoGanancias(datosEsteMes, modoGraficoGanancias);
+    const grupoMesPasado = agruparDatosGraficoGanancias(datosMesPasado, modoGraficoGanancias);
+    const maxValor = Math.max(1, ...grupoEsteMes.map(g => g.total), ...grupoMesPasado.map(g => g.total));
+    const esAncha = modoGraficoGanancias !== 'diario';
 
     const contenedor = document.getElementById('grafico-ganancias-barras');
     contenedor.innerHTML = '';
 
-    datos.forEach(d=>{
-      const alturaPorcentaje = Math.max(4, (Math.abs(d.total) / maxValor) * 100);
+    grupoEsteMes.forEach((g, indice)=>{
+      const gPasado = grupoMesPasado[indice] || { total: 0 };
+      const alturaEste = Math.max(3, (g.total / maxValor) * 100);
+      const alturaPasado = Math.max(3, (gPasado.total / maxValor) * 100);
+
       const col = document.createElement('div');
-      col.className = 'grafico-ganancias-barra-col';
-      if(esMesActual && d.dia === hoy.getDate()) col.classList.add('hoy');
+      col.className = 'grafico-ganancias-barra-col' + (esAncha ? ' ggm-ancha' : '');
+      if(!esAncha && esMesActual && g.dia === hoy.getDate()) col.classList.add('hoy');
+
       col.innerHTML = `
-        <div class="grafico-ganancias-barra" data-porcentaje="${alturaPorcentaje}"></div>
-        <div class="grafico-ganancias-barra-dia">${d.dia}</div>
+        <div class="ggm-dia-barras">
+          <div class="ggm-barra verde" style="height:${alturaEste}%;"></div>
+          <div class="ggm-barra azul" style="height:${alturaPasado}%;"></div>
+        </div>
+        <div class="grafico-ganancias-barra-dia">${g.etiqueta}</div>
       `;
       col.addEventListener('click', ()=>{
         contenedor.querySelectorAll('.grafico-ganancias-barra-col').forEach(c => c.classList.remove('activa'));
         col.classList.add('activa');
-        const fechaTexto = d.dia + ' de ' + NOMBRES_MES_GRAFICO[mesGraficoGanancias.getMonth()];
-        document.getElementById('grafico-dia-seleccionado').textContent = fechaTexto + ': ' + formatearPesos(d.total);
+        const diff = g.total - gPasado.total;
+        const signo = diff > 0 ? '+' : diff < 0 ? '-' : '';
+        const etiquetaTexto = modoGraficoGanancias === 'diario' ? ('Día ' + g.etiqueta) : g.etiqueta;
+        document.getElementById('grafico-dia-seleccionado').textContent =
+          etiquetaTexto + ' — Este mes: ' + formatearPesos(g.total) + ' · Mes pasado: ' + formatearPesos(gPasado.total) + ' · Diferencia: ' + signo + formatearPesos(Math.abs(diff));
       });
       contenedor.appendChild(col);
     });
 
-    // CORREGIDO (bug: no se veían las barras indicadoras): antes la
-    // barra usaba height EN PORCENTAJE (%), pero el contenedor obtiene
-    // su alto real vía flex:1 (para igualar el alto de la tarjeta
-    // "Medios de Pago") — un alto resuelto por flex-grow no cuenta como
-    // "alto definido" para que el navegador calcule porcentajes de sus
-    // hijos, así que el % nunca se aplicaba y TODAS las barras caían al
-    // mínimo de 3px (.grafico-ganancias-barra{ min-height:3px }) sin
-    // importar su valor real. Ahora se mide el alto YA RENDERIZADO del
-    // contenedor (en píxeles) y se calcula cada barra a partir de eso.
-    actualizarAlturaBarrasGanancias();
-
-    // Deja visible el día de hoy al abrir el mes actual, sin necesidad de scroll manual
-    if(esMesActual){
+    // Deja visible el día de hoy al abrir el mes actual (solo en modo diario)
+    if(!esAncha && esMesActual){
       const colHoy = contenedor.querySelector('.grafico-ganancias-barra-col.hoy');
       if(colHoy) colHoy.scrollIntoView({ inline:'center', block:'nearest' });
     }
-  }
-
-  // NUEVO (corrección de bug): cuánto espacio en píxeles queda
-  // realmente disponible para la barra dentro de cada columna, después
-  // de descontar la etiqueta del día y su separador — medido en el DOM
-  // ya renderizado, no asumido como porcentaje CSS.
-  function alturaDisponibleBarraGanancias(){
-    const contenedor = document.getElementById('grafico-ganancias-barras');
-    if(!contenedor) return 0;
-    const colRef = contenedor.querySelector('.grafico-ganancias-barra-col');
-    let reserva = 21; // respaldo si todavía no hay ninguna columna para medir
-    if(colRef){
-      const etiqueta = colRef.querySelector('.grafico-ganancias-barra-dia');
-      if(etiqueta) reserva = etiqueta.offsetHeight + 5; // +5px del gap ya definido en el CSS
-    }
-    return Math.max(20, contenedor.clientHeight - reserva);
-  }
-
-  // NUEVO (corrección de bug): aplica la altura real en píxeles a cada
-  // barra ya dibujada, a partir de su porcentaje guardado en
-  // data-porcentaje. Se llama al construir el gráfico y también cada
-  // vez que la tarjeta cambia de alto (sincronizarAlturaMediosPagoYGanancias
-  // y el resize de ventana), para que las barras nunca queden
-  // desactualizadas frente al alto final ya asentado de la tarjeta.
-  function actualizarAlturaBarrasGanancias(){
-    const contenedor = document.getElementById('grafico-ganancias-barras');
-    if(!contenedor) return;
-    const disponible = alturaDisponibleBarraGanancias();
-    contenedor.querySelectorAll('.grafico-ganancias-barra').forEach(barra=>{
-      const porcentaje = parseFloat(barra.dataset.porcentaje || '0');
-      const alturaPx = Math.max(3, (porcentaje / 100) * disponible);
-      barra.style.height = alturaPx + 'px';
-    });
   }
 
   document.getElementById('btn-grafico-mes-anterior').addEventListener('click', ()=>{
@@ -15959,6 +16441,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   document.getElementById('btn-grafico-mes-siguiente').addEventListener('click', ()=>{
     mesGraficoGanancias.setMonth(mesGraficoGanancias.getMonth() + 1);
     renderizarGraficoGanancias();
+  });
+  document.querySelectorAll('#ggm-modos .ggm-modo-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      modoGraficoGanancias = btn.dataset.modo;
+      document.querySelectorAll('#ggm-modos .ggm-modo-btn').forEach(b => b.classList.toggle('activo', b === btn));
+      renderizarGraficoGanancias();
+    });
   });
 
   // ==========================================================
