@@ -14546,6 +14546,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     const pagos = pagosDe(prestamo).slice().sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
     const cuotasPagadasCount = (prestamo.plan || []).filter(c => estaCuotaPagada(prestamo, c.numero)).length;
+    // NUEVO — a pedido: 2 filas de resumen al final de la tabla. Reutilizan
+    // funciones YA existentes (nada de cálculos nuevos): totalAbonadoPrestamo
+    // ya suma interés+capital+abono SIN mora, y saldoPendientePrestamo ya
+    // resta ese mismo total (también sin mora) al total a pagar.
+    const abonoTotalHistorial = totalAbonadoPrestamo(prestamo);
+    const totalPendienteHistorial = saldoPendientePrestamo(prestamo);
 
     // ---- 1) Calcular el alto total del canvas ANTES de dibujar ----
     const altoHeader = 105;
@@ -14561,8 +14567,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const altoFilaTabla = 38;
     const altoTabla = 34 + altoEncabezadoTabla + Math.max(pagos.length, 1) * altoFilaTabla;
 
+    // NUEVO — a pedido: bloque de resumen ("Abono total" / "Total
+    // pendiente") FUERA de la tabla, debajo de ella — mismo estilo visual
+    // de 2 columnas que el bloque de información de arriba.
+    const altoResumenTotales = 74;
+
     const altoFooter = 56; // deja espacio para la línea de "cuotas pagadas" + pie
-    const altoTarjeta = altoHeader + altoBloqueInfo + altoTabla + altoFooter;
+    const altoTarjeta = altoHeader + altoBloqueInfo + altoTabla + altoResumenTotales + altoFooter;
     const altoCanvas = altoTarjeta + margen * 2;
 
     const canvas = document.createElement('canvas');
@@ -14704,7 +14715,24 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     }
     ctxTmp.font = '13px Arial, sans-serif'; // restablece el peso de fuente por si quedó en negrita
 
-    // ---- 6) Pie ----
+    // ---- 6) Resumen — "Abono total" y "Total pendiente", FUERA de la
+    // tabla (a pedido), con el mismo estilo de 2 columnas del bloque de
+    // información de arriba (etiqueta gris chica + valor grande debajo).
+    y += 30;
+    ctxTmp.fillStyle = '#7B8794';
+    ctxTmp.font = '13px Arial, sans-serif';
+    ctxTmp.fillText('Abono total', colIzqX, y);
+    ctxTmp.fillText('Total pendiente', colDerX, y);
+    ctxTmp.font = 'bold 20px Arial, sans-serif';
+    ctxTmp.fillStyle = '#151A23';
+    ctxTmp.fillText(formatearPesos(abonoTotalHistorial), colIzqX, y + 26);
+    ctxTmp.fillStyle = totalPendienteHistorial > 0 ? '#E54848' : '#22A559';
+    ctxTmp.fillText(formatearPesos(totalPendienteHistorial), colDerX, y + 26);
+    ctxTmp.font = '13px Arial, sans-serif';
+    ctxTmp.fillStyle = '#151A23';
+    y += 26;
+
+    // ---- 7) Pie ----
     y += 26;
     ctxTmp.font = '12.5px Arial, sans-serif';
     ctxTmp.fillStyle = '#7B8794';
