@@ -3979,6 +3979,17 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   opacity:1;
   transform:translateX(-50%) translateY(0);
 }
+/* NUEVO: flechita apuntadora, usada solo cuando el toast se ancla junto
+   a un botón específico (ver mostrarMensajeToast). */
+.toast-mensaje-flecha{
+  position:absolute;
+  top:100%;
+  transform:translateX(-50%);
+  width:0; height:0;
+  border-left:7px solid transparent;
+  border-right:7px solid transparent;
+  border-top:7px solid #151A23;
+}
 /* NUEVO: variante circular y compacta (solo ícono) — para cuando el botón
    se fusiona dentro de una fila de píldoras ya existente. */
 .btn-fecha-compacto{
@@ -9121,17 +9132,47 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }, { passive: false });
 
   // ---------- Mensaje flotante pequeño (toast) — reutilizable en toda la app ----------
+  // NUEVO: acepta un elemento de referencia opcional — si se pasa, el
+  // mensaje aparece justo encima de ese elemento (con flechita apuntando
+  // hacia él) en vez de ir siempre abajo centrado en la pantalla.
   let temporizadorToast = null;
-  function mostrarMensajeToast(texto){
+  function mostrarMensajeToast(texto, elementoAncla){
     let el = document.getElementById('toast-mensaje-global');
     if(!el){
       el = document.createElement('div');
       el.id = 'toast-mensaje-global';
       el.className = 'toast-mensaje';
+      el.innerHTML = '<span id="toast-mensaje-texto"></span><span class="toast-mensaje-flecha" id="toast-mensaje-flecha" style="display:none;"></span>';
       document.body.appendChild(el);
     }
-    el.textContent = texto;
-    el.classList.add('visible');
+    document.getElementById('toast-mensaje-texto').textContent = texto;
+    const flecha = document.getElementById('toast-mensaje-flecha');
+
+    if(elementoAncla){
+      const rect = elementoAncla.getBoundingClientRect();
+      el.style.left = '0px';
+      el.style.right = 'auto';
+      el.style.bottom = 'auto';
+      el.style.transform = 'none';
+      el.classList.add('visible'); // se agrega antes de medir, para que offsetWidth ya sea el real
+      const anchoToast = el.offsetWidth;
+      const centroBoton = rect.left + rect.width / 2;
+      const margen = 10;
+      const izquierdaClamp = Math.min(Math.max(centroBoton - anchoToast / 2, margen), window.innerWidth - anchoToast - margen);
+      el.style.left = izquierdaClamp + 'px';
+      el.style.top = (rect.top - el.offsetHeight - 12) + 'px';
+      flecha.style.display = 'block';
+      flecha.style.left = (centroBoton - izquierdaClamp) + 'px';
+    }else{
+      el.style.left = '50%';
+      el.style.right = 'auto';
+      el.style.top = 'auto';
+      el.style.bottom = '100px';
+      el.style.transform = 'translateX(-50%)';
+      flecha.style.display = 'none';
+      el.classList.add('visible');
+    }
+
     clearTimeout(temporizadorToast);
     temporizadorToast = setTimeout(()=> el.classList.remove('visible'), 2200);
   }
@@ -14287,7 +14328,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // NUEVO: "Bloquear por mora" — a pedido, impide registrar un nuevo
     // préstamo mientras el interruptor esté activo.
     if(clienteEnDetalle.bloqueadoPorMora){
-      mostrarMensajeToast('Cliente Bloqueado por mora');
+      mostrarMensajeToast('Cliente Bloqueado por mora', btnAbrirNuevoPrestamo);
       return;
     }
     // NUEVO: no se pueden crear préstamos nuevos para un cliente inhabilitado
