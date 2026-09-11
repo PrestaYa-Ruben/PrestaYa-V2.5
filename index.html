@@ -3144,6 +3144,18 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   font-weight:500;
   margin-top:2px;
 }
+/* NUEVO: "Puntualidad del pago" — píldora chica justo debajo del monto,
+   verde si fue anticipado/a tiempo, roja si fue tarde. */
+.pago-detalle-puntualidad{
+  display:inline-flex;
+  align-items:center;
+  font-size:13.5px;
+  font-weight:700;
+  letter-spacing:0.3px;
+  margin-top:6px; /* CORREGIDO: antes tenía padding/fondo/borde de píldora — a pedido, ahora es solo texto */
+}
+.pago-detalle-puntualidad.anticipado, .pago-detalle-puntualidad.puntual{ color:#15803D; }
+.pago-detalle-puntualidad.tarde{ color:var(--danger); }
 .pago-detalle-card hr.loan-divider{ width:100%; margin:16px 0; }
 .pago-detalle-fila{
   width:100%;
@@ -3882,18 +3894,21 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   height:20px;
   stroke:var(--text-secondary);
   flex-shrink:0;
-  transition:transform .2s ease;
+  transition:transform .32s cubic-bezier(.4,0,.2,1); /* CORREGIDO: antes .2s ease — terminaba de girar antes que el resto del despliegue, sentía descoordinado */
 }
 #btn-toggle-resumen-historico[aria-expanded="true"] .resumen-historico-chevron{ transform:rotate(180deg); }
 .resumen-historico-contenido{
   max-height:0;
   overflow:hidden;
-  transition:max-height .3s ease;
+  padding-top:0;
+  padding-bottom:0;
+  transition:max-height .32s cubic-bezier(.4,0,.2,1), opacity .32s cubic-bezier(.4,0,.2,1); /* CORREGIDO: antes max-height y opacity tenían duración/curva distintas entre sí (.38s con rebote vs .3s simple) — se sentían descoordinadas. Ahora ambas usan la misma duración y una curva estándar sin rebote, más natural para este tipo de animación. */
+  opacity:0;
 }
 .resumen-historico-contenido.abierto{
-  max-height:2000px;
   padding-top:16px;
   padding-bottom:4px;
+  opacity:1;
 }
 .resumen-historico-grid{
   display:grid;
@@ -3999,7 +4014,9 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   padding:5px 13px;
   border-radius:999px;
   margin:8px 0 2px 6px;
+  border:1px solid transparent; /* NUEVO: color real lo pone el JS según la ruta */
 }
+.cliente-nivel-badge svg{ width:13px; height:13px; stroke:currentColor; flex-shrink:0; } /* NUEVO: ícono de ruta, hereda el color de la insignia */
 .cliente-nivel-badge.nivel-nuevo{ background:rgba(245,158,11,0.12); color:#B45309; border:1px solid rgba(245,158,11,0.45); } /* CORREGIDO: a pedido — antes gris neutro, ahora ámbar/dorado con borde fino */
 .cliente-nivel-badge.nivel-bronce{ background:#F5E4D7; color:#9A5B26; }
 .cliente-nivel-badge.nivel-plata{ background:#E9EDF2; color:#5B6B80; }
@@ -5656,9 +5673,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <span class="cliente-estado-badge activo" id="cliente-estado-badge">
           <span class="dot"></span>ACTIVO
         </span>
-        <!-- NUEVO: "Nivel del Cliente" — insignia informativa, sube/baja
-             sola según el historial de pago (ver recalcularNivelCliente). -->
-        <span class="cliente-nivel-badge nivel-nuevo" id="cliente-nivel-badge">NUEVO</span>
+        <!-- CORREGIDO: a pedido, ya no muestra el nivel del cliente —
+             ahora muestra la ruta a la que pertenece (mismo color que
+             ya usa esa ruta en el resto del sistema). -->
+        <span class="cliente-nivel-badge" id="cliente-nivel-badge"><svg id="cliente-nivel-badge-icono" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 1.447-.894L9 7m0 13 6-3m-6 3V7m6 10 4.553 2.276A1 1 0 0 0 21 18.382V7.618a1 1 0 0 0-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg><span id="cliente-nivel-badge-texto">RUTA</span></span>
       </div>
 
       <!-- NUEVO: el resto de los datos queda colapsado hasta tocar el nombre -->
@@ -6076,6 +6094,14 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         </div>
         <button type="button" class="toggle-switch" id="toggle-comprobante-cuota" role="switch" aria-checked="false" aria-label="Mostrar número de cuota en el comprobante"></button>
       </div>
+      <hr class="loan-divider" style="margin:14px 0;">
+      <div class="mora-toggle-row" style="padding:0;">
+        <div class="mora-toggle-text">
+          <div class="mora-toggle-title">Puntualidad del pago</div>
+          <div class="mora-toggle-subtitle">Ej. "Pago 2 días anticipado" (verde) o "Pago 2 días tarde" (rojo), justo debajo del monto abonado</div>
+        </div>
+        <button type="button" class="toggle-switch" id="toggle-comprobante-puntualidad" role="switch" aria-checked="false" aria-label="Mostrar puntualidad del pago en el comprobante"></button>
+      </div>
     </div>
 
   </section>
@@ -6252,6 +6278,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <div class="pago-detalle-marca" id="detalle-pago-marca"><span class="brand-navy">Presta</span><span class="brand-green">Ya</span></div>
 
       <div class="pago-detalle-monto" id="detalle-pago-monto">$0</div>
+      <!-- NUEVO: "Puntualidad del pago" — controlada por el interruptor
+           en Ajustes → Comprobante de cada abono. -->
+      <div class="pago-detalle-puntualidad" id="detalle-pago-puntualidad" style="display:none;"></div>
       <div class="pago-detalle-metodo" id="detalle-pago-abonado-a">Interés y Capital</div>
 
       <hr class="loan-divider">
@@ -15298,6 +15327,33 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // NUEVO: fecha en que se terminó de pagar una cuota — la más reciente
   // entre los abonos que cuentan para ella (si tuvo varios pagos
   // parciales antes de completarse, se toma la fecha del último).
+  // NUEVO — "Puntualidad del pago": compara la fecha de vencimiento de la
+  // cuota (cuota.fechaISO) contra la fecha real en que se registró el pago
+  // (pago.fecha), ambas ya guardadas — no es un dato inventado. Solo
+  // aplica a pagos normales de cuota (no mora, no "abono" genérico, que no
+  // tienen una única fecha de vencimiento de referencia). Compara por día
+  // calendario, sin horas, para que pagar el mismo día siempre cuente
+  // como "a tiempo" sin importar la hora exacta del registro.
+  function calcularPuntualidadPago(cuota, pago){
+    if(!cuota || !pago || !cuota.fechaISO) return null;
+    if(pago.aplicarA === 'mora' || pago.aplicarA === 'abono') return null;
+    const fechaVenc = new Date(cuota.fechaISO);
+    const fechaPago = new Date(pago.fecha);
+    const diaVenc = new Date(fechaVenc.getFullYear(), fechaVenc.getMonth(), fechaVenc.getDate());
+    const diaPago = new Date(fechaPago.getFullYear(), fechaPago.getMonth(), fechaPago.getDate());
+    const dias = Math.round((diaPago - diaVenc) / 86400000);
+    if(dias < 0) return { dias: Math.abs(dias), tipo: 'anticipado' };
+    if(dias > 0) return { dias: dias, tipo: 'tarde' };
+    return { dias: 0, tipo: 'puntual' };
+  }
+  // Texto a mostrar según el resultado de calcularPuntualidadPago().
+  function textoPuntualidadPago(resultado){
+    if(!resultado) return '';
+    if(resultado.tipo === 'puntual') return 'PAGO A TIEMPO';
+    const plural = resultado.dias === 1 ? 'DÍA' : 'DÍAS';
+    return 'PAGO ' + resultado.dias + ' ' + plural + ' ' + (resultado.tipo === 'anticipado' ? 'ANTICIPADO' : 'TARDE');
+  }
+
   function fechaPagoCuota(prestamo, numeroCuota){
     const pagos = pagosDeCuota(prestamo, numeroCuota);
     if(pagos.length === 0) return null;
@@ -15605,15 +15661,26 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     cliente.nivelCliente = NIVELES_CLIENTE_ORDEN[indiceActual];
   }
 
-  // Pinta la insignia con el nivel actual — se llama cada vez que se abre
-  // o refresca la ficha del cliente.
+  // CORREGIDO — a pedido: esta insignia ya NO muestra el nivel del
+  // cliente (Nuevo/Bronce/Plata/Oro/Premium); ahora muestra la RUTA a
+  // la que pertenece, con el mismo color que ya usa esa ruta en el
+  // resto del sistema (Capital por Ruta, Cartera). El sistema de
+  // niveles en sí NO se eliminó — sigue calculándose por dentro
+  // (recalcularNivelCliente) porque lo sigue usando el Ranking de
+  // Clientes ("Clientes Premium"); solo se dejó de mostrar aquí.
   function actualizarBadgeNivelCliente(cliente){
     const badgeNivel = document.getElementById('cliente-nivel-badge');
-    if(!badgeNivel) return;
-    const nivel = cliente.nivelCliente || 'nuevo'; // clientes ya existentes sin el campo = NUEVO
-    badgeNivel.className = 'cliente-nivel-badge nivel-' + nivel;
-    badgeNivel.textContent = nivel.toUpperCase();
+    const badgeTexto = document.getElementById('cliente-nivel-badge-texto');
+    if(!badgeNivel || !badgeTexto) return;
+    const ruta = cliente.ruta || '';
+    const color = colorParaRuta(ruta, 0);
+    badgeNivel.className = 'cliente-nivel-badge';
+    badgeNivel.style.background = color + '20';
+    badgeNivel.style.color = color;
+    badgeNivel.style.borderColor = color + '73';
+    badgeTexto.textContent = ruta ? ruta.toUpperCase() : 'SIN RUTA';
   }
+
 
   // ==========================================================
   // NUEVO — "Descuento": una rebaja que se le concede a un cliente sobre
@@ -17020,8 +17087,30 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // encabezado con el icono visible) y se despliega al tocarlo.
   document.getElementById('btn-toggle-resumen-historico').addEventListener('click', function(){
     const abierto = this.getAttribute('aria-expanded') === 'true';
+    const contenido = document.getElementById('resumen-historico-contenido');
     this.setAttribute('aria-expanded', String(!abierto));
-    document.getElementById('resumen-historico-contenido').classList.toggle('abierto', !abierto);
+
+    if(!abierto){
+      // NUEVO (fluidez): se agrega la clase primero (así el padding ya
+      // cuenta en la medición), se mide el alto REAL del contenido, y se
+      // anima hacia ese valor exacto — antes se animaba hacia un tope
+      // fijo de 2000px sin relación con el contenido real, lo que hacía
+      // que la apertura se sintiera despareja según cuánto contenido hubiera.
+      contenido.classList.add('abierto');
+      contenido.style.maxHeight = contenido.scrollHeight + 'px';
+    }else{
+      // NUEVO (fluidez): para que el cierre también se vea suave, primero
+      // se fija el alto actual como punto de partida explícito (en vez de
+      // quitar la clase de una), se fuerza un reflow, y recién ahí se
+      // anima a 0. El padding se quita DESPUÉS de que termine esa
+      // animación (no de inmediato) — si no, el contenido pegaba un
+      // salto brusco hacia arriba a mitad del cierre, antes de que la
+      // tarjeta terminara de encogerse.
+      contenido.style.maxHeight = contenido.scrollHeight + 'px';
+      void contenido.offsetHeight; // fuerza reflow
+      contenido.style.maxHeight = '0px';
+      setTimeout(()=> contenido.classList.remove('abierto'), 320);
+    }
   });
 
   // NUEVO — Resumen Histórico y Comportamiento de Pago del cliente. Todo se
@@ -18656,6 +18745,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // pago completo de una cuota específica.
     const esAbono = pagosCuota.length === 1 && pagosCuota[0].aplicarA === 'abono';
 
+    // NUEVO: "Puntualidad del pago" — se compara la cuota realmente
+    // asociada al ÚLTIMO pago de esta transacción (por si el abono cayó
+    // en cascada sobre varias cuotas) contra su fecha de vencimiento real.
+    const cuotaDelUltimoPago = (prestamo.plan || []).find(c => c.numero === (ultimoPago && ultimoPago.cuota)) || cuota;
+    const resultadoPuntualidad = mostrarReciboPuntualidad() ? calcularPuntualidadPago(cuotaDelUltimoPago, ultimoPago) : null;
+
     // NUEVO: número(s) de cuota realmente cubiertos por este comprobante.
     // CORREGIDO: mostrar un rango ("N.° 2 a 3 de 3") confundía — ahora se
     // muestra solo la ÚLTIMA cuota cubierta por el pago (ej. "N.° 3 de 3"),
@@ -18755,7 +18850,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // "no necesito mostrar esa referencia visualmente"), así que ese
     // espacio se recupera en vez de dejarlo vacío.
     const alturaHeader = 108;
-    const alturaBloqueAbono = 140;
+    const alturaBloqueAbono = 140 + (resultadoPuntualidad ? 26 : 0); // CORREGIDO: antes +34px (para la píldora con caja) — ahora solo texto, un poco menos de espacio
     const alturaFilaPar = 88;
     const alturaPie = 80;
 
@@ -18864,6 +18959,20 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     ctx.lineWidth = 1.6;
     ctx.strokeText(textoMontoAbono, centroX, yAbono + 64);
     ctx.textAlign = 'left';
+
+    // NUEVO: "Puntualidad del pago" — texto en color justo debajo del
+    // monto (sin píldora de fondo, a pedido), verde si fue anticipado/a
+    // tiempo, rojo si fue tarde. Solo se dibuja si el interruptor está
+    // activo Y el pago aplica (no mora, no abono).
+    if(resultadoPuntualidad){
+      const textoPuntualidad = textoPuntualidadPago(resultadoPuntualidad);
+      const colorPuntualidad = resultadoPuntualidad.tipo === 'tarde' ? '#DC2626' : '#15803D';
+      ctx.font = 'bold 17px Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = colorPuntualidad;
+      ctx.fillText(textoPuntualidad, centroX, yAbono + 95);
+      ctx.textAlign = 'left';
+    }
 
     // Línea divisoria bajo el bloque de abono
     ctx.strokeStyle = '#EDF0F4';
@@ -19104,8 +19213,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // ==========================================================
   const RECIBO_SALDO_KEY = 'prestapp_recibo_mostrar_saldo';
   const RECIBO_PROXIMO_KEY = 'prestapp_recibo_mostrar_proximo';
+  const RECIBO_PUNTUALIDAD_KEY = 'prestapp_recibo_mostrar_puntualidad';
   let reciboSaldoEnMemoria = false;
   let reciboProximoEnMemoria = false;
+  let reciboPuntualidadEnMemoria = false;
 
   function mostrarReciboSaldo(){
     try{ return localStorage.getItem(RECIBO_SALDO_KEY) === '1'; }
@@ -19115,6 +19226,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     try{ return localStorage.getItem(RECIBO_PROXIMO_KEY) === '1'; }
     catch(err){ return reciboProximoEnMemoria; }
   }
+  // NUEVO: interruptor "Puntualidad del pago" (Ajustes → Comprobante de
+  // cada abono) — apagado por defecto, mismo patrón que Saldo pendiente y
+  // Fecha de próximo pago.
+  function mostrarReciboPuntualidad(){
+    try{ return localStorage.getItem(RECIBO_PUNTUALIDAD_KEY) === '1'; }
+    catch(err){ return reciboPuntualidadEnMemoria; }
+  }
   function guardarReciboSaldo(activo){
     try{ localStorage.setItem(RECIBO_SALDO_KEY, activo ? '1' : '0'); }
     catch(err){ reciboSaldoEnMemoria = activo; }
@@ -19122,6 +19240,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   function guardarReciboProximo(activo){
     try{ localStorage.setItem(RECIBO_PROXIMO_KEY, activo ? '1' : '0'); }
     catch(err){ reciboProximoEnMemoria = activo; }
+  }
+  function guardarReciboPuntualidad(activo){
+    try{ localStorage.setItem(RECIBO_PUNTUALIDAD_KEY, activo ? '1' : '0'); }
+    catch(err){ reciboPuntualidadEnMemoria = activo; }
   }
 
   const toggleReciboSaldo = document.getElementById('toggle-recibo-saldo');
@@ -19158,6 +19280,18 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // método de pago que iba ahí antes. El método de pago ahora es una
     // fila más de la lista, controlada por el interruptor "Método de pago".
     document.getElementById('detalle-pago-abonado-a').textContent = nombresAplicarA[pagoEnDetalle.pago.aplicarA] || 'Interés y Capital';
+
+    // NUEVO: "Puntualidad del pago" — justo debajo del monto, controlada
+    // por su propio interruptor (Ajustes → Comprobante de cada abono).
+    const elPuntualidad = document.getElementById('detalle-pago-puntualidad');
+    const resultadoPuntualidad = calcularPuntualidadPago(pagoEnDetalle.cuota, pagoEnDetalle.pago);
+    if(mostrarReciboPuntualidad() && resultadoPuntualidad){
+      elPuntualidad.textContent = textoPuntualidadPago(resultadoPuntualidad);
+      elPuntualidad.className = 'pago-detalle-puntualidad ' + resultadoPuntualidad.tipo;
+      elPuntualidad.style.display = 'inline-flex';
+    }else{
+      elPuntualidad.style.display = 'none';
+    }
 
     // NUEVO: campos a incluir en el recibo (Ajustes → Plantilla de recibo,
     // o el interruptor "Método de pago" de esta misma pantalla — mismo dato)
@@ -19816,9 +19950,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const saldo = mostrarReciboSaldo();
     const proximo = mostrarReciboProximo();
     const cuota = obtenerReciboMostrarCuota();
+    const puntualidad = mostrarReciboPuntualidad();
     const toggleSaldo = document.getElementById('toggle-comprobante-saldo');
     const toggleProximo = document.getElementById('toggle-comprobante-proximo');
     const toggleCuota = document.getElementById('toggle-comprobante-cuota');
+    const togglePuntualidad = document.getElementById('toggle-comprobante-puntualidad');
     toggleSaldo.classList.toggle('on', saldo);
     toggleSaldo.classList.toggle('toggle-verde', saldo);
     toggleSaldo.setAttribute('aria-checked', String(saldo));
@@ -19828,6 +19964,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     toggleCuota.classList.toggle('on', cuota);
     toggleCuota.classList.toggle('toggle-verde', cuota);
     toggleCuota.setAttribute('aria-checked', String(cuota));
+    togglePuntualidad.classList.toggle('on', puntualidad);
+    togglePuntualidad.classList.toggle('toggle-verde', puntualidad);
+    togglePuntualidad.setAttribute('aria-checked', String(puntualidad));
   }
   document.getElementById('toggle-comprobante-saldo').addEventListener('click', ()=>{
     guardarReciboSaldo(!mostrarReciboSaldo());
@@ -19840,6 +19979,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   document.getElementById('toggle-comprobante-cuota').addEventListener('click', ()=>{
     guardarReciboMostrarCuota(!obtenerReciboMostrarCuota());
     aplicarTogglesComprobanteDesdePrestamo();
+  });
+  document.getElementById('toggle-comprobante-puntualidad').addEventListener('click', ()=>{
+    guardarReciboPuntualidad(!mostrarReciboPuntualidad());
+    aplicarTogglesComprobanteDesdePrestamo();
+    refrescarFilasOpcionalesRecibo(); // NUEVO: refleja el cambio de inmediato si la pantalla en vivo está abierta
   });
   aplicarTogglesComprobanteDesdePrestamo(); // sincroniza el estado visual desde el arranque
 
