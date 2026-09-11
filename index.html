@@ -3941,6 +3941,43 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   align-items:center;
   gap:6px;
   transition:transform .15s ease;
+  white-space:nowrap; /* NUEVO: evita que "Nuevo crédito" se parta en 2 líneas dentro de la píldora en pantallas angostas */
+  flex-shrink:0;
+}
+/* NUEVO: "+ Nuevo" bloqueado por mora — a pedido. Se ve apagado/gris en
+   vez del azul de marca, con un candado en vez del signo "+", para que
+   sea evidente de un vistazo que está deshabilitado. */
+.btn-nuevo-pill.bloqueado{
+  background:#E7EAF0;
+  color:#7B8794;
+}
+
+/* NUEVO: mensaje flotante pequeño (toast) — aparece un momento y se
+   desvanece solo. Reutilizable para cualquier aviso corto de la app. */
+.toast-mensaje{
+  position:fixed;
+  left:50%;
+  bottom:100px;
+  transform:translateX(-50%) translateY(12px);
+  background:#151A23;
+  color:#fff;
+  font-size:13.5px;
+  font-weight:600;
+  padding:12px 20px;
+  border-radius:var(--radius-full);
+  box-shadow:0 8px 20px rgba(0,0,0,0.22);
+  z-index:900;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+  white-space:nowrap;
+  max-width:90vw;
+  text-overflow:ellipsis;
+  overflow:hidden;
+}
+.toast-mensaje.visible{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
 }
 /* NUEVO: variante circular y compacta (solo ícono) — para cuando el botón
    se fusiona dentro de una fila de píldoras ya existente. */
@@ -5743,7 +5780,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <div class="section-title">Historial de Créditos</div>
       <button class="btn-nuevo-pill" id="btn-nuevo-prestamo-cliente">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        Nuevo
+        Nuevo crédito
       </button>
     </div>
 
@@ -5836,6 +5873,20 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
       Eliminar Cliente
     </button>
+
+    <!-- NUEVO: interruptor "Bloquear por mora" — a pedido, con imagen de
+         referencia. Al activarlo, bloquea el botón "+ Nuevo" (arriba, en
+         Historial de Créditos), impidiendo registrar un nuevo préstamo
+         para este cliente hasta que se desactive. -->
+    <div class="card" style="padding:16px 16px; margin-top:9px;">
+      <div class="mora-toggle-row" style="padding:0;">
+        <div class="mora-toggle-text">
+          <div class="mora-toggle-title">Bloquear por mora</div>
+          <div class="mora-toggle-subtitle">Impide registrar un nuevo préstamo para este cliente mientras esté activo.</div>
+        </div>
+        <button type="button" class="toggle-switch" id="toggle-bloqueo-mora-cliente" role="switch" aria-checked="false" aria-label="Bloquear cliente por mora"></button>
+      </div>
+    </div>
 
   </section>
 
@@ -9068,6 +9119,22 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       e.preventDefault();
     }
   }, { passive: false });
+
+  // ---------- Mensaje flotante pequeño (toast) — reutilizable en toda la app ----------
+  let temporizadorToast = null;
+  function mostrarMensajeToast(texto){
+    let el = document.getElementById('toast-mensaje-global');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'toast-mensaje-global';
+      el.className = 'toast-mensaje';
+      document.body.appendChild(el);
+    }
+    el.textContent = texto;
+    el.classList.add('visible');
+    clearTimeout(temporizadorToast);
+    temporizadorToast = setTimeout(()=> el.classList.remove('visible'), 2200);
+  }
 
   // ---------- Modal de confirmación propio (reemplaza confirm() nativo) ----------
   function mostrarConfirmacion(titulo, mensaje, textoBoton, alConfirmar){
@@ -12845,6 +12912,27 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     return !cliente || cliente.estadoCliente !== 'inhabilitado';
   }
 
+  // NUEVO: "Bloquear por mora" — a pedido. Sincroniza el interruptor y el
+  // aspecto del botón "+ Nuevo" (Historial de Créditos) según
+  // cliente.bloqueadoPorMora.
+  function actualizarBloqueoMoraCliente(cliente){
+    const bloqueado = !!cliente.bloqueadoPorMora;
+    const toggle = document.getElementById('toggle-bloqueo-mora-cliente');
+    if(toggle){
+      toggle.classList.toggle('on', bloqueado);
+      toggle.setAttribute('aria-checked', String(bloqueado));
+    }
+    const btnNuevo = document.getElementById('btn-nuevo-prestamo-cliente');
+    if(btnNuevo) btnNuevo.classList.toggle('bloqueado', bloqueado);
+  }
+
+  document.getElementById('toggle-bloqueo-mora-cliente').addEventListener('click', ()=>{
+    if(!clienteEnDetalle) return;
+    clienteEnDetalle.bloqueadoPorMora = !clienteEnDetalle.bloqueadoPorMora;
+    guardarClientes(clientesGuardados);
+    actualizarBloqueoMoraCliente(clienteEnDetalle);
+  });
+
   function actualizarBadgeEstadoCliente(cliente){
     const badge = document.getElementById('cliente-estado-badge');
     const inhabilitado = cliente.estadoCliente === 'inhabilitado';
@@ -13494,6 +13582,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     actualizarBadgeEstadoCliente(cliente); // NUEVO: Inhabilitar/Habilitar Cliente
     actualizarBadgeNivelCliente(cliente); // NUEVO: Nivel del Cliente
+    actualizarBloqueoMoraCliente(cliente); // NUEVO: Bloquear por mora
 
     // Préstamos del cliente (estadísticas + lista)
     // NUEVO: siempre arranca en la pestaña "Activos" al entrar a la ficha
@@ -14195,6 +14284,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // ---------- Abrir / cerrar la pantalla Nuevo Préstamo ----------
   btnAbrirNuevoPrestamo.addEventListener('click', ()=>{
     if(!clienteEnDetalle) return;
+    // NUEVO: "Bloquear por mora" — a pedido, impide registrar un nuevo
+    // préstamo mientras el interruptor esté activo.
+    if(clienteEnDetalle.bloqueadoPorMora){
+      mostrarMensajeToast('Cliente Bloqueado por mora');
+      return;
+    }
     // NUEVO: no se pueden crear préstamos nuevos para un cliente inhabilitado
     // (exclusión temporal del sistema financiero) — debe habilitarse primero.
     if(clienteEnDetalle.estadoCliente === 'inhabilitado'){
