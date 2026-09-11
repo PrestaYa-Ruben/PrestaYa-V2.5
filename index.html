@@ -14570,7 +14570,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // NUEVO — a pedido: bloque de resumen ("Abono total" / "Total
     // pendiente") FUERA de la tabla, debajo de ella — mismo estilo visual
     // de 2 columnas que el bloque de información de arriba.
-    const altoResumenTotales = 74;
+    const altoResumenTotales = 80; // CORREGIDO: antes 114 — con el texto más chico (igual al resto del recibo), ocupa menos alto
 
     const altoFooter = 56; // deja espacio para la línea de "cuotas pagadas" + pie
     const altoTarjeta = altoHeader + altoBloqueInfo + altoTabla + altoResumenTotales + altoFooter;
@@ -14715,22 +14715,30 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     }
     ctxTmp.font = '13px Arial, sans-serif'; // restablece el peso de fuente por si quedó en negrita
 
-    // ---- 6) Resumen — "Abono total" y "Total pendiente", FUERA de la
-    // tabla (a pedido), con el mismo estilo de 2 columnas del bloque de
-    // información de arriba (etiqueta gris chica + valor grande debajo).
-    y += 30;
+    // ---- 6) Resumen — "Total abonado" y "Total pendiente", FUERA de la
+    // tabla, uno debajo del otro, alineados con la columna "Abonado" de
+    // la tabla de arriba (misma posición X: col4X). CORREGIDO: valores
+    // antes en 20px (más grande que el resto del recibo) — ahora en
+    // 13px, igual que el resto de los textos del documento.
+    const xResumen = col4X + 10;
+    y += 22;
     ctxTmp.fillStyle = '#7B8794';
     ctxTmp.font = '13px Arial, sans-serif';
-    ctxTmp.fillText('Abono total', colIzqX, y);
-    ctxTmp.fillText('Total pendiente', colDerX, y);
-    ctxTmp.font = 'bold 20px Arial, sans-serif';
+    ctxTmp.fillText('Total abonado', xResumen, y);
+    ctxTmp.font = 'bold 13px Arial, sans-serif';
     ctxTmp.fillStyle = '#151A23';
-    ctxTmp.fillText(formatearPesos(abonoTotalHistorial), colIzqX, y + 26);
+    ctxTmp.fillText(formatearPesos(abonoTotalHistorial), xResumen, y + 18);
+    y += 38;
+
+    ctxTmp.fillStyle = '#7B8794';
+    ctxTmp.font = '13px Arial, sans-serif';
+    ctxTmp.fillText('Total pendiente', xResumen, y);
+    ctxTmp.font = 'bold 13px Arial, sans-serif';
     ctxTmp.fillStyle = totalPendienteHistorial > 0 ? '#E54848' : '#22A559';
-    ctxTmp.fillText(formatearPesos(totalPendienteHistorial), colDerX, y + 26);
+    ctxTmp.fillText(formatearPesos(totalPendienteHistorial), xResumen, y + 18);
     ctxTmp.font = '13px Arial, sans-serif';
     ctxTmp.fillStyle = '#151A23';
-    y += 26;
+    y += 18;
 
     // ---- 7) Pie ----
     y += 26;
