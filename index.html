@@ -3966,7 +3966,9 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   opacity:1;
   margin-top:10px;
 }
-.comprobante-opciones-contenido > div{ padding-top:22px; padding-bottom:22px; } /* CORREGIDO: antes 16px/16px — a pedido, más aire arriba y abajo */
+/* CORREGIDO: el padding real de este contenido vive en el estilo en
+   línea del div interno (ver HTML) — no aquí, para evitar que quede
+   ignorado por un estilo en línea con más prioridad, como pasó antes. */
 .resumen-historico-grid{
   display:grid;
   grid-template-columns:repeat(2, 1fr);
@@ -6184,7 +6186,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     </div>
 
     <div class="comprobante-opciones-contenido" id="comprobante-opciones-contenido">
-      <div style="padding:0 16px;">
+      <div style="padding:22px 16px;">
       <div class="section-title" style="margin-bottom:2px;">Comprobante de cada abono</div>
       <p style="font-size:12.5px; color:var(--text-secondary); font-weight:400; margin-bottom:10px;">Qué se incluye en la imagen que se comparte al registrar o ver el abono de una cuota.</p>
       <div class="mora-toggle-row" style="padding:0;">
@@ -18712,8 +18714,15 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // cambios) — acá solo se agrega que, al tocar cualquiera de ellos,
   // el menú se cierre después.
   const menuMasOpcionesPrestamoOverlay = document.getElementById('menu-mas-opciones-prestamo-overlay');
+  const menuMasOpcionesPrestamoWrap = menuMasOpcionesPrestamoOverlay.querySelector('.action-sheet-wrap');
   document.getElementById('btn-mas-opciones-prestamo').addEventListener('click', ()=>{
     menuMasOpcionesPrestamoOverlay.style.display = 'flex';
+    // CORREGIDO: a pedido — antes aparecía de golpe (sin ninguna
+    // animación); ahora reutiliza el mismo deslizamiento suave que ya
+    // usan los demás menús de la app (Compartir, etc.).
+    menuMasOpcionesPrestamoWrap.classList.remove('action-sheet-anim');
+    void menuMasOpcionesPrestamoWrap.offsetWidth;
+    menuMasOpcionesPrestamoWrap.classList.add('action-sheet-anim');
   });
   function cerrarMenuMasOpcionesPrestamo(){
     menuMasOpcionesPrestamoOverlay.style.display = 'none';
@@ -18730,8 +18739,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // #tarjeta-resumen-historico) y la despliega automáticamente,
   // reutilizando tal cual la misma animación de siempre.
   const menuMasOpcionesClienteOverlay = document.getElementById('menu-mas-opciones-cliente-overlay');
+  const menuMasOpcionesClienteWrap = menuMasOpcionesClienteOverlay.querySelector('.action-sheet-wrap');
   document.getElementById('btn-mas-opciones-cliente').addEventListener('click', ()=>{
     menuMasOpcionesClienteOverlay.style.display = 'flex';
+    menuMasOpcionesClienteWrap.classList.remove('action-sheet-anim');
+    void menuMasOpcionesClienteWrap.offsetWidth;
+    menuMasOpcionesClienteWrap.classList.add('action-sheet-anim');
   });
   function cerrarMenuMasOpcionesCliente(){
     menuMasOpcionesClienteOverlay.style.display = 'none';
