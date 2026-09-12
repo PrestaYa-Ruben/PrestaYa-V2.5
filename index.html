@@ -13661,6 +13661,20 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // estado) — se despliega al tocar el nombre.
     document.getElementById('profile-card-cliente').classList.remove('expandido');
 
+    // CORREGIDO: "Resumen Histórico" vive oculta hasta que se elige desde
+    // "Más opciones" (ver accion-ver-resumen-historico) — pero nada la
+    // volvía a ocultar al cambiar de cliente o al volver a entrar, así que
+    // una vez revelada para CUALQUIER cliente se quedaba visible para
+    // siempre. Ahora se reinicia (oculta y colapsada) cada vez que se abre
+    // la ficha de un cliente, sin importar cuál.
+    document.getElementById('tarjeta-resumen-historico').style.display = 'none';
+    const btnToggleResumenHistorico = document.getElementById('btn-toggle-resumen-historico');
+    btnToggleResumenHistorico.setAttribute('aria-expanded', 'false');
+    const contenidoResumenHistorico = document.getElementById('resumen-historico-contenido');
+    contenidoResumenHistorico.classList.remove('abierto');
+    contenidoResumenHistorico.style.maxHeight = '0px';
+    contenidoResumenHistorico.style.opacity = '';
+
     detalleAvatar.textContent = iniciales(cliente.nombre);
     detalleNombre.textContent = cliente.nombre;
     detalleTelefono.textContent = cliente.telefono && cliente.telefono.trim() ? cliente.telefono : 'Sin registrar';
