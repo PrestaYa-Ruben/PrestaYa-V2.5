@@ -17268,9 +17268,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const listaContenedor = document.getElementById('lista-prestamos-cliente');
     const prestamosCliente = prestamosGuardados.filter(p => p.clienteId === clienteId);
 
-    // Estadísticas (siempre sobre TODOS los créditos del cliente, sin importar la pestaña)
+    // Estadísticas (Total Prestado y Pendiente solo de créditos ACTIVOS —
+    // CORREGIDO: antes Total Prestado sumaba también los finalizados,
+    // mezclando historial con lo vigente; ese histórico ya se puede ver
+    // aparte en "Resumen Histórico". "Préstamos Activos" no cambia.)
     const activos = prestamosCliente.filter(p => p.estado === 'activo');
-    const totalPrestado = prestamosCliente.reduce((s, p) => s + p.valor, 0);
+    const totalPrestado = activos.reduce((s, p) => s + p.valor, 0);
     const pendiente = activos.reduce((s, p) => s + saldoPendientePrestamo(p), 0);
 
     document.getElementById('stat-prestamos-activos').textContent = activos.length;
