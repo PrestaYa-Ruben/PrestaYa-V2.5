@@ -3941,10 +3941,32 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   opacity:0;
 }
 .resumen-historico-contenido.abierto{
-  padding-top:16px;
-  padding-bottom:4px;
+  padding-top:22px; /* CORREGIDO: antes 16px — a pedido, más aire arriba */
+  padding-bottom:20px; /* CORREGIDO: antes 4px — muy apretado, el texto se veía desbordado */
   opacity:1;
 }
+/* NUEVO: "Comprobante de cada abono" — mismo patrón de despliegue fluido
+   ya usado y corregido en Resumen Histórico (el padding NO se anima,
+   solo el alto y la opacidad; si no, la medición de altura queda corta
+   y recorta el contenido). A diferencia de Resumen Histórico, esta SÍ
+   se abre/cierra con el mismo botón (no un botón "ver" aparte). */
+.comprobante-opciones-contenido{
+  max-height:0;
+  overflow:hidden;
+  background:var(--surface);
+  border-radius:var(--radius-lg);
+  border:1.5px solid transparent;
+  transition:max-height .32s cubic-bezier(.4,0,.2,1), opacity .32s cubic-bezier(.4,0,.2,1);
+  opacity:0;
+  margin-top:0;
+}
+.comprobante-opciones-contenido.abierto{
+  border-color:rgba(20,30,60,0.18);
+  box-shadow:var(--shadow);
+  opacity:1;
+  margin-top:10px;
+}
+.comprobante-opciones-contenido > div{ padding-top:22px; padding-bottom:22px; } /* CORREGIDO: antes 16px/16px — a pedido, más aire arriba y abajo */
 .resumen-historico-grid{
   display:grid;
   grid-template-columns:repeat(2, 1fr);
@@ -6130,10 +6152,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
          Editar, Eliminar). El botón "Recordar" por WhatsApp se quitó por
          completo: esa misma función ya está al tocar el número de
          cualquier cuota pendiente (Recordatorio Amistoso). -->
-    <button type="button" class="btn-mas-opciones-prestamo" id="btn-mas-opciones-prestamo">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle><circle cx="5" cy="12" r="1.5"></circle></svg>
-      <span>Más opciones</span>
-    </button>
+    <div style="display:flex; justify-content:flex-end; margin:14px 0;">
+      <button type="button" class="btn-mas-opciones-prestamo btn-mas-opciones-pildora" id="btn-mas-opciones-prestamo">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle><circle cx="5" cy="12" r="1.5"></circle></svg>
+        <span>Más opciones</span>
+      </button>
+    </div>
 
     <div class="loan-tabs">
       <button type="button" class="loan-tab active" id="tab-cuotas" data-tab="cuotas">Cuotas (<span id="tab-cuotas-count">0</span>)</button>
@@ -6148,11 +6172,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <!-- Eliminar / Editar ahora viven dentro del menú "Más opciones" de
          arriba — ver #menu-mas-opciones-prestamo-overlay. -->
 
-    <!-- NUEVO: interruptores para la imagen del Comprobante de Pago (el
-         que se comparte al pagar/ver cada abono desde el menú "..." de
-         cada cuota) — mismos ajustes globales que ya usa esa imagen, así
-         que cambiarlos aquí también los cambia en Detalle del Pago. -->
-    <div class="card" style="padding:16px; margin-top:14px;">
+    <!-- CORREGIDO: a pedido — la tarjeta "Comprobante de cada abono" (4
+         interruptores) se ocultó detrás de una píldora "Más opciones" que
+         se abre/cierra tocándola, igual que ya hicimos con "Resumen
+         Histórico" del cliente — misma animación fluida ya probada. -->
+    <div style="display:flex; justify-content:flex-end; margin-top:14px;">
+      <button type="button" class="btn-mas-opciones-prestamo btn-mas-opciones-pildora" id="btn-mas-opciones-comprobante" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle><circle cx="5" cy="12" r="1.5"></circle></svg>
+        <span>Más opciones</span>
+      </button>
+    </div>
+
+    <div class="comprobante-opciones-contenido" id="comprobante-opciones-contenido">
+      <div style="padding:0 16px;">
       <div class="section-title" style="margin-bottom:2px;">Comprobante de cada abono</div>
       <p style="font-size:12.5px; color:var(--text-secondary); font-weight:400; margin-bottom:10px;">Qué se incluye en la imagen que se comparte al registrar o ver el abono de una cuota.</p>
       <div class="mora-toggle-row" style="padding:0;">
@@ -6185,6 +6217,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           <div class="mora-toggle-subtitle">Ej. "Pago 2 días anticipado" (verde) o "Pago 2 días tarde" (rojo), justo debajo del monto abonado</div>
         </div>
         <button type="button" class="toggle-switch" id="toggle-comprobante-puntualidad" role="switch" aria-checked="false" aria-label="Mostrar puntualidad del pago en el comprobante"></button>
+      </div>
       </div>
     </div>
 
@@ -17762,6 +17795,15 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     prestamoEnDetalle = prestamo;
     refrescarDetallePrestamo();
 
+    // CORREGIDO PREVENTIVAMENTE: mismo problema que tuvo "Resumen
+    // Histórico" del cliente (se quedaba abierto entre una ficha y
+    // otra) — se reinicia "Más opciones" del comprobante a cerrada cada
+    // vez que se abre el detalle de un préstamo, sin importar cuál.
+    document.getElementById('btn-mas-opciones-comprobante').setAttribute('aria-expanded', 'false');
+    const contenidoComprobanteOpciones = document.getElementById('comprobante-opciones-contenido');
+    contenidoComprobanteOpciones.classList.remove('abierto');
+    contenidoComprobanteOpciones.style.maxHeight = '0px';
+
     tabCuotas.classList.add('active');
     tabPagos.classList.remove('active');
     cuotasLista.style.display = 'block';
@@ -20255,6 +20297,25 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     togglePuntualidad.classList.toggle('toggle-verde', puntualidad);
     togglePuntualidad.setAttribute('aria-checked', String(puntualidad));
   }
+  // NUEVO: píldora "Más opciones" — abre/cierra la tarjeta de
+  // interruptores del comprobante, mismo patrón fluido ya usado y
+  // corregido en Resumen Histórico (mide el alto real con scrollHeight
+  // en vez de animar hacia un tope fijo).
+  document.getElementById('btn-mas-opciones-comprobante').addEventListener('click', function(){
+    const contenido = document.getElementById('comprobante-opciones-contenido');
+    const abierto = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', String(!abierto));
+    if(!abierto){
+      contenido.classList.add('abierto');
+      contenido.style.maxHeight = contenido.scrollHeight + 'px';
+    }else{
+      contenido.style.maxHeight = contenido.scrollHeight + 'px';
+      void contenido.offsetHeight; // fuerza reflow antes de animar a 0
+      contenido.style.maxHeight = '0px';
+      setTimeout(()=> contenido.classList.remove('abierto'), 320);
+    }
+  });
+
   document.getElementById('toggle-comprobante-saldo').addEventListener('click', ()=>{
     guardarReciboSaldo(!mostrarReciboSaldo());
     aplicarTogglesComprobanteDesdePrestamo();
