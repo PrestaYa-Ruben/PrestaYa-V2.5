@@ -3106,6 +3106,20 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .action-sheet-anim{
   animation:actionSheetEnter .26s ease;
 }
+/* NUEVO: animación de SALIDA — a pedido, para que los menús "Más
+   opciones" también se cierren con suavidad (antes desaparecían de
+   golpe). Se usa junto con un fondo que también se desvanece. */
+@keyframes actionSheetExit{
+  from{ opacity:1; transform:translateY(0); }
+  to{ opacity:0; transform:translateY(24px); }
+}
+.action-sheet-anim-salida{
+  animation:actionSheetExit .22s cubic-bezier(.4,0,.2,1) forwards;
+}
+.action-sheet-overlay.cerrando{
+  background:rgba(20,30,60,0);
+  transition:background .22s ease;
+}
 
 /* ==========================================================
    VISOR DE IMAGEN DEL COMPROBANTE
@@ -4497,7 +4511,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   position: relative;
   background: #ffffff;
   border: 1.5px solid #8FE0B3; /* CORREGIDO: antes #e2e8f0 (gris casi invisible) — a pedido, más marcado y en el mismo verde que ya usan el ícono y la insignia de esta tarjeta */
-  border-radius: 20px;
+  border-radius: var(--radius-lg); /* CORREGIDO: antes 20px (más redondeado que el resto) — a pedido, ahora igual a todas las demás tarjetas */
   padding: 20px 24px;
   color: #0f172a;
   font-family: inherit; /* CORREGIDO: hereda la tipografía del resto de PrestaYa en vez de system-ui */
@@ -18724,8 +18738,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     void menuMasOpcionesPrestamoWrap.offsetWidth;
     menuMasOpcionesPrestamoWrap.classList.add('action-sheet-anim');
   });
+  // CORREGIDO: a pedido — el cierre ahora también es suave (antes
+  // desaparecía de golpe). Se reproduce la animación de salida y solo
+  // se oculta el overlay cuando esa animación ya terminó.
   function cerrarMenuMasOpcionesPrestamo(){
-    menuMasOpcionesPrestamoOverlay.style.display = 'none';
+    if(menuMasOpcionesPrestamoOverlay.style.display === 'none') return;
+    menuMasOpcionesPrestamoWrap.classList.remove('action-sheet-anim');
+    menuMasOpcionesPrestamoWrap.classList.add('action-sheet-anim-salida');
+    menuMasOpcionesPrestamoOverlay.classList.add('cerrando');
+    setTimeout(()=>{
+      menuMasOpcionesPrestamoOverlay.style.display = 'none';
+      menuMasOpcionesPrestamoOverlay.classList.remove('cerrando');
+      menuMasOpcionesPrestamoWrap.classList.remove('action-sheet-anim-salida');
+    }, 220);
   }
   menuMasOpcionesPrestamoOverlay.addEventListener('click', (e)=>{ if(e.target === menuMasOpcionesPrestamoOverlay) cerrarMenuMasOpcionesPrestamo(); });
   document.getElementById('accion-cancelar-menu-mas-opciones-prestamo').addEventListener('click', cerrarMenuMasOpcionesPrestamo);
@@ -18740,14 +18765,47 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // reutilizando tal cual la misma animación de siempre.
   const menuMasOpcionesClienteOverlay = document.getElementById('menu-mas-opciones-cliente-overlay');
   const menuMasOpcionesClienteWrap = menuMasOpcionesClienteOverlay.querySelector('.action-sheet-wrap');
+  // NUEVO: cierra "Resumen Histórico" con la misma animación fluida de
+  // siempre (mide el alto real, anima a 0, y solo AL TERMINAR oculta la
+  // tarjeta) — reutilizada tanto por el interruptor interno como por la
+  // propia píldora "Más opciones" (ver más abajo).
+  function cerrarResumenHistoricoSuave(){
+    const tarjeta = document.getElementById('tarjeta-resumen-historico');
+    const btnToggle = document.getElementById('btn-toggle-resumen-historico');
+    const contenido = document.getElementById('resumen-historico-contenido');
+    btnToggle.setAttribute('aria-expanded', 'false');
+    contenido.style.maxHeight = contenido.scrollHeight + 'px';
+    void contenido.offsetHeight; // fuerza reflow antes de animar a 0
+    contenido.style.maxHeight = '0px';
+    setTimeout(()=>{
+      contenido.classList.remove('abierto');
+      tarjeta.style.display = 'none';
+    }, 320);
+  }
   document.getElementById('btn-mas-opciones-cliente').addEventListener('click', ()=>{
+    // CORREGIDO: a pedido — si "Resumen Histórico" ya está desplegado,
+    // tocar la píldora de nuevo lo cierra directamente (con la misma
+    // suavidad), en vez de volver a abrir el menú.
+    const tarjetaResumen = document.getElementById('tarjeta-resumen-historico');
+    if(getComputedStyle(tarjetaResumen).display !== 'none'){
+      cerrarResumenHistoricoSuave();
+      return;
+    }
     menuMasOpcionesClienteOverlay.style.display = 'flex';
     menuMasOpcionesClienteWrap.classList.remove('action-sheet-anim');
     void menuMasOpcionesClienteWrap.offsetWidth;
     menuMasOpcionesClienteWrap.classList.add('action-sheet-anim');
   });
   function cerrarMenuMasOpcionesCliente(){
-    menuMasOpcionesClienteOverlay.style.display = 'none';
+    if(menuMasOpcionesClienteOverlay.style.display === 'none') return;
+    menuMasOpcionesClienteWrap.classList.remove('action-sheet-anim');
+    menuMasOpcionesClienteWrap.classList.add('action-sheet-anim-salida');
+    menuMasOpcionesClienteOverlay.classList.add('cerrando');
+    setTimeout(()=>{
+      menuMasOpcionesClienteOverlay.style.display = 'none';
+      menuMasOpcionesClienteOverlay.classList.remove('cerrando');
+      menuMasOpcionesClienteWrap.classList.remove('action-sheet-anim-salida');
+    }, 220);
   }
   menuMasOpcionesClienteOverlay.addEventListener('click', (e)=>{ if(e.target === menuMasOpcionesClienteOverlay) cerrarMenuMasOpcionesCliente(); });
   document.getElementById('accion-cancelar-menu-mas-opciones-cliente').addEventListener('click', cerrarMenuMasOpcionesCliente);
