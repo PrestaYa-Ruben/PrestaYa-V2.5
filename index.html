@@ -2290,6 +2290,17 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .btn-mas-opciones-prestamo svg{ width:20px; height:20px; stroke:var(--text-secondary); flex-shrink:0; }
 .btn-mas-opciones-prestamo:active{ transform:scale(0.98); }
 
+/* NUEVO: variante píldora pequeña, alineada a la derecha — a pedido,
+   solo para el botón "Más opciones" del CLIENTE (el de Detalle del
+   Préstamo sigue ancho, sin tocar). */
+.btn-mas-opciones-pildora{
+  width:auto;
+  margin:0;
+  padding:9px 16px;
+  border-radius:var(--radius-full);
+}
+.btn-mas-opciones-pildora svg{ width:17px; height:17px; }
+
 /* --- Tabs Cuotas / Pagos --- */
 .loan-tabs{
   display:flex;
@@ -2431,6 +2442,7 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 
 .pago-monto{ font-size:16px; font-weight:600; color:var(--text); margin-bottom:3px; letter-spacing:-0.2px; }
 .pago-meta{ font-size:13px; color:var(--text-secondary); font-weight:400; }
+.pago-desglose{ font-size:11.5px; color:var(--text-secondary); font-weight:400; opacity:0.85; margin-top:1px; }
 .pago-meta .recargo-label{ color:var(--danger); font-weight:600; }
 .pago-meta .abono-label{ color:var(--primary); font-weight:600; }
 .pago-nota{
@@ -3062,6 +3074,29 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .action-sheet-item.danger span{ color:var(--danger); }
 .action-sheet-item.centrado{ justify-content:center; padding:12px 14px; }
 .action-sheet-cancelar span{ font-weight:600; color:var(--primary); }
+/* CORREGIDO: #btn-toggle-estado-cliente conserva sus clases de siempre
+   (.btn-toggle-estado-inhabilitar/.habilitar, que le pintaban el borde
+   completo del botón cuando vivía solo) — ahora que vive dentro del
+   menú como .action-sheet-item, se neutraliza ese borde de color para
+   que combine con las demás filas del menú. */
+.action-sheet-item.btn-toggle-estado-inhabilitar,
+.action-sheet-item.btn-toggle-estado-habilitar{
+  border-color: var(--border);
+}
+
+/* NUEVO: fila de "Bloquear por mora" dentro del menú "Más opciones" del
+   cliente — mismo look de .action-sheet-item, pero con un interruptor a
+   la derecha en vez de solo navegar al tocarla. */
+.action-sheet-item-toggle-row{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:11px 14px;
+  border-bottom:1px solid var(--border);
+}
+.action-sheet-item-toggle-row .icon-container{ width:32px; height:32px; }
+.action-sheet-item-toggle-row .icon-container svg{ width:15px; height:15px; }
+.action-sheet-item-toggle-row span{ font-size:14.5px; font-weight:500; color:var(--text); }
 
 /* Pequeña animación de entrada para el modal de Compartir Préstamo (mismo lenguaje de movimiento que .screen-anim) */
 @keyframes actionSheetEnter{
@@ -5809,9 +5844,25 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <!-- Se renderiza dinámicamente: tarjeta vacía o lista de créditos del cliente -->
     <div id="lista-prestamos-cliente"></div>
 
+    <!-- CORREGIDO: a pedido — las 4 secciones de abajo (Resumen Histórico,
+         Inhabilitar, Bloquear por mora, Eliminar Cliente) ocupaban mucho
+         espacio siempre visible. Se consolidan en un solo botón "Más
+         opciones" (mismo patrón ya usado en Detalle del Préstamo), que
+         abre un menú con las 4 — ver #menu-mas-opciones-cliente-overlay
+         más abajo en el archivo. -->
+    <div style="display:flex; justify-content:flex-end; margin:14px 0;">
+      <button type="button" class="btn-mas-opciones-prestamo btn-mas-opciones-pildora" id="btn-mas-opciones-cliente">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle><circle cx="5" cy="12" r="1.5"></circle></svg>
+        <span>Más opciones</span>
+      </button>
+    </div>
+
     <!-- NUEVO: Resumen Histórico + Comportamiento de Pago (calculados a partir
-         de los créditos y movimientos reales del cliente) -->
-    <div class="card" id="tarjeta-resumen-historico" style="padding:20px 18px;">
+         de los créditos y movimientos reales del cliente). Se mantiene oculta
+         por defecto — se revela al elegir "Resumen Histórico" en el menú de
+         arriba, conservando exactamente el mismo despliegue/animación de
+         siempre (ver #btn-toggle-resumen-historico). -->
+    <div class="card" id="tarjeta-resumen-historico" style="padding:20px 18px; display:none;">
       <button type="button" class="resumen-historico-header" id="btn-toggle-resumen-historico" aria-expanded="false">
         <div class="icon-container blue">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg>
@@ -5867,35 +5918,6 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <div class="loan-detail-label" style="margin-bottom:8px;">Comportamiento de pago</div>
         <span class="cuota-badge" id="resumen-comportamiento-badge" style="font-size:13px; padding:7px 16px;">Sin historial</span>
       </div>
-      </div>
-    </div>
-
-    <!-- INHABILITAR CLIENTE (antes iba en pareja con "Recordatorio", que se
-         retiró: ahora ese acceso vive como ícono directo en la tarjeta de
-         cada préstamo). "Eliminar Cliente" se deja sola y ancha abajo, para
-         no perder su peso visual de advertencia. -->
-    <button type="button" class="btn-outline-share btn-toggle-estado-inhabilitar" id="btn-toggle-estado-cliente" style="margin-bottom:12px;">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="icono-toggle-estado-cliente" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"></line></svg>
-      <span id="texto-btn-toggle-estado-cliente">Inhabilitar</span>
-    </button>
-
-    <!-- ELIMINAR CLIENTE -->
-    <button class="btn-eliminar-cliente" id="btn-eliminar-cliente">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-      Eliminar Cliente
-    </button>
-
-    <!-- NUEVO: interruptor "Bloquear por mora" — a pedido, con imagen de
-         referencia. Al activarlo, bloquea el botón "+ Nuevo" (arriba, en
-         Historial de Créditos), impidiendo registrar un nuevo préstamo
-         para este cliente hasta que se desactive. -->
-    <div class="card" style="padding:16px 16px; margin-top:9px;">
-      <div class="mora-toggle-row" style="padding:0;">
-        <div class="mora-toggle-text">
-          <div class="mora-toggle-title">Bloquear por mora</div>
-          <div class="mora-toggle-subtitle">Impide registrar un nuevo préstamo para este cliente mientras esté activo.</div>
-        </div>
-        <button type="button" class="toggle-switch" id="toggle-bloqueo-mora-cliente" role="switch" aria-checked="false" aria-label="Bloquear cliente por mora"></button>
       </div>
     </div>
 
@@ -8381,6 +8403,53 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     <div class="action-sheet-card action-sheet-cancelar">
       <div class="action-sheet-item centrado" id="accion-cancelar-menu-mas-opciones-prestamo">
+        <span>Cancelar</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NUEVO: "Más opciones" del cliente — consolida Resumen Histórico,
+     Inhabilitar/Habilitar, Bloquear por mora y Eliminar Cliente (antes
+     eran 4 secciones siempre visibles debajo de las tarjetas de crédito).
+     "Inhabilitar" y "Eliminar Cliente" son los MISMOS botones de siempre
+     (mismo id, mismo manejador de clic ya existente) — solo cambia su
+     envoltorio visual para que combinen con el resto del menú. -->
+<div id="menu-mas-opciones-cliente-overlay" class="action-sheet-overlay" style="display:none;">
+  <div class="action-sheet-wrap">
+    <div class="action-sheet-card">
+      <div class="action-sheet-item" id="accion-ver-resumen-historico">
+        <div class="icon-container blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg>
+        </div>
+        <span>Resumen Histórico</span>
+      </div>
+
+      <div class="action-sheet-item" id="btn-toggle-estado-cliente">
+        <div class="icon-container orange">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="icono-toggle-estado-cliente" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"></line></svg>
+        </div>
+        <span id="texto-btn-toggle-estado-cliente">Inhabilitar</span>
+      </div>
+
+      <div class="action-sheet-item-toggle-row" id="fila-bloqueo-mora-menu">
+        <div class="icon-container red">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"></line></svg>
+        </div>
+        <span style="flex:1;">Bloquear por mora</span>
+        <button type="button" class="toggle-switch" id="toggle-bloqueo-mora-cliente" role="switch" aria-checked="false" aria-label="Bloquear cliente por mora"></button>
+      </div>
+
+      <div class="action-sheet-item danger" id="btn-eliminar-cliente">
+        <div class="icon-container red">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        </div>
+        <span>Eliminar Cliente</span>
+      </div>
+    </div>
+
+    <div class="action-sheet-card action-sheet-cancelar">
+      <div class="action-sheet-item centrado" id="accion-cancelar-menu-mas-opciones-cliente">
         <span>Cancelar</span>
       </div>
     </div>
@@ -17603,6 +17672,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <div class="cuota-info">
           <div class="pago-monto">${formatearPesos(pago.monto)}</div>
           <div class="pago-meta">${esRecargoMora ? '<span class="recargo-label">Recargo</span>' : (esAbono ? '<span class="abono-label">Abono</span>' : 'Cuota ' + pago.cuota)} · Pagada el ${formatearFechaCorta(new Date(pago.fecha))}</div>
+          ${(!esRecargoMora && !esAbono) ? `<div class="pago-desglose">Capital: ${formatearPesos(pago.capitalPagado || 0)} · Interés: ${formatearPesos(pago.interesPagado || 0)}</div>` : ''}
           ${pago.nota ? `<div class="pago-nota"></div>` : ''}
         </div>
         <div class="cuota-accion mas" role="button" aria-label="Más opciones">
@@ -18596,6 +18666,37 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   document.getElementById('accion-cancelar-menu-mas-opciones-prestamo').addEventListener('click', cerrarMenuMasOpcionesPrestamo);
   menuMasOpcionesPrestamoOverlay.querySelectorAll('.action-sheet-item').forEach(item=>{
     item.addEventListener('click', cerrarMenuMasOpcionesPrestamo);
+  });
+
+  // NUEVO — "Más opciones" del cliente — mismo patrón que el de arriba.
+  // "Resumen Histórico" es un caso especial: en vez de navegar a otro
+  // lado, revela la tarjeta (que vive oculta en la página, ver
+  // #tarjeta-resumen-historico) y la despliega automáticamente,
+  // reutilizando tal cual la misma animación de siempre.
+  const menuMasOpcionesClienteOverlay = document.getElementById('menu-mas-opciones-cliente-overlay');
+  document.getElementById('btn-mas-opciones-cliente').addEventListener('click', ()=>{
+    menuMasOpcionesClienteOverlay.style.display = 'flex';
+  });
+  function cerrarMenuMasOpcionesCliente(){
+    menuMasOpcionesClienteOverlay.style.display = 'none';
+  }
+  menuMasOpcionesClienteOverlay.addEventListener('click', (e)=>{ if(e.target === menuMasOpcionesClienteOverlay) cerrarMenuMasOpcionesCliente(); });
+  document.getElementById('accion-cancelar-menu-mas-opciones-cliente').addEventListener('click', cerrarMenuMasOpcionesCliente);
+  menuMasOpcionesClienteOverlay.querySelectorAll('.action-sheet-item').forEach(item=>{
+    item.addEventListener('click', cerrarMenuMasOpcionesCliente);
+  });
+  // NUEVO: a diferencia de los demás ítems, el interruptor de "Bloquear
+  // por mora" NO debe cerrar el menú al tocarlo (así el usuario ve el
+  // cambio antes de que se cierre) — se cierra con los demás elementos
+  // de su fila salvo el interruptor mismo.
+  document.getElementById('toggle-bloqueo-mora-cliente').addEventListener('click', (e)=> e.stopPropagation());
+
+  document.getElementById('accion-ver-resumen-historico').addEventListener('click', ()=>{
+    const tarjeta = document.getElementById('tarjeta-resumen-historico');
+    const btnToggle = document.getElementById('btn-toggle-resumen-historico');
+    tarjeta.style.display = '';
+    if(btnToggle.getAttribute('aria-expanded') !== 'true') btnToggle.click();
+    setTimeout(()=> tarjeta.scrollIntoView({ behavior:'smooth', block:'start' }), 80);
   });
 
   document.getElementById('accion-pagar-cuota-pendiente').addEventListener('click', ()=>{
