@@ -4092,12 +4092,12 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   align-items:center;
   gap:5px;
   font-size:12.5px;
-  font-weight:700;
+  font-weight:600; /* CORREGIDO: antes 700 — a pedido, más suave sin la píldora */
   letter-spacing:0.3px;
-  padding:5px 13px;
-  border-radius:999px;
+  padding:0; /* CORREGIDO: antes 5px 13px (píldora) — a pedido, ya no lleva fondo/borde */
   margin:8px 0 2px 6px;
-  border:1px solid transparent; /* NUEVO: color real lo pone el JS según la ruta */
+  color:var(--text-secondary); /* CORREGIDO: antes el color de la ruta — a pedido, gris difuminado */
+  opacity:0.85;
 }
 .cliente-nivel-badge svg{ width:13px; height:13px; stroke:currentColor; flex-shrink:0; } /* NUEVO: ícono de ruta, hereda el color de la insignia */
 .cliente-nivel-badge.nivel-nuevo{ background:rgba(245,158,11,0.12); color:#B45309; border:1px solid rgba(245,158,11,0.45); } /* CORREGIDO: a pedido — antes gris neutro, ahora ámbar/dorado con borde fino */
@@ -15914,11 +15914,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const badgeTexto = document.getElementById('cliente-nivel-badge-texto');
     if(!badgeNivel || !badgeTexto) return;
     const ruta = cliente.ruta || '';
-    const color = colorParaRuta(ruta, 0);
-    badgeNivel.className = 'cliente-nivel-badge';
-    badgeNivel.style.background = color + '20';
-    badgeNivel.style.color = color;
-    badgeNivel.style.borderColor = color + '73';
+    // CORREGIDO: a pedido — ya no lleva píldora ni color propio de ruta,
+    // ahora es solo ícono + texto en gris difuminado (ver CSS .cliente-nivel-badge).
     badgeTexto.textContent = ruta ? ruta.toUpperCase() : 'SIN RUTA';
   }
 
