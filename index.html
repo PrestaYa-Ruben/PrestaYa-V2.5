@@ -1969,9 +1969,31 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   align-items:center;
   gap:8px;
   margin:10px 0 0;
+  cursor:pointer; /* NUEVO: ahora sí es interactivo — toca para desplegar/colapsar */
 }
 .loan-detail-amount-toggle .loan-detail-amount{ margin:0; }
+.loan-detail-amount-toggle svg{
+  width:18px;
+  height:18px;
+  stroke:#0EA5E9;
+  flex-shrink:0;
+  transition:transform .25s ease;
+}
+.loan-detail-card.expandido .loan-detail-amount-toggle svg{ transform:rotate(180deg); }
+/* CORREGIDO: el diseño para que esto fuera desplegable ya existía en
+   los comentarios/clases, pero nunca se conectó de verdad (no tenía
+   max-height ni el JS del clic) — por eso se veía siempre desplegado.
+   Mismo patrón ya usado en la tarjeta de perfil del cliente. */
 .loan-detail-collapsible{
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  margin-top:0;
+  transition:max-height .3s ease, opacity .25s ease, margin-top .3s ease;
+}
+.loan-detail-card.expandido .loan-detail-collapsible{
+  max-height:900px;
+  opacity:1;
   margin-top:16px;
 }
 
@@ -17505,6 +17527,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   const screenDetallePrestamo = document.getElementById('screen-detalle-prestamo');
   const btnCerrarDetallePrestamo = document.getElementById('btn-cerrar-detalle-prestamo');
   const loanDetailCardContainer = document.getElementById('loan-detail-card-container');
+  // NUEVO: la tarjeta de Detalle del Préstamo vuelve a ser desplegable
+  // (mismo patrón que la tarjeta de perfil del Cliente) — como esta
+  // tarjeta se reconstruye entera en cada render (innerHTML), el clic
+  // se engancha por delegación en el contenedor estable, no en el botón
+  // en sí (que se destruye y se vuelve a crear cada vez).
+  loanDetailCardContainer.addEventListener('click', (e)=>{
+    const toggle = e.target.closest('#loan-detail-amount-toggle');
+    if(!toggle) return;
+    toggle.closest('.loan-detail-card').classList.toggle('expandido');
+  });
 
   // CORREGIDO: a pedido, la tarjeta grande de detalle ya no es
   // desplegable — queda siempre abierta, con todos sus datos visibles de
@@ -17557,6 +17589,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
         <div class="loan-detail-amount-toggle" id="loan-detail-amount-toggle">
           <div class="loan-detail-amount">${formatearPesos(prestamo.valor)}</div>
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
 
         <div class="loan-detail-collapsible">
