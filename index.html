@@ -6087,6 +6087,21 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       </div>
     </div>
 
+    <!-- CORREGIDO: a pedido — "Frecuencia de pago" se movió para quedar
+         justo debajo de "Cuotas" (antes iba después de Interés/Cuota
+         deseada). Solo se reordenó el bloque HTML; conserva exactamente
+         los mismos id's, así que ningún cálculo ni validación se vio
+         afectado. -->
+    <div class="form-field">
+      <label class="field-label" for="select-frecuencia">Frecuencia de pago*</label>
+      <select class="field-input field-select" id="select-frecuencia" required>
+        <option value="diario">Diario</option>
+        <option value="semanal">Semanal</option>
+        <option value="quincenal" selected>Quincenal</option>
+        <option value="mensual">Mensual</option>
+      </select>
+    </div>
+
     <div class="interes-swap-row">
       <div class="form-field">
         <label class="field-label" for="input-tasa-interes">Interés</label>
@@ -6102,16 +6117,6 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <label class="field-label" for="input-cuota-deseada">Cuota deseada</label>
         <input class="field-input" id="input-cuota-deseada" type="text" inputmode="numeric" placeholder="Toca y escribe">
       </div>
-    </div>
-
-    <div class="form-field">
-      <label class="field-label" for="select-frecuencia">Frecuencia de pago*</label>
-      <select class="field-input field-select" id="select-frecuencia" required>
-        <option value="diario">Diario</option>
-        <option value="semanal">Semanal</option>
-        <option value="quincenal" selected>Quincenal</option>
-        <option value="mensual">Mensual</option>
-      </select>
     </div>
 
     <div class="fecha-nota-row">
