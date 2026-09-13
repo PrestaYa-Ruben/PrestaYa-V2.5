@@ -2427,6 +2427,7 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .cuota-info{ flex:1; min-width:0; }
 .cuota-monto{ font-size:16px; font-weight:600; color:var(--text); margin-bottom:3px; letter-spacing:-0.2px; }
 .cuota-fecha{ font-size:13px; color:var(--text-secondary); font-weight:400; }
+.cuota-puntualidad{ font-size:13px; font-weight:700; margin-top:1px; } /* NUEVO: color se define en línea (azul o rojo) según calcularPuntualidadPago */
 .cuota-fecha.cuota-fecha-pago{ color:var(--success); font-weight:500; margin-top:1px; }
 
 .cuota-badge{
@@ -17739,12 +17740,28 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       const item = document.createElement('div');
       item.className = 'cuota-item ' + estadoClase;
       const fechaDePago = pagada ? fechaPagoCuota(prestamo, cuota.numero) : null;
+      // NUEVO: a pedido — texto de puntualidad justo debajo de "Pago: [fecha]"
+      // en esta tarjeta (Cuotas). Reutiliza tal cual la misma función ya
+      // construida para el comprobante (calcularPuntualidadPago /
+      // textoPuntualidadPago) — nada de cálculos nuevos, solo se muestra
+      // aquí también, con azul en vez de verde para "a tiempo/anticipado".
+      let puntualidadHtml = '';
+      if(pagada){
+        const pagosDeEstaCuota = pagosDeCuota(prestamo, cuota.numero);
+        const ultimoPagoCuota = pagosDeEstaCuota[pagosDeEstaCuota.length - 1];
+        const resultadoPuntualidad = calcularPuntualidadPago(cuota, ultimoPagoCuota);
+        if(resultadoPuntualidad){
+          const colorPuntualidad = resultadoPuntualidad.tipo === 'tarde' ? 'var(--danger)' : 'var(--primary)';
+          puntualidadHtml = `<div class="cuota-puntualidad" style="color:${colorPuntualidad};">${textoPuntualidadPago(resultadoPuntualidad)}</div>`;
+        }
+      }
       item.innerHTML = `
         <div class="cuota-numero ${estadoClase}">${cuota.numero}</div>
         <div class="cuota-info">
           <div class="cuota-monto">${formatearPesos(cuota.total)}</div>
           <div class="cuota-fecha">Vence: ${formatearFechaCorta(new Date(cuota.fechaISO))}</div>
           ${fechaDePago ? `<div class="cuota-fecha cuota-fecha-pago">Pago: ${formatearFechaCorta(new Date(fechaDePago))}</div>` : ''}
+          ${puntualidadHtml}
           ${esAbonada ? `<div class="cuota-dias-atraso abonada">Abonado ${formatearPesos(abonadoParcial)} de ${formatearPesos(cuota.total)}</div><div class="cuota-saldo-parcial">Saldo: ${formatearPesos(cuota.total - abonadoParcial)}</div>` : ''}
         </div>
         <div class="cuota-estado-col">
