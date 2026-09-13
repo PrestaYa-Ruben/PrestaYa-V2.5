@@ -14219,6 +14219,38 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   });
   selectFrecuencia.addEventListener('change', sincronizarInteresCuota);
 
+  // ==========================================================
+  // NUEVO — a pedido: autocompletar el % de Interés según Cuotas y
+  // Frecuencia (bloques de +10% cada N cuotas, distinto por frecuencia:
+  // 24 en Diario, 4 en Semanal, 2 en Quincenal, 1 en Mensual). Es un
+  // PUNTO DE PARTIDA automático — el campo sigue siendo 100% editable a
+  // mano; si el usuario lo cambia, ese valor se respeta tal cual hasta
+  // que vuelva a tocar Cuotas o Frecuencia (ahí se recalcula de nuevo).
+  // IMPORTANTE: no reemplaza ni modifica calcularCuotaDesdeInteres,
+  // calcularInteresDesdeCuota ni sincronizarInteresCuota — solo llena el
+  // campo Interés y llama a sincronizarInteresCuota() ya existente para
+  // que la Cuota deseada se recalcule con la MISMA fórmula de siempre.
+  const BLOQUE_INTERES_POR_FRECUENCIA = { diario:24, semanal:4, quincenal:2, mensual:1 };
+  function calcularInteresAutomaticoPorBloque(cuotas, frecuencia){
+    const bloque = BLOQUE_INTERES_POR_FRECUENCIA[frecuencia];
+    if(!bloque || !cuotas || cuotas <= 0) return null;
+    return Math.ceil(cuotas / bloque) * 10;
+  }
+  function autocompletarInteresPorBloque(){
+    // Solo aplica en Modo 1 (% Interés como dato de entrada) — en Modo 2
+    // el campo de Interés ya es un valor CALCULADO desde la Cuota
+    // deseada, y tocarlo ahí rompería esa relación en vez de respetarla.
+    if(!modoInteresActivo) return;
+    const cuotas = parseInt(inputCuotasPrestamo.value, 10) || 0;
+    const porcentaje = calcularInteresAutomaticoPorBloque(cuotas, selectFrecuencia.value);
+    if(porcentaje === null) return;
+    inputTasaInteres.value = porcentaje.toFixed(2);
+    interesEditadoManualmente = false; // se acaba de autocompletar: no es una edición manual del usuario
+    sincronizarInteresCuota(); // dispara el recálculo YA EXISTENTE de "Cuota deseada"
+  }
+  inputCuotasPrestamo.addEventListener('input', autocompletarInteresPorBloque);
+  selectFrecuencia.addEventListener('change', autocompletarInteresPorBloque);
+
   // Botón de flechas ↔: cambia cuál de los dos campos actúa como dato de
   // entrada (Modo 1: % Interés | Modo 2: Cuota deseada). El otro campo pasa
   // a ser calculado automáticamente y queda deshabilitado.
