@@ -2445,6 +2445,10 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .cuota-estado-col{ display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0; }
 .cuota-dias-atraso{ font-size:11.5px; font-weight:600; color:var(--danger); white-space:nowrap; }
 .cuota-dias-atraso.abonada{ color:var(--primary); white-space:normal; }
+/* NUEVO: a pedido — "Saldo: $X" debajo de "Abonado $X de $Y", en cuotas
+   con pago parcial (Opción B: el monto grande de arriba sigue siendo
+   siempre el valor total de la cuota, sin excepciones). */
+.cuota-saldo-parcial{ font-size:11.5px; font-weight:700; color:var(--primary); margin-top:2px; }
 
 .cuota-accion{
   width:38px;
@@ -17741,7 +17745,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           <div class="cuota-monto">${formatearPesos(cuota.total)}</div>
           <div class="cuota-fecha">Vence: ${formatearFechaCorta(new Date(cuota.fechaISO))}</div>
           ${fechaDePago ? `<div class="cuota-fecha cuota-fecha-pago">Pago: ${formatearFechaCorta(new Date(fechaDePago))}</div>` : ''}
-          ${esAbonada ? `<div class="cuota-dias-atraso abonada">Abonado ${formatearPesos(abonadoParcial)} de ${formatearPesos(cuota.total)}</div>` : ''}
+          ${esAbonada ? `<div class="cuota-dias-atraso abonada">Abonado ${formatearPesos(abonadoParcial)} de ${formatearPesos(cuota.total)}</div><div class="cuota-saldo-parcial">Saldo: ${formatearPesos(cuota.total - abonadoParcial)}</div>` : ''}
         </div>
         <div class="cuota-estado-col">
           <div class="cuota-badge ${estadoClase}">${estadoTexto}</div>
