@@ -2428,7 +2428,7 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .cuota-monto{ font-size:16px; font-weight:600; color:var(--text); margin-bottom:3px; letter-spacing:-0.2px; }
 .cuota-fecha{ font-size:13px; color:var(--text-secondary); font-weight:400; }
 .cuota-puntualidad{ font-size:13px; font-weight:700; margin-top:1px; } /* NUEVO: color se define en línea (azul o rojo) según calcularPuntualidadPago */
-.cuota-fecha.cuota-fecha-pago{ color:var(--success); font-weight:500; margin-top:1px; }
+.cuota-fecha.cuota-fecha-pago{ color:#00C853; font-weight:700; margin-top:1px; } /* CORREGIDO: antes var(--success) en peso normal — a pedido, verde más vibrante y en negrita para que resalte más */
 
 .cuota-badge{
   font-size:12px;
@@ -15719,7 +15719,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(!resultado) return '';
     if(resultado.tipo === 'puntual') return 'PAGO A TIEMPO';
     const plural = resultado.dias === 1 ? 'DÍA' : 'DÍAS';
-    return 'PAGO ' + resultado.dias + ' ' + plural + ' ' + (resultado.tipo === 'anticipado' ? 'ANTICIPADO' : 'TARDE');
+    return 'PAGO ' + resultado.dias + ' ' + plural + ' ' + (resultado.tipo === 'anticipado' ? 'ANTES' : 'TARDE');
   }
 
   function fechaPagoCuota(prestamo, numeroCuota){
