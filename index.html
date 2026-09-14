@@ -3062,6 +3062,56 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 /* ==========================================================
    MENÚ DE OPCIONES DE LA CUOTA (bottom sheet moderno y compacto)
    ========================================================== */
+/* NUEVO: menú lateral (hamburguesa) de Inicio — panel que se desliza
+   desde la izquierda, mismo lenguaje de movimiento que el resto de
+   overlays de la app (curva estándar, sin rebote). */
+.menu-lateral-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(20,30,60,0.45);
+  z-index:310;
+  opacity:0;
+  transition:opacity .26s ease;
+}
+.menu-lateral-overlay.abierto{ opacity:1; }
+.menu-lateral-panel{
+  position:absolute;
+  top:0;
+  left:0;
+  height:100%;
+  width:80%;
+  max-width:300px;
+  background:var(--surface);
+  box-shadow:4px 0 20px rgba(20,30,60,0.18);
+  transform:translateX(-100%);
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
+  padding:env(safe-area-inset-top) 0 16px;
+  overflow-y:auto;
+}
+.menu-lateral-overlay.abierto .menu-lateral-panel{ transform:translateX(0); }
+.menu-lateral-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 18px 14px;
+  margin-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.menu-lateral-logo{ font-size:20px; font-weight:800; color:var(--primary); }
+.menu-lateral-cerrar{ width:34px; height:34px; display:flex; align-items:center; justify-content:center; color:var(--text-secondary); flex-shrink:0; }
+.menu-lateral-cerrar svg{ width:19px; height:19px; stroke:currentColor; }
+.menu-lateral-item{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 18px;
+  cursor:pointer;
+}
+.menu-lateral-item:active{ background:var(--background); }
+.menu-lateral-item .icon-container{ width:38px; height:38px; flex-shrink:0; }
+.menu-lateral-item span{ font-size:15px; font-weight:600; color:var(--text); }
+.menu-lateral-panel hr.loan-divider{ margin:10px 18px; width:auto; }
+
 .action-sheet-overlay{
   position:fixed;
   inset:0;
@@ -3157,6 +3207,91 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
    pantalla de atrás por encima de la imagen, dando la sensación de que
    estaba recortada arriba. También se permite desplazar verticalmente
    por si la imagen es más alta que la pantalla (documentos largos). */
+/* ==========================================================
+   REEMPLAZADO — a pedido: CSS del nuevo editor de "Documentos" (notas
+   libres), reemplaza el CSS del sistema anterior de documentos
+   estructurados (Paz y Salvo, Contrato, etc.).
+   ========================================================== */
+.documentos-libres-vacio{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  padding:48px 24px;
+  color:var(--text-secondary);
+}
+.documentos-libres-vacio svg{ stroke:var(--border); margin-bottom:14px; }
+.documentos-libres-vacio-titulo{ font-size:16px; font-weight:700; color:var(--text); margin-bottom:6px; }
+.documentos-libres-vacio-texto{ font-size:13.5px; }
+
+.documento-libre-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:14px 14px;
+  margin-bottom:10px;
+}
+.documento-libre-item-info{ flex:1; min-width:0; cursor:pointer; }
+.documento-libre-item-nombre{ font-size:15px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.documento-libre-item-fecha{ font-size:12px; color:var(--text-secondary); margin-top:1px; }
+.documento-libre-item-extracto{ font-size:13px; color:var(--text-secondary); margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.documento-libre-item-eliminar{
+  width:38px;
+  height:38px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--danger);
+  background:var(--danger-light);
+  border-radius:var(--radius-full);
+}
+.documento-libre-item-eliminar svg{ width:17px; height:17px; stroke:currentColor; }
+
+.documento-libre-toolbar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
+.documento-libre-tool-btn{
+  padding:8px 14px;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-full);
+  font-size:13px;
+  font-weight:600;
+  color:var(--text);
+  background:var(--surface);
+}
+.documento-libre-tool-btn.activo{ background:var(--primary); border-color:var(--primary); color:#fff; }
+.documento-libre-toolbar-divisor{ width:1.5px; height:22px; background:var(--border); }
+.documento-libre-editable{
+  min-height:260px;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:14px;
+  font-size:14px;
+  line-height:1.5;
+  color:var(--text);
+  margin-bottom:18px;
+  overflow-wrap:break-word;
+}
+.documento-libre-editable:focus{ outline:none; border-color:var(--primary); }
+.documento-libre-editable:empty::before{
+  content:attr(data-placeholder);
+  color:var(--text-secondary);
+}
+.documento-libre-acciones-fila{
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
+}
+.documento-libre-acciones-fila > button{ flex:1; display:flex; align-items:center; justify-content:center; gap:7px; }
+
 .documento-preview-overlay-fix{
   background:rgba(10,16,30,0.72) !important;
   align-items:flex-start !important;
@@ -4906,6 +5041,46 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
      ========================================================== -->
 <div class="app" id="screen-inicio">
 
+  <!-- NUEVO: menú lateral (hamburguesa) — reemplaza el acceso directo a
+       Ajustes desde Inicio. Reúne accesos que hoy viven "escondidos"
+       dentro de Ajustes (Estadísticas, Ranking, Documentos, Rutas), más
+       Ajustes mismo. Cada ítem reutiliza tal cual la función/flujo ya
+       existente de cada pantalla — no se duplica ninguna lógica. -->
+  <div id="menu-lateral-overlay" class="menu-lateral-overlay" style="display:none;">
+    <div class="menu-lateral-panel" id="menu-lateral-panel">
+      <div class="menu-lateral-header">
+        <div class="menu-lateral-logo">Presta<span style="color:var(--success);">Ya</span></div>
+        <button type="button" class="menu-lateral-cerrar" id="btn-cerrar-menu-lateral" aria-label="Cerrar menú">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="menu-lateral-item" id="menu-lateral-estadisticas">
+        <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg></div>
+        <span>Estadísticas</span>
+      </div>
+      <div class="menu-lateral-item" id="menu-lateral-ranking">
+        <div class="icon-container orange"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v6a5 5 0 0 1-10 0V4Z"></path><path d="M17 5h3a2 2 0 0 1 0 4h-1"></path><path d="M7 5H4a2 2 0 0 0 0 4h1"></path></svg></div>
+        <span>Ranking de Clientes</span>
+      </div>
+      <div class="menu-lateral-item" id="menu-lateral-documentos">
+        <div class="icon-container green"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg></div>
+        <span>Documentos</span>
+      </div>
+      <div class="menu-lateral-item" id="menu-lateral-rutas">
+        <div class="icon-container red"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 1.447-.894L9 7m0 13 6-3m-6 3V7m6 10 4.553 2.276A1 1 0 0 0 21 18.382V7.618a1 1 0 0 0-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg></div>
+        <span>Rutas / Cobradores</span>
+      </div>
+
+      <hr class="loan-divider" style="margin:10px 0;">
+
+      <div class="menu-lateral-item" id="menu-lateral-ajustes">
+        <div class="icon-container gris"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>
+        <span>Ajustes</span>
+      </div>
+    </div>
+  </div>
+
   <!-- NUEVO: acceso al Simulador de Crédito — botón flotante circular,
        totalmente independiente del resto de la app (no lee ni guarda
        ningún dato real). -->
@@ -4932,8 +5107,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="m9 16 2 2 4-4"></path></svg>
         <span class="pagan-hoy-badge" id="pagan-hoy-badge" style="display:none;">0</span>
       </button>
-      <button class="settings-btn" aria-label="Configuración">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      <button class="settings-btn" id="btn-abrir-menu-lateral" aria-label="Abrir menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
       </button>
     </div>
   </header>
@@ -7852,14 +8027,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 </div>
 
 <!-- ==========================================================
-     NUEVO: MÓDULO "DOCUMENTOS" (Ajustes → Documentos)
-     Paz y Salvo, Notificación de Bloqueo de Perfil, Tope Máximo de
-     Préstamo, Contrato de Préstamo y Pagaré. Un mismo editor
-     dinámico y un mismo generador de imagen (canvas, recortado a
-     bordes con esquinas redondeadas, igual que los comprobantes de
-     pago) sirven para los 5 tipos. Se guardan en localStorage con su
-     propia clave — no toca ninguna fórmula ni dato financiero
-     existente del sistema.
+     REEMPLAZADO — a pedido: el módulo "Documentos" (Paz y Salvo,
+     Contrato, Pagaré, etc., ligados a un cliente/crédito específico)
+     se reemplazó por completo por un editor de NOTAS LIBRES, sin
+     ningún campo estructurado ni relación con clientes/préstamos/datos
+     financieros. Su propia llave de localStorage, totalmente aparte
+     (ver DOCUMENTOS_LIBRES_KEY).
      ========================================================== -->
 <div class="app" id="screen-documentos" style="display:none;">
 
@@ -7871,198 +8044,76 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <span class="header-spacer"></span>
   </header>
 
-  <div class="search-row">
-    <div class="search-box">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="text" id="buscador-documentos" placeholder="Buscar por cliente o tipo..." aria-label="Buscar documento">
-    </div>
-    <button class="add-client-btn" id="btn-nuevo-documento" aria-label="Nuevo documento">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-    </button>
-  </div>
-
   <section class="detail-body">
-    <div id="lista-documentos"></div>
+    <button type="button" class="primary-button" id="btn-nuevo-documento-libre" style="width:100%; margin-bottom:18px; display:flex; align-items:center; justify-content:center; gap:8px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Nuevo documento
+    </button>
+
+    <div id="lista-documentos-libres"></div>
+
+    <div id="documentos-libres-vacio" class="documentos-libres-vacio" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="52" height="52"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+      <div class="documentos-libres-vacio-titulo">Todavía no tienes documentos</div>
+      <div class="documentos-libres-vacio-texto">Toca "Nuevo documento" para crear el primero.</div>
+    </div>
   </section>
 
 </div>
 
-<!-- Elegir tipo de documento nuevo -->
-<div id="documento-tipo-overlay" class="action-sheet-overlay" style="display:none;">
-  <div class="action-sheet-wrap">
-    <div class="action-sheet-card">
-      <div class="action-sheet-item" data-tipo="paz_y_salvo">
-        <div class="icon-container green">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"></path><circle cx="12" cy="12" r="9"></circle></svg>
-        </div>
-        <span>Paz y Salvo</span>
-      </div>
-      <div class="action-sheet-item" data-tipo="bloqueo_perfil">
-        <div class="icon-container red">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-        </div>
-        <span>Notificación de Bloqueo</span>
-      </div>
-      <div class="action-sheet-item" data-tipo="tope_maximo">
-        <div class="icon-container orange">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"></path><path d="M18 20V4"></path><path d="M6 20v-4"></path></svg>
-        </div>
-        <span>Tope Máximo de Préstamo</span>
-      </div>
-      <div class="action-sheet-item" data-tipo="contrato">
-        <div class="icon-container blue">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="15" y2="17"></line></svg>
-        </div>
-        <span>Contrato de Préstamo</span>
-      </div>
-      <div class="action-sheet-item" data-tipo="pagare">
-        <div class="icon-container blue">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line></svg>
-        </div>
-        <span>Pagaré</span>
-      </div>
-      <!-- NUEVO: documento libre, sin campos ni cálculos -->
-      <div class="action-sheet-item" data-tipo="libre">
-        <div class="icon-container orange">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-        </div>
-        <span>Documento libre</span>
-      </div>
-    </div>
-    <div class="action-sheet-card action-sheet-cancelar">
-      <div class="action-sheet-item centrado" id="accion-cancelar-tipo-documento">
-        <span>Cancelar</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Menú de acciones de un documento ya guardado -->
-<div id="documento-menu-overlay" class="action-sheet-overlay" style="display:none;">
-  <div class="action-sheet-wrap">
-    <div class="action-sheet-card">
-      <div class="action-sheet-item" id="accion-documento-ver">
-        <div class="icon-container green">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M21 15l-5-5L5 21"></path></svg>
-        </div>
-        <span>Ver Imagen</span>
-      </div>
-      <div class="action-sheet-item" id="accion-documento-compartir">
-        <div class="icon-container green">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-        </div>
-        <span>Compartir Imagen</span>
-      </div>
-      <div class="action-sheet-item" id="accion-documento-editar">
-        <div class="icon-container blue">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-        </div>
-        <span>Editar</span>
-      </div>
-      <div class="action-sheet-item danger" id="accion-documento-eliminar">
-        <div class="icon-container red">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-        </div>
-        <span>Eliminar</span>
-      </div>
-    </div>
-    <div class="action-sheet-card action-sheet-cancelar">
-      <div class="action-sheet-item centrado" id="accion-cancelar-menu-documento">
-        <span>Cancelar</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Editor de documento (crear / editar) — campos dinámicos según el tipo -->
-<div class="app" id="screen-documento-editor" style="display:none;">
+<!-- Editor de documento libre (crear / editar) -->
+<div class="app" id="screen-documento-libre-editor" style="display:none;">
   <header class="header">
-    <button class="back-btn" id="btn-cerrar-documento-editor" aria-label="Volver">
+    <button class="back-btn" id="btn-cancelar-documento-libre" aria-label="Cancelar">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
     </button>
-    <h1 id="titulo-documento-editor">Nuevo Documento</h1>
+    <h1 id="titulo-documento-libre-editor">Nuevo Documento</h1>
     <span class="header-spacer"></span>
   </header>
 
-  <form class="form-section" id="form-documento-editor">
-
-    <div class="form-field" id="documento-cliente-relacionado-wrap">
-      <label class="field-label" for="input-documento-cliente">Cliente relacionado (opcional)</label>
-      <input class="field-input" id="input-documento-cliente" type="text" placeholder="Escribe para buscar un cliente" autocomplete="off">
-      <div id="documento-cliente-resultados" class="documento-cliente-resultados"></div>
+  <section class="detail-body" style="padding-top:16px;">
+    <div class="form-field" style="margin-bottom:16px;">
+      <label class="field-label" for="input-nombre-documento-libre">Nombre del documento</label>
+      <input class="field-input" id="input-nombre-documento-libre" type="text" placeholder="Ej. Recordatorio de pago" autocomplete="off">
     </div>
 
-    <div id="documento-campos-dinamicos"></div>
+    <label class="field-label" style="margin-bottom:8px; display:block;">Contenido</label>
+    <div class="documento-libre-toolbar">
+      <button type="button" class="documento-libre-tool-btn" id="btn-doc-libre-negrita" aria-label="Negrita"><b>N</b></button>
+      <div class="documento-libre-toolbar-divisor"></div>
+      <button type="button" class="documento-libre-tool-btn" data-size="14">Normal</button>
+      <button type="button" class="documento-libre-tool-btn" data-size="19">Grande</button>
+      <button type="button" class="documento-libre-tool-btn" data-size="25">Más grande</button>
+    </div>
+    <div id="documento-libre-contenido" class="documento-libre-editable" contenteditable="true" data-placeholder="Escribe o pega tu texto aquí..."></div>
 
-    <!-- Solo para Contrato / Pagaré / Documento libre: cuerpo largo editable -->
-    <div id="documento-cuerpo-wrap" style="display:none;">
-      <button type="button" class="btn-outline-share" id="btn-generar-cuerpo-documento" style="width:100%; margin:6px 0 14px; display:flex; align-items:center; justify-content:center; gap:8px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M21 12a9 9 0 1 1-3-6.7"></path><polyline points="21 3 21 9 15 9"></polyline></svg>
-        Generar texto con estos datos
+    <div class="documento-libre-acciones-fila">
+      <button type="button" class="btn-outline-share" id="btn-cancelar-documento-libre-2">Cancelar</button>
+      <button type="button" class="primary-button" id="btn-guardar-documento-libre">Guardar</button>
+    </div>
+    <div class="documento-libre-acciones-fila">
+      <button type="button" class="btn-outline-share" id="btn-copiar-texto-documento-libre">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        Copiar texto
       </button>
-      <!-- NUEVO: tamaño/estilo del texto — solo para tipos con
-           permiteEstilo:true (por ahora, Documento libre). Aplica al
-           CUERPO COMPLETO del documento (no es texto enriquecido por
-           selección, es un único estilo general), así la imagen final se
-           genera de forma simple y confiable. -->
-      <div class="form-field" id="documento-estilo-wrap" style="display:none;">
-        <label class="field-label">Contenido</label>
-        <div class="documento-estilo-botones">
-          <button type="button" class="documento-estilo-btn" data-estilo="negrita"><b>N</b> Negrita</button>
-          <button type="button" class="documento-estilo-btn activo" data-estilo="normal">Normal</button>
-          <button type="button" class="documento-estilo-btn" data-estilo="grande">Grande</button>
-          <button type="button" class="documento-estilo-btn" data-estilo="mas_grande">Más grande</button>
-        </div>
-      </div>
-      <div class="form-field">
-        <label class="field-label" for="documento-cuerpo-editable" id="label-documento-cuerpo-editable">Texto del documento (editable)</label>
-        <textarea class="field-input field-textarea" id="documento-cuerpo-editable" rows="12" placeholder="Toca &quot;Generar texto con estos datos&quot; para crear un borrador, o escribe aquí directamente."></textarea>
-      </div>
-      <p class="documento-nota-legal" id="documento-nota-legal">Plantilla base editable. Antes de usarla formalmente, te recomendamos hacerla revisar por un abogado.</p>
+      <button type="button" class="btn-outline-share" id="btn-compartir-imagen-documento-libre">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+        Compartir imagen
+      </button>
     </div>
-
-    <div id="documento-firmas-contenedor"></div>
-
-    <button type="button" class="primary-button" id="btn-guardar-documento" style="margin-top:6px;">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-      <span id="texto-btn-guardar-documento">Guardar y Generar Imagen</span>
-    </button>
-  </form>
+  </section>
 </div>
 
-<!-- Modal de firma (pad de dibujo a mano) -->
-<div id="documento-firma-overlay" class="confirm-modal-overlay" style="display:none;">
-  <div class="firma-pad-card">
-    <div class="confirm-modal-title" id="firma-pad-titulo">Firma</div>
-    <div class="firma-pad-wrap">
-      <canvas id="firma-pad-canvas"></canvas>
-    </div>
-    <p class="compartir-comprobante-ayuda" style="margin:0 0 14px;">Firma con el dedo dentro del recuadro.</p>
-    <div class="confirm-modal-botones">
-      <button type="button" class="confirm-modal-btn cancelar" id="btn-firma-borrar">Borrar</button>
-      <button type="button" class="confirm-modal-btn confirmar" id="btn-firma-guardar" style="background:var(--primary);">Guardar Firma</button>
-    </div>
-    <button type="button" class="btn-outline-share" id="btn-firma-cancelar" style="width:100%; margin-top:10px;">Cancelar</button>
-  </div>
-</div>
-
-<!-- Vista previa del documento final generado (compartir / descargar) -->
-<div id="documento-preview-overlay" class="confirm-modal-overlay documento-preview-overlay-fix" style="display:none;">
+<!-- Vista previa de la imagen antes de compartir -->
+<div id="documento-libre-preview-overlay" class="confirm-modal-overlay documento-preview-overlay-fix" style="display:none;">
   <div class="imagen-comprobante-card">
-    <img id="documento-preview-img" src="" alt="Documento generado">
+    <img id="documento-libre-preview-img" src="" alt="Documento generado">
     <p class="compartir-comprobante-ayuda">Mantén presionada la imagen para guardarla en tu galería.</p>
-    <button type="button" class="primary-button" id="btn-documento-preview-compartir" style="width:100%; margin-top:10px; display:flex; align-items:center; justify-content:center; gap:8px;">
+    <button type="button" class="primary-button" id="btn-documento-libre-preview-compartir" style="width:100%; margin-top:10px; display:flex; align-items:center; justify-content:center; gap:8px;">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
       Compartir
     </button>
-    <a class="primary-button" id="btn-documento-preview-whatsapp" href="#" style="width:100%; margin-top:10px; text-decoration:none; display:none; align-items:center; justify-content:center; gap:8px; background:#22A559;">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-      Abrir chat de WhatsApp
-    </a>
-    <!-- CORREGIDO: se quitó "Descargar imagen" — mantener presionada la
-         imagen ya ofrece esa misma opción (guardar en la galería), así
-         que este botón era redundante. -->
-    <button type="button" class="btn-outline-share" id="btn-cerrar-documento-preview" style="width:100%; margin-top:10px;">Cerrar</button>
+    <button type="button" class="btn-outline-share" id="btn-cerrar-documento-libre-preview" style="width:100%; margin-top:10px;">Cerrar</button>
   </div>
 </div>
 
@@ -9752,15 +9803,20 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   const screenInicio = mainScreens.inicio;
   const screenAjustes = document.getElementById('screen-ajustes');
   const bottomNav = document.querySelector('.bottom-nav');
-  const btnAbrirAjustes = document.querySelector('.settings-btn');
+  const btnAbrirMenuLateral = document.getElementById('btn-abrir-menu-lateral');
   const btnCerrarAjustes = document.getElementById('btn-cerrar-ajustes');
 
-  btnAbrirAjustes.addEventListener('click', ()=>{
+  // CORREGIDO: a pedido — antes este botón (entonces un engranaje) abría
+  // Ajustes directo. Ahora Ajustes vive dentro del nuevo menú lateral
+  // (ver #menu-lateral-overlay más abajo), así que se conserva la MISMA
+  // lógica de apertura, solo que ahora vive en una función con nombre
+  // para poder llamarla también desde el menú lateral.
+  function abrirAjustes(){
     screenInicio.style.display = 'none';
     screenAjustes.style.display = 'block';
     bottomNav.style.display = 'none';
     window.scrollTo(0,0);
-  });
+  }
 
   btnCerrarAjustes.addEventListener('click', ()=>{
     screenAjustes.style.display = 'none';
@@ -9770,6 +9826,55 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
     document.querySelector('.nav-item[data-nav="inicio"]').classList.add('active');
     window.scrollTo(0,0);
+  });
+
+  // ==========================================================
+  // NUEVO — Menú lateral (hamburguesa) de Inicio. Reúne Estadísticas,
+  // Ranking de Clientes, Documentos y Rutas/Cobradores (hasta ahora
+  // solo accesibles entrando primero a Ajustes) más Ajustes mismo.
+  // Estadísticas/Ranking/Documentos, al cerrarse, siempre regresan a
+  // Ajustes (así están construidas desde antes) — en vez de reescribir
+  // esos 3 cierres, este menú simplemente "pasa por" Ajustes en el mismo
+  // instante (mismo tick de JS, sin parpadeo visible) y de inmediato
+  // dispara el clic de la tarjeta real de Ajustes que abre cada una —
+  // cero lógica duplicada, cero funciones existentes modificadas.
+  // ==========================================================
+  const menuLateralOverlay = document.getElementById('menu-lateral-overlay');
+  function abrirMenuLateral(){
+    menuLateralOverlay.style.display = 'block';
+    void menuLateralOverlay.offsetWidth; // fuerza reflow para que la transición se vea
+    menuLateralOverlay.classList.add('abierto');
+  }
+  function cerrarMenuLateral(){
+    menuLateralOverlay.classList.remove('abierto');
+    setTimeout(()=> menuLateralOverlay.style.display = 'none', 280);
+  }
+  btnAbrirMenuLateral.addEventListener('click', abrirMenuLateral);
+  document.getElementById('btn-cerrar-menu-lateral').addEventListener('click', cerrarMenuLateral);
+  menuLateralOverlay.addEventListener('click', (e)=>{ if(e.target === menuLateralOverlay) cerrarMenuLateral(); });
+
+  document.getElementById('menu-lateral-estadisticas').addEventListener('click', ()=>{
+    cerrarMenuLateral();
+    abrirAjustes();
+    document.getElementById('item-estadisticas').click();
+  });
+  document.getElementById('menu-lateral-ranking').addEventListener('click', ()=>{
+    cerrarMenuLateral();
+    abrirAjustes();
+    document.getElementById('item-ranking-clientes').click();
+  });
+  document.getElementById('menu-lateral-documentos').addEventListener('click', ()=>{
+    cerrarMenuLateral();
+    abrirAjustes();
+    document.getElementById('item-documentos').click();
+  });
+  document.getElementById('menu-lateral-rutas').addEventListener('click', ()=>{
+    cerrarMenuLateral();
+    abrirAdministrarRutas(); // modal independiente — no pasa por Ajustes
+  });
+  document.getElementById('menu-lateral-ajustes').addEventListener('click', ()=>{
+    cerrarMenuLateral();
+    abrirAjustes();
   });
 
   // ==========================================================
@@ -10148,7 +10253,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     'prestapp_ocultar_codigo_recibo',
     'prestapp_presupuestos_ruta',
     'prestapp_orden_ajustes',
-    'prestapp_documentos'
+    'prestapp_documentos_libres'
   ];
 
   const screenCopiaSeguridad = document.getElementById('screen-copia-seguridad');
@@ -11885,390 +11990,39 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   });
 
   // ==========================================================
-  // NUEVO — MÓDULO "DOCUMENTOS" (Ajustes → Documentos)
-  // Paz y Salvo, Notificación de Bloqueo, Tope Máximo de Préstamo,
-  // Contrato de Préstamo y Pagaré. Un mismo editor dinámico y un
-  // mismo generador de imagen (canvas, recortado exactamente a su
-  // contenido con esquinas redondeadas, igual que los comprobantes
-  // de pago) sirven para los 5 tipos. Se guardan en localStorage con
-  // su propia clave — no toca ninguna fórmula ni dato financiero
-  // existente del sistema.
+  // REEMPLAZADO — a pedido: el módulo "Documentos" (Paz y Salvo,
+  // Contrato, Pagaré, Tope Máximo, Bloqueo de Perfil — todos ligados a
+  // un cliente/crédito específico) se reemplazó por completo por un
+  // editor de NOTAS LIBRES: sin campos estructurados, sin ninguna
+  // relación con clientes/préstamos/datos financieros existentes. Su
+  // propia llave de localStorage, totalmente aparte.
   // ==========================================================
 
-  const DOCUMENTOS_KEY = 'prestapp_documentos';
-  let documentosEnMemoria = [];
+  const screenDocumentos = document.getElementById('screen-documentos');
+  const DOCUMENTOS_LIBRES_KEY = 'prestapp_documentos_libres';
+  let documentosLibresEnMemoria = [];
 
-  function cargarDocumentos(){
+  function cargarDocumentosLibres(){
     try{
-      const guardado = localStorage.getItem(DOCUMENTOS_KEY);
+      const guardado = localStorage.getItem(DOCUMENTOS_LIBRES_KEY);
       return guardado ? JSON.parse(guardado) : [];
     }catch(err){
       console.warn('Almacenamiento local no disponible para documentos; se usará memoria temporal.', err);
-      return documentosEnMemoria;
+      return documentosLibresEnMemoria;
     }
   }
-  function guardarListaDocumentos(lista){
-    try{ localStorage.setItem(DOCUMENTOS_KEY, JSON.stringify(lista)); }
+  function guardarDocumentosLibres(lista){
+    try{ localStorage.setItem(DOCUMENTOS_LIBRES_KEY, JSON.stringify(lista)); }
     catch(err){
       console.warn('No se pudo guardar documentos en localStorage; se usará memoria temporal.', err);
-      documentosEnMemoria = lista;
+      documentosLibresEnMemoria = lista;
     }
   }
-  let documentosGuardados = cargarDocumentos();
-
-  // ---------- Números en letras (para "monto en letras" de Contrato y Pagaré) ----------
-  function numeroALetras(numero){
-    let n = Math.round(Math.abs(numero || 0));
-    if(n === 0) return 'CERO';
-    if(n >= 1000000000) return String(n); // fuera de rango razonable para este uso
-
-    const UNIDADES = ['', 'UN', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE'];
-    const ESPECIALES_10_19 = ['DIEZ','ONCE','DOCE','TRECE','CATORCE','QUINCE','DIECISÉIS','DIECISIETE','DIECIOCHO','DIECINUEVE'];
-    const VEINTES = ['VEINTE','VEINTIÚN','VEINTIDÓS','VEINTITRÉS','VEINTICUATRO','VEINTICINCO','VEINTISÉIS','VEINTISIETE','VEINTIOCHO','VEINTINUEVE'];
-    const DECENAS = ['','DIEZ','VEINTE','TREINTA','CUARENTA','CINCUENTA','SESENTA','SETENTA','OCHENTA','NOVENTA'];
-    const CENTENAS = ['','CIENTO','DOSCIENTOS','TRESCIENTOS','CUATROCIENTOS','QUINIENTOS','SEISCIENTOS','SETECIENTOS','OCHOCIENTOS','NOVECIENTOS'];
-
-    function convertirDecenas(n){
-      if(n === 0) return '';
-      if(n < 10) return UNIDADES[n];
-      if(n < 20) return ESPECIALES_10_19[n-10];
-      const d = Math.floor(n/10), u = n%10;
-      if(d === 2) return VEINTES[u];
-      let texto = DECENAS[d];
-      if(u > 0) texto += ' Y ' + UNIDADES[u];
-      return texto;
-    }
-    function convertirCentenas(n){
-      if(n === 0) return '';
-      if(n === 100) return 'CIEN';
-      const c = Math.floor(n/100), resto = n%100;
-      let texto = '';
-      if(c > 0) texto += CENTENAS[c];
-      if(resto > 0) texto += (texto ? ' ' : '') + convertirDecenas(resto);
-      return texto;
-    }
-
-    const millones = Math.floor(n / 1000000);
-    const miles = Math.floor((n % 1000000) / 1000);
-    const cientos = n % 1000;
-
-    let partes = [];
-    if(millones > 0){
-      if(millones === 1) partes.push('UN MILLÓN');
-      else partes.push(convertirCentenas(millones) + ' MILLONES');
-    }
-    if(miles > 0){
-      if(miles === 1) partes.push('MIL');
-      else partes.push(convertirCentenas(miles) + ' MIL');
-    }
-    if(cientos > 0) partes.push(convertirCentenas(cientos));
-    return partes.join(' ').replace(/\s+/g, ' ').trim();
-  }
-  function montoEnLetras(numero){
-    const n = Math.round(Math.abs(numero || 0));
-    // Regla del español: un millón "redondo" (sin miles/cientos de más)
-    // lleva "DE" antes del sustantivo — "DOS MILLONES DE PESOS", pero
-    // "DOS MILLONES QUINIENTOS MIL PESOS" (sin "DE").
-    const esMillonRedondo = n > 0 && n % 1000000 === 0;
-    return numeroALetras(numero) + (esMillonRedondo ? ' DE PESOS M/CTE' : ' PESOS M/CTE');
-  }
-
-  // ---------- Fecha larga en español, para el cuerpo de los documentos ----------
-  function formatearFechaLarga(valorFecha){
-    if(!valorFecha) return '____________';
-    const d = new Date(valorFecha + 'T00:00:00');
-    if(isNaN(d)) return '____________';
-    return d.getDate() + ' de ' + NOMBRES_MES_GRAFICO[d.getMonth()].toLowerCase() + ' de ' + d.getFullYear();
-  }
-
-  // ---------- Envolver texto en canvas (word-wrap manual) ----------
-  // Respeta saltos de línea explícitos ('\n') como fin de párrafo y
-  // reparte el resto en líneas que no superen anchoMax, midiendo con
-  // el mismo ctx (y la misma fuente) que se usará para dibujar.
-  function envolverTextoCanvas(ctx, texto, anchoMax){
-    const parrafos = String(texto || '').split('\n');
-    const lineas = [];
-    parrafos.forEach(parrafo=>{
-      if(parrafo.trim() === ''){ lineas.push(''); return; }
-      const palabras = parrafo.split(' ');
-      let lineaActual = '';
-      palabras.forEach(palabra=>{
-        const prueba = lineaActual ? lineaActual + ' ' + palabra : palabra;
-        if(ctx.measureText(prueba).width > anchoMax && lineaActual){
-          lineas.push(lineaActual);
-          lineaActual = palabra;
-        }else{
-          lineaActual = prueba;
-        }
-      });
-      lineas.push(lineaActual);
-    });
-    return lineas;
-  }
-
-  // ---------- Plantillas de cada tipo de documento ----------
-  const TIPOS_DOCUMENTO = {
-    paz_y_salvo: {
-      id: 'paz_y_salvo',
-      nombre: 'Paz y Salvo',
-      icono: 'documento',
-      largo: false,
-      campos: [
-        { id:'clienteNombre', label:'Cliente', tipo:'texto', requerido:true },
-        { id:'clienteDocumento', label:'Documento / Cédula', tipo:'texto' },
-        { id:'creditoReferencia', label:'Crédito(s) cancelado(s)', tipo:'texto', placeholder:'Ej. P-0004' },
-        { id:'montoTotal', label:'Monto total cancelado', tipo:'dinero' },
-        { id:'fecha', label:'Fecha de expedición', tipo:'fecha' },
-        { id:'ciudad', label:'Ciudad', tipo:'texto' }
-      ],
-      firmas: [{ clave:'emisor', etiqueta:'Firma autorizada' }],
-      filas(datos){
-        return [
-          ['Cliente', datos.clienteNombre || '—'],
-          ['Documento', datos.clienteDocumento || '—'],
-          ['Crédito(s)', datos.creditoReferencia || '—'],
-          ['Monto cancelado', formatearPesos(numeroDesdeCampo(datos.montoTotal))],
-          ['Fecha', formatearFechaCorta(datos.fecha ? new Date(datos.fecha + 'T00:00:00') : new Date())],
-          ['Ciudad', datos.ciudad || '—']
-        ];
-      },
-      tituloDocumento: 'Paz y Salvo',
-      leyenda(datos){
-        return 'Por medio del presente documento se certifica que ' + (datos.clienteNombre || 'el cliente') +
-          ' se encuentra a paz y salvo por concepto del crédito ' + (datos.creditoReferencia || 'relacionado') +
-          ', al haber cancelado la totalidad de la obligación.';
-      }
-    },
-    bloqueo_perfil: {
-      id: 'bloqueo_perfil',
-      nombre: 'Notificación de Bloqueo',
-      icono: 'estado',
-      largo: false,
-      campos: [
-        { id:'clienteNombre', label:'Cliente', tipo:'texto', requerido:true },
-        { id:'motivo', label:'Motivo del bloqueo', tipo:'texto', placeholder:'Ej. Mora prolongada' },
-        { id:'saldoPendiente', label:'Saldo pendiente', tipo:'dinero' },
-        { id:'fecha', label:'Fecha de bloqueo', tipo:'fecha' },
-        { id:'ciudad', label:'Ciudad', tipo:'texto' }
-      ],
-      firmas: [{ clave:'emisor', etiqueta:'Firma autorizada' }],
-      filas(datos){
-        return [
-          ['Cliente', datos.clienteNombre || '—'],
-          ['Motivo', datos.motivo || '—'],
-          ['Saldo pendiente', formatearPesos(numeroDesdeCampo(datos.saldoPendiente))],
-          ['Fecha de bloqueo', formatearFechaCorta(datos.fecha ? new Date(datos.fecha + 'T00:00:00') : new Date())],
-          ['Ciudad', datos.ciudad || '—']
-        ];
-      },
-      tituloDocumento: 'Notificación de Bloqueo de Perfil',
-      leyenda(datos){
-        return 'Se notifica a ' + (datos.clienteNombre || 'el cliente') + ' que su perfil ha sido bloqueado en el sistema por concepto de: ' +
-          (datos.motivo || 'incumplimiento') + '. El bloqueo se levantará una vez se regularice la situación.';
-      }
-    },
-    tope_maximo: {
-      id: 'tope_maximo',
-      nombre: 'Tope Máximo de Préstamo',
-      icono: 'valor',
-      largo: false,
-      campos: [
-        { id:'referenciaNombre', label:'Cliente o Ruta', tipo:'texto', requerido:true },
-        { id:'montoMaximo', label:'Monto máximo aprobado', tipo:'dinero' },
-        { id:'vigenciaDesde', label:'Vigente desde', tipo:'fecha' },
-        { id:'vigenciaHasta', label:'Vigente hasta (opcional)', tipo:'fecha' },
-        { id:'observaciones', label:'Observaciones (opcional)', tipo:'textarea' }
-      ],
-      firmas: [{ clave:'emisor', etiqueta:'Firma autorizada' }],
-      filas(datos){
-        return [
-          ['Cliente / Ruta', datos.referenciaNombre || '—'],
-          ['Monto máximo', formatearPesos(numeroDesdeCampo(datos.montoMaximo))],
-          ['Vigente desde', formatearFechaCorta(datos.vigenciaDesde ? new Date(datos.vigenciaDesde + 'T00:00:00') : new Date())],
-          ['Vigente hasta', datos.vigenciaHasta ? formatearFechaCorta(new Date(datos.vigenciaHasta + 'T00:00:00')) : 'Indefinida']
-        ];
-      },
-      tituloDocumento: 'Tope Máximo de Préstamo',
-      leyenda(datos){
-        let texto = 'Se deja constancia de que el monto máximo de préstamo aprobado para ' + (datos.referenciaNombre || 'el cliente/ruta indicado') +
-          ' es de ' + formatearPesos(numeroDesdeCampo(datos.montoMaximo)) + '.';
-        if(datos.observaciones) texto += ' Observaciones: ' + datos.observaciones;
-        return texto;
-      }
-    },
-    contrato: {
-      id: 'contrato',
-      nombre: 'Contrato de Préstamo',
-      icono: 'documento',
-      largo: true,
-      campos: [
-        { id:'clienteNombre', label:'Nombre del deudor', tipo:'texto', requerido:true },
-        { id:'clienteDocumento', label:'Cédula del deudor', tipo:'texto' },
-        { id:'clienteDireccion', label:'Dirección del deudor', tipo:'texto' },
-        { id:'monto', label:'Monto del préstamo', tipo:'dinero', requerido:true },
-        { id:'tasaInteres', label:'Tasa de interés (%)', tipo:'numero' },
-        { id:'plazoCuotas', label:'Plazo (N.° de cuotas)', tipo:'numero' },
-        { id:'frecuencia', label:'Frecuencia de pago', tipo:'texto', placeholder:'Ej. Mensual, Quincenal' },
-        { id:'fecha', label:'Fecha de suscripción', tipo:'fecha' },
-        { id:'ciudad', label:'Ciudad', tipo:'texto' }
-      ],
-      firmas: [{ clave:'emisor', etiqueta:'EL ACREEDOR' }, { clave:'deudor', etiqueta:'EL DEUDOR' }],
-      tituloDocumento: 'Contrato de Préstamo',
-      generarCuerpo(datos){
-        const nombreNegocio = obtenerNombreNegocio();
-        const monto = numeroDesdeCampo(datos.monto);
-        return 'En ' + (datos.ciudad || '____________') + ', a ' + formatearFechaLarga(datos.fecha) + ', entre ' + nombreNegocio +
-          ', en adelante EL ACREEDOR, y ' + (datos.clienteNombre || '____________') + ', identificado(a) con cédula de ciudadanía N.° ' +
-          (datos.clienteDocumento || '____________') + ', con domicilio en ' + (datos.clienteDireccion || '____________') +
-          ', en adelante EL DEUDOR, se celebra el presente contrato de mutuo (préstamo de dinero), sujeto a las siguientes cláusulas:\n\n' +
-          'PRIMERA. OBJETO. EL ACREEDOR entrega a título de préstamo a EL DEUDOR la suma de ' + formatearPesos(monto) + ' (' + montoEnLetras(monto) +
-          '), que EL DEUDOR declara recibir a su entera satisfacción.\n\n' +
-          'SEGUNDA. INTERÉS. El préstamo devengará un interés del ' + (datos.tasaInteres || '____') + '% por cada período de pago, dentro de los límites permitidos por la ley.\n\n' +
-          'TERCERA. FORMA DE PAGO. EL DEUDOR se obliga a cancelar la obligación en ' + (datos.plazoCuotas || '____') + ' cuotas de periodicidad ' +
-          (datos.frecuencia || '____________') + ', contadas a partir de la fecha del presente documento.\n\n' +
-          'CUARTA. MORA. El incumplimiento en el pago de cualquier cuota en la fecha pactada generará los intereses moratorios máximos permitidos por la ley, sin perjuicio de las demás acciones a que haya lugar.\n\n' +
-          'QUINTA. ACELERACIÓN DEL PLAZO. El no pago de dos (2) cuotas consecutivas dará derecho a EL ACREEDOR a exigir el pago total de la obligación como si el plazo estuviera vencido.\n\n' +
-          'SEXTA. JURISDICCIÓN. Para todos los efectos legales derivados de este contrato, las partes se someten a las leyes y jueces competentes de la República de Colombia.\n\n' +
-          'En constancia de haber leído y aceptado lo anterior, se firma en dos ejemplares del mismo tenor, en la ciudad y fecha arriba indicadas.';
-      }
-    },
-    pagare: {
-      id: 'pagare',
-      nombre: 'Pagaré',
-      icono: 'valor',
-      largo: true,
-      campos: [
-        { id:'clienteNombre', label:'Nombre del deudor', tipo:'texto', requerido:true },
-        { id:'clienteDocumento', label:'Cédula del deudor', tipo:'texto' },
-        { id:'monto', label:'Monto del pagaré', tipo:'dinero', requerido:true },
-        { id:'interesMora', label:'Interés de mora (%)', tipo:'numero' },
-        { id:'vencimiento', label:'Fecha de vencimiento', tipo:'fecha' },
-        { id:'fecha', label:'Fecha de suscripción', tipo:'fecha' },
-        { id:'ciudad', label:'Ciudad', tipo:'texto' }
-      ],
-      firmas: [{ clave:'deudor', etiqueta:'EL DEUDOR' }],
-      tituloDocumento: 'Pagaré',
-      generarCuerpo(datos){
-        const nombreNegocio = obtenerNombreNegocio();
-        const monto = numeroDesdeCampo(datos.monto);
-        const vencimientoTexto = datos.vencimiento ? formatearFechaLarga(datos.vencimiento) : 'a la vista';
-        return 'PAGARÉ\n\n' +
-          'Por valor recibido, yo, ' + (datos.clienteNombre || '____________') + ', identificado(a) con cédula de ciudadanía N.° ' +
-          (datos.clienteDocumento || '____________') + ', me obligo a pagar incondicionalmente a la orden de ' + nombreNegocio + ' la suma de ' +
-          formatearPesos(monto) + ' (' + montoEnLetras(monto) + '), en ' + (datos.ciudad || '____________') + ', el día ' + vencimientoTexto +
-          ', sin necesidad de requerimiento ni notificación alguna, la cual expresamente renuncio.\n\n' +
-          'En caso de mora, esta suma devengará un interés moratorio del ' + (datos.interesMora || '____') + '% por cada período de mora, hasta la cancelación total de la obligación.\n\n' +
-          'El no pago de este pagaré en la fecha de su vencimiento faculta a su tenedor legítimo para exigir el pago por la vía ejecutiva, junto con los intereses de mora y los gastos de cobranza a que haya lugar.\n\n' +
-          'Se suscribe en ' + (datos.ciudad || '____________') + ', a ' + formatearFechaLarga(datos.fecha) + '.';
-      }
-    },
-    // NUEVO: "Documento libre" — a pedido, totalmente independiente del
-    // resto del sistema (sin cálculos ni datos financieros): el usuario
-    // escribe o pega cualquier texto, le pone un nombre y lo guarda. No
-    // tiene campos estructurados ni firmas ni "generarCuerpo" (por eso el
-    // botón "Generar texto con estos datos" se oculta solo — ver
-    // renderizarCamposDocumento). Sí admite elegir el tamaño/estilo del
-    // texto (permiteEstilo:true), algo que ningún otro tipo usa.
-    libre: {
-      id: 'libre',
-      nombre: 'Documento libre',
-      icono: 'documento',
-      largo: true,
-      permiteEstilo: true,
-      campos: [
-        { id:'nombreDocumento', label:'Nombre del documento', tipo:'texto', requerido:true, placeholder:'Ej: Contrato Juan Pérez' }
-      ],
-      firmas: [],
-      tituloDocumento: '' // CORREGIDO: a pedido, se oculta el subtítulo genérico "Documento" bajo el logo
-    }
-  };
-
-  // ---------- Estado del editor ----------
-  const screenDocumentos = document.getElementById('screen-documentos');
-  const screenDocumentoEditor = document.getElementById('screen-documento-editor');
-  const listaDocumentosEl = document.getElementById('lista-documentos');
-  const buscadorDocumentos = document.getElementById('buscador-documentos');
-  let tipoDocumentoActivo = null;   // clave del tipo elegido para el editor abierto
-  let documentoEditandoId = null;   // null = creando; con valor = editando ese documento
-  let firmasActuales = {};          // { clave: dataURL } para el documento en edición
-  let clienteDocumentoSeleccionado = null; // objeto cliente elegido en el editor (o null)
-
-  // ---------- Lista ----------
-  function iconoTipoDocumento(tipoId){
-    return (TIPOS_DOCUMENTO[tipoId] && TIPOS_DOCUMENTO[tipoId].icono) || 'documento';
-  }
-  function colorTipoDocumento(tipoId){
-    if(tipoId === 'bloqueo_perfil') return 'red';
-    if(tipoId === 'tope_maximo') return 'orange';
-    if(tipoId === 'paz_y_salvo') return 'green';
-    if(tipoId === 'libre') return 'orange';
-    return 'blue';
-  }
-
-  function renderizarListaDocumentos(){
-    const filtro = (buscadorDocumentos.value || '').toLowerCase().trim();
-    const lista = documentosGuardados
-      .slice()
-      .sort((a, b) => (b.fechaModificacion || '').localeCompare(a.fechaModificacion || ''))
-      .filter(doc=>{
-        if(!filtro) return true;
-        const tipo = TIPOS_DOCUMENTO[doc.tipo];
-        const nombreCliente = (doc.campos && (doc.campos.clienteNombre || doc.campos.referenciaNombre || doc.campos.nombreDocumento)) || '';
-        return nombreCliente.toLowerCase().includes(filtro) || (tipo && tipo.nombre.toLowerCase().includes(filtro));
-      });
-
-    listaDocumentosEl.innerHTML = '';
-
-    if(lista.length === 0){
-      listaDocumentosEl.innerHTML = '<div class="empty-state">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="15" y2="17"></line></svg>' +
-        '<p>Todavía no has creado ningún documento.<br>Toca el botón "+" para crear el primero.</p></div>';
-      return;
-    }
-
-    lista.forEach(doc=>{
-      const tipo = TIPOS_DOCUMENTO[doc.tipo];
-      if(!tipo) return;
-      const nombreCliente = (doc.campos && (doc.campos.clienteNombre || doc.campos.referenciaNombre || doc.campos.nombreDocumento)) || 'Sin cliente asociado';
-
-      const card = document.createElement('div');
-      card.className = 'card documento-item';
-      card.innerHTML = `
-        <div class="icon-container ${colorTipoDocumento(doc.tipo)}"></div>
-        <div class="documento-item-info">
-          <div class="documento-item-tipo">${escaparHtml(tipo.nombre)}</div>
-          <div class="documento-item-sub">${escaparHtml(nombreCliente)} · ${formatearFechaCorta(new Date(doc.fechaModificacion || doc.fechaCreacion))}</div>
-        </div>
-        <div class="documento-item-menu-btn" aria-label="Más opciones">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
-        </div>
-      `;
-      dibujarIconoComprobanteEnDiv(card.querySelector('.icon-container'), iconoTipoDocumento(doc.tipo));
-      card.querySelector('.documento-item-menu-btn').addEventListener('click', ()=> abrirMenuDocumento(doc.id));
-      card.addEventListener('click', (e)=>{
-        if(e.target.closest('.documento-item-menu-btn')) return;
-        abrirMenuDocumento(doc.id);
-      });
-      listaDocumentosEl.appendChild(card);
-    });
-  }
-
-  // Pequeño helper: dibuja el mismo set de íconos de dibujarIconoComprobante,
-  // pero como SVG normal dentro de un <div> de la lista (no en canvas).
-  // Reutiliza rutas equivalentes a los íconos ya usados en el resto de la
-  // app para mantener consistencia visual sin duplicar un set nuevo.
-  function dibujarIconoComprobanteEnDiv(contenedor, tipoIcono){
-    const mapaSvg = {
-      documento: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="15" y2="17"></line></svg>',
-      estado: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>',
-      valor: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v10M9.5 9.5h3.5a1.75 1.75 0 1 1 0 3.5h-2a1.75 1.75 0 1 0 0 3.5H15"></path></svg>'
-    };
-    contenedor.innerHTML = mapaSvg[tipoIcono] || mapaSvg.documento;
-  }
+  let documentosLibresGuardados = cargarDocumentosLibres();
 
   document.getElementById('item-documentos').addEventListener('click', ()=>{
-    documentosGuardados = cargarDocumentos();
-    renderizarListaDocumentos();
+    documentosLibresGuardados = cargarDocumentosLibres();
+    renderizarListaDocumentosLibres();
     screenAjustes.style.display = 'none';
     screenDocumentos.style.display = 'block';
     window.scrollTo(0, 0);
@@ -12278,758 +12032,351 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     screenAjustes.style.display = 'block';
     window.scrollTo(0, 0);
   });
-  buscadorDocumentos.addEventListener('input', renderizarListaDocumentos);
 
-  // ---------- Elegir tipo de documento nuevo ----------
-  const documentoTipoOverlay = document.getElementById('documento-tipo-overlay');
-  document.getElementById('btn-nuevo-documento').addEventListener('click', ()=>{
-    documentoTipoOverlay.style.display = 'flex';
-  });
-  document.getElementById('accion-cancelar-tipo-documento').addEventListener('click', ()=>{
-    documentoTipoOverlay.style.display = 'none';
-  });
-  documentoTipoOverlay.querySelectorAll('.action-sheet-item[data-tipo]').forEach(item=>{
-    item.addEventListener('click', ()=>{
-      const tipo = item.dataset.tipo;
-      documentoTipoOverlay.style.display = 'none';
-      abrirEditorDocumento(tipo, null);
-    });
-  });
-
-  // ---------- Menú de acciones de un documento guardado ----------
-  const documentoMenuOverlay = document.getElementById('documento-menu-overlay');
-  let documentoMenuActivoId = null;
-  function abrirMenuDocumento(id){
-    documentoMenuActivoId = id;
-    documentoMenuOverlay.style.display = 'flex';
+  function extraerTextoPlanoDoc(html){
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html || '';
+    return (tmp.textContent || tmp.innerText || '').replace(/\n{3,}/g, '\n\n').trim();
   }
-  function cerrarMenuDocumento(){
-    documentoMenuOverlay.style.display = 'none';
-  }
-  document.getElementById('accion-cancelar-menu-documento').addEventListener('click', cerrarMenuDocumento);
-  documentoMenuOverlay.addEventListener('click', (e)=>{ if(e.target === documentoMenuOverlay) cerrarMenuDocumento(); });
 
-  document.getElementById('accion-documento-ver').addEventListener('click', ()=>{
-    const doc = documentosGuardados.find(d => d.id === documentoMenuActivoId);
-    cerrarMenuDocumento();
-    if(!doc) return;
-    abrirVistaPreviaDocumento(doc, false);
-  });
-  document.getElementById('accion-documento-compartir').addEventListener('click', ()=>{
-    const doc = documentosGuardados.find(d => d.id === documentoMenuActivoId);
-    cerrarMenuDocumento();
-    if(!doc) return;
-    abrirVistaPreviaDocumento(doc, true);
-  });
-  document.getElementById('accion-documento-editar').addEventListener('click', ()=>{
-    const doc = documentosGuardados.find(d => d.id === documentoMenuActivoId);
-    cerrarMenuDocumento();
-    if(!doc) return;
-    abrirEditorDocumento(doc.tipo, doc);
-  });
-  document.getElementById('accion-documento-eliminar').addEventListener('click', ()=>{
-    const id = documentoMenuActivoId;
-    cerrarMenuDocumento();
-    const doc = documentosGuardados.find(d => d.id === id);
-    if(!doc) return;
-    const tipo = TIPOS_DOCUMENTO[doc.tipo];
-    mostrarConfirmacion('¿Eliminar documento?', 'Se eliminará este ' + (tipo ? tipo.nombre : 'documento') + ' de forma permanente.', 'Eliminar', ()=>{
-      documentosGuardados = documentosGuardados.filter(d => d.id !== id);
-      guardarListaDocumentos(documentosGuardados);
-      renderizarListaDocumentos();
-    });
-  });
-
-  // ---------- Selector de cliente (dentro del editor) ----------
-  const inputDocumentoCliente = document.getElementById('input-documento-cliente');
-  const documentoClienteResultados = document.getElementById('documento-cliente-resultados');
-
-  function renderizarResultadosClienteDocumento(){
-    const texto = inputDocumentoCliente.value.trim().toLowerCase();
-    if(!texto || clienteDocumentoSeleccionado){
-      documentoClienteResultados.classList.remove('visible');
-      documentoClienteResultados.innerHTML = '';
+  function renderizarListaDocumentosLibres(){
+    const lista = document.getElementById('lista-documentos-libres');
+    const vacio = document.getElementById('documentos-libres-vacio');
+    const ordenados = documentosLibresGuardados.slice().sort((a,b)=> new Date(b.fechaModificado) - new Date(a.fechaModificado));
+    lista.innerHTML = '';
+    if(ordenados.length === 0){
+      vacio.style.display = 'flex';
       return;
     }
-    const coincidencias = clientesGuardados.filter(c => c.nombre.toLowerCase().includes(texto)).slice(0, 8);
-    if(coincidencias.length === 0){
-      documentoClienteResultados.classList.remove('visible');
-      documentoClienteResultados.innerHTML = '';
-      return;
-    }
-    documentoClienteResultados.innerHTML = '';
-    coincidencias.forEach(cliente=>{
-      const item = document.createElement('button');
-      item.type = 'button';
-      item.className = 'documento-cliente-resultado-item';
-      item.textContent = cliente.nombre;
-      item.addEventListener('click', ()=>{
-        clienteDocumentoSeleccionado = cliente;
-        inputDocumentoCliente.value = cliente.nombre;
-        documentoClienteResultados.classList.remove('visible');
-        documentoClienteResultados.innerHTML = '';
-        aplicarDatosClienteACampos(cliente);
+    vacio.style.display = 'none';
+    ordenados.forEach(doc=>{
+      const textoPlano = extraerTextoPlanoDoc(doc.contenidoHTML);
+      const extracto = textoPlano.slice(0, 90);
+      const item = document.createElement('div');
+      item.className = 'documento-libre-item';
+      item.innerHTML = `
+        <div class="documento-libre-item-info">
+          <div class="documento-libre-item-nombre">${escaparHtml(doc.nombre || 'Sin nombre')}</div>
+          <div class="documento-libre-item-fecha">${formatearFechaCorta(new Date(doc.fechaModificado))}</div>
+          <div class="documento-libre-item-extracto">${escaparHtml(extracto)}${textoPlano.length > 90 ? '…' : ''}</div>
+        </div>
+        <button type="button" class="documento-libre-item-eliminar" aria-label="Eliminar documento">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        </button>`;
+      item.querySelector('.documento-libre-item-info').addEventListener('click', ()=> abrirEditorDocumentoLibre(doc.id));
+      item.querySelector('.documento-libre-item-eliminar').addEventListener('click', (e)=>{
+        e.stopPropagation();
+        documentosLibresGuardados = documentosLibresGuardados.filter(d=>d.id !== doc.id);
+        guardarDocumentosLibres(documentosLibresGuardados);
+        renderizarListaDocumentosLibres();
+        mostrarMensajeToast('Documento eliminado');
       });
-      documentoClienteResultados.appendChild(item);
-    });
-    documentoClienteResultados.classList.add('visible');
-  }
-  inputDocumentoCliente.addEventListener('input', ()=>{
-    if(clienteDocumentoSeleccionado && inputDocumentoCliente.value !== clienteDocumentoSeleccionado.nombre){
-      clienteDocumentoSeleccionado = null;
-    }
-    renderizarResultadosClienteDocumento();
-  });
-
-  // Cuando se elige un cliente ya registrado, se precargan (si existen en
-  // la plantilla activa) los campos de nombre, cédula y dirección — el
-  // usuario puede seguir editándolos libremente después.
-  function aplicarDatosClienteACampos(cliente){
-    const mapaCampoCliente = { clienteNombre: cliente.nombre, clienteDocumento: cliente.documento, clienteDireccion: cliente.direccion, referenciaNombre: cliente.nombre };
-    Object.keys(mapaCampoCliente).forEach(campoId=>{
-      const el = document.getElementById('campo-documento-' + campoId);
-      if(el && mapaCampoCliente[campoId] && !el.value) el.value = mapaCampoCliente[campoId];
+      lista.appendChild(item);
     });
   }
 
-  // ---------- Campos dinámicos según el tipo ----------
-  const contenedorCamposDinamicos = document.getElementById('documento-campos-dinamicos');
-  const documentoCuerpoWrap = document.getElementById('documento-cuerpo-wrap');
-  const documentoCuerpoEditable = document.getElementById('documento-cuerpo-editable');
+  const screenDocumentoLibreEditor = document.getElementById('screen-documento-libre-editor');
+  const inputNombreDocumentoLibre = document.getElementById('input-nombre-documento-libre');
+  const contenidoDocumentoLibre = document.getElementById('documento-libre-contenido');
+  const tituloDocumentoLibreEditor = document.getElementById('titulo-documento-libre-editor');
+  let documentoLibreEditandoId = null;
 
-  function crearCampoHtml(campo){
-    const wrap = document.createElement('div');
-    wrap.className = 'form-field';
-    const label = document.createElement('label');
-    label.className = 'field-label';
-    label.setAttribute('for', 'campo-documento-' + campo.id);
-    label.textContent = campo.label;
-    wrap.appendChild(label);
-
-    let input;
-    if(campo.tipo === 'textarea'){
-      input = document.createElement('textarea');
-      input.className = 'field-input field-textarea';
-      input.rows = 3;
-    }else{
-      input = document.createElement('input');
-      input.className = 'field-input';
-      input.type = (campo.tipo === 'fecha') ? 'date' : (campo.tipo === 'numero' ? 'number' : 'text');
-      if(campo.tipo === 'dinero'){ input.type = 'text'; input.inputMode = 'numeric'; }
-    }
-    input.id = 'campo-documento-' + campo.id;
-    if(campo.placeholder) input.placeholder = campo.placeholder;
-    if(campo.requerido) input.required = true;
-
-    if(campo.tipo === 'dinero'){
-      input.addEventListener('input', ()=>{ input.value = formatearMiles(input.value); });
-    }
-    wrap.appendChild(input);
-    return wrap;
-  }
-
-  function renderizarCamposDocumento(tipoId){
-    const tipo = TIPOS_DOCUMENTO[tipoId];
-    contenedorCamposDinamicos.innerHTML = '';
-    tipo.campos.forEach(campo=> contenedorCamposDinamicos.appendChild(crearCampoHtml(campo)));
-    documentoCuerpoWrap.style.display = tipo.largo ? 'block' : 'none';
-    if(!tipo.largo) documentoCuerpoEditable.value = '';
-
-    // NUEVO: "Cliente relacionado" no aplica a un documento libre (no
-    // tiene por qué estar atado a ningún cliente).
-    document.getElementById('documento-cliente-relacionado-wrap').style.display = (tipoId === 'libre') ? 'none' : '';
-
-    // NUEVO: sin generarCuerpo (caso de "libre") no hay nada que
-    // autogenerar, así que ese botón no tendría sentido — se oculta.
-    document.getElementById('btn-generar-cuerpo-documento').style.display = tipo.generarCuerpo ? '' : 'none';
-
-    // NUEVO: selector de tamaño/estilo del texto, solo si el tipo lo permite.
-    document.getElementById('documento-estilo-wrap').style.display = tipo.permiteEstilo ? '' : 'none';
-    if(tipo.permiteEstilo){
-      document.getElementById('label-documento-cuerpo-editable').style.display = 'none';
-      document.getElementById('documento-cuerpo-editable').placeholder = 'Pega o escribe aquí el contenido del documento...';
-      document.getElementById('documento-nota-legal').style.display = 'none';
-    }else{
-      document.getElementById('label-documento-cuerpo-editable').style.display = '';
-      document.getElementById('label-documento-cuerpo-editable').textContent = 'Texto del documento (editable)';
-      document.getElementById('documento-nota-legal').style.display = '';
-    }
-  }
-
-  function leerValoresCampos(tipoId){
-    const tipo = TIPOS_DOCUMENTO[tipoId];
-    const datos = {};
-    tipo.campos.forEach(campo=>{
-      const el = document.getElementById('campo-documento-' + campo.id);
-      datos[campo.id] = el ? el.value.trim() : '';
-    });
-    return datos;
-  }
-
-  document.getElementById('btn-generar-cuerpo-documento').addEventListener('click', ()=>{
-    const tipo = TIPOS_DOCUMENTO[tipoDocumentoActivo];
-    if(!tipo || !tipo.generarCuerpo) return;
-    const datos = leerValoresCampos(tipoDocumentoActivo);
-    documentoCuerpoEditable.value = tipo.generarCuerpo(datos);
-  });
-
-  // NUEVO: selector de tamaño/estilo del texto (Documento libre) — un
-  // único estilo para todo el cuerpo, no texto enriquecido por tramos.
-  let estiloContenidoActual = 'normal';
-  document.querySelectorAll('.documento-estilo-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      estiloContenidoActual = btn.dataset.estilo;
-      document.querySelectorAll('.documento-estilo-btn').forEach(b=> b.classList.toggle('activo', b === btn));
-    });
-  });
-
-  // ---------- Firmas ----------
-  const contenedorFirmasDocumento = document.getElementById('documento-firmas-contenedor');
-
-  function renderizarFirmasDocumento(tipoId){
-    const tipo = TIPOS_DOCUMENTO[tipoId];
-    contenedorFirmasDocumento.innerHTML = '';
-    tipo.firmas.forEach(firma=>{
-      const wrap = document.createElement('div');
-      wrap.className = 'form-field firma-slot';
-      wrap.innerHTML = `
-        <label class="field-label">${escaparHtml(firma.etiqueta)}</label>
-        <div class="firma-preview-box" id="firma-preview-${firma.clave}"><span class="firma-preview-vacio">Sin firma</span></div>
-        <button type="button" class="btn-outline-share" data-clave-firma="${firma.clave}" data-etiqueta-firma="${escaparHtml(firma.etiqueta)}" style="width:100%;">Firmar</button>
-      `;
-      wrap.querySelector('button').addEventListener('click', ()=> abrirFirmaPad(firma.clave, firma.etiqueta));
-      contenedorFirmasDocumento.appendChild(wrap);
-    });
-    actualizarPreviewsFirmas();
-  }
-
-  function actualizarPreviewsFirmas(){
-    Object.keys(firmasActuales).forEach(clave=>{
-      const box = document.getElementById('firma-preview-' + clave);
-      if(!box) return;
-      if(firmasActuales[clave]){
-        box.innerHTML = '<img src="' + firmasActuales[clave] + '" alt="Firma">';
-      }else{
-        box.innerHTML = '<span class="firma-preview-vacio">Sin firma</span>';
-      }
-    });
-  }
-
-  // ---------- Pad de firma (dibujo a mano, con recorte automático a la tinta) ----------
-  const documentoFirmaOverlay = document.getElementById('documento-firma-overlay');
-  const firmaPadCanvas = document.getElementById('firma-pad-canvas');
-  const firmaPadCtx = firmaPadCanvas.getContext('2d');
-  let firmaClaveActual = null;
-  let firmaDibujando = false;
-  let firmaTrazoAlgunaVez = false;
-  let firmaUltimoPunto = null;
-
-  function prepararFirmaPadCanvas(){
-    const wrap = firmaPadCanvas.parentElement;
-    const ancho = wrap.clientWidth, alto = wrap.clientHeight;
-    const escala = Math.min(3, window.devicePixelRatio || 2);
-    firmaPadCanvas.width = ancho * escala;
-    firmaPadCanvas.height = alto * escala;
-    firmaPadCtx.scale(escala, escala);
-    firmaPadCtx.lineWidth = 2.6;
-    firmaPadCtx.lineCap = 'round';
-    firmaPadCtx.lineJoin = 'round';
-    firmaPadCtx.strokeStyle = '#151A23';
-    firmaPadCtx.clearRect(0, 0, ancho, alto);
-  }
-
-  function abrirFirmaPad(clave, etiqueta){
-    firmaClaveActual = clave;
-    document.getElementById('firma-pad-titulo').textContent = 'Firma — ' + etiqueta;
-    documentoFirmaOverlay.style.display = 'flex';
-    firmaTrazoAlgunaVez = false;
-    requestAnimationFrame(prepararFirmaPadCanvas);
-  }
-
-  function posicionRelativaCanvas(evento){
-    const rect = firmaPadCanvas.getBoundingClientRect();
-    return { x: evento.clientX - rect.left, y: evento.clientY - rect.top };
-  }
-  firmaPadCanvas.addEventListener('pointerdown', (e)=>{
-    firmaDibujando = true;
-    firmaTrazoAlgunaVez = true;
-    firmaUltimoPunto = posicionRelativaCanvas(e);
-    firmaPadCanvas.setPointerCapture(e.pointerId);
-  });
-  firmaPadCanvas.addEventListener('pointermove', (e)=>{
-    if(!firmaDibujando) return;
-    const punto = posicionRelativaCanvas(e);
-    firmaPadCtx.beginPath();
-    firmaPadCtx.moveTo(firmaUltimoPunto.x, firmaUltimoPunto.y);
-    firmaPadCtx.lineTo(punto.x, punto.y);
-    firmaPadCtx.stroke();
-    firmaUltimoPunto = punto;
-  });
-  function terminarTrazoFirma(){ firmaDibujando = false; }
-  firmaPadCanvas.addEventListener('pointerup', terminarTrazoFirma);
-  firmaPadCanvas.addEventListener('pointerleave', terminarTrazoFirma);
-  firmaPadCanvas.addEventListener('pointercancel', terminarTrazoFirma);
-
-  document.getElementById('btn-firma-borrar').addEventListener('click', ()=>{
-    prepararFirmaPadCanvas();
-    firmaTrazoAlgunaVez = false;
-  });
-  document.getElementById('btn-firma-cancelar').addEventListener('click', ()=>{
-    documentoFirmaOverlay.style.display = 'none';
-  });
-  documentoFirmaOverlay.addEventListener('click', (e)=>{
-    if(e.target === documentoFirmaOverlay) documentoFirmaOverlay.style.display = 'none';
-  });
-
-  // Recorta el canvas de firma a la caja real de la tinta dibujada
-  // (escaneando el canal alfa), con un pequeño margen — así la firma
-  // queda lista para insertarse en el documento sin espacio en blanco
-  // alrededor, sin importar en qué parte del recuadro se firmó.
-  function recortarCanvasATransparencia(canvasOrigen, margen){
-    const ctx = canvasOrigen.getContext('2d');
-    const w = canvasOrigen.width, h = canvasOrigen.height;
-    const datos = ctx.getImageData(0, 0, w, h).data;
-    let minX = w, minY = h, maxX = 0, maxY = 0, huboTinta = false;
-    for(let y = 0; y < h; y += 2){
-      for(let x = 0; x < w; x += 2){
-        const alfa = datos[(y * w + x) * 4 + 3];
-        if(alfa > 10){
-          huboTinta = true;
-          if(x < minX) minX = x;
-          if(x > maxX) maxX = x;
-          if(y < minY) minY = y;
-          if(y > maxY) maxY = y;
-        }
-      }
-    }
-    if(!huboTinta) return null;
-    const m = margen || 0;
-    minX = Math.max(0, minX - m); minY = Math.max(0, minY - m);
-    maxX = Math.min(w, maxX + m); maxY = Math.min(h, maxY + m);
-    const anchoRecorte = maxX - minX, altoRecorte = maxY - minY;
-    const recortado = document.createElement('canvas');
-    recortado.width = anchoRecorte;
-    recortado.height = altoRecorte;
-    recortado.getContext('2d').drawImage(canvasOrigen, minX, minY, anchoRecorte, altoRecorte, 0, 0, anchoRecorte, altoRecorte);
-    return recortado;
-  }
-
-  document.getElementById('btn-firma-guardar').addEventListener('click', ()=>{
-    if(!firmaTrazoAlgunaVez){
-      alert('Firma dentro del recuadro antes de guardar.');
-      return;
-    }
-    const recortado = recortarCanvasATransparencia(firmaPadCanvas, 8);
-    if(!recortado){
-      alert('Firma dentro del recuadro antes de guardar.');
-      return;
-    }
-    firmasActuales[firmaClaveActual] = recortado.toDataURL('image/png');
-    actualizarPreviewsFirmas();
-    documentoFirmaOverlay.style.display = 'none';
-  });
-
-  // ---------- Abrir editor (nuevo o edición) ----------
-  function abrirEditorDocumento(tipoId, documentoExistente){
-    tipoDocumentoActivo = tipoId;
-    documentoEditandoId = documentoExistente ? documentoExistente.id : null;
-    firmasActuales = documentoExistente ? Object.assign({}, documentoExistente.firmas || {}) : {};
-    clienteDocumentoSeleccionado = null;
-
-    const tipo = TIPOS_DOCUMENTO[tipoId];
-    document.getElementById('titulo-documento-editor').textContent = documentoExistente ? ('Editar ' + tipo.nombre) : ('Nuevo ' + tipo.nombre);
-    document.getElementById('texto-btn-guardar-documento').textContent = documentoExistente ? 'Guardar Cambios' : 'Guardar y Generar Imagen';
-
-    inputDocumentoCliente.value = '';
-    documentoClienteResultados.classList.remove('visible');
-    renderizarCamposDocumento(tipoId);
-    renderizarFirmasDocumento(tipoId);
-
-    // NUEVO: restaurar (al editar) o reiniciar a "Normal" (documento
-    // nuevo) el tamaño/estilo de texto elegido.
-    estiloContenidoActual = (documentoExistente && documentoExistente.estiloContenido) || 'normal';
-    document.querySelectorAll('.documento-estilo-btn').forEach(b=> b.classList.toggle('activo', b.dataset.estilo === estiloContenidoActual));
-
-    if(documentoExistente){
-      const datos = documentoExistente.campos || {};
-      tipo.campos.forEach(campo=>{
-        const el = document.getElementById('campo-documento-' + campo.id);
-        if(el && datos[campo.id] !== undefined) el.value = datos[campo.id];
-      });
-      if(tipo.largo) documentoCuerpoEditable.value = documentoExistente.cuerpo || '';
-      // Si el nombre guardado coincide con un cliente real, se preselecciona
-      // (solo referencia visual; no es obligatorio que exista).
-      const nombreGuardado = datos.clienteNombre || datos.referenciaNombre;
-      if(nombreGuardado){
-        const match = clientesGuardados.find(c => c.nombre === nombreGuardado);
-        if(match) clienteDocumentoSeleccionado = match;
-        inputDocumentoCliente.value = nombreGuardado;
-      }
-    }
-
+  function abrirEditorDocumentoLibre(id){
+    documentoLibreEditandoId = id || null;
+    const doc = id ? documentosLibresGuardados.find(d=>d.id===id) : null;
+    inputNombreDocumentoLibre.value = doc ? doc.nombre : '';
+    contenidoDocumentoLibre.innerHTML = doc ? doc.contenidoHTML : '';
+    tituloDocumentoLibreEditor.textContent = doc ? 'Editar Documento' : 'Nuevo Documento';
     screenDocumentos.style.display = 'none';
-    screenDocumentoEditor.style.display = 'block';
-    window.scrollTo(0, 0);
+    screenDocumentoLibreEditor.style.display = 'block';
+    window.scrollTo(0,0);
   }
-
-  document.getElementById('btn-cerrar-documento-editor').addEventListener('click', ()=>{
-    screenDocumentoEditor.style.display = 'none';
+  function cerrarEditorDocumentoLibre(){
+    screenDocumentoLibreEditor.style.display = 'none';
     screenDocumentos.style.display = 'block';
-    window.scrollTo(0, 0);
+    window.scrollTo(0,0);
+  }
+  document.getElementById('btn-nuevo-documento-libre').addEventListener('click', ()=> abrirEditorDocumentoLibre(null));
+  document.getElementById('btn-cancelar-documento-libre').addEventListener('click', cerrarEditorDocumentoLibre);
+  document.getElementById('btn-cancelar-documento-libre-2').addEventListener('click', cerrarEditorDocumentoLibre);
+
+  // ---------- Pegado limpio: solo texto plano, sin estilos del origen ----------
+  contenidoDocumentoLibre.addEventListener('paste', (e)=>{
+    e.preventDefault();
+    const texto = (e.clipboardData || window.clipboardData).getData('text/plain');
+    document.execCommand('insertText', false, texto);
   });
 
-  // ---------- Guardar documento + generar imagen ----------
-  document.getElementById('btn-guardar-documento').addEventListener('click', ()=>{
-    const tipo = TIPOS_DOCUMENTO[tipoDocumentoActivo];
-    const datos = leerValoresCampos(tipoDocumentoActivo);
-
-    const campoFaltante = tipo.campos.find(c => c.requerido && !datos[c.id]);
-    if(campoFaltante){
-      alert('Completa el campo "' + campoFaltante.label + '" antes de guardar.');
-      const el = document.getElementById('campo-documento-' + campoFaltante.id);
-      if(el) el.focus();
-      return;
-    }
-
-    const ahora = new Date().toISOString();
-    let documento;
-    if(documentoEditandoId){
-      documento = documentosGuardados.find(d => d.id === documentoEditandoId);
-      documento.campos = datos;
-      documento.firmas = Object.assign({}, firmasActuales);
-      if(tipo.largo) documento.cuerpo = documentoCuerpoEditable.value;
-      if(tipo.permiteEstilo) documento.estiloContenido = estiloContenidoActual;
-      documento.fechaModificacion = ahora;
-    }else{
-      documento = {
-        id: Date.now(),
-        tipo: tipoDocumentoActivo,
-        campos: datos,
-        firmas: Object.assign({}, firmasActuales),
-        cuerpo: tipo.largo ? documentoCuerpoEditable.value : '',
-        estiloContenido: tipo.permiteEstilo ? estiloContenidoActual : undefined,
-        fechaCreacion: ahora,
-        fechaModificacion: ahora
-      };
-      documentosGuardados.push(documento);
-      documentoEditandoId = documento.id;
-    }
-    guardarListaDocumentos(documentosGuardados);
-
-    screenDocumentoEditor.style.display = 'none';
-    screenDocumentos.style.display = 'block';
-    renderizarListaDocumentos();
-
-    abrirVistaPreviaDocumento(documento, false);
+  // ---------- Barra de herramientas: Negrita ----------
+  document.getElementById('btn-doc-libre-negrita').addEventListener('click', ()=>{
+    contenidoDocumentoLibre.focus();
+    document.execCommand('bold');
   });
 
-  // ---------- Generación del canvas final (recortado a bordes, esquinas redondeadas) ----------
-  const ANCHO_DOCUMENTO = 540;
-
-  function dibujarFirmasEnCanvas(ctx, doc, tipo, cardX, anchoCard, yFirmas, alturaBloqueFirma){
-    const n = tipo.firmas.length;
-    const anchoSlot = anchoCard / n;
-    tipo.firmas.forEach((firma, i)=>{
-      const centroX = cardX + anchoSlot * i + anchoSlot / 2;
-      const anchoLinea = anchoSlot - 60;
-      const yLinea = yFirmas + alturaBloqueFirma - 26;
-
-      const dataUrl = doc.firmas && doc.firmas[firma.clave];
-      if(dataUrl){
-        // La imagen ya está cargada de forma síncrona vía Image() con
-        // await en generarCanvasDocumento antes de llamar a esta función,
-        // así que acá solo se dibuja (ver imagenesFirmaCache).
-        const img = imagenesFirmaCache[dataUrl];
-        if(img){
-          const maxAltoFirma = alturaBloqueFirma - 40;
-          const maxAnchoFirma = anchoLinea;
-          let w = img.width, h = img.height;
-          const escala = Math.min(maxAnchoFirma / w, maxAltoFirma / h, 1);
-          w *= escala; h *= escala;
-          ctx.drawImage(img, centroX - w / 2, yLinea - h - 6, w, h);
+  // ---------- Barra de herramientas: tamaño de fuente ----------
+  document.querySelectorAll('.documento-libre-tool-btn[data-size]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      contenidoDocumentoLibre.focus();
+      const sel = window.getSelection();
+      if(!sel || sel.rangeCount === 0 || sel.isCollapsed) return; // hace falta una selección real
+      const tam = btn.dataset.size;
+      try{
+        const range = sel.getRangeAt(0);
+        const span = document.createElement('span');
+        span.style.fontSize = tam + 'px';
+        range.surroundContents(span);
+        sel.removeAllRanges();
+      }catch(err){
+        // La selección cruza límites de nodos (surroundContents falla en
+        // ese caso) — se extrae el contenido y se envuelve manualmente.
+        try{
+          const range = sel.getRangeAt(0);
+          const contenido = range.extractContents();
+          const span = document.createElement('span');
+          span.style.fontSize = tam + 'px';
+          span.appendChild(contenido);
+          range.insertNode(span);
+          sel.removeAllRanges();
+        }catch(err2){
+          console.warn('No se pudo aplicar el tamaño de fuente a esta selección.', err2);
         }
       }
+    });
+  });
 
-      ctx.strokeStyle = '#B7BEC9';
-      ctx.lineWidth = 1.3;
-      ctx.beginPath();
-      ctx.moveTo(centroX - anchoLinea / 2, yLinea);
-      ctx.lineTo(centroX + anchoLinea / 2, yLinea);
-      ctx.stroke();
+  // ---------- Guardar ----------
+  document.getElementById('btn-guardar-documento-libre').addEventListener('click', ()=>{
+    const nombre = inputNombreDocumentoLibre.value.trim() || 'Sin nombre';
+    const contenidoHTML = contenidoDocumentoLibre.innerHTML;
+    const ahora = new Date().toISOString();
+    if(documentoLibreEditandoId){
+      const doc = documentosLibresGuardados.find(d=>d.id === documentoLibreEditandoId);
+      if(doc){ doc.nombre = nombre; doc.contenidoHTML = contenidoHTML; doc.fechaModificado = ahora; }
+    }else{
+      documentosLibresGuardados.push({ id: Date.now(), nombre, contenidoHTML, fechaCreado: ahora, fechaModificado: ahora });
+    }
+    guardarDocumentosLibres(documentosLibresGuardados);
+    renderizarListaDocumentosLibres();
+    cerrarEditorDocumentoLibre();
+    mostrarMensajeToast('Documento guardado');
+  });
 
-      ctx.fillStyle = '#7B8794';
-      ctx.font = 'bold 13px Arial, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(firma.etiqueta, centroX, yLinea + 20);
-      ctx.textAlign = 'left';
+  // ---------- Copiar texto (sin formato) ----------
+  document.getElementById('btn-copiar-texto-documento-libre').addEventListener('click', async ()=>{
+    const texto = extraerTextoPlanoDoc(contenidoDocumentoLibre.innerHTML);
+    try{
+      await navigator.clipboard.writeText(texto);
+      mostrarMensajeToast('Texto copiado');
+    }catch(err){
+      const textarea = document.createElement('textarea');
+      textarea.value = texto;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try{ document.execCommand('copy'); mostrarMensajeToast('Texto copiado'); }
+      catch(err2){ mostrarMensajeToast('No se pudo copiar el texto'); }
+      document.body.removeChild(textarea);
+    }
+  });
+
+  // ==========================================================
+  // Generación de imagen — recorre el HTML del contenteditable, arma
+  // una lista plana de "palabras" con su propio formato (negrita/
+  // tamaño), y hace su propio ajuste de línea (cada palabra se mide
+  // con su propia fuente antes de decidir si cabe en la línea actual).
+  // ==========================================================
+  function extraerPalabrasConFormatoDoc(nodo, formato, lista){
+    formato = formato || { bold:false, size:14 };
+    Array.from(nodo.childNodes).forEach(hijo=>{
+      if(hijo.nodeType === Node.TEXT_NODE){
+        const texto = hijo.textContent;
+        if(texto && texto.trim() !== ''){
+          texto.split(/\s+/).filter(Boolean).forEach(palabra=>{
+            lista.push({ texto: palabra, bold: formato.bold, size: formato.size });
+          });
+        }
+        return;
+      }
+      if(hijo.nodeType !== Node.ELEMENT_NODE) return;
+      const tag = hijo.tagName;
+      if(tag === 'BR'){
+        lista.push({ salto:true });
+        return;
+      }
+      const esBloque = (tag === 'DIV' || tag === 'P');
+      if(esBloque && lista.length > 0 && !lista[lista.length-1].salto){
+        lista.push({ salto:true, parrafoNuevo:true });
+      }
+      const nuevoFormato = { bold: formato.bold, size: formato.size };
+      if(tag === 'B' || tag === 'STRONG') nuevoFormato.bold = true;
+      const estiloInline = hijo.getAttribute && hijo.getAttribute('style');
+      if(estiloInline){
+        const matchTam = estiloInline.match(/font-size:\s*(\d+)/);
+        if(matchTam) nuevoFormato.size = parseInt(matchTam[1], 10);
+        if(/font-weight:\s*(bold|[6-9]00)/.test(estiloInline)) nuevoFormato.bold = true;
+      }
+      extraerPalabrasConFormatoDoc(hijo, nuevoFormato, lista);
     });
   }
 
-  // Cache simple de imágenes de firma ya decodificadas (evita recargar
-  // la misma imagen varias veces si se regenera el canvas).
-  const imagenesFirmaCache = {};
-  function precargarImagenesFirma(doc){
-    const claves = doc.firmas ? Object.keys(doc.firmas) : [];
-    return Promise.all(claves.map(clave=>{
-      const url = doc.firmas[clave];
-      if(!url || imagenesFirmaCache[url]) return Promise.resolve();
-      return new Promise(resolve=>{
-        const img = new Image();
-        img.onload = ()=>{ imagenesFirmaCache[url] = img; resolve(); };
-        img.onerror = resolve;
-        img.src = url;
-      });
-    }));
-  }
+  function generarCanvasDocumentoLibre(contenidoHTML){
+    const ESCALA_DOC = 5;
+    const anchoBase = 480;
+    const padX = 22;
+    const padTop = 70; // deja espacio para el logo arriba
+    const padBottom = 26;
+    const anchoUtil = anchoBase - padX * 2;
 
-  // Encabezado + logo, idéntico en espíritu al de los comprobantes de pago.
-  // CORREGIDO: a pedido, el encabezado de cada documento ahora muestra el
-  // nombre del negocio EXACTAMENTE como se ve en la bienvenida de Inicio
-  // — "Presta" en azul marino + "Ya" en verde, sin franja de color detrás
-  // (antes era texto blanco sobre una franja de color configurable). Si
-  // el negocio no es "PrestaYa" (usuario lo cambió en Ajustes), se
-  // respeta su nombre tal cual, en un solo color oscuro.
-  function dibujarEncabezadoDocumento(ctx, cardX, cardY, anchoCard, alturaHeader, colorAcento, tituloDocumento){
-    const nombreNegocio = obtenerNombreNegocio();
-    const esMarcaPrestaYa = nombreNegocio === 'PrestaYa';
+    const canvasMedida = document.createElement('canvas');
+    const ctxMedida = canvasMedida.getContext('2d');
 
-    if(esMarcaPrestaYa){
-      ctx.font = 'bold 28px Arial, sans-serif';
-      const tPresta = 'Presta', tYa = 'Ya';
-      const wPresta = ctx.measureText(tPresta).width;
-      ctx.fillStyle = '#0B1F5C';
-      ctx.fillText(tPresta, cardX + 25, cardY + 40);
-      ctx.fillStyle = '#2E9E4F';
-      ctx.fillText(tYa, cardX + 25 + wPresta, cardY + 40);
-    }else{
-      ctx.fillStyle = '#151A23';
-      ctx.font = 'bold 26px Arial, sans-serif';
-      ctx.fillText(nombreNegocio, cardX + 25, cardY + 40);
+    const tmp = document.createElement('div');
+    tmp.innerHTML = contenidoHTML;
+    const palabras = [];
+    extraerPalabrasConFormatoDoc(tmp, { bold:false, size:14 }, palabras);
+
+    function fuenteDe(p){ return (p.bold ? 'bold ' : '') + p.size + 'px Arial, sans-serif'; }
+
+    const lineas = [];
+    let lineaActual = [];
+    let anchoLineaActual = 0;
+    const espacioPx = 6;
+
+    function cerrarLinea(){
+      if(lineaActual.length > 0){
+        const altoLinea = Math.max(...lineaActual.map(p => p.size)) * 1.32;
+        lineas.push({ palabras: lineaActual, alto: altoLinea });
+      }else{
+        lineas.push({ palabras: [], alto: 14 * 1.32 });
+      }
+      lineaActual = [];
+      anchoLineaActual = 0;
     }
 
-    ctx.fillStyle = '#7B8794';
-    ctx.font = '15px Arial, sans-serif';
-    if(tituloDocumento) ctx.fillText(tituloDocumento, cardX + 25, cardY + 66);
+    palabras.forEach(p=>{
+      if(p.salto){
+        cerrarLinea();
+        return;
+      }
+      ctxMedida.font = fuenteDe(p);
+      const anchoPalabra = ctxMedida.measureText(p.texto).width;
+      const espacio = lineaActual.length > 0 ? espacioPx : 0;
+      if(anchoLineaActual + espacio + anchoPalabra > anchoUtil && lineaActual.length > 0){
+        cerrarLinea();
+        lineaActual.push(p);
+        anchoLineaActual = anchoPalabra;
+      }else{
+        lineaActual.push(p);
+        anchoLineaActual += espacio + anchoPalabra;
+      }
+    });
+    cerrarLinea();
 
-    ctx.strokeStyle = '#EDF0F4';
+    while(lineas.length > 1 && lineas[lineas.length-1].palabras.length === 0){
+      lineas.pop();
+    }
+    if(lineas.length === 0 || (lineas.length === 1 && lineas[0].palabras.length === 0)){
+      lineas.length = 0;
+      lineas.push({ palabras: [{ texto:'(Documento vacío)', bold:false, size:14 }], alto: 14*1.32 });
+    }
+
+    const altoContenido = lineas.reduce((s,l)=> s + l.alto, 0);
+    const altoTotal = Math.ceil(padTop + altoContenido + padBottom);
+
+    const canvas = document.createElement('canvas');
+    const ctx = prepararCanvasNitido(canvas, anchoBase, altoTotal, ESCALA_DOC);
+
+    // Esquinas apenas curvas — como una hoja de papel, no una tarjeta de app
+    const radio = 8;
+    ctx.beginPath();
+    ctx.moveTo(radio, 0);
+    ctx.lineTo(anchoBase - radio, 0);
+    ctx.arcTo(anchoBase, 0, anchoBase, radio, radio);
+    ctx.lineTo(anchoBase, altoTotal - radio);
+    ctx.arcTo(anchoBase, altoTotal, anchoBase - radio, altoTotal, radio);
+    ctx.lineTo(radio, altoTotal);
+    ctx.arcTo(0, altoTotal, 0, altoTotal - radio, radio);
+    ctx.lineTo(0, radio);
+    ctx.arcTo(0, 0, radio, 0, radio);
+    ctx.closePath();
+    ctx.clip();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, anchoBase, altoTotal);
+
+    // Logo "PrestaYa" — "Presta" en azul, "Ya" en verde (nada de imágenes externas)
+    ctx.textBaseline = 'alphabetic';
+    ctx.font = 'bold 22px Arial, sans-serif';
+    ctx.fillStyle = '#1F2F68';
+    ctx.fillText('Presta', padX, 40);
+    const anchoPresta = ctx.measureText('Presta').width;
+    ctx.fillStyle = '#18C968';
+    ctx.fillText('Ya', padX + anchoPresta, 40);
+
+    ctx.strokeStyle = '#E5E8EF';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(cardX + 25, cardY + alturaHeader - 4);
-    ctx.lineTo(cardX + anchoCard - 25, cardY + alturaHeader - 4);
+    ctx.moveTo(padX, 54);
+    ctx.lineTo(anchoBase - padX, 54);
     ctx.stroke();
-  }
 
-  function generarCanvasDocumentoCorto(doc, tipo){
-    const filas = tipo.filas(doc.campos);
-    const cardX = 0, cardY = 0, anchoCard = ANCHO_DOCUMENTO;
-    const alturaHeader = 92;
-    const alturaFilaPar = 60;
-    const alturaFirmas = tipo.firmas.length > 0 ? 120 : 0; // CORREGIDO: antes fijo en 120, dejaba un hueco vacío grande cuando el tipo no tiene firmas
-    const alturaPie = 40;
-    const anchoTextoMax = anchoCard - 50;
-
-    // Se mide primero cuántas líneas ocupará la leyenda (con el mismo
-    // font que se usará al dibujar) para reservarle el alto exacto —
-    // así un texto largo nunca se monta sobre las filas de datos.
-    const medCanvas = document.createElement('canvas');
-    const medCtx = medCanvas.getContext('2d');
-    medCtx.font = '14.5px Arial, sans-serif';
-    const lineasLeyenda = envolverTextoCanvas(medCtx, tipo.leyenda(doc.campos), anchoTextoMax);
-    const alturaLeyenda = 28 + lineasLeyenda.length * 20 + 14;
-
-    const numFilasVisuales = Math.ceil(filas.length / 2);
-    const yInicioFilas = cardY + alturaHeader + alturaLeyenda;
-    const yFinFilas = yInicioFilas + numFilasVisuales * alturaFilaPar;
-    const yFirmas = yFinFilas + (tipo.firmas.length > 0 ? 20 : 0);
-    const altoCard = yFirmas + alturaFirmas + alturaPie;
-
-    const canvas = document.createElement('canvas');
-    const ctx = prepararCanvasNitido(canvas, anchoCard, altoCard, 2); // CORREGIDO: antes 3, se generaba más lento de lo necesario
-
-    ctx.fillStyle = '#FFFFFF';
-    trazarRectRedondeado(ctx, cardX, cardY, anchoCard, altoCard, 24);
-    ctx.fill();
-
-    const colorAcento = obtenerColorEncabezadoRecibo();
-    dibujarEncabezadoDocumento(ctx, cardX, cardY, anchoCard, alturaHeader, colorAcento, tipo.tituloDocumento);
-
-    // Leyenda (texto corrido corto, ya envuelto arriba)
-    ctx.fillStyle = '#151A23';
-    ctx.font = '14.5px Arial, sans-serif';
-    let yLeyenda = cardY + alturaHeader + 28;
-    lineasLeyenda.forEach(linea=>{
-      ctx.fillText(linea, cardX + 25, yLeyenda);
-      yLeyenda += 20;
-    });
-
-    // Filas de datos (etiqueta + valor, 2 columnas, sin ícono — más compacto)
-    const colIzqX = cardX + 25, colDerX = cardX + anchoCard / 2 + 12;
-    let y = yInicioFilas;
-    for(let i = 0; i < filas.length; i += 2){
-      if(filas[i]){
-        ctx.fillStyle = '#7B8794'; ctx.font = '13px Arial, sans-serif';
-        ctx.fillText(filas[i][0], colIzqX, y);
-        ctx.fillStyle = '#151A23'; ctx.font = 'bold 17px Arial, sans-serif';
-        ctx.fillText(String(filas[i][1]), colIzqX, y + 22);
-      }
-      if(filas[i+1]){
-        ctx.fillStyle = '#7B8794'; ctx.font = '13px Arial, sans-serif';
-        ctx.fillText(filas[i+1][0], colDerX, y);
-        ctx.fillStyle = '#151A23'; ctx.font = 'bold 17px Arial, sans-serif';
-        ctx.fillText(String(filas[i+1][1]), colDerX, y + 22);
-      }
-      if(i + 2 < filas.length){
-        ctx.strokeStyle = '#EDF0F4'; ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(cardX + 25, y + alturaFilaPar - 16);
-        ctx.lineTo(cardX + anchoCard - 25, y + alturaFilaPar - 16);
-        ctx.stroke();
-      }
-      y += alturaFilaPar;
-    }
-
-    dibujarFirmasEnCanvas(ctx, doc, tipo, cardX, anchoCard, yFirmas, alturaFirmas);
-
-    ctx.fillStyle = '#7B8794';
-    ctx.font = '11.5px Arial, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Generado en ' + obtenerNombreNegocio() + ' · ' + formatearFechaCorta(new Date()), cardX + anchoCard / 2, yFirmas + alturaFirmas + 24);
+    let y = padTop;
     ctx.textAlign = 'left';
-
-    return canvas;
-  }
-
-  function generarCanvasDocumentoLargo(doc, tipo){
-    const cardX = 0, cardY = 0, anchoCard = ANCHO_DOCUMENTO;
-    const alturaHeader = 92;
-    const anchoTextoMax = anchoCard - 50;
-    const alturaFirmas = tipo.firmas.length > 0 ? 120 : 0; // CORREGIDO: antes fijo en 120, dejaba un hueco vacío grande en Documento libre (sin firmas)
-    const alturaPie = 40;
-
-    // NUEVO: tamaño/estilo del cuerpo elegido en "Documento libre" (los
-    // demás tipos no tienen este selector y usan 'normal' por defecto,
-    // igual que antes — no cambia nada para Contrato/Pagaré).
-    const ESTILOS_CONTENIDO = {
-      negrita:    { fuente: 'bold 14px Arial, sans-serif', alturaLinea: 21 },
-      normal:     { fuente: '14px Arial, sans-serif',      alturaLinea: 21 },
-      grande:     { fuente: '17px Arial, sans-serif',      alturaLinea: 25 },
-      mas_grande: { fuente: '20px Arial, sans-serif',      alturaLinea: 29 }
-    };
-    const estilo = ESTILOS_CONTENIDO[doc.estiloContenido] || ESTILOS_CONTENIDO.normal;
-    const alturaLinea = estilo.alturaLinea;
-
-    // Paso 1: medir cuántas líneas ocupará el cuerpo, con un contexto de
-    // medición (mismo font que se usará al dibujar de verdad).
-    const medCanvas = document.createElement('canvas');
-    const medCtx = medCanvas.getContext('2d');
-    medCtx.font = estilo.fuente;
-    const cuerpo = doc.cuerpo || '';
-    const lineas = envolverTextoCanvas(medCtx, cuerpo, anchoTextoMax);
-
-    const yInicioCuerpo = cardY + alturaHeader + 30;
-    const altoCuerpo = lineas.length * alturaLinea;
-    const yFirmas = yInicioCuerpo + altoCuerpo + (tipo.firmas.length > 0 ? 20 : 0);
-    const altoCard = yFirmas + alturaFirmas + alturaPie;
-
-    const canvas = document.createElement('canvas');
-    const ctx = prepararCanvasNitido(canvas, anchoCard, altoCard, 2); // CORREGIDO: antes 3, se generaba más lento de lo necesario
-
-    ctx.fillStyle = '#FFFFFF';
-    trazarRectRedondeado(ctx, cardX, cardY, anchoCard, altoCard, 24);
-    ctx.fill();
-
-    const colorAcento = obtenerColorEncabezadoRecibo();
-    dibujarEncabezadoDocumento(ctx, cardX, cardY, anchoCard, alturaHeader, colorAcento, tipo.tituloDocumento);
-
-    ctx.fillStyle = '#151A23';
-    ctx.font = estilo.fuente;
-    let y = yInicioCuerpo;
     lineas.forEach(linea=>{
-      if(linea) ctx.fillText(linea, cardX + 25, y);
-      y += alturaLinea;
+      let x = padX;
+      const baseline = y + linea.alto * 0.72;
+      linea.palabras.forEach(p=>{
+        ctx.font = fuenteDe(p);
+        ctx.fillStyle = '#18202F';
+        ctx.fillText(p.texto, x, baseline);
+        x += ctx.measureText(p.texto).width + espacioPx;
+      });
+      y += linea.alto;
     });
-
-    dibujarFirmasEnCanvas(ctx, doc, tipo, cardX, anchoCard, yFirmas, alturaFirmas);
-
-    ctx.fillStyle = '#7B8794';
-    ctx.font = '11.5px Arial, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Generado en ' + obtenerNombreNegocio() + ' · ' + formatearFechaCorta(new Date()), cardX + anchoCard / 2, yFirmas + alturaFirmas + 24);
-    ctx.textAlign = 'left';
 
     return canvas;
   }
 
-  function generarCanvasDocumento(doc){
-    const tipo = TIPOS_DOCUMENTO[doc.tipo];
-    return tipo.largo ? generarCanvasDocumentoLargo(doc, tipo) : generarCanvasDocumentoCorto(doc, tipo);
-  }
+  // ---------- Compartir imagen: genera, muestra vista previa ----------
+  const documentoLibrePreviewOverlay = document.getElementById('documento-libre-preview-overlay');
+  let canvasDocumentoLibreActual = null;
 
-  // ---------- Vista previa + compartir ----------
-  const documentoPreviewOverlay = document.getElementById('documento-preview-overlay');
-  const documentoPreviewImg = document.getElementById('documento-preview-img');
-  const btnDocumentoPreviewWhatsapp = document.getElementById('btn-documento-preview-whatsapp');
+  document.getElementById('btn-compartir-imagen-documento-libre').addEventListener('click', ()=>{
+    const canvas = generarCanvasDocumentoLibre(contenidoDocumentoLibre.innerHTML);
+    canvasDocumentoLibreActual = canvas;
+    document.getElementById('documento-libre-preview-img').src = canvas.toDataURL('image/png');
+    documentoLibrePreviewOverlay.style.display = 'flex';
+  });
 
-  async function abrirVistaPreviaDocumento(doc, intentarCompartirDeInmediato){
-    // Las firmas se dibujan de forma síncrona a partir de imágenes ya
-    // decodificadas — se precargan primero (necesario sobre todo para
-    // una firma recién capturada, que todavía no está en caché) y solo
-    // entonces se genera el canvas final, para que la firma sí aparezca.
-    await precargarImagenesFirma(doc);
-    const canvas = generarCanvasDocumento(doc);
+  document.getElementById('btn-cerrar-documento-libre-preview').addEventListener('click', ()=>{
+    documentoLibrePreviewOverlay.style.display = 'none';
+  });
+  documentoLibrePreviewOverlay.addEventListener('click', (e)=>{
+    if(e.target === documentoLibrePreviewOverlay) documentoLibrePreviewOverlay.style.display = 'none';
+  });
 
-    documentoPreviewImg.src = canvas.toDataURL('image/png');
-
-    const nombreCliente = doc.campos && (doc.campos.clienteNombre || doc.campos.referenciaNombre);
-    const clienteReal = nombreCliente ? clientesGuardados.find(c => c.nombre === nombreCliente) : null;
-    const telefono = clienteReal && clienteReal.telefono ? clienteReal.telefono.replace(/[^\d]/g, '') : '';
-    if(telefono){
-      btnDocumentoPreviewWhatsapp.href = 'https://wa.me/' + telefono;
-      btnDocumentoPreviewWhatsapp.style.display = 'flex';
-    }else{
-      btnDocumentoPreviewWhatsapp.style.display = 'none';
-    }
-
-    documentoPreviewOverlay.style.display = 'flex';
-    documentoPreviewOverlay.dataset.canvasListo = '1';
-    documentoPreviewOverlay._canvasActual = canvas;
-
-    if(intentarCompartirDeInmediato) await compartirCanvasDocumento(canvas, doc);
-  }
-
-  async function compartirCanvasDocumento(canvas, doc){
-    const tipo = TIPOS_DOCUMENTO[doc.tipo];
-    if(navigator.share && navigator.canShare){
-      try{
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1));
-        if(blob){
-          const archivo = new File([blob], (tipo ? tipo.id : 'documento') + '.png', { type: 'image/png' });
-          if(navigator.canShare({ files: [archivo] })){
-            await navigator.share({ files: [archivo], title: tipo ? tipo.tituloDocumento : 'Documento' });
-            return;
-          }
+  document.getElementById('btn-documento-libre-preview-compartir').addEventListener('click', async ()=>{
+    if(!canvasDocumentoLibreActual) return;
+    const nombreArchivo = (inputNombreDocumentoLibre.value.trim() || 'documento').replace(/[^\w\- ]/g, '') + '.png';
+    canvasDocumentoLibreActual.toBlob(async (blob)=>{
+      if(!blob) return;
+      const archivo = new File([blob], nombreArchivo, { type:'image/png' });
+      if(navigator.share && navigator.canShare && navigator.canShare({ files:[archivo] })){
+        try{
+          await navigator.share({ files:[archivo], title: inputNombreDocumentoLibre.value.trim() || 'Documento' });
+          return;
+        }catch(err){
+          if(err && err.name === 'AbortError') return;
         }
-      }catch(err){
-        if(err && err.name === 'AbortError') return;
-        console.warn('navigator.share no funcionó, se usa el modal de imagen:', err);
       }
-    }
-    // Si no se pudo compartir directamente, el modal de vista previa ya
-    // está abierto con la imagen, guardable con una pulsación larga.
-  }
+      const enlace = document.createElement('a');
+      enlace.href = URL.createObjectURL(blob);
+      enlace.download = nombreArchivo;
+      enlace.click();
+    }, 'image/png');
+  });
 
-  document.getElementById('btn-documento-preview-compartir').addEventListener('click', ()=>{
-    const canvas = documentoPreviewOverlay._canvasActual;
-    if(!canvas) return;
-    const doc = documentosGuardados.find(d => d.id === documentoEditandoId) || { tipo: tipoDocumentoActivo };
-    compartirCanvasDocumento(canvas, doc);
-  });
-  document.getElementById('btn-cerrar-documento-preview').addEventListener('click', ()=>{
-    documentoPreviewOverlay.style.display = 'none';
-  });
-  documentoPreviewOverlay.addEventListener('click', (e)=>{
-    if(e.target === documentoPreviewOverlay) documentoPreviewOverlay.style.display = 'none';
-  });
 
 
   // ---------- Pantalla Nuevo Cliente + almacenamiento local (localStorage) ----------
