@@ -17211,8 +17211,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     });
   });
 
-  inputRangoDesde.addEventListener('change', aplicarRangoPersonalizado);
-  inputRangoHasta.addEventListener('change', aplicarRangoPersonalizado);
+  // CORREGIDO: a pedido — al elegir la fecha en "Desde"/"Hasta" (a
+  // diferencia de tocar la pestaña "Personalizado", que ya estaba
+  // protegida), el redibujado de las tarjetas no pasaba por
+  // mantenerScrollAlFiltrar(), así que la pantalla pegaba un salto hasta
+  // "Medios de Pago". Ahora usa la misma protección ya existente.
+  inputRangoDesde.addEventListener('change', ()=> mantenerScrollAlFiltrar(aplicarRangoPersonalizado));
+  inputRangoHasta.addEventListener('change', ()=> mantenerScrollAlFiltrar(aplicarRangoPersonalizado));
 
   // Rango inicial al cargar la app: Hoy (mismo período que ya se mostraba antes)
   {
