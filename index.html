@@ -8572,6 +8572,21 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <button type="button" class="toggle-switch" id="toggle-bloqueo-mora-cliente" role="switch" aria-checked="false" aria-label="Bloquear cliente por mora"></button>
       </div>
 
+      <!-- NUEVO: a pedido — "Monto máximo a prestar" por cliente. Al
+           activarlo, se despliega un campo para escribir el tope; ese
+           tope luego se usa en "Nuevo Préstamo" para recortar en vivo
+           el campo "Valor" si se intenta superar (ver input-valor-prestamo). -->
+      <div class="action-sheet-item-toggle-row" id="fila-monto-maximo-menu" style="flex-wrap:wrap;">
+        <div class="icon-container blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        </div>
+        <span style="flex:1;">Monto máximo a prestar</span>
+        <button type="button" class="toggle-switch" id="toggle-monto-maximo-cliente" role="switch" aria-checked="false" aria-label="Activar monto máximo a prestar"></button>
+        <div id="monto-maximo-input-wrap" style="display:none; width:100%; padding:10px 0 0 50px;">
+          <input type="text" inputmode="numeric" class="field-input" id="input-monto-maximo-cliente" placeholder="Ej. 1.000.000" style="font-size:14px; padding:10px 12px;">
+        </div>
+      </div>
+
       <div class="action-sheet-item danger" id="btn-eliminar-cliente">
         <div class="icon-container red">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
@@ -12471,6 +12486,38 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     actualizarBloqueoMoraCliente(clienteEnDetalle);
   });
 
+  // NUEVO: a pedido — "Monto máximo a prestar" por cliente. Sincroniza
+  // el interruptor y muestra/oculta el campo de monto. El tope en sí se
+  // usa después en Nuevo Préstamo (ver input-valor-prestamo) para
+  // recortar en vivo el campo "Valor" si se intenta superar.
+  function actualizarMontoMaximoCliente(cliente){
+    const activo = !!cliente.montoMaximoActivo;
+    const toggle = document.getElementById('toggle-monto-maximo-cliente');
+    const wrap = document.getElementById('monto-maximo-input-wrap');
+    const input = document.getElementById('input-monto-maximo-cliente');
+    if(toggle){
+      toggle.classList.toggle('on', activo);
+      toggle.setAttribute('aria-checked', String(activo));
+    }
+    if(wrap) wrap.style.display = activo ? 'block' : 'none';
+    if(input) input.value = cliente.montoMaximoValor ? formatearMiles(cliente.montoMaximoValor) : '';
+  }
+
+  document.getElementById('toggle-monto-maximo-cliente').addEventListener('click', ()=>{
+    if(!clienteEnDetalle) return;
+    clienteEnDetalle.montoMaximoActivo = !clienteEnDetalle.montoMaximoActivo;
+    guardarClientes(clientesGuardados);
+    actualizarMontoMaximoCliente(clienteEnDetalle);
+  });
+  document.getElementById('input-monto-maximo-cliente').addEventListener('input', function(){
+    this.value = formatearMiles(this.value);
+  });
+  document.getElementById('input-monto-maximo-cliente').addEventListener('change', function(){
+    if(!clienteEnDetalle) return;
+    clienteEnDetalle.montoMaximoValor = numeroDesdeCampo(this.value);
+    guardarClientes(clientesGuardados);
+  });
+
   function actualizarBadgeEstadoCliente(cliente){
     const badge = document.getElementById('cliente-estado-badge');
     const inhabilitado = cliente.estadoCliente === 'inhabilitado';
@@ -13135,6 +13182,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     actualizarBadgeEstadoCliente(cliente); // NUEVO: Inhabilitar/Habilitar Cliente
     actualizarBadgeNivelCliente(cliente); // NUEVO: Nivel del Cliente
     actualizarBloqueoMoraCliente(cliente); // NUEVO: Bloquear por mora
+    actualizarMontoMaximoCliente(cliente); // NUEVO: Monto máximo a prestar
 
     // Préstamos del cliente (estadísticas + lista)
     // NUEVO: siempre arranca en la pestaña "Activos" al entrar a la ficha
@@ -13553,6 +13601,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // Formateo en vivo de campos monetarios
   inputValorPrestamo.addEventListener('input', ()=>{
     inputValorPrestamo.value = formatearMiles(inputValorPrestamo.value);
+    // NUEVO: a pedido — "Monto máximo a prestar" por cliente. Si el
+    // cliente activo tiene un tope activado, no deja escribir más allá:
+    // se recorta al tope apenas se supera, y se avisa con un mensaje
+    // flotante justo encima del campo.
+    if(clienteEnDetalle && clienteEnDetalle.montoMaximoActivo && clienteEnDetalle.montoMaximoValor > 0){
+      const valorActual = numeroDesdeCampo(inputValorPrestamo.value);
+      if(valorActual > clienteEnDetalle.montoMaximoValor){
+        inputValorPrestamo.value = formatearMiles(clienteEnDetalle.montoMaximoValor);
+        mostrarMensajeToast('Monto máximo alcanzado: ' + formatearPesos(clienteEnDetalle.montoMaximoValor), inputValorPrestamo);
+      }
+    }
     sincronizarInteresCuota();
   });
   inputCuotasPrestamo.addEventListener('input', ()=>{
@@ -18260,6 +18319,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // cambio antes de que se cierre) — se cierra con los demás elementos
   // de su fila salvo el interruptor mismo.
   document.getElementById('toggle-bloqueo-mora-cliente').addEventListener('click', (e)=> e.stopPropagation());
+  document.getElementById('toggle-monto-maximo-cliente').addEventListener('click', (e)=> e.stopPropagation());
+  document.getElementById('monto-maximo-input-wrap').addEventListener('click', (e)=> e.stopPropagation());
 
   document.getElementById('accion-ver-resumen-historico').addEventListener('click', ()=>{
     const tarjeta = document.getElementById('tarjeta-resumen-historico');
