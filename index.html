@@ -7169,6 +7169,33 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 <!-- ==========================================================
      MODAL: Registrar Movimiento de Caja (retiro, gasto, aporte o retiro de capital)
      ========================================================== -->
+<!-- NUEVO: a pedido — "Renovar Crédito". Mismo patrón visual que
+     "Registrar Movimiento" (.confirm-modal-overlay + .mora-hoy-card). -->
+<div id="renovar-credito-overlay" class="confirm-modal-overlay" style="display:none;">
+  <div class="mora-hoy-card" id="renovar-credito-card">
+    <div class="confirm-modal-title" style="margin-bottom:6px;">Renovar Crédito</div>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px; text-align:left;">El saldo pendiente del crédito actual se salda con el nuevo, y el actual queda Finalizado.</p>
+
+    <div class="form-field" style="text-align:left;">
+      <label class="field-label">Cliente</label>
+      <div class="field-input" id="renovar-credito-cliente" style="background:var(--background); color:var(--text-secondary); display:flex; align-items:center;"></div>
+    </div>
+    <div class="form-field" style="text-align:left;">
+      <label class="field-label">Saldo pendiente actual</label>
+      <div class="field-input" id="renovar-credito-saldo-actual" style="background:var(--background); color:var(--danger); font-weight:700; display:flex; align-items:center;"></div>
+    </div>
+    <div class="form-field" style="text-align:left;">
+      <label class="field-label" for="input-renovar-credito-valor">Valor del crédito nuevo</label>
+      <input class="field-input" id="input-renovar-credito-valor" type="text" inputmode="numeric" placeholder="Ej. 300.000">
+    </div>
+
+    <div id="renovar-credito-resultado" style="padding:14px; border-radius:var(--radius-md); margin:4px 0 16px; font-weight:700; font-size:15px; text-align:center; display:none;"></div>
+
+    <button type="button" class="primary-button" id="btn-confirmar-renovacion" style="width:100%; margin-bottom:10px;">Confirmar Renovación</button>
+    <button type="button" class="confirm-modal-btn cancelar" id="btn-cerrar-renovar-credito" style="width:100%;">Cancelar</button>
+  </div>
+</div>
+
 <div id="nuevo-movimiento-caja-overlay" class="confirm-modal-overlay" style="display:none;">
   <div class="mora-hoy-card" id="nuevo-movimiento-caja-card">
     <div class="confirm-modal-title" style="margin-bottom:16px;">Registrar Movimiento</div>
@@ -8087,6 +8114,20 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     </div>
     <div id="documento-libre-contenido" class="documento-libre-editable" contenteditable="true" data-placeholder="Escribe o pega tu texto aquí..."></div>
 
+    <!-- NUEVO: a pedido — "Formato automático". No usa inteligencia
+         artificial (esta app no tiene conexión a ningún servicio de
+         IA); reconoce 2 patrones sencillos que el usuario deja al
+         escribir y les da formato de un solo toque:
+         - Una línea sola, corta y sin punto final -> título (negrita + grande)
+         - Líneas que empiezan con "- " -> lista con viñetas real
+         El resto queda como párrafo normal. -->
+    <button type="button" class="btn-outline-share" id="btn-autoformato-documento-libre" style="width:100%; margin-bottom:14px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M9.5 2A2.5 2.5 0 0 0 7 4.5v15A2.5 2.5 0 0 0 9.5 22h9"></path><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-2.5 2.5"></path><path d="M4.5 9H2"></path><path d="M4.5 15H2"></path><path d="M4.5 4.5H2"></path><path d="M4.5 19.5H2"></path></svg>
+      Formato automático
+    </button>
+
+    <p style="font-size:11.5px; color:var(--text-secondary); margin:-8px 0 16px; line-height:1.4;">Deja una línea sola y corta para un título, y empieza una línea con "- " para una viñeta.</p>
+
     <div class="documento-libre-acciones-fila">
       <button type="button" class="btn-outline-share" id="btn-cancelar-documento-libre-2">Cancelar</button>
       <button type="button" class="primary-button" id="btn-guardar-documento-libre">Guardar</button>
@@ -8099,6 +8140,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <button type="button" class="btn-outline-share" id="btn-compartir-imagen-documento-libre">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
         Compartir imagen
+      </button>
+    </div>
+    <!-- NUEVO: a pedido — "Ver imagen" (aparte de "Compartir imagen"),
+         para ver cómo queda la imagen generada sin necesidad de pasar
+         por el flujo de compartir. Reutiliza tal cual la misma
+         generación de imagen y la misma vista previa. -->
+    <div class="documento-libre-acciones-fila">
+      <button type="button" class="btn-outline-share" id="btn-ver-imagen-documento-libre" style="width:100%;">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        Ver imagen
       </button>
     </div>
   </section>
@@ -8516,6 +8567,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
         </div>
         <span>Descuento</span>
+      </div>
+
+      <!-- NUEVO: a pedido — "Renovar crédito". Salda el crédito actual con
+           el valor del crédito nuevo (reutiliza tal cual el reparto de
+           abono ya existente) y abre "Nuevo Préstamo" con el valor y una
+           nota ya pre-llenados. -->
+      <div class="action-sheet-item" id="btn-renovar-credito">
+        <div class="icon-container green">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+        </div>
+        <span>Renovar crédito</span>
       </div>
 
       <div class="action-sheet-item" id="btn-editar-prestamo-detalle">
@@ -12159,6 +12221,68 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     });
   });
 
+  // ==========================================================
+  // NUEVO — a pedido: "Formato automático". Reconoce patrones sencillos
+  // en el TEXTO PLANO tal como lo escribió el usuario (no usa ninguna
+  // IA, esta app no tiene conexión a ningún servicio de ese tipo):
+  // - Una línea sola, corta (<=50 caracteres) y que no termina en
+  //   punto/interrogación/exclamación -> se vuelve un título (negrita +
+  //   letra grande).
+  // - Líneas que empiezan con "- " o "• " -> se agrupan en una lista
+  //   con viñetas real (<ul><li>).
+  // - Cualquier otra línea -> párrafo normal.
+  // Reemplaza el contenido actual por el resultado ya formateado (por
+  // eso conviene usarlo recién se termina de escribir, antes de afinar
+  // negritas/tamaños a mano).
+  // ==========================================================
+  document.getElementById('btn-autoformato-documento-libre').addEventListener('click', ()=>{
+    const texto = contenidoDocumentoLibre.innerText || contenidoDocumentoLibre.textContent || '';
+    const lineas = texto.split('\n');
+    const bloques = [];
+    let listaActual = null;
+
+    lineas.forEach(lineaCruda=>{
+      const linea = lineaCruda.trim();
+      if(linea === ''){
+        listaActual = null; // una línea en blanco cierra cualquier lista en curso
+        return;
+      }
+      if(/^[-•]\s+/.test(linea)){
+        const textoViñeta = linea.replace(/^[-•]\s+/, '');
+        if(!listaActual){
+          listaActual = { tipo:'lista', items:[] };
+          bloques.push(listaActual);
+        }
+        listaActual.items.push(textoViñeta);
+        return;
+      }
+      listaActual = null;
+      const esTitulo = linea.length <= 50 && !/[.!?]$/.test(linea);
+      bloques.push({ tipo: esTitulo ? 'titulo' : 'parrafo', texto: linea });
+    });
+
+    if(bloques.length === 0){
+      mostrarMensajeToast('Escribe algo primero');
+      return;
+    }
+
+    let html = '';
+    bloques.forEach(b=>{
+      if(b.tipo === 'lista'){
+        html += '<ul style="margin:0 0 10px 22px; padding:0;">' +
+          b.items.map(i=>`<li>${escaparHtml(i)}</li>`).join('') +
+          '</ul>';
+      }else if(b.tipo === 'titulo'){
+        html += `<div><b><span style="font-size: 19px;">${escaparHtml(b.texto)}</span></b></div>`;
+      }else{
+        html += `<div>${escaparHtml(b.texto)}</div>`;
+      }
+    });
+
+    contenidoDocumentoLibre.innerHTML = html;
+    mostrarMensajeToast('Formato aplicado');
+  });
+
   // ---------- Guardar ----------
   document.getElementById('btn-guardar-documento-libre').addEventListener('click', ()=>{
     const nombre = inputNombreDocumentoLibre.value.trim() || 'Sin nombre';
@@ -12219,12 +12343,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         lista.push({ salto:true });
         return;
       }
-      const esBloque = (tag === 'DIV' || tag === 'P');
+      const esBloque = (tag === 'DIV' || tag === 'P' || tag === 'LI'); // NUEVO: LI también fuerza línea nueva (listas del Formato automático)
       if(esBloque && lista.length > 0 && !lista[lista.length-1].salto){
         lista.push({ salto:true, parrafoNuevo:true });
       }
       const nuevoFormato = { bold: formato.bold, size: formato.size };
       if(tag === 'B' || tag === 'STRONG') nuevoFormato.bold = true;
+      if(tag === 'LI'){
+        // NUEVO: viñeta dibujada como una "palabra" más, con el mismo
+        // formato que el resto del texto de ese punto.
+        lista.push({ texto:'•', bold: nuevoFormato.bold, size: nuevoFormato.size });
+      }
       const estiloInline = hijo.getAttribute && hijo.getAttribute('style');
       if(estiloInline){
         const matchTam = estiloInline.match(/font-size:\s*(\d+)/);
@@ -12358,6 +12487,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   let canvasDocumentoLibreActual = null;
 
   document.getElementById('btn-compartir-imagen-documento-libre').addEventListener('click', ()=>{
+    const canvas = generarCanvasDocumentoLibre(contenidoDocumentoLibre.innerHTML);
+    canvasDocumentoLibreActual = canvas;
+    document.getElementById('documento-libre-preview-img').src = canvas.toDataURL('image/png');
+    documentoLibrePreviewOverlay.style.display = 'flex';
+  });
+
+  // NUEVO: "Ver imagen" — a pedido, mismo botón/lógica que "Compartir
+  // imagen" (genera la imagen y muestra la misma vista previa), solo
+  // que sirve para mirarla sin necesariamente compartirla. La vista
+  // previa igual tiene su propio botón "Compartir" si luego se decide.
+  document.getElementById('btn-ver-imagen-documento-libre').addEventListener('click', ()=>{
     const canvas = generarCanvasDocumentoLibre(contenidoDocumentoLibre.innerHTML);
     canvasDocumentoLibreActual = canvas;
     document.getElementById('documento-libre-preview-img').src = canvas.toDataURL('image/png');
@@ -14981,9 +15121,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       const anioCredito = new Date(datos.fecha + 'T00:00:00').getFullYear();
       const numeroSecuencial = prestamosGuardados.length + 1;
       const codigo = 'PRE-' + anioCredito + '-' + String(numeroSecuencial).padStart(6, '0');
+      const nuevoIdPrestamo = Date.now();
 
       prestamosGuardados.push({
-        id: Date.now(),
+        id: nuevoIdPrestamo,
         codigo,
         clienteId: clienteEnDetalle.id,
         tipoInteres: datos.tipoInteres,
@@ -14998,8 +15139,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         estado: 'activo',
         plan,
         pagos: [],
-        totalAPagar
+        totalAPagar,
+        renovadoDesdeId: renovacionPrestamoOrigenId || null // NUEVO: a pedido — deja huella de "Renovar crédito"
       });
+
+      // NUEVO: si este préstamo viene de "Renovar crédito", el viejo también
+      // queda enlazado hacia este (para poder navegar en ambos sentidos).
+      if(renovacionPrestamoOrigenId){
+        const indiceViejo = prestamosGuardados.findIndex(p => p.id === renovacionPrestamoOrigenId);
+        if(indiceViejo !== -1) prestamosGuardados[indiceViejo].renovadoHaciaId = nuevoIdPrestamo;
+        renovacionPrestamoOrigenId = null; // se consume una sola vez, no debe pegarse a un préstamo futuro sin relación
+      }
     }
 
     guardarPrestamos(prestamosGuardados);
@@ -17115,6 +17265,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         </div>
 
         <div class="loan-detail-footer-date">Iniciado: ${fechaInicioTexto}${prestamo.estado === 'finalizado' && prestamo.fechaFinalizacion ? ' · Finalizado: ' + formatearFechaCorta(new Date(prestamo.fechaFinalizacion)) : ''}</div>
+        ${(()=>{
+          // NUEVO: a pedido — deja huella visual de "Renovar crédito" en
+          // ambas direcciones (el nuevo apunta al viejo, y el viejo al nuevo).
+          if(prestamo.renovadoDesdeId){
+            const origen = prestamosGuardados.find(p => p.id === prestamo.renovadoDesdeId);
+            if(origen) return `<div class="loan-detail-footer-date" style="color:var(--primary); font-weight:600;">Renovación de ${origen.codigo}</div>`;
+          }
+          if(prestamo.renovadoHaciaId){
+            const destino = prestamosGuardados.find(p => p.id === prestamo.renovadoHaciaId);
+            if(destino) return `<div class="loan-detail-footer-date" style="color:var(--primary); font-weight:600;">Renovado hacia ${destino.codigo}</div>`;
+          }
+          return '';
+        })()}
         ${cuotasVencidas > 0 ? `
         <div class="alerta-cuotas-vencidas">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
@@ -19956,6 +20119,152 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
   inputDescuentoValor.addEventListener('input', ()=>{
     inputDescuentoValor.value = formatearMiles(inputDescuentoValor.value);
+  });
+
+  // ==========================================================
+  // NUEVO — a pedido: "Renovar crédito". Salda el crédito actual con el
+  // valor del crédito nuevo (reutiliza tal cual repartirAbonoEntreCuotas,
+  // la misma función que ya usa "Agregar Abono" — nada de cálculos
+  // nuevos) y abre "Nuevo Préstamo" con el valor y una nota ya
+  // pre-llenados, para que el usuario complete cuotas/frecuencia/interés
+  // exactamente como con cualquier préstamo nuevo.
+  // ==========================================================
+  let prestamoParaRenovar = null;
+  let renovacionPrestamoOrigenId = null; // se lee una sola vez al guardar el préstamo nuevo (ver ejecutarGuardadoPrestamo)
+
+  const renovarCreditoOverlay = document.getElementById('renovar-credito-overlay');
+  const inputRenovarCreditoValor = document.getElementById('input-renovar-credito-valor');
+  const renovarCreditoResultado = document.getElementById('renovar-credito-resultado');
+
+  function actualizarResultadoRenovacion(){
+    const nuevoValor = numeroDesdeCampo(inputRenovarCreditoValor.value);
+    if(!prestamoParaRenovar || nuevoValor <= 0){
+      renovarCreditoResultado.style.display = 'none';
+      return;
+    }
+    const saldo = saldoPendientePrestamo(prestamoParaRenovar);
+    const diferencia = nuevoValor - saldo;
+    renovarCreditoResultado.style.display = 'block';
+    if(diferencia >= 0){
+      renovarCreditoResultado.style.background = 'var(--success-light)';
+      renovarCreditoResultado.style.color = '#15803D';
+      renovarCreditoResultado.textContent = 'Entregas al cliente: ' + formatearPesos(diferencia);
+    }else{
+      renovarCreditoResultado.style.background = 'var(--warning-light)';
+      renovarCreditoResultado.style.color = '#B45309';
+      renovarCreditoResultado.textContent = 'El cliente debe entregarte: ' + formatearPesos(Math.abs(diferencia)) + ' adicional';
+    }
+  }
+  inputRenovarCreditoValor.addEventListener('input', ()=>{
+    inputRenovarCreditoValor.value = formatearMiles(inputRenovarCreditoValor.value);
+    actualizarResultadoRenovacion();
+  });
+
+  document.getElementById('btn-renovar-credito').addEventListener('click', ()=>{
+    if(!prestamoEnDetalle) return;
+    prestamoParaRenovar = prestamoEnDetalle;
+    const clienteDelPrestamo = clientesGuardados.find(c => c.id === prestamoParaRenovar.clienteId);
+    document.getElementById('renovar-credito-cliente').textContent = clienteDelPrestamo ? clienteDelPrestamo.nombre : '';
+    document.getElementById('renovar-credito-saldo-actual').textContent = formatearPesos(saldoPendientePrestamo(prestamoParaRenovar));
+    inputRenovarCreditoValor.value = '';
+    renovarCreditoResultado.style.display = 'none';
+    renovarCreditoOverlay.style.display = 'flex';
+  });
+  document.getElementById('btn-cerrar-renovar-credito').addEventListener('click', ()=>{
+    renovarCreditoOverlay.style.display = 'none';
+  });
+  renovarCreditoOverlay.addEventListener('click', (e)=>{ if(e.target === renovarCreditoOverlay) renovarCreditoOverlay.style.display = 'none'; });
+
+  document.getElementById('btn-confirmar-renovacion').addEventListener('click', ()=>{
+    const nuevoValor = numeroDesdeCampo(inputRenovarCreditoValor.value);
+    if(nuevoValor <= 0){
+      alert('Escribe el valor del crédito nuevo.');
+      inputRenovarCreditoValor.focus();
+      return;
+    }
+    const prestamo = prestamoParaRenovar;
+    if(!prestamo) return;
+    const indice = prestamosGuardados.findIndex(p => p.id === prestamo.id);
+    if(indice === -1) return;
+
+    const saldo = saldoPendientePrestamo(prestamo);
+    const diferencia = nuevoValor - saldo;
+    const hoyISO = new Date().toISOString();
+
+    // ---- Salda el crédito actual — MISMA función que "Agregar Abono" ----
+    if(saldo > 0){
+      const cuotasPendientesAnteriores = cuotasPendientesAbono;
+      const prestamoEnDetalleAnterior = prestamoEnDetalle;
+      cuotasPendientesAbono = (prestamo.plan || []).filter(c => pendienteDeCuota(prestamo, c) > 0);
+      prestamoEnDetalle = prestamo;
+
+      const reparto = repartirAbonoEntreCuotas(prestamo, saldo, 'capital_interes');
+      if(!prestamosGuardados[indice].pagos) prestamosGuardados[indice].pagos = [];
+      reparto.forEach((parte, i)=>{
+        prestamosGuardados[indice].pagos.push({
+          id: Date.now() + i,
+          cuota: parte.cuota.numero,
+          fecha: hoyISO,
+          monto: parte.monto,
+          interesPagado: parte.interesPagado,
+          capitalPagado: parte.capitalPagado,
+          aplicarA: 'capital_interes',
+          metodoPago: 'efectivo',
+          nota: 'Saldado por renovación de crédito'
+        });
+      });
+
+      cuotasPendientesAbono = cuotasPendientesAnteriores;
+      prestamoEnDetalle = prestamoEnDetalleAnterior;
+    }
+
+    prestamosGuardados[indice].estado = 'finalizado';
+    if(!prestamosGuardados[indice].fechaFinalizacion){
+      prestamosGuardados[indice].fechaFinalizacion = hoyISO;
+      const clienteDelNivel = clientesGuardados.find(c => c.id === prestamosGuardados[indice].clienteId);
+      if(clienteDelNivel){
+        recalcularNivelCliente(clienteDelNivel, prestamosGuardados[indice]);
+        guardarClientes(clientesGuardados);
+      }
+    }
+
+    guardarPrestamos(prestamosGuardados);
+    actualizarMoraCobradaDashboard();
+    actualizarCapitalCobradoDashboard();
+    actualizarInteresCobradoDashboard();
+
+    renovacionPrestamoOrigenId = prestamo.id; // se consume una sola vez al guardar el préstamo nuevo
+    renovarCreditoOverlay.style.display = 'none';
+
+    // ---- Abre "Nuevo Préstamo" para el mismo cliente, con el valor y la nota ya pre-llenados ----
+    const clienteDelPrestamo = clientesGuardados.find(c => c.id === prestamo.clienteId);
+    if(!clienteDelPrestamo) return;
+    clienteEnDetalle = clienteDelPrestamo;
+    resetFormularioPrestamo();
+    prestamoEditandoId = null;
+    origenFormularioPrestamo = 'detalleCliente';
+    document.getElementById('titulo-form-prestamo').textContent = 'Nuevo Préstamo';
+    document.getElementById('texto-btn-guardar-prestamo').textContent = 'Guardar Préstamo';
+    loanClienteNombre.textContent = clienteEnDetalle.nombre;
+
+    inputValorPrestamo.value = formatearMiles(nuevoValor);
+    const notaRenovacion = 'Renovación de ' + prestamo.codigo + '. ' +
+      (diferencia >= 0 ? 'Entregado al cliente: ' + formatearPesos(diferencia) : 'Cliente entregó: ' + formatearPesos(Math.abs(diferencia)));
+    inputNotaPrestamo.value = notaRenovacion;
+    campoNotaPrestamo.style.display = 'flex';
+    btnAgregarNotaPrestamo.classList.add('active');
+    textoBtnNota.textContent = 'Quitar Nota';
+    notaVisible = true;
+    sincronizarInteresCuota();
+
+    screenDetallePrestamo.style.display = 'none';
+    screenDetalleCliente.style.display = 'none';
+    screenNuevoPrestamo.style.display = 'block';
+    screenNuevoPrestamo.classList.remove('screen-anim');
+    void screenNuevoPrestamo.offsetWidth;
+    screenNuevoPrestamo.classList.add('screen-anim');
+    bottomNav.style.display = 'none';
+    window.scrollTo(0,0);
   });
 
   document.getElementById('btn-aplicar-descuento').addEventListener('click', ()=>{
