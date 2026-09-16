@@ -18857,12 +18857,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     ] : [
       ['Cliente', nombreCliente],
       ['Fecha de pago', fechaTexto],
-      // CORREGIDO: a pedido — antes "Cuota" siempre mostraba "N.° X de Y"
-      // aunque el abono fuera parcial (sin terminar de pagar esa cuota),
-      // dando a entender que esa cuota ya contaba como pagada. Reutiliza
-      // el mismo dato que ya calcula "Estado" correctamente (línea de
-      // arriba: todasLasCuotasCubiertasQuedaronPagadas).
-      ['Cuota', todasLasCuotasCubiertasQuedaronPagadas ? textoCuota : 'Parcial ' + textoCuota],
+      // CORREGIDO: a pedido — ya no dice "N.° X de Y" ni "Parcial". Ahora
+      // siempre muestra cuántas cuotas quedaron 100% pagadas sobre el
+      // total, sin importar el número específico de cuota tocada por
+      // este abono (así un abono que sobra hacia la siguiente cuota, sin
+      // completarla, no la cuenta todavía).
+      ['Cuota', cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas],
       ['Valor de la cuota', formatearPesos(cuotaRealPrestamo(prestamo))],
       ['Abono realizado', formatearPesos(montoAbonado)],
       ['Estado', todasLasCuotasCubiertasQuedaronPagadas ? 'Pagada' : 'Abono registrado'],
@@ -19562,12 +19562,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     filas.push(['Cliente', clienteEnDetalle ? clienteEnDetalle.nombre : '—']);
     filas.push(['Fecha del pago', formatearFechaHoraCorta(new Date(pago.fecha))]);
     if(obtenerReciboMostrarCuota()){
-      // CORREGIDO: a pedido — antes siempre mostraba "N de Y" aunque el
-      // pago fuera solo un abono parcial (sin terminar de pagar esa
-      // cuota), lo cual confundía al cliente haciéndole pensar que esa
-      // cuota ya quedó contada/pagada. Ahora distingue ambos casos.
-      const textoCuota = esRecargoMora ? cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas :
-        esAbono ? 'Abono' : (estaCuotaPagada(prestamo, cuota.numero) ? cuota.numero + ' de ' + prestamo.cuotas : 'Parcial ' + cuota.numero + ' de ' + prestamo.cuotas);
+      // CORREGIDO: a pedido — ya no dice "N de Y" ni "Parcial". Ahora
+      // siempre muestra cuántas cuotas quedaron 100% pagadas sobre el
+      // total (mismo dato que ya usaba el caso de mora), sin importar el
+      // número específico de cuota tocada por este abono.
+      const textoCuota = esAbono ? 'Abono' : cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas;
       filas.push(['Cuota', textoCuota]);
     }
     if(obtenerReciboMostrarMetodo()){
