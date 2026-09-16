@@ -19037,7 +19037,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // tiempo, rojo si fue tarde. Solo se dibuja si el interruptor está
     // activo Y el pago aplica (no mora, no abono).
     if(resultadoPuntualidad){
-      const textoPuntualidad = textoPuntualidadPago(resultadoPuntualidad);
+      // CORREGIDO: a pedido — solo en esta imagen compartida (comprobante),
+      // "anticipado" se une con "a tiempo" en un mismo mensaje. La
+      // pantalla de Cuotas y el Detalle del Pago en vivo siguen usando
+      // textoPuntualidadPago() tal cual, sin este cambio.
+      const textoPuntualidad = resultadoPuntualidad.tipo === 'anticipado' ? 'PAGO A TIEMPO' : textoPuntualidadPago(resultadoPuntualidad);
       const colorPuntualidad = resultadoPuntualidad.tipo === 'tarde' ? '#DC2626' : '#15803D';
       ctx.font = 'bold 17px Arial, sans-serif';
       ctx.textAlign = 'center';
