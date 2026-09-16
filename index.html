@@ -18857,7 +18857,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     ] : [
       ['Cliente', nombreCliente],
       ['Fecha de pago', fechaTexto],
-      ['Cuota', textoCuota],
+      // CORREGIDO: a pedido — antes "Cuota" siempre mostraba "N.° X de Y"
+      // aunque el abono fuera parcial (sin terminar de pagar esa cuota),
+      // dando a entender que esa cuota ya contaba como pagada. Reutiliza
+      // el mismo dato que ya calcula "Estado" correctamente (línea de
+      // arriba: todasLasCuotasCubiertasQuedaronPagadas).
+      ['Cuota', todasLasCuotasCubiertasQuedaronPagadas ? textoCuota : 'Parcial ' + textoCuota],
       ['Valor de la cuota', formatearPesos(cuotaRealPrestamo(prestamo))],
       ['Abono realizado', formatearPesos(montoAbonado)],
       ['Estado', todasLasCuotasCubiertasQuedaronPagadas ? 'Pagada' : 'Abono registrado'],
@@ -19557,8 +19562,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     filas.push(['Cliente', clienteEnDetalle ? clienteEnDetalle.nombre : '—']);
     filas.push(['Fecha del pago', formatearFechaHoraCorta(new Date(pago.fecha))]);
     if(obtenerReciboMostrarCuota()){
+      // CORREGIDO: a pedido — antes siempre mostraba "N de Y" aunque el
+      // pago fuera solo un abono parcial (sin terminar de pagar esa
+      // cuota), lo cual confundía al cliente haciéndole pensar que esa
+      // cuota ya quedó contada/pagada. Ahora distingue ambos casos.
       const textoCuota = esRecargoMora ? cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas :
-        esAbono ? 'Abono' : cuota.numero + ' de ' + prestamo.cuotas;
+        esAbono ? 'Abono' : (estaCuotaPagada(prestamo, cuota.numero) ? cuota.numero + ' de ' + prestamo.cuotas : 'Parcial ' + cuota.numero + ' de ' + prestamo.cuotas);
       filas.push(['Cuota', textoCuota]);
     }
     if(obtenerReciboMostrarMetodo()){
