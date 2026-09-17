@@ -11351,6 +11351,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     pantallaDebajoDeCobros = Array.from(document.querySelectorAll('.app')).find(el => el !== screenCobros && getComputedStyle(el).display !== 'none') || null;
     screenCobros.style.display = 'block';
     screenCobros.scrollTop = 0;
+    // NUEVO: a pedido — respaldo del mismo reinicio del buscador (la
+    // limpieza principal ocurre al cerrar, ver btn-cerrar-cobros), por
+    // si Cobros se llegara a abrir sin haber pasado por ese botón.
+    textoBusquedaCobros = '';
+    document.getElementById('cobros-buscador').value = '';
     if(typeof actualizarCobros === 'function') actualizarCobros();
     // NUEVO: al abrir, deja centrado el día activo en la tira deslizable
     if(typeof centrarDiaSeleccionadoCobros === 'function'){
@@ -11371,6 +11376,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // mostrarla de nuevo aquí, o se cerraría Cobros dejando todo en blanco.
     if(pantallaDebajoDeCobros) pantallaDebajoDeCobros.style.display = 'block';
     pantallaDebajoDeCobros = null;
+    // NUEVO: a pedido — al salir de Cobros, el buscador queda limpio
+    // (en blanco), para que la próxima vez que se abra no siga
+    // mostrando la búsqueda anterior.
+    textoBusquedaCobros = '';
+    document.getElementById('cobros-buscador').value = '';
   });
 
   // ==========================================================
