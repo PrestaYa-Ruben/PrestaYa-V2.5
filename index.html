@@ -157,6 +157,20 @@ a{ text-decoration:none; color:inherit; }
   padding-bottom:96px; /* espacio para nav inferior */
 }
 
+/* NUEVO: a pedido — "Cobros" ahora es una capa superpuesta (se puede
+   abrir desde cualquier pantalla y, al cerrarla, deja todo exactamente
+   como estaba debajo — mismo scroll, mismo formulario a medio llenar,
+   etc. — porque esa pantalla de abajo nunca se oculta ni se destruye
+   mientras se está viendo Cobros). Ver abrirCobrosOverlay() en JS. */
+#screen-cobros.app{
+  position:fixed;
+  inset:0;
+  z-index:240;
+  margin:0 auto;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
 /* ==========================================================
    4. COMPONENTES — reutilizables en todos los módulos futuros
    ========================================================== */
@@ -5527,6 +5541,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <svg id="icono-orden-clientes" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s ease;"><path d="M3 8l4-4 4 4"></path><path d="M7 4v16"></path><path d="M13 16h8"></path><path d="M13 11h5"></path><path d="M13 6h2"></path></svg>
         <span id="texto-orden-clientes" style="font-size:13px; font-weight:600;">A-Z</span>
       </button>
+      <!-- NUEVO: a pedido — acceso a "Cobros" desde Clientes, como capa
+           superpuesta (ver abrirCobrosOverlay). Cerrar deja esta misma
+           pantalla exactamente como estaba. -->
+      <button class="refrescar-btn" id="btn-abrir-cobros-clientes" aria-label="Abrir Cobros">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      </button>
     </div>
   </header>
 
@@ -6361,7 +6381,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
     </button>
     <h1>Detalle del Préstamo</h1>
-    <span class="header-spacer"></span>
+    <!-- NUEVO: a pedido — acceso a "Cobros" desde Detalle del Préstamo,
+         como capa superpuesta (ver abrirCobrosOverlay). Cerrar deja esta
+         misma pantalla exactamente como estaba. -->
+    <button class="refrescar-btn" id="btn-abrir-cobros-detalle-prestamo" aria-label="Abrir Cobros">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+    </button>
   </header>
 
   <section class="detail-body" style="padding-bottom:110px;">
@@ -11311,25 +11336,38 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     window.scrollTo(0, 0);
   });
 
-  // NUEVO: abrir/cerrar la pantalla dedicada "Cobros" (antes vivía
-  // directo en Inicio). Se refresca al abrir para mostrar datos frescos.
+  // NUEVO: a pedido — "Cobros" ahora es una capa superpuesta que se
+  // puede abrir desde CUALQUIER pantalla (no solo Inicio). En vez de
+  // asumir siempre "vengo de Inicio, vuelvo a Inicio", detecta sola cuál
+  // pantalla estaba visible justo antes de abrirse y la deja intacta
+  // debajo (nunca se oculta) — al cerrar, esa pantalla ya está ahí tal
+  // cual se dejó, sin necesidad de restaurar nada.
   const screenCobros = document.getElementById('screen-cobros');
-  document.getElementById('btn-abrir-cobros').addEventListener('click', ()=>{
-    screenInicio.style.display = 'none';
+  let pantallaDebajoDeCobros = null;
+  function abrirCobrosOverlay(){
+    pantallaDebajoDeCobros = Array.from(document.querySelectorAll('.app')).find(el => el !== screenCobros && getComputedStyle(el).display !== 'none') || null;
     screenCobros.style.display = 'block';
-    bottomNav.style.display = 'none';
+    screenCobros.scrollTop = 0;
     if(typeof actualizarCobros === 'function') actualizarCobros();
     // NUEVO: al abrir, deja centrado el día activo en la tira deslizable
     if(typeof centrarDiaSeleccionadoCobros === 'function'){
       requestAnimationFrame(centrarDiaSeleccionadoCobros);
     }
-    window.scrollTo(0, 0);
-  });
+  }
+  document.getElementById('btn-abrir-cobros').addEventListener('click', abrirCobrosOverlay);
+  // NUEVO: a pedido — mismos accesos desde Clientes y Detalle del
+  // Préstamo, reutilizando tal cual abrirCobrosOverlay() — detecta sola
+  // cuál pantalla está debajo y la deja intacta al cerrar.
+  document.getElementById('btn-abrir-cobros-clientes').addEventListener('click', abrirCobrosOverlay);
+  document.getElementById('btn-abrir-cobros-detalle-prestamo').addEventListener('click', abrirCobrosOverlay);
   document.getElementById('btn-cerrar-cobros').addEventListener('click', ()=>{
     screenCobros.style.display = 'none';
-    screenInicio.style.display = 'block';
-    bottomNav.style.display = 'flex';
-    window.scrollTo(0, 0);
+    // CORREGIDO: si se navegó a Detalle del Préstamo y se volvió, la
+    // pantalla de abajo se había ocultado para evitar contenido
+    // duplicado (ver 'cobros' en abrirDetallePrestamo) — hay que
+    // mostrarla de nuevo aquí, o se cerraría Cobros dejando todo en blanco.
+    if(pantallaDebajoDeCobros) pantallaDebajoDeCobros.style.display = 'block';
+    pantallaDebajoDeCobros = null;
   });
 
   // ==========================================================
@@ -17500,6 +17538,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       screenModoCobro.style.display = 'none';
     }else if(origenDetallePrestamo === 'cobros'){
       screenCobros.style.display = 'none';
+      // NUEVO: Cobros es una capa superpuesta — la pantalla que había
+      // quedado debajo (nunca se ocultó mientras se veía Cobros) si
+      // sigue visible aquí, se duplicaría junto a Detalle del Préstamo.
+      if(pantallaDebajoDeCobros) pantallaDebajoDeCobros.style.display = 'none';
     }else{
       screenDetalleCliente.style.display = 'none';
     }
@@ -20737,8 +20779,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }
 
   function centrarDiaSeleccionadoCobros(){
+    // CORREGIDO: antes usaba scrollIntoView({block:'nearest'}), que en
+    // algunos casos también desplazaba el scroll de la pantalla de abajo
+    // (ahora visible detrás de Cobros al ser una capa superpuesta). Se
+    // calcula el desplazamiento horizontal a mano — mismo resultado
+    // visual, sin ningún efecto sobre el scroll vertical de nada más.
     const activo = cobrosDiasStrip.querySelector('.dia-card.active');
-    if(activo) activo.scrollIntoView({ behavior:'auto', inline:'center', block:'nearest' });
+    if(!activo) return;
+    const centroActivo = activo.offsetLeft + activo.offsetWidth / 2;
+    const centroStrip = cobrosDiasStrip.clientWidth / 2;
+    cobrosDiasStrip.scrollLeft = centroActivo - centroStrip;
   }
 
   // NUEVO: botón "Hoy" — vuelve directo al día actual mientras se navega
