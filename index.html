@@ -165,7 +165,7 @@ a{ text-decoration:none; color:inherit; }
 #screen-cobros.app{
   position:fixed;
   inset:0;
-  z-index:240;
+  z-index:100; /* CORREGIDO: antes 240 — quedaba por ENCIMA de los modales de confirmación (z-index:200) y menús (210), tapándolos cuando se abrían desde dentro de Cobros (ej. "Editar" en el detalle de un recordatorio). Ahora queda por debajo de cualquier modal, pero sigue por encima de pantallas normales y del menú inferior. */
   margin:0 auto;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
@@ -1129,6 +1129,7 @@ body.tinte-dashboard-activo .stat-card.tinte-rojo .icon-container{ background:no
 /* NUEVO: mismo tratamiento de tinte + borde aplicado también a las
    tarjetas de recordatorio de Cobros — naranja mientras está pendiente,
    verde una vez gestionado (mismos colores ya usados en Cuotas). */
+.recordatorio-card{ margin-bottom:10px; } /* NUEVO: a pedido — un poco de espacio entre tarjetas, antes quedaban pegadas */
 .recordatorio-card[data-estado="pendiente"]{ background:#FBF0E3; border-color:#EFCB9E; }
 .recordatorio-card[data-estado="gestionado"]{ background:#EBF7EF; border-color:#A9DDBC; }
 .recordatorio-card[data-estado="gestionado"] .recordatorio-linea{ color:var(--success); }
@@ -5544,8 +5545,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <!-- NUEVO: a pedido — acceso a "Cobros" desde Clientes, como capa
            superpuesta (ver abrirCobrosOverlay). Cerrar deja esta misma
            pantalla exactamente como estaba. -->
-      <button class="refrescar-btn" id="btn-abrir-cobros-clientes" aria-label="Abrir Cobros">
+      <button class="refrescar-btn" id="btn-abrir-cobros-clientes" aria-label="Abrir Cobros" style="position:relative;">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span class="pagan-hoy-badge" id="badge-cobros-clientes" style="display:none;">0</span>
       </button>
     </div>
   </header>
@@ -6384,8 +6386,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <!-- NUEVO: a pedido — acceso a "Cobros" desde Detalle del Préstamo,
          como capa superpuesta (ver abrirCobrosOverlay). Cerrar deja esta
          misma pantalla exactamente como estaba. -->
-    <button class="refrescar-btn" id="btn-abrir-cobros-detalle-prestamo" aria-label="Abrir Cobros">
+    <button class="refrescar-btn" id="btn-abrir-cobros-detalle-prestamo" aria-label="Abrir Cobros" style="position:relative;">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      <span class="pagan-hoy-badge" id="badge-cobros-detalle-prestamo" style="display:none;">0</span>
     </button>
   </header>
 
@@ -20541,6 +20544,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // ocultaba — quedaba debajo del formulario, y por eso había que
   // desplazarse mucho hacia abajo para verlo.
   function pantallaVisibleActual(){
+    // CORREGIDO: si Cobros está abierto (como capa superpuesta), es la
+    // pantalla que el usuario realmente está viendo — aunque la de abajo
+    // siga técnicamente "visible" en el DOM (a propósito, nunca se
+    // oculta mientras se ve Cobros). Esta función SIEMPRE se usa para
+    // saber qué ocultar antes de mostrar otra pantalla — así que, si se
+    // va a ocultar Cobros, hay que ocultar TAMBIÉN lo que había quedado
+    // debajo (si no, esa pantalla de abajo queda igual visible, y lo
+    // nuevo que se muestre aparece "debajo" de ella en el flujo normal
+    // de la página en vez de encima).
+    if(screenCobros && screenCobros.style.display !== 'none'){
+      if(pantallaDebajoDeCobros) pantallaDebajoDeCobros.style.display = 'none';
+      return screenCobros;
+    }
     const pantallas = document.querySelectorAll('.app');
     for(const el of pantallas){
       if(el.style.display !== 'none') return el;
@@ -20746,8 +20762,33 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // Genera la tira de tarjetas de día alrededor de fechaBase ('YYYY-MM-DD').
   // Se regenera al elegir una fecha libre desde el overlay de calendario,
   // así el día elegido siempre queda visible y centrado en la tira.
+  // NUEVO: a pedido — cuántos recordatorios pendientes hay por cada
+  // fecha, en una sola pasada (mismo patrón ya usado en Pagan Hoy con
+  // contarClientesPaganHoyPorFecha) para no recorrer recordatoriosGuardados
+  // una vez por cada uno de los ~46 días de la tira.
+  // CORREGIDO: aplica los MISMOS criterios de validez que ya usa
+  // recordatoriosDelDia() (cliente/préstamo/cuota existentes, cliente no
+  // inhabilitado, filtro de ruta) — si no, un recordatorio "huérfano" (de
+  // un préstamo ya eliminado, por ejemplo) se contaría en el globo aunque
+  // nunca fuera a aparecer en la lista de abajo.
+  function contarRecordatoriosPendientesPorFecha(){
+    const mapa = new Map();
+    recordatoriosGuardados.filter(r => r.estado === 'pendiente').forEach(r=>{
+      const cliente = clientesGuardados.find(c => c.id === r.clienteId);
+      if(!cliente || cliente.estadoCliente === 'inhabilitado') return;
+      if(rutasFiltroActivas && !rutasFiltroActivas.has(cliente.ruta || '')) return;
+      const prestamo = prestamosGuardados.find(p => p.id === r.prestamoId);
+      if(!prestamo) return;
+      const cuota = (prestamo.plan || []).find(c => c.numero === r.numeroCuota);
+      if(!cuota) return;
+      mapa.set(r.fecha, (mapa.get(r.fecha) || 0) + 1);
+    });
+    return mapa;
+  }
+
   function generarDiasStripCobros(fechaBase){
     const base = new Date(fechaBase + 'T00:00:00');
+    const conteos = contarRecordatoriosPendientesPorFecha();
     cobrosDiasStrip.innerHTML = '';
     for(let i = -COBROS_DIAS_ANTES; i <= COBROS_DIAS_DESPUES; i++){
       const d = new Date(base);
@@ -20756,6 +20797,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       const mes = String(d.getMonth() + 1).padStart(2, '0');
       const dia = String(d.getDate()).padStart(2, '0');
       const clave = anio + '-' + mes + '-' + dia;
+      const cantidad = conteos.get(clave) || 0;
 
       const btn = document.createElement('button');
       btn.type = 'button';
@@ -20765,6 +20807,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <span class="dia-mes">${MESES_ABREV_MIN[d.getMonth()]}</span>
         <span class="dia-numero">${d.getDate()}</span>
         <span class="dia-semana">${DIAS_ABREV_COBROS[d.getDay()]}</span>
+        ${cantidad > 0 ? `<span class="dia-card-badge">${cantidad > 99 ? '99+' : cantidad}</span>` : ''}
       `;
       btn.addEventListener('click', ()=>{
         if(clave === cobrosFechaSeleccionada) return;
@@ -20907,18 +20950,30 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // NUEVO: la tira de días reemplazó los pills Ayer/Hoy/Mañana, así que ya
   // no hay contadores por pestaña que actualizar aquí — solo se conserva
   // el badge de "cobros pendientes hoy" del botón de acceso en Inicio.
+  // CORREGIDO: a pedido — el globo (rojo/blanco, mismo estilo que "Pagan
+  // Hoy") ahora también vive en los accesos a Cobros de Clientes y
+  // Detalle del Préstamo, y esta función se ejecuta una vez apenas carga
+  // la app — antes solo se actualizaba al ABRIR Cobros, así que el globo
+  // nunca se veía si el usuario no había entrado ahí primero.
   function actualizarContadoresCobros(){
     const hoy = recordatoriosDelDia(claveFechaConOffset(0)).filter(i => i.recordatorio.estado === 'pendiente').length;
-
-    const badge = document.getElementById('banner-cobros-badge');
-    if(badge){
-      badge.textContent = hoy > 99 ? '99+' : String(hoy);
-      badge.style.display = hoy > 0 ? 'flex' : 'none';
-    }
+    const texto = hoy > 99 ? '99+' : String(hoy);
+    ['banner-cobros-badge', 'badge-cobros-clientes', 'badge-cobros-detalle-prestamo'].forEach(id=>{
+      const badge = document.getElementById(id);
+      if(badge){
+        badge.textContent = texto;
+        badge.style.display = hoy > 0 ? 'flex' : 'none';
+      }
+    });
   }
+  actualizarContadoresCobros();
 
   function actualizarCobros(){
     actualizarContadoresCobros();
+    // NUEVO: a pedido — regenera también la tira de días (no solo la
+    // lista del día activo), para que el contador de cada día se
+    // mantenga al día si algún recordatorio cambió de estado.
+    generarDiasStripCobros(cobrosFechaSeleccionada);
     renderizarCobrosLista();
     actualizarBadgePaganHoy(); // NUEVO
     actualizarBadgeModoCobro(); // NUEVO
