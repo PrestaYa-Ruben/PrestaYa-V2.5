@@ -175,10 +175,20 @@ a{ text-decoration:none; color:inherit; }
   z-index:100; /* CORREGIDO: antes 240 — quedaba por ENCIMA de los modales de confirmación (z-index:200) y menús (210), tapándolos cuando se abrían desde dentro de Cobros (ej. "Editar" en el detalle de un recordatorio). Ahora queda por debajo de cualquier modal, pero sigue por encima de pantallas normales y del menú inferior. */
   margin:0 auto;
   overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
+  /* CORREGIDO: a pedido — se quitaron -webkit-overflow-scrolling:touch
+     Y will-change:scroll-position. Sonaban lógicos para "fluidez
+     táctil", pero -webkit-overflow-scrolling:touch es justo la causa
+     más conocida de que un position:fixed con overflow-y:auto se
+     congele A MITAD del gesto (no solo en los bordes) en Safari/iOS —
+     crea su propia capa de scroll "elástica" que a veces no se
+     actualiza bien cuando el contenido cambia mientras se desliza (ej.
+     el contador de cada día cambiando). will-change, sumado a esa
+     misma capa, podía terminar compitiendo en vez de ayudar. El iOS
+     moderno ya trae scroll con inercia de forma nativa en
+     overflow-y:auto, sin necesitar ninguna de las dos — quitarlas es la
+     recomendación actual para este problema puntual. */
   overscroll-behavior-y:contain; /* CORREGIDO: a pedido — sin esto, al llegar arriba/abajo del todo el scroll intentaba "encadenarse" con la pantalla de abajo (que sigue existiendo en el DOM, nunca se oculta, por ser Cobros una capa superpuesta), sintiéndose pegado hasta soltar e intentar de nuevo. */
   touch-action:pan-y; /* CORREGIDO: a pedido — antes solo la tira de días (adentro) le avisaba al navegador que ERA horizontal; este contenedor no decía nada sobre sí mismo, así que el navegador tardaba un instante en "decidir" que el gesto era vertical, sintiéndose bloqueado justo al empezar a deslizar. */
-  will-change:scroll-position; /* NUEVO: le pide al navegador que prepare de antemano una capa optimizada para este scroll, en vez de armarla recién cuando el dedo ya se está moviendo — reduce el tirón inicial, sobre todo siendo esta una capa fija (position:fixed) superpuesta encima de otra pantalla. */
 }
 #cobros-dias-strip{ touch-action:pan-x; } /* NUEVO: refuerza que esta tira solo reacciona a gestos horizontales, para que un deslizamiento vertical que empiece ahí mismo no compita con el scroll de toda la pantalla */
 
