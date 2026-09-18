@@ -77,6 +77,13 @@
   --radius-lg: 10px; /* CORREGIDO: antes 16px — a pedido, esquinas mucho menos redondeadas en TODAS las tarjetas */
   --radius-md: 10px; /* CORREGIDO: antes 12px — mismo criterio, para que todo el sistema use un único radio consistente */
   --radius-full: 999px;
+
+  /* NUEVO: a pedido — azul pastel para la tarjeta de recordatorio
+     pendiente en Recordatorios (antes beige/crema). Solo afecta esa
+     tarjeta puntual — nada de lo demás usa estas variables. */
+  --recordatorio-pendiente-bg:#EFF6FF;
+  --recordatorio-pendiente-border:#60A5FA;
+  --recordatorio-pendiente-chip-bg:#DBEAFE;
 }
 
 /* ==========================================================
@@ -170,6 +177,8 @@ a{ text-decoration:none; color:inherit; }
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior-y:contain; /* CORREGIDO: a pedido — sin esto, al llegar arriba/abajo del todo el scroll intentaba "encadenarse" con la pantalla de abajo (que sigue existiendo en el DOM, nunca se oculta, por ser Cobros una capa superpuesta), sintiéndose pegado hasta soltar e intentar de nuevo. */
+  touch-action:pan-y; /* CORREGIDO: a pedido — antes solo la tira de días (adentro) le avisaba al navegador que ERA horizontal; este contenedor no decía nada sobre sí mismo, así que el navegador tardaba un instante en "decidir" que el gesto era vertical, sintiéndose bloqueado justo al empezar a deslizar. */
+  will-change:scroll-position; /* NUEVO: le pide al navegador que prepare de antemano una capa optimizada para este scroll, en vez de armarla recién cuando el dedo ya se está moviendo — reduce el tirón inicial, sobre todo siendo esta una capa fija (position:fixed) superpuesta encima de otra pantalla. */
 }
 #cobros-dias-strip{ touch-action:pan-x; } /* NUEVO: refuerza que esta tira solo reacciona a gestos horizontales, para que un deslizamiento vertical que empiece ahí mismo no compita con el scroll de toda la pantalla */
 
@@ -1132,7 +1141,31 @@ body.tinte-dashboard-activo .stat-card.tinte-rojo .icon-container{ background:no
    tarjetas de recordatorio de Cobros — naranja mientras está pendiente,
    verde una vez gestionado (mismos colores ya usados en Cuotas). */
 .recordatorio-card{ margin-bottom:10px; } /* NUEVO: a pedido — un poco de espacio entre tarjetas, antes quedaban pegadas */
-.recordatorio-card[data-estado="pendiente"]{ background:#FBF0E3; border-color:#EFCB9E; }
+/* NUEVO: a pedido — filas del selector de cliente para crear un
+   recordatorio manual desde Recordatorios. */
+.selector-cliente-fila{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 4px;
+  cursor:pointer;
+}
+.selector-cliente-fila:active{ background:var(--background); }
+.selector-cliente-fila + .selector-cliente-fila{ border-top:1px solid var(--border); }
+.selector-cliente-fila .nombre{ font-weight:600; font-size:14.5px; color:var(--text); }
+.selector-cliente-fila .telefono{ font-size:12.5px; color:var(--text-secondary); }
+.selector-cliente-fila .avatar-mini{
+  width:36px; height:36px; border-radius:var(--radius-full); flex-shrink:0;
+  background:var(--primary-light); color:var(--primary);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:14px;
+}
+
+.recordatorio-card[data-estado="pendiente"]{ background:var(--recordatorio-pendiente-bg); border-color:var(--recordatorio-pendiente-border); }
+/* NUEVO: a pedido — la cápsula de fecha, SOLO dentro de la tarjeta
+   pendiente de Recordatorios (no toca la vista previa de recordatorio
+   que se ve dentro de cada tarjeta de Clientes, que sigue igual). */
+.recordatorio-card[data-estado="pendiente"] .recordatorio-chip{ background:var(--recordatorio-pendiente-chip-bg); color:var(--primary); }
 .recordatorio-card[data-estado="gestionado"]{ background:#EBF7EF; border-color:#A9DDBC; }
 .recordatorio-card[data-estado="gestionado"] .recordatorio-linea{ color:var(--success); }
 .recordatorio-card[data-estado="gestionado"] .recordatorio-dot{ background:var(--success); }
@@ -7208,6 +7241,18 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
      ========================================================== -->
 <!-- NUEVO: a pedido — "Renovar Crédito". Mismo patrón visual que
      "Registrar Movimiento" (.confirm-modal-overlay + .mora-hoy-card). -->
+<!-- NUEVO: a pedido — selector de cliente para crear un recordatorio
+     manualmente desde Recordatorios (botón "+"), sin depender del
+     relojito de la tarjeta de un cliente en Clientes. -->
+<div id="selector-cliente-recordatorio-overlay" class="confirm-modal-overlay" style="display:none;">
+  <div class="mora-hoy-card" style="max-height:80vh; display:flex; flex-direction:column;">
+    <div class="confirm-modal-title" style="margin-bottom:14px;">¿Para qué cliente?</div>
+    <input type="text" id="selector-cliente-recordatorio-buscador" class="field-input" placeholder="Buscar cliente..." style="margin-bottom:12px; flex-shrink:0;">
+    <div id="selector-cliente-recordatorio-lista" style="overflow-y:auto; flex:1; text-align:left; margin:0 -4px;"></div>
+    <button type="button" class="confirm-modal-btn cancelar" id="btn-cerrar-selector-cliente-recordatorio" style="width:100%; margin-top:14px; flex-shrink:0;">Cancelar</button>
+  </div>
+</div>
+
 <div id="renovar-credito-overlay" class="confirm-modal-overlay" style="display:none;">
   <div class="mora-hoy-card" id="renovar-credito-card">
     <div class="confirm-modal-title" style="margin-bottom:6px;">Renovar Crédito</div>
@@ -8278,7 +8323,14 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
     </button>
     <h1>Recordatorios</h1>
-    <span class="header-spacer"></span>
+    <!-- NUEVO: a pedido — "+" para crear un recordatorio manualmente,
+         sin depender del relojito de la tarjeta de un cliente en
+         Clientes. Primero pide elegir el cliente (ver
+         abrirSelectorClienteRecordatorio), y de ahí en adelante usa tal
+         cual el mismo formulario ya existente. -->
+    <button class="refrescar-btn" id="btn-nuevo-recordatorio-manual" aria-label="Nuevo recordatorio">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </button>
   </header>
 
   <section class="cobros" style="padding-top:14px;">
@@ -20589,6 +20641,61 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   let scrollAnteriorRecordatorio = 0; // NUEVO: ver abrirFormularioRecordatorio/cerrarFormularioRecordatorio
 
   // Abre el formulario en blanco, para programar un recordatorio nuevo
+  // ==========================================================
+  // NUEVO — a pedido: "+" en Recordatorios para crear uno manualmente,
+  // sin depender del relojito de la tarjeta de un cliente en Clientes.
+  // Como un recordatorio siempre necesita un cliente y una cuota suya,
+  // primero se elige el cliente aquí — y de ahí en adelante usa tal cual
+  // el mismo abrirFormularioRecordatorio() ya existente.
+  // ==========================================================
+  const selectorClienteRecordatorioOverlay = document.getElementById('selector-cliente-recordatorio-overlay');
+  const selectorClienteRecordatorioLista = document.getElementById('selector-cliente-recordatorio-lista');
+  const selectorClienteRecordatorioBuscador = document.getElementById('selector-cliente-recordatorio-buscador');
+
+  function renderizarSelectorClienteRecordatorio(){
+    const q = selectorClienteRecordatorioBuscador.value.trim().toLowerCase();
+    const coincide = clientesGuardados.filter(c=>{
+      if(cuotasPendientesCliente(c.id).length === 0) return false; // mismo requisito que ya exige abrirFormularioRecordatorio
+      if(!q) return true;
+      return (c.nombre || '').toLowerCase().includes(q) || (c.telefono || '').includes(q);
+    });
+    selectorClienteRecordatorioLista.innerHTML = '';
+    if(coincide.length === 0){
+      selectorClienteRecordatorioLista.innerHTML = '<p style="text-align:center; color:var(--text-secondary); font-size:13.5px; padding:20px 4px;">Ningún cliente con cuotas pendientes coincide con la búsqueda.</p>';
+      return;
+    }
+    coincide.forEach(cliente=>{
+      const fila = document.createElement('div');
+      fila.className = 'selector-cliente-fila';
+      const inicial = (cliente.nombre || '?').trim().charAt(0).toUpperCase();
+      fila.innerHTML = `
+        <div class="avatar-mini">${escaparHtml(inicial)}</div>
+        <div style="flex:1; min-width:0;">
+          <div class="nombre">${escaparHtml(cliente.nombre)}</div>
+          <div class="telefono">${escaparHtml(cliente.telefono || '')}</div>
+        </div>
+      `;
+      fila.addEventListener('click', ()=>{
+        selectorClienteRecordatorioOverlay.style.display = 'none';
+        abrirFormularioRecordatorio(cliente);
+      });
+      selectorClienteRecordatorioLista.appendChild(fila);
+    });
+  }
+
+  document.getElementById('btn-nuevo-recordatorio-manual').addEventListener('click', ()=>{
+    selectorClienteRecordatorioBuscador.value = '';
+    renderizarSelectorClienteRecordatorio();
+    selectorClienteRecordatorioOverlay.style.display = 'flex';
+  });
+  selectorClienteRecordatorioBuscador.addEventListener('input', renderizarSelectorClienteRecordatorio);
+  document.getElementById('btn-cerrar-selector-cliente-recordatorio').addEventListener('click', ()=>{
+    selectorClienteRecordatorioOverlay.style.display = 'none';
+  });
+  selectorClienteRecordatorioOverlay.addEventListener('click', (e)=>{
+    if(e.target === selectorClienteRecordatorioOverlay) selectorClienteRecordatorioOverlay.style.display = 'none';
+  });
+
   function abrirFormularioRecordatorio(cliente, prestamoIdPreseleccionado, numeroCuotaPreseleccionado){
     const hayOpciones = cuotasPendientesCliente(cliente.id).length > 0;
     if(!hayOpciones){
