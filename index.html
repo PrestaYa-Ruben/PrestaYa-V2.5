@@ -3859,6 +3859,35 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   color:var(--text-secondary);
 }
 
+/* NUEVO: a pedido — "Avatar con Anillo de Progreso de Pago". El
+   contenedor mantiene el mismo tamaño que el avatar de siempre (52px),
+   para no correr nada del resto de la fila — el SVG del anillo es un
+   poco más grande y se asoma apenas por fuera del borde del avatar. */
+.avatar-anillo-wrap{
+  position:relative;
+  width:52px;
+  height:52px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.avatar-anillo-progreso{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  pointer-events:none;
+}
+.avanillo-pista{ fill:none; stroke:var(--border); stroke-width:3; }
+.avanillo-relleno{
+  fill:none;
+  stroke:var(--success);
+  stroke-width:3;
+  stroke-linecap:round;
+  transition:stroke-dashoffset .4s ease;
+}
+
 .client-row{
   padding:16px;
   display:flex;
@@ -12891,6 +12920,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // la insignia de la esquina y la línea de saldo (reutiliza
     // saldoPendientePrestamo, que ya existía, sin tocarla)
     const prestamosActivosCliente = prestamosGuardados.filter(p => p.clienteId === cliente.id && p.estado === 'activo');
+    // CORREGIDO: declaradas aquí (antes vivían adentro del "if" de más
+    // abajo) para que también las pueda usar el anillo de progreso del
+    // avatar, que se arma después de ese bloque.
+    let cuotasPagadasTotal = 0;
+    let cuotasTotalSum = 0;
 
     // CAMBIO: si el cliente tiene un préstamo activo, debajo del nombre se
     // muestra el valor de la cuota en vez del teléfono (reutiliza
@@ -12928,14 +12962,18 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       card.classList.toggle('client-row-al-dia', !tieneCuotaVencida);
 
       const saldoTotal = prestamosActivosCliente.reduce((s, p) => s + saldoPendientePrestamo(p), 0);
+      // NUEVO: cuotas pagadas / total, sumado entre todos los préstamos
+      // activos del cliente — se calcula aquí (antes vivía adentro del
+      // "if(saldoTotal > 0)") para poder reutilizarlo también en el
+      // anillo de progreso del avatar, sin duplicar el cálculo.
+      cuotasPagadasTotal = prestamosActivosCliente.reduce((s, p) =>
+        s + (p.plan || []).filter(c => estaCuotaPagada(p, c.numero)).length, 0);
+      cuotasTotalSum = prestamosActivosCliente.reduce((s, p) => s + (p.cuotas || 0), 0);
+
       if(saldoTotal > 0){
         // NUEVO: cuotas pagadas / total, sumado entre todos los préstamos
         // activos del cliente — se agrega en la MISMA línea del saldo para
         // no aumentar el alto de la tarjeta.
-        const cuotasPagadasTotal = prestamosActivosCliente.reduce((s, p) =>
-          s + (p.plan || []).filter(c => estaCuotaPagada(p, c.numero)).length, 0);
-        const cuotasTotalSum = prestamosActivosCliente.reduce((s, p) => s + (p.cuotas || 0), 0);
-
         const saldoLinea = document.createElement('div');
         saldoLinea.className = 'saldo-cliente';
         saldoLinea.textContent = 'Saldo p.: ' + formatearPesos(saldoTotal) + ' · ' + cuotasPagadasTotal + ' de ' + cuotasTotalSum;
@@ -12943,7 +12981,35 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       }
     }
 
-    card.appendChild(avatar);
+    // NUEVO: a pedido — "Avatar con Anillo de Progreso de Pago". Envuelve
+    // el avatar de siempre en un SVG circular que se rellena según las
+    // cuotas pagadas / total (mismo dato ya usado en la línea de saldo,
+    // sin ningún cálculo nuevo). Arranca a rellenarse desde arriba (las
+    // 12, -90°) y avanza en sentido horario. Si el cliente no tiene
+    // préstamos activos (o su plan aún no tiene cuotas), el avatar se ve
+    // exactamente igual que siempre, sin ningún anillo.
+    if(prestamosActivosCliente.length > 0 && cuotasTotalSum > 0){
+      const porcentajeProgreso = Math.min(100, Math.round((cuotasPagadasTotal / cuotasTotalSum) * 100));
+      const tamanoAnillo = 58; // 52px del avatar + espacio para el trazo del anillo
+      const radioAnillo = 27;
+      const circunferencia = 2 * Math.PI * radioAnillo;
+      const desplazamiento = circunferencia * (1 - porcentajeProgreso / 100);
+
+      const wrapAvatar = document.createElement('div');
+      wrapAvatar.className = 'avatar-anillo-wrap';
+      wrapAvatar.innerHTML = `
+        <svg class="avatar-anillo-progreso" viewBox="0 0 ${tamanoAnillo} ${tamanoAnillo}" width="${tamanoAnillo}" height="${tamanoAnillo}" aria-hidden="true">
+          <circle cx="${tamanoAnillo/2}" cy="${tamanoAnillo/2}" r="${radioAnillo}" class="avanillo-pista"></circle>
+          <circle cx="${tamanoAnillo/2}" cy="${tamanoAnillo/2}" r="${radioAnillo}" class="avanillo-relleno"
+            stroke-dasharray="${circunferencia}" stroke-dashoffset="${desplazamiento}"
+            transform="rotate(-90 ${tamanoAnillo/2} ${tamanoAnillo/2})"></circle>
+        </svg>
+      `;
+      wrapAvatar.appendChild(avatar);
+      card.appendChild(wrapAvatar);
+    }else{
+      card.appendChild(avatar);
+    }
     card.appendChild(info);
 
     // NUEVO: ícono de recordatorio, esquina inferior derecha — se agrega
