@@ -15439,6 +15439,21 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     ocultarToastDeshacerEdicion();
   });
 
+  // NUEVO: a pedido — capital actual de una ruta (mismo cálculo que ya
+  // usa calcularCarteraPorRuta, aislado para una sola ruta), con la
+  // opción de EXCLUIR un préstamo puntual — clave para "Renovar
+  // Crédito": el préstamo viejo se está por saldar en el mismo momento,
+  // así que no debe contar hacia el capital "actual" de la ruta.
+  function capitalActualRuta(ruta, excluirPrestamoId){
+    return prestamosGuardados
+      .filter(p => p.estado === 'activo' && clienteEstaActivo(p.clienteId) && p.id !== excluirPrestamoId)
+      .filter(p => {
+        const cliente = clientesGuardados.find(c => c.id === p.clienteId);
+        return (cliente && cliente.ruta ? cliente.ruta : '') === ruta;
+      })
+      .reduce((s, p) => s + carteraPendientePrestamo(p), 0);
+  }
+
   btnGuardarPrestamo.addEventListener('click', ()=>{
     if(!clienteEnDetalle) return;
     const datos = obtenerDatosFormularioPrestamo();
@@ -15450,12 +15465,45 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // Cuota "estándar" mostrada al usuario en el formulario (editable, o la calculada por la fórmula)
     const cuotaMostrada = numeroDesdeCampo(inputCuotaDeseada.value) || Math.round(plan[plan.length - 1].total);
 
-    // NUEVO: ya no se pierde el historial de pagos al editar (ver
-    // ejecutarGuardadoPrestamo) — la advertencia que existía aquí antes
-    // ("se perderá el historial de pagos") ya no aplica, así que se guarda
-    // directo. El botón "Deshacer" que aparece después cubre igual el caso
-    // de que el usuario se haya arrepentido de la edición.
-    ejecutarGuardadoPrestamo(datos, plan, totalAPagar, cuotaMostrada);
+    function continuarGuardado(){
+      // NUEVO: ya no se pierde el historial de pagos al editar (ver
+      // ejecutarGuardadoPrestamo) — la advertencia que existía aquí antes
+      // ("se perderá el historial de pagos") ya no aplica, así que se guarda
+      // directo. El botón "Deshacer" que aparece después cubre igual el caso
+      // de que el usuario se haya arrepentido de la edición.
+      ejecutarGuardadoPrestamo(datos, plan, totalAPagar, cuotaMostrada);
+    }
+
+    // NUEVO: a pedido — aviso (no bloqueo duro, se puede pasar por alto)
+    // si la ruta de este cliente ya alcanzó o alcanzaría su presupuesto
+    // con este préstamo. Solo aplica al CREAR un préstamo nuevo o
+    // RENOVAR uno (prestamoEditandoId === null en ambos casos) — editar
+    // un préstamo ya existente no dispara este aviso. Rutas sin ruta
+    // asignada, o rutas sin presupuesto definido, quedan libres sin
+    // ninguna restricción.
+    if(prestamoEditandoId === null){
+      const ruta = clienteEnDetalle.ruta || '';
+      const presupuesto = obtenerPresupuestosRuta()[ruta] || 0;
+      if(ruta && presupuesto > 0){
+        // CORREGIDO: al renovar, el crédito viejo (renovacionPrestamoOrigenId)
+        // se excluye del cálculo "actual" — se está saldando en este mismo
+        // momento, así que la comparación queda contra el saldo DESPUÉS de
+        // la renovación, no antes (que casi siempre bloquearía sin necesidad).
+        const capitalActual = capitalActualRuta(ruta, renovacionPrestamoOrigenId);
+        const capitalResultante = capitalActual + datos.valor;
+        if(capitalResultante >= presupuesto){
+          mostrarConfirmacion(
+            'Presupuesto de la ruta',
+            `La ruta "${ruta}" ${capitalResultante > presupuesto ? 'superaría' : 'alcanzaría'} su presupuesto con este préstamo (quedaría en ${formatearPesos(capitalResultante)} de ${formatearPesos(presupuesto)}). ¿Deseas continuar de todas formas?`,
+            'Continuar de todas formas',
+            continuarGuardado
+          );
+          return;
+        }
+      }
+    }
+
+    continuarGuardado();
   });
 
   // ---------- Helpers derivados de los pagos registrados (compatibles con abonos parciales) ----------
