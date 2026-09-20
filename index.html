@@ -1044,20 +1044,20 @@ body.tinte-dashboard-activo .stat-card.tinte-rojo .icon-container{ background:no
   position:relative;
   scroll-snap-align:center;
   flex:0 0 auto;
-  min-width:60px;
+  min-width:84px; /* CORREGIDO: antes 72px — un poco más grandes, a pedido */
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:3px;
-  padding:12px 8px;
+  gap:4px;
+  padding:18px 12px; /* CORREGIDO: antes 16px 10px */
   border-radius:var(--radius-lg);
   border:1.5px solid var(--border);
   background:var(--surface);
   transition:all .18s ease;
 }
-.dia-card .dia-mes{ font-size:12px; font-weight:500; color:var(--text-secondary); }
-.dia-card .dia-numero{ font-size:17px; font-weight:700; color:var(--text); }
-.dia-card .dia-semana{ font-size:12px; font-weight:500; color:var(--text-secondary); }
+.dia-card .dia-mes{ font-size:14px; font-weight:500; color:var(--text-secondary); } /* CORREGIDO: antes 13px */
+.dia-card .dia-numero{ font-size:23px; font-weight:700; color:var(--text); } /* CORREGIDO: antes 20px */
+.dia-card .dia-semana{ font-size:14px; font-weight:500; color:var(--text-secondary); } /* CORREGIDO: antes 13px */
 .dia-card.active{ background:var(--success); border-color:var(--success); }
 .dia-card.active .dia-mes,
 .dia-card.active .dia-numero,
@@ -1067,15 +1067,15 @@ body.tinte-dashboard-activo .stat-card.tinte-rojo .icon-container{ background:no
    idea visual que ya se usa para los demás contadores rojos de la app. */
 .dia-card-badge{
   position:absolute;
-  top:-6px;
-  right:-6px;
-  min-width:20px;
-  height:20px;
-  padding:0 5px;
+  top:-8px; /* CORREGIDO: antes -7px, ajustado a la tarjeta más grande */
+  right:-8px;
+  min-width:25px; /* CORREGIDO: antes 23px */
+  height:25px;
+  padding:0 6px;
   border-radius:var(--radius-full);
   background:var(--danger);
   color:#fff;
-  font-size:11px;
+  font-size:13px; /* CORREGIDO: antes 12px */
   font-weight:700;
   display:flex;
   align-items:center;
