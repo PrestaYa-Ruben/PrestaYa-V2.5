@@ -1684,6 +1684,19 @@ body.tinte-dashboard-activo .stat-card.tinte-rojo .icon-container{ background:no
 .cartera-presupuesto-resumen{ font-size:12.5px; font-weight:600; color:var(--text-secondary); }
 .cartera-presupuesto-resumen.excedido{ color:var(--danger); }
 .cartera-presupuesto-resumen.vacio{ font-weight:400; font-style:italic; }
+/* NUEVO: a pedido — alerta roja vibrante cuando a una ruta le falte 8% o
+   menos para alcanzar su presupuesto (aviso temprano, antes de llegar a
+   "excedido", que es un estado aparte y ya existía). */
+.cartera-presupuesto-alerta{
+  margin-top:8px;
+  padding:8px 10px;
+  border-radius:8px;
+  background:var(--danger);
+  color:#fff;
+  font-size:12.5px;
+  font-weight:700;
+  text-align:center;
+}
 
 /* ==========================================================
    NUEVO: Apariencia — Color de acento (selector de swatches)
@@ -11063,10 +11076,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   function marcadoHtmlPresupuestoRuta(ruta, capitalReal){
     const presupuesto = obtenerPresupuestosRuta()[ruta] || 0;
     const resumen = calcularResumenPresupuestoRuta(presupuesto, capitalReal);
+    // NUEVO: a pedido — alerta roja vibrante cuando falte 8% o menos para
+    // llegar al presupuesto (entre 92% y 100% de uso). Es un aviso
+    // TEMPRANO, distinto del estado "excedido" que ya existía (ese sigue
+    // igual, para cuando el presupuesto YA se pasó del 100%).
+    const cercaDelLimite = resumen && !resumen.excedido && resumen.porcentajeUso >= 92;
+    const alertaCerca = cercaDelLimite
+      ? `<div class="cartera-presupuesto-alerta">⚠ Atención: falta solo ${(100 - resumen.porcentajeUso).toFixed(1)}% para alcanzar el presupuesto de esta ruta</div>`
+      : '';
     const barraYResumen = resumen
       ? `
         <div class="cartera-presupuesto-barra"><div class="cartera-presupuesto-barra-fill${resumen.excedido ? ' excedido' : ''}" style="width:${Math.min(resumen.porcentajeUso, 100)}%;"></div></div>
         <div class="cartera-presupuesto-resumen${resumen.excedido ? ' excedido' : ''}">${resumen.excedido ? 'Superado por ' + formatearPesos(Math.abs(resumen.diferencia)) : 'Faltan ' + formatearPesos(resumen.diferencia)} · ${resumen.porcentajeUso.toFixed(1)}%</div>
+        ${alertaCerca}
       `
       : `<div class="cartera-presupuesto-resumen vacio">Define un presupuesto para ver el progreso</div>`;
 
@@ -11384,6 +11406,24 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
             textoResumen.classList.remove('vacio');
             textoResumen.classList.toggle('excedido', resumen.excedido);
             textoResumen.textContent = (resumen.excedido ? 'Superado por ' + formatearPesos(Math.abs(resumen.diferencia)) : 'Faltan ' + formatearPesos(resumen.diferencia)) + ' · ' + resumen.porcentajeUso.toFixed(1) + '%';
+          }
+          // NUEVO: a pedido — misma alerta roja de "falta 8% o menos",
+          // ahora también reactiva mientras se escribe el presupuesto
+          // (crea, actualiza o quita el aviso según corresponda).
+          const cercaDelLimite = !resumen.excedido && resumen.porcentajeUso >= 92;
+          let alerta = bloquePresupuesto.querySelector('.cartera-presupuesto-alerta');
+          if(cercaDelLimite){
+            const texto = `⚠ Atención: falta solo ${(100 - resumen.porcentajeUso).toFixed(1)}% para alcanzar el presupuesto de esta ruta`;
+            if(alerta){
+              alerta.textContent = texto;
+            }else if(textoResumen){
+              alerta = document.createElement('div');
+              alerta.className = 'cartera-presupuesto-alerta';
+              alerta.textContent = texto;
+              textoResumen.insertAdjacentElement('afterend', alerta);
+            }
+          }else if(alerta){
+            alerta.remove();
           }
         }
       });
