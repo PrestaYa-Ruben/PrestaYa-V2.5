@@ -11110,7 +11110,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
             <input type="text" inputmode="numeric" class="cartera-presupuesto-input" data-ruta="${escaparHtml(ruta)}" placeholder="Ej: 3.000.000" value="${presupuesto ? formatearMiles(presupuesto) : ''}">
           </div>
           <div class="cartera-presupuesto-campo">
-            <div class="cartera-ruta-dato-label">Prestado real</div>
+            <div class="cartera-ruta-dato-label">Total prestado</div>
             <div class="cartera-ruta-dato-valor">${formatearPesos(capitalReal)}</div>
           </div>
         </div>
@@ -11377,7 +11377,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           <div class="cartera-ruta-dato-valor">${datos.prestamos}</div>
         </div>
         <div>
-          <div class="cartera-ruta-dato-label">Capital</div>
+          <div class="cartera-ruta-dato-label">Capital en calle</div>
           <div class="cartera-ruta-dato-valor">${formatearPesos(datos.capital)}</div>
         </div>
       </div>
