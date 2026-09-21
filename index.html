@@ -7296,6 +7296,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 <!-- NUEVO: a pedido — selector de cliente para crear un recordatorio
      manualmente desde Recordatorios (botón "+"), sin depender del
      relojito de la tarjeta de un cliente en Clientes. -->
+<!-- NUEVO: a pedido — al tocar el nombre de una ruta en "Capital por
+     Ruta" (Inicio), muestra la misma tarjeta de resumen que ya existe en
+     Cartera (construirTarjetaResumenRuta), sin duplicar nada. -->
+<div id="resumen-ruta-inicio-overlay" class="confirm-modal-overlay" style="display:none; align-items:flex-start; padding-top:60px; padding-bottom:40px; overflow-y:auto; background:rgba(20,30,60,0.45);">
+  <div style="width:100%; max-width:400px; margin:0 auto;">
+    <div id="resumen-ruta-inicio-contenido"></div>
+    <button type="button" class="confirm-modal-btn cancelar" id="btn-cerrar-resumen-ruta-inicio" style="width:100%; margin-top:12px; margin-bottom:40px;">Cerrar</button>
+  </div>
+</div>
+
 <div id="selector-cliente-recordatorio-overlay" class="confirm-modal-overlay" style="display:none;">
   <div class="mora-hoy-card" style="max-height:80vh; display:flex; flex-direction:column;">
     <div class="confirm-modal-title" style="margin-bottom:14px;">¿Para qué cliente?</div>
@@ -11229,6 +11239,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
       const item = document.createElement('div');
       item.className = 'top-ruta-item';
+      item.style.cursor = 'pointer'; // NUEVO: a pedido — ahora es tocable
       item.innerHTML = `
         <div class="top-ruta-rank rank-${rank <= 3 ? rank : 'otro'}">${rank}</div>
         <div class="top-ruta-cuerpo">
@@ -11242,9 +11253,51 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           </div>
         </div>
       `;
+      // NUEVO: a pedido — toca el nombre de una ruta y se abre un modal
+      // con exactamente la misma información que ya muestra Cartera.
+      item.addEventListener('click', ()=> abrirResumenRutaInicio(ruta));
       lista.appendChild(item);
     });
   }
+
+  // NUEVO: a pedido — modal de resumen de ruta desde Inicio (al tocar un
+  // nombre en "Capital por Ruta"). Reutiliza construirTarjetaResumenRuta
+  // tal cual, con el mismo dato de mes ya usado en Cartera — así que
+  // muestra EXACTAMENTE la misma información, sin ningún cálculo nuevo.
+  function abrirResumenRutaInicio(ruta){
+    const { capitalTotal, grupos, nombres } = calcularCarteraPorRuta();
+    const datos = grupos[ruta];
+    if(!datos) return;
+    const indice = nombres.indexOf(ruta);
+    const etiquetaCobradoMes = 'Cobrado en ' + NOMBRES_MES_GRAFICO[mesCarteraSeleccionado.getMonth()].slice(0, 3);
+
+    const tarjeta = construirTarjetaResumenRuta(ruta, datos, capitalTotal, indice, etiquetaCobradoMes, ()=>{
+      // "Toca para ver los clientes de esta ruta" — cierra este modal y
+      // navega a Clientes filtrado por esta ruta, igual que en Cartera.
+      cerrarResumenRutaInicio();
+      rutasFiltroActivas = new Set([ruta]);
+      renderizarChipsRutas();
+      refrescarVistasConFiltroRutas();
+      Object.values(mainScreens).forEach(s => s.style.display = 'none');
+      mainScreens.clientes.style.display = 'block';
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.querySelector('.nav-item[data-nav="clientes"]').classList.add('active');
+      bottomNav.style.display = 'flex';
+      window.scrollTo(0, 0);
+    });
+
+    const contenedor = document.getElementById('resumen-ruta-inicio-contenido');
+    contenedor.innerHTML = '';
+    contenedor.appendChild(tarjeta);
+    document.getElementById('resumen-ruta-inicio-overlay').style.display = 'flex';
+  }
+  function cerrarResumenRutaInicio(){
+    document.getElementById('resumen-ruta-inicio-overlay').style.display = 'none';
+  }
+  document.getElementById('btn-cerrar-resumen-ruta-inicio').addEventListener('click', cerrarResumenRutaInicio);
+  document.getElementById('resumen-ruta-inicio-overlay').addEventListener('click', e=>{
+    if(e.target.id === 'resumen-ruta-inicio-overlay') cerrarResumenRutaInicio();
+  });
 
   // REEMPLAZADO — a pedido, con nuevo diseño HTML/CSS de "Capital en la
   // Calle". El monto sigue siendo EXACTAMENTE el mismo total que ya
@@ -11297,6 +11350,115 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
 
 
+  // NUEVO: arma la tarjeta completa de una ruta (nombre, %, barra, datos,
+  // presupuesto) — antes vivía solo adentro de renderizarCartera(); se
+  // extrajo aquí para poder reutilizarla tal cual también en el modal de
+  // resumen de ruta desde Inicio (ver abrirResumenRutaInicio), sin
+  // duplicar el HTML ni la lógica de guardar/alertar del presupuesto.
+  function construirTarjetaResumenRuta(ruta, datos, capitalTotal, indice, etiquetaCobradoMes, alTocar){
+    const porcentaje = capitalTotal > 0 ? (datos.capital / capitalTotal) * 100 : 0;
+    const color = colorParaRuta(ruta, indice);
+    const nombreMostrar = ruta === '' ? 'Sin asignar' : ruta;
+
+    const card = document.createElement('div');
+    card.className = 'card cartera-ruta-card';
+    card.innerHTML = `
+      <div class="cartera-ruta-top">
+        <div class="cartera-ruta-nombre">
+          <span class="cartera-ruta-dot" style="background:${color};"></span>
+          <span>${nombreMostrar}</span>
+        </div>
+        <div class="cartera-ruta-porcentaje" style="color:${color};">${porcentaje.toFixed(1)}%</div>
+      </div>
+      <div class="cartera-ruta-barra"><div class="cartera-ruta-barra-fill" style="width:${porcentaje}%; background:${color};"></div></div>
+      <div class="cartera-ruta-datos">
+        <div>
+          <div class="cartera-ruta-dato-label">Préstamos</div>
+          <div class="cartera-ruta-dato-valor">${datos.prestamos}</div>
+        </div>
+        <div>
+          <div class="cartera-ruta-dato-label">Capital</div>
+          <div class="cartera-ruta-dato-valor">${formatearPesos(datos.capital)}</div>
+        </div>
+      </div>
+      <div class="cartera-ruta-datos" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+        <div>
+          <div class="cartera-ruta-dato-label">Clientes</div>
+          <div class="cartera-ruta-dato-valor">${datos.clientes}</div>
+        </div>
+        <div>
+          <div class="cartera-ruta-dato-label">Mora</div>
+          <div class="cartera-ruta-dato-valor" style="color:${datos.mora > 0 ? 'var(--danger)' : 'inherit'};">${formatearPesos(datos.mora)}</div>
+        </div>
+      </div>
+      <div class="cartera-ruta-datos" style="margin-top:12px;">
+        <div>
+          <div class="cartera-ruta-dato-label">${etiquetaCobradoMes}</div>
+          <div class="cartera-ruta-dato-valor" style="color:var(--success);">${formatearPesos(datos.cobradoMes)}</div>
+        </div>
+        <div>
+          <div class="cartera-ruta-dato-label">Interés generado</div>
+          <div class="cartera-ruta-dato-valor" style="color:var(--success);">${formatearPesos(datos.interesGenerado)}</div>
+        </div>
+      </div>
+      <div class="cartera-ruta-cta">Toca para ver los clientes de esta ruta</div>
+      ${marcadoHtmlPresupuestoRuta(ruta, datos.capital)}
+    `;
+    if(alTocar) card.addEventListener('click', alTocar);
+
+    // El bloque de presupuesto tiene su propia interacción (escribir en
+    // el campo) — no debe disparar el clic de la tarjeta, que navega a
+    // los clientes de la ruta.
+    const bloquePresupuesto = card.querySelector('.cartera-ruta-presupuesto');
+    bloquePresupuesto.addEventListener('click', e => e.stopPropagation());
+
+    const inputPresupuesto = card.querySelector('.cartera-presupuesto-input');
+    inputPresupuesto.addEventListener('input', ()=>{
+      inputPresupuesto.value = formatearMiles(inputPresupuesto.value);
+      // Recalcula y refresca SOLO la barra y el resumen de esta tarjeta
+      // (no se vuelve a dibujar toda la lista, para no perder el foco
+      // mientras se escribe).
+      const nuevoPresupuesto = numeroDesdeCampo(inputPresupuesto.value);
+      const resumen = calcularResumenPresupuestoRuta(nuevoPresupuesto, datos.capital);
+      const barra = bloquePresupuesto.querySelector('.cartera-presupuesto-barra-fill');
+      const textoResumen = bloquePresupuesto.querySelector('.cartera-presupuesto-resumen');
+      if(resumen){
+        if(barra){
+          barra.style.width = Math.min(resumen.porcentajeUso, 100) + '%';
+          barra.classList.toggle('excedido', resumen.excedido);
+        }
+        if(textoResumen){
+          textoResumen.classList.remove('vacio');
+          textoResumen.classList.toggle('excedido', resumen.excedido);
+          textoResumen.textContent = (resumen.excedido ? 'Superado por ' + formatearPesos(Math.abs(resumen.diferencia)) : 'Faltan ' + formatearPesos(resumen.diferencia)) + ' · ' + resumen.porcentajeUso.toFixed(1) + '%';
+        }
+        // NUEVO: a pedido — misma alerta roja de "falta 8% o menos",
+        // ahora también reactiva mientras se escribe el presupuesto
+        // (crea, actualiza o quita el aviso según corresponda).
+        const cercaDelLimite = !resumen.excedido && resumen.porcentajeUso >= 92;
+        let alerta = bloquePresupuesto.querySelector('.cartera-presupuesto-alerta');
+        if(cercaDelLimite){
+          const texto = `⚠ Atención: falta solo ${(100 - resumen.porcentajeUso).toFixed(1)}% para alcanzar el presupuesto de esta ruta`;
+          if(alerta){
+            alerta.textContent = texto;
+          }else if(textoResumen){
+            alerta = document.createElement('div');
+            alerta.className = 'cartera-presupuesto-alerta';
+            alerta.textContent = texto;
+            textoResumen.insertAdjacentElement('afterend', alerta);
+          }
+        }else if(alerta){
+          alerta.remove();
+        }
+      }
+    });
+    inputPresupuesto.addEventListener('blur', ()=>{
+      guardarPresupuestoRuta(ruta, numeroDesdeCampo(inputPresupuesto.value));
+    });
+
+    return card;
+  }
+
   function renderizarCartera(){
     const { capitalTotal, grupos, nombres } = calcularCarteraPorRuta();
     document.getElementById('cartera-total-valor').textContent = formatearPesos(capitalTotal);
@@ -11317,56 +11479,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     nombres.forEach((ruta, indice)=>{
       const datos = grupos[ruta];
-      const porcentaje = capitalTotal > 0 ? (datos.capital / capitalTotal) * 100 : 0;
-      const color = colorParaRuta(ruta, indice); // NUEVO: centralizado (respeta colores fijos de rutas puntuales)
-      const nombreMostrar = ruta === '' ? 'Sin asignar' : ruta;
-
-      const card = document.createElement('div');
-      card.className = 'card cartera-ruta-card';
-      card.innerHTML = `
-        <div class="cartera-ruta-top">
-          <div class="cartera-ruta-nombre">
-            <span class="cartera-ruta-dot" style="background:${color};"></span>
-            <span>${nombreMostrar}</span>
-          </div>
-          <div class="cartera-ruta-porcentaje" style="color:${color};">${porcentaje.toFixed(1)}%</div>
-        </div>
-        <div class="cartera-ruta-barra"><div class="cartera-ruta-barra-fill" style="width:${porcentaje}%; background:${color};"></div></div>
-        <div class="cartera-ruta-datos">
-          <div>
-            <div class="cartera-ruta-dato-label">Préstamos</div>
-            <div class="cartera-ruta-dato-valor">${datos.prestamos}</div>
-          </div>
-          <div>
-            <div class="cartera-ruta-dato-label">Capital</div>
-            <div class="cartera-ruta-dato-valor">${formatearPesos(datos.capital)}</div>
-          </div>
-        </div>
-        <!-- NUEVO: 4 datos adicionales — clientes, mora, cobrado este mes e interés generado -->
-        <div class="cartera-ruta-datos" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
-          <div>
-            <div class="cartera-ruta-dato-label">Clientes</div>
-            <div class="cartera-ruta-dato-valor">${datos.clientes}</div>
-          </div>
-          <div>
-            <div class="cartera-ruta-dato-label">Mora</div>
-            <div class="cartera-ruta-dato-valor" style="color:${datos.mora > 0 ? 'var(--danger)' : 'inherit'};">${formatearPesos(datos.mora)}</div>
-          </div>
-        </div>
-        <div class="cartera-ruta-datos" style="margin-top:12px;">
-          <div>
-            <div class="cartera-ruta-dato-label">${etiquetaCobradoMes}</div>
-            <div class="cartera-ruta-dato-valor" style="color:var(--success);">${formatearPesos(datos.cobradoMes)}</div>
-          </div>
-          <div>
-            <div class="cartera-ruta-dato-label">Interés generado</div>
-            <div class="cartera-ruta-dato-valor" style="color:var(--success);">${formatearPesos(datos.interesGenerado)}</div>
-          </div>
-        </div>
-        <div class="cartera-ruta-cta">Toca para ver los clientes de esta ruta</div>
-        ${marcadoHtmlPresupuestoRuta(ruta, datos.capital)}
-      `;
-      card.addEventListener('click', ()=>{
+      const card = construirTarjetaResumenRuta(ruta, datos, capitalTotal, indice, etiquetaCobradoMes, ()=>{
         // Reutiliza el filtro de rutas ya existente en el sistema
         rutasFiltroActivas = new Set([ruta]);
         renderizarChipsRutas();
@@ -11380,57 +11493,6 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         bottomNav.style.display = 'flex';
         window.scrollTo(0, 0);
       });
-
-      // El bloque de presupuesto tiene su propia interacción (escribir en
-      // el campo) — no debe disparar el clic de la tarjeta, que navega a
-      // los clientes de la ruta.
-      const bloquePresupuesto = card.querySelector('.cartera-ruta-presupuesto');
-      bloquePresupuesto.addEventListener('click', e => e.stopPropagation());
-
-      const inputPresupuesto = card.querySelector('.cartera-presupuesto-input');
-      inputPresupuesto.addEventListener('input', ()=>{
-        inputPresupuesto.value = formatearMiles(inputPresupuesto.value);
-        // Recalcula y refresca SOLO la barra y el resumen de esta tarjeta
-        // (no se vuelve a dibujar toda la lista, para no perder el foco
-        // mientras se escribe).
-        const nuevoPresupuesto = numeroDesdeCampo(inputPresupuesto.value);
-        const resumen = calcularResumenPresupuestoRuta(nuevoPresupuesto, datos.capital);
-        const barra = bloquePresupuesto.querySelector('.cartera-presupuesto-barra-fill');
-        const textoResumen = bloquePresupuesto.querySelector('.cartera-presupuesto-resumen');
-        if(resumen){
-          if(barra){
-            barra.style.width = Math.min(resumen.porcentajeUso, 100) + '%';
-            barra.classList.toggle('excedido', resumen.excedido);
-          }
-          if(textoResumen){
-            textoResumen.classList.remove('vacio');
-            textoResumen.classList.toggle('excedido', resumen.excedido);
-            textoResumen.textContent = (resumen.excedido ? 'Superado por ' + formatearPesos(Math.abs(resumen.diferencia)) : 'Faltan ' + formatearPesos(resumen.diferencia)) + ' · ' + resumen.porcentajeUso.toFixed(1) + '%';
-          }
-          // NUEVO: a pedido — misma alerta roja de "falta 8% o menos",
-          // ahora también reactiva mientras se escribe el presupuesto
-          // (crea, actualiza o quita el aviso según corresponda).
-          const cercaDelLimite = !resumen.excedido && resumen.porcentajeUso >= 92;
-          let alerta = bloquePresupuesto.querySelector('.cartera-presupuesto-alerta');
-          if(cercaDelLimite){
-            const texto = `⚠ Atención: falta solo ${(100 - resumen.porcentajeUso).toFixed(1)}% para alcanzar el presupuesto de esta ruta`;
-            if(alerta){
-              alerta.textContent = texto;
-            }else if(textoResumen){
-              alerta = document.createElement('div');
-              alerta.className = 'cartera-presupuesto-alerta';
-              alerta.textContent = texto;
-              textoResumen.insertAdjacentElement('afterend', alerta);
-            }
-          }else if(alerta){
-            alerta.remove();
-          }
-        }
-      });
-      inputPresupuesto.addEventListener('blur', ()=>{
-        guardarPresupuestoRuta(ruta, numeroDesdeCampo(inputPresupuesto.value));
-      });
-
       lista.appendChild(card);
     });
   }
