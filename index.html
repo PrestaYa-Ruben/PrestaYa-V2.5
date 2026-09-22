@@ -21573,6 +21573,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
   // CORREGIDO: a pedido — este botón se movió del encabezado de Inicio al
   // menú inferior (mismo comportamiento de siempre, solo cambió el id).
+  let pantallaDebajoDePaganHoy = null; // NUEVO: ver nav-item-pagan-hoy / btn-cerrar-pagan-hoy más abajo
+
   document.getElementById('nav-item-pagan-hoy').addEventListener('click', ()=>{
     // NUEVO: a pedido — Pagan Hoy siempre abre con la ruta "Ruben" ya
     // seleccionada (en vez de "Todas"). Usa el mismo filtro de ruta
@@ -21594,7 +21596,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     generarDiasStripPaganHoy(paganHoyFechaSeleccionada);
     actualizarTituloFechaPaganHoy();
     renderizarPaganHoy();
-    screenInicio.style.display = 'none';
+    // CORREGIDO: a pedido — antes solo ocultaba screenInicio, asumiendo
+    // que Pagan Hoy siempre se abría desde ahí (cierto cuando el acceso
+    // vivía solo en el encabezado de Inicio). Ahora que es accesible
+    // desde el menú inferior en CUALQUIER pantalla, abrirlo estando en
+    // Clientes (por ejemplo) dejaba Clientes visible DEBAJO — se veían
+    // los dos apilados uno arriba del otro al hacer scroll. Ahora oculta
+    // TODAS las pantallas (sea cual sea la que esté activa) y recuerda
+    // cuál era, para devolver a esa misma al cerrar (no siempre Inicio).
+    pantallaDebajoDePaganHoy = Array.from(document.querySelectorAll('.app')).find(el => el !== screenPaganHoy && getComputedStyle(el).display !== 'none') || null;
+    document.querySelectorAll('.app').forEach(el => el.style.display = 'none');
     screenPaganHoy.style.display = 'block';
     bottomNav.style.display = 'none';
     window.scrollTo(0, 0);
@@ -21634,11 +21645,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
   document.getElementById('btn-cerrar-pagan-hoy').addEventListener('click', ()=>{
     screenPaganHoy.style.display = 'none';
-    screenInicio.style.display = 'block';
+    // CORREGIDO: a pedido — antes siempre volvía a Inicio, sin importar
+    // desde dónde se hubiera abierto Pagan Hoy. Ahora restaura la MISMA
+    // pantalla de la que se vino (ver nav-item-pagan-hoy más arriba).
+    const pantallaDestino = pantallaDebajoDePaganHoy || screenInicio;
+    pantallaDestino.style.display = 'block';
+    pantallaDebajoDePaganHoy = null;
     bottomNav.style.display = 'flex';
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-    const navInicio = document.querySelector('.nav-item[data-nav="inicio"]');
-    if(navInicio) navInicio.classList.add('active');
+    const navDestino = document.querySelector('.nav-item[data-nav="' + pantallaDestino.id.replace('screen-', '') + '"]');
+    if(navDestino) navDestino.classList.add('active');
     window.scrollTo(0, 0);
   });
 
