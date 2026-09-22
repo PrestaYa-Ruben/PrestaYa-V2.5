@@ -23713,7 +23713,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const pantallasApilables = Array.from(document.querySelectorAll('[id^="screen-"]'))
       .filter(el => el.id !== 'screen-inicio' && document.getElementById('btn-cerrar-' + el.id.slice('screen-'.length)));
 
-    if(pantallasApilables.length === 0) return;
+    // CORREGIDO: a pedido — Clientes, Préstamos, Pagos y Reportes se
+    // habían dejado fuera a propósito (no tienen un botón "cerrar", se
+    // navegan por pestañas). Pero eso significaba que, estando en
+    // cualquiera de ellas, el botón/gesto Atrás no tenía nada que
+    // deshacer dentro de la app — y Android terminaba cerrándola por
+    // completo. Ahora también se apilan, y Atrás las manda a Inicio
+    // (reutilizando tal cual navegarAPantallaPrincipal, la misma función
+    // que ya usa el menú inferior).
+    const pantallasDePestana = ['screen-clientes', 'screen-prestamos', 'screen-pagos', 'screen-reportes']
+      .map(id => document.getElementById(id))
+      .filter(Boolean);
+
+    if(pantallasApilables.length === 0 && pantallasDePestana.length === 0) return;
 
     const pantallasEmpujadas = new Set(); // ids ya contabilizados en el historial, para no duplicar
 
@@ -23735,12 +23747,21 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       });
     });
     pantallasApilables.forEach(el => observer.observe(el, { attributes:true, attributeFilter:['style'] }));
+    pantallasDePestana.forEach(el => observer.observe(el, { attributes:true, attributeFilter:['style'] }));
 
     window.addEventListener('popstate', ()=>{
       const actual = pantallasApilables.find(estaVisible);
-      if(!actual) return; // ninguna pantalla apilable visible: se deja que Android maneje Atrás con normalidad
-      const btnCerrar = document.getElementById('btn-cerrar-' + actual.id.slice('screen-'.length));
-      if(btnCerrar) btnCerrar.click();
+      if(actual){
+        const btnCerrar = document.getElementById('btn-cerrar-' + actual.id.slice('screen-'.length));
+        if(btnCerrar) btnCerrar.click();
+        return;
+      }
+      const actualPestana = pantallasDePestana.find(estaVisible);
+      if(actualPestana){
+        navegarAPantallaPrincipal('inicio', document.querySelector('.nav-item[data-nav="inicio"]'));
+        return;
+      }
+      // ninguna pantalla apilable ni de pestaña visible: se deja que Android maneje Atrás con normalidad
     });
   })();
 
