@@ -21574,6 +21574,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // CORREGIDO: a pedido — este botón se movió del encabezado de Inicio al
   // menú inferior (mismo comportamiento de siempre, solo cambió el id).
   document.getElementById('nav-item-pagan-hoy').addEventListener('click', ()=>{
+    // NUEVO: a pedido — Pagan Hoy siempre abre con la ruta "Ruben" ya
+    // seleccionada (en vez de "Todas"). Usa el mismo filtro de ruta
+    // global que ya comparten Clientes/Cartera — no "se pega" a esas
+    // otras pantallas porque Clientes ya reinicia este filtro solo, cada
+    // vez que se entra ahí desde el menú inferior.
+    rutasFiltroActivas = new Set(['Ruben']);
+    renderizarChipsRutas();
     // NUEVO: cada vez que se abre la pantalla, el carrusel arranca
     // centrado en el día de hoy.
     paganHoyFechaSeleccionada = claveFechaConOffset(0);
