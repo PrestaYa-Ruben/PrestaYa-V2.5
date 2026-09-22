@@ -2637,7 +2637,7 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
    .pagar-fab, con degradado verde oscuro a claro. */
 .agregar-cliente-fab{
   position:fixed;
-  bottom:26px;
+  bottom:92px; /* CORREGIDO: antes 26px — con el menú inferior visible en Clientes, tapaba el nuevo ícono "Menú" (misma altura ya usada en .simulador-fab por este mismo motivo) */
   right:20px;
   background:linear-gradient(135deg, #1E4A3D, #6FAE93);
   color:#fff;
@@ -5141,47 +5141,71 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 <!-- ==========================================================
      APP
      ========================================================== -->
-<div class="app" id="screen-inicio">
+<!-- CORREGIDO: a pedido — el menú lateral (hamburguesa) se movió aquí,
+     FUERA de screen-inicio (antes vivía anidado dentro). Ahora que
+     "Menú" es accesible desde el menú inferior en CUALQUIER pantalla
+     (no solo desde Inicio), tenía que dejar de depender de que Inicio
+     esté visible — si seguía adentro, al ocultar Inicio para navegar a
+     otra pantalla, el menú se ocultaba con ella aunque su propio estilo
+     dijera "abierto". Reúne accesos que hoy viven "escondidos" dentro de
+     Ajustes (Estadísticas, Ranking, Documentos, Rutas), más Préstamos,
+     Pagos, Reportes y Ajustes mismo. Cada ítem reutiliza tal cual la
+     función/flujo ya existente de cada pantalla — no se duplica
+     ninguna lógica. -->
+<div id="menu-lateral-overlay" class="menu-lateral-overlay" style="display:none;">
+  <div class="menu-lateral-panel" id="menu-lateral-panel">
+    <div class="menu-lateral-header">
+      <div class="menu-lateral-logo">Presta<span style="color:var(--success);">Ya</span></div>
+      <button type="button" class="menu-lateral-cerrar" id="btn-cerrar-menu-lateral" aria-label="Cerrar menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
 
-  <!-- NUEVO: menú lateral (hamburguesa) — reemplaza el acceso directo a
-       Ajustes desde Inicio. Reúne accesos que hoy viven "escondidos"
-       dentro de Ajustes (Estadísticas, Ranking, Documentos, Rutas), más
-       Ajustes mismo. Cada ítem reutiliza tal cual la función/flujo ya
-       existente de cada pantalla — no se duplica ninguna lógica. -->
-  <div id="menu-lateral-overlay" class="menu-lateral-overlay" style="display:none;">
-    <div class="menu-lateral-panel" id="menu-lateral-panel">
-      <div class="menu-lateral-header">
-        <div class="menu-lateral-logo">Presta<span style="color:var(--success);">Ya</span></div>
-        <button type="button" class="menu-lateral-cerrar" id="btn-cerrar-menu-lateral" aria-label="Cerrar menú">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-      </div>
+    <!-- NUEVO: a pedido — Préstamos, Pagos y Reportes se movieron aquí
+         desde el menú inferior (mismos íconos de siempre), para dejar
+         espacio abajo a Pagan Hoy y Recordatorios. -->
+    <div class="menu-lateral-item" id="menu-lateral-prestamos">
+      <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M12 18v-6"></path><path d="M9.5 14.5 12 12l2.5 2.5"></path></svg></div>
+      <span>Préstamos</span>
+    </div>
+    <div class="menu-lateral-item" id="menu-lateral-pagos">
+      <div class="icon-container green"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"></path><path d="M17 14h.01"></path><path d="M3 8h18v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"></path></svg></div>
+      <span>Pagos</span>
+    </div>
+    <div class="menu-lateral-item" id="menu-lateral-reportes">
+      <div class="icon-container orange"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></div>
+      <span>Reportes</span>
+    </div>
 
-      <div class="menu-lateral-item" id="menu-lateral-estadisticas">
-        <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg></div>
-        <span>Estadísticas</span>
-      </div>
-      <div class="menu-lateral-item" id="menu-lateral-ranking">
-        <div class="icon-container orange"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v6a5 5 0 0 1-10 0V4Z"></path><path d="M17 5h3a2 2 0 0 1 0 4h-1"></path><path d="M7 5H4a2 2 0 0 0 0 4h1"></path></svg></div>
-        <span>Ranking de Clientes</span>
-      </div>
-      <div class="menu-lateral-item" id="menu-lateral-documentos">
-        <div class="icon-container green"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg></div>
-        <span>Documentos</span>
-      </div>
-      <div class="menu-lateral-item" id="menu-lateral-rutas">
-        <div class="icon-container red"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 1.447-.894L9 7m0 13 6-3m-6 3V7m6 10 4.553 2.276A1 1 0 0 0 21 18.382V7.618a1 1 0 0 0-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg></div>
-        <span>Rutas / Cobradores</span>
-      </div>
+    <hr class="loan-divider" style="margin:10px 0;">
 
-      <hr class="loan-divider" style="margin:10px 0;">
+    <div class="menu-lateral-item" id="menu-lateral-estadisticas">
+      <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg></div>
+      <span>Estadísticas</span>
+    </div>
+    <div class="menu-lateral-item" id="menu-lateral-ranking">
+      <div class="icon-container orange"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v6a5 5 0 0 1-10 0V4Z"></path><path d="M17 5h3a2 2 0 0 1 0 4h-1"></path><path d="M7 5H4a2 2 0 0 0 0 4h1"></path></svg></div>
+      <span>Ranking de Clientes</span>
+    </div>
+    <div class="menu-lateral-item" id="menu-lateral-documentos">
+      <div class="icon-container green"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg></div>
+      <span>Documentos</span>
+    </div>
+    <div class="menu-lateral-item" id="menu-lateral-rutas">
+      <div class="icon-container red"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 1.447-.894L9 7m0 13 6-3m-6 3V7m6 10 4.553 2.276A1 1 0 0 0 21 18.382V7.618a1 1 0 0 0-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg></div>
+      <span>Rutas / Cobradores</span>
+    </div>
 
-      <div class="menu-lateral-item" id="menu-lateral-ajustes">
-        <div class="icon-container gris"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>
-        <span>Ajustes</span>
-      </div>
+    <hr class="loan-divider" style="margin:10px 0;">
+
+    <div class="menu-lateral-item" id="menu-lateral-ajustes">
+      <div class="icon-container gris"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>
+      <span>Ajustes</span>
     </div>
   </div>
+</div>
+
+<div class="app" id="screen-inicio">
 
   <!-- NUEVO: acceso al Simulador de Crédito — botón flotante circular,
        totalmente independiente del resto de la app (no lee ni guarda
@@ -5203,21 +5227,6 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       </button>
       <button class="refrescar-btn" id="btn-abrir-busqueda" aria-label="Buscar cliente o crédito">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      </button>
-      <!-- NUEVO: acceso rápido a "Pagan Hoy" — clientes con cuota vencida hoy según su plan de pagos -->
-      <button class="refrescar-btn" id="btn-pagan-hoy" aria-label="Clientes que pagan hoy" style="position:relative;">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="m9 16 2 2 4-4"></path></svg>
-        <span class="pagan-hoy-badge" id="pagan-hoy-badge" style="display:none;">0</span>
-      </button>
-      <!-- NUEVO: a pedido — mismo acceso a "Cobros" que ya existe en
-           Clientes y Detalle del Préstamo, ahora también en el
-           encabezado de Inicio (reutiliza abrirCobrosOverlay tal cual). -->
-      <button class="refrescar-btn" id="btn-abrir-cobros-inicio-header" aria-label="Abrir Recordatorios" style="position:relative;">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-        <span class="pagan-hoy-badge" id="badge-cobros-inicio-header" style="display:none;">0</span>
-      </button>
-      <button class="settings-btn" id="btn-abrir-menu-lateral" aria-label="Abrir menú">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
       </button>
     </div>
   </header>
@@ -8548,17 +8557,26 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
     <span>Clientes</span>
   </a>
-  <a class="nav-item" data-nav="prestamos">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M12 18v-6"></path><path d="M9.5 14.5 12 12l2.5 2.5"></path></svg>
-    <span>Préstamos</span>
+  <!-- CORREGIDO: a pedido — Préstamos, Pagos y Reportes se movieron al
+       menú lateral (rayitas). En su lugar quedan los 3 accesos que antes
+       vivían en el encabezado de Inicio: Pagan Hoy, Recordatorios y el
+       propio botón para abrir ese menú — mismos ids en los globos
+       contadores, así que actualizarBadgePaganHoy() y
+       actualizarContadoresCobros() los siguen actualizando sin tocar
+       nada de JS. -->
+  <a class="nav-item" id="nav-item-pagan-hoy" style="position:relative;">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="m9 16 2 2 4-4"></path></svg>
+    <span class="pagan-hoy-badge" id="pagan-hoy-badge" style="display:none; top:2px; right:6px;">0</span>
+    <span>Pagan Hoy</span>
   </a>
-  <a class="nav-item" data-nav="pagos">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"></path><path d="M17 14h.01"></path><path d="M3 8h18v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"></path></svg>
-    <span>Pagos</span>
+  <a class="nav-item" id="nav-item-recordatorios" style="position:relative;">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+    <span class="pagan-hoy-badge" id="badge-cobros-inicio-header" style="display:none; top:2px; right:6px;">0</span>
+    <span>Recordatorios</span>
   </a>
-  <a class="nav-item" data-nav="reportes">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-    <span>Reportes</span>
+  <a class="nav-item" id="nav-item-menu-lateral">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+    <span>Menú</span>
   </a>
 </nav>
 
@@ -9976,39 +9994,51 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     pagos: document.getElementById('screen-pagos')
   };
 
+  // NUEVO: extraído del manejador de clic del menú inferior, para poder
+  // reutilizarlo tal cual desde el menú lateral (Préstamos, Pagos y
+  // Reportes ahora viven ahí también) sin duplicar la lógica de cambio
+  // de pantalla ni el refresco de datos de cada una.
+  function navegarAPantallaPrincipal(destino, itemActivo){
+    if(!mainScreens[destino]) return;
+
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    if(itemActivo) itemActivo.classList.add('active');
+    Object.values(mainScreens).forEach(s=> s.style.display = 'none');
+    mainScreens[destino].style.display = 'block';
+    // NUEVO: transición suave de entrada (fundido + deslizamiento leve)
+    mainScreens[destino].classList.remove('pantalla-transicion');
+    void mainScreens[destino].offsetWidth; // fuerza el reinicio de la animación
+    mainScreens[destino].classList.add('pantalla-transicion');
+    if(destino === 'reportes') actualizarReportes(); // datos frescos cada vez que se visita
+    if(destino === 'prestamos') renderizarListaPrestamos(); // datos frescos cada vez que se visita
+    if(destino === 'pagos') renderizarListaPagosGlobal(); // datos frescos cada vez que se visita
+    if(destino === 'clientes'){
+      // NUEVO: al entrar a Clientes desde la barra inferior, los
+      // filtros siempre vuelven a su estado por defecto ("Todas" las
+      // rutas, "Todos" los clientes) — antes quedaban pegados en lo
+      // último que se hubiera elegido, sin importar cuánto tiempo
+      // hubiera pasado.
+      filtroClienteActivo = 'todos';
+      rutasFiltroActivas = null;
+      document.getElementById('tabs-filtro-clientes').querySelectorAll('.tab-button').forEach(b=>{
+        b.classList.toggle('active', b.dataset.filtroCliente === 'todos');
+      });
+      renderizarChipsRutas();
+      renderizarClientes(clientesFiltrados());
+    }
+    window.scrollTo(0,0);
+  }
+
   document.querySelectorAll('.nav-item').forEach(item=>{
     item.addEventListener('click', (e)=>{
       e.preventDefault();
-      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-      item.classList.add('active');
-
       const destino = item.dataset.nav;
-      if(mainScreens[destino]){
-        Object.values(mainScreens).forEach(s=> s.style.display = 'none');
-        mainScreens[destino].style.display = 'block';
-        // NUEVO: transición suave de entrada (fundido + deslizamiento leve)
-        mainScreens[destino].classList.remove('pantalla-transicion');
-        void mainScreens[destino].offsetWidth; // fuerza el reinicio de la animación
-        mainScreens[destino].classList.add('pantalla-transicion');
-        if(destino === 'reportes') actualizarReportes(); // datos frescos cada vez que se visita
-        if(destino === 'prestamos') renderizarListaPrestamos(); // datos frescos cada vez que se visita
-        if(destino === 'pagos') renderizarListaPagosGlobal(); // datos frescos cada vez que se visita
-        if(destino === 'clientes'){
-          // NUEVO: al entrar a Clientes desde la barra inferior, los
-          // filtros siempre vuelven a su estado por defecto ("Todas" las
-          // rutas, "Todos" los clientes) — antes quedaban pegados en lo
-          // último que se hubiera elegido, sin importar cuánto tiempo
-          // hubiera pasado.
-          filtroClienteActivo = 'todos';
-          rutasFiltroActivas = null;
-          document.getElementById('tabs-filtro-clientes').querySelectorAll('.tab-button').forEach(b=>{
-            b.classList.toggle('active', b.dataset.filtroCliente === 'todos');
-          });
-          renderizarChipsRutas();
-          renderizarClientes(clientesFiltrados());
-        }
-        window.scrollTo(0,0);
-      }
+      // CORREGIDO: a pedido — Pagan Hoy, Recordatorios y Menú (sin
+      // data-nav) tienen su propio manejador aparte, más abajo; no
+      // representan una pantalla persistente, así que no deben quedar
+      // marcados como la pestaña "activa" del menú inferior.
+      if(!mainScreens[destino]) return;
+      navegarAPantallaPrincipal(destino, item);
     });
   });
 
@@ -10031,7 +10061,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   const screenInicio = mainScreens.inicio;
   const screenAjustes = document.getElementById('screen-ajustes');
   const bottomNav = document.querySelector('.bottom-nav');
-  const btnAbrirMenuLateral = document.getElementById('btn-abrir-menu-lateral');
+  const btnAbrirMenuLateral = document.getElementById('nav-item-menu-lateral'); // CORREGIDO: antes 'btn-abrir-menu-lateral' — este botón se movió del encabezado de Inicio al menú inferior
   const btnCerrarAjustes = document.getElementById('btn-cerrar-ajustes');
 
   // CORREGIDO: a pedido — antes este botón (entonces un engranaje) abría
@@ -10081,6 +10111,22 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   document.getElementById('btn-cerrar-menu-lateral').addEventListener('click', cerrarMenuLateral);
   menuLateralOverlay.addEventListener('click', (e)=>{ if(e.target === menuLateralOverlay) cerrarMenuLateral(); });
 
+  // NUEVO: a pedido — Préstamos, Pagos y Reportes se movieron aquí desde
+  // el menú inferior; reutilizan tal cual navegarAPantallaPrincipal (la
+  // misma función que ya usa el menú inferior), así que el refresco de
+  // datos de cada pantalla queda exactamente igual que antes.
+  document.getElementById('menu-lateral-prestamos').addEventListener('click', ()=>{
+    cerrarMenuLateral();
+    navegarAPantallaPrincipal('prestamos');
+  });
+  document.getElementById('menu-lateral-pagos').addEventListener('click', ()=>{
+    cerrarMenuLateral();
+    navegarAPantallaPrincipal('pagos');
+  });
+  document.getElementById('menu-lateral-reportes').addEventListener('click', ()=>{
+    cerrarMenuLateral();
+    navegarAPantallaPrincipal('reportes');
+  });
   document.getElementById('menu-lateral-estadisticas').addEventListener('click', ()=>{
     cerrarMenuLateral();
     abrirAjustes();
@@ -11570,7 +11616,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // cuál pantalla está debajo y la deja intacta al cerrar.
   document.getElementById('btn-abrir-cobros-clientes').addEventListener('click', abrirCobrosOverlay);
   document.getElementById('btn-abrir-cobros-detalle-prestamo').addEventListener('click', abrirCobrosOverlay);
-  document.getElementById('btn-abrir-cobros-inicio-header').addEventListener('click', abrirCobrosOverlay);
+  // CORREGIDO: a pedido — este botón se movió del encabezado de Inicio al
+  // menú inferior (mismo abrirCobrosOverlay de siempre, solo cambió el id).
+  document.getElementById('nav-item-recordatorios').addEventListener('click', abrirCobrosOverlay);
   document.getElementById('btn-cerrar-cobros').addEventListener('click', ()=>{
     screenCobros.style.display = 'none';
     // CORREGIDO: si se navegó a Detalle del Préstamo y se volvió, la
@@ -21523,7 +21571,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     }
   }
 
-  document.getElementById('btn-pagan-hoy').addEventListener('click', ()=>{
+  // CORREGIDO: a pedido — este botón se movió del encabezado de Inicio al
+  // menú inferior (mismo comportamiento de siempre, solo cambió el id).
+  document.getElementById('nav-item-pagan-hoy').addEventListener('click', ()=>{
     // NUEVO: cada vez que se abre la pantalla, el carrusel arranca
     // centrado en el día de hoy.
     paganHoyFechaSeleccionada = claveFechaConOffset(0);
