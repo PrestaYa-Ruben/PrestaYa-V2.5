@@ -24296,7 +24296,26 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     // ---- Formateo en vivo del valor a simular ----
     inputValor.addEventListener('input', ()=>{
+      // CORREGIDO: a pedido — antes, al reformatear el valor con puntos de
+      // miles en cada tecla, el cursor siempre saltaba al final del campo
+      // (comportamiento normal del navegador al reasignar .value). Esto
+      // hacía imposible editar un dígito en medio del número sin borrar
+      // todo y volver a escribir. Ahora se cuenta cuántos dígitos había
+      // ANTES del cursor en el valor viejo, se reformatea, y se recoloca
+      // el cursor tras esa misma cantidad de dígitos en el valor nuevo.
+      const posCursor = inputValor.selectionStart;
+      const digitosAntesDelCursor = inputValor.value.slice(0, posCursor).replace(/[^\d]/g, '').length;
+
       inputValor.value = formatearMiles(inputValor.value);
+
+      let digitosContados = 0;
+      let nuevaPos = inputValor.value.length;
+      for(let i = 0; i < inputValor.value.length; i++){
+        if(digitosContados === digitosAntesDelCursor){ nuevaPos = i; break; }
+        if(/\d/.test(inputValor.value[i])) digitosContados++;
+      }
+      inputValor.setSelectionRange(nuevaPos, nuevaPos);
+
       renderizarSimulacion();
     });
     inputPorcentaje.addEventListener('input', ()=>{
