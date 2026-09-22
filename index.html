@@ -21579,7 +21579,14 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // global que ya comparten Clientes/Cartera — no "se pega" a esas
     // otras pantallas porque Clientes ya reinicia este filtro solo, cada
     // vez que se entra ahí desde el menú inferior.
-    rutasFiltroActivas = new Set(['Ruben']);
+    // CORREGIDO: antes buscaba el texto exacto "Ruben" — si la ruta está
+    // guardada como "Rubén" (con tilde), o con otra mayúscula/minúscula,
+    // no encontraba ninguna coincidencia y el filtro quedaba vacío. Ahora
+    // busca sin importar tildes ni mayúsculas, y usa el nombre EXACTO tal
+    // como está guardado (para que el chip también quede bien marcado).
+    const normalizar = s => (s || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    const rutaRubenReal = rutasGuardadas.find(r => normalizar(r) === 'ruben');
+    rutasFiltroActivas = new Set([rutaRubenReal !== undefined ? rutaRubenReal : 'Ruben']);
     renderizarChipsRutas();
     // NUEVO: cada vez que se abre la pantalla, el carrusel arranca
     // centrado en el día de hoy.
