@@ -1299,27 +1299,47 @@ body.tinte-dashboard-activo .stat-card.tinte-rojo .icon-container{ background:no
   box-shadow:0 0 0 3px var(--primary-light);
 }
 
-/* NUEVO: relleno muy suave para destacar campos clave sin llamar demasiado
-   la atención (ej. Valor / Aplicar abono a / Método de Pago en Agregar
-   Abono). Al enfocarse vuelve a blanco, igual que cualquier otro campo.
-   CAMBIO: se agrega un pulso muy sutil en el borde para que estos campos
-   se noten mejor a simple vista, sin ser molesto ni distraer.
-   CAMBIO: el pulso pasó de azul (el mismo color de acento del resto de
-   la app) a ámbar — un color distinto para que estos campos resalten un
-   poco más a simple vista, con un anillo levemente más marcado.
-   CAMBIO: a pedido — pulso más vibrante y fácil de notar. Ahora usa el
-   mismo ámbar vivo de --warning (antes un tono más apagado/marrón), con
-   más opacidad en el pico (0.20 → 0.45) y un anillo más ancho (5px →
-   7px), para que estos 3 campos resalten con más fuerza a simple vista. */
+/* CAMBIO: a pedido — se reemplaza el pulso ámbar por un color degradado
+   permanente y distinto en cada uno de los 3 campos (Valor / Aplicar
+   abono a / Método de Pago en Agregar Abono), en vez de una animación.
+   Los 3 comparten la base (texto blanco, sin animación); el degradado en
+   sí varía en las 3 clases de abajo. */
 .campo-resaltado-suave{
-  background:var(--background);
-  animation:pulso-campo-resaltado 2.8s ease-in-out infinite;
+  color:#fff;
 }
-.campo-resaltado-suave:focus{ background:var(--surface); animation:none; }
-@keyframes pulso-campo-resaltado{
-  0%, 100%{ box-shadow:0 0 0 0 rgba(245,158,11,0); }
-  50%{ box-shadow:0 0 0 7px rgba(245,158,11,0.45); }
+.campo-resaltado-suave::placeholder{ color:rgba(255,255,255,0.8); }
+
+/* Valor — degradado azul */
+.campo-valor-abono{ background:linear-gradient(135deg, #4A9DFF, #1D6FEE); }
+
+/* Aplicar abono a — degradado verde/turquesa.
+   CORREGIDO: "Aplicar abono a" y "Método de Pago" en realidad los ve el
+   usuario como un botón (.field-select-trigger) que reemplaza al
+   <select> nativo — el <select> de verdad queda OCULTO en el DOM (ver
+   "Selector personalizado" más abajo). Ese botón hereda las clases del
+   select ORIGINAL, pero le QUITA el texto "field-select" (para no
+   heredar también su flecha de fondo) — así que una regla que exigiera
+   .field-select junto con la clase de color nunca llegaba a aplicarse
+   sobre el botón que sí se ve. Se combina en cambio con
+   .campo-resaltado-suave (esa sí la conservan ambos: el select oculto Y
+   el botón visible), que da la misma especificidad necesaria. La flecha
+   del botón es un <svg> aparte (.chevron-select), no un fondo — se pone
+   blanca por separado, más abajo. */
+.campo-resaltado-suave.campo-aplicar-abono{
+  background-image:linear-gradient(135deg, #2ECC9A, #12A97A);
 }
+
+/* Método de Pago — degradado morado */
+.campo-resaltado-suave.campo-metodo-pago{
+  background-image:linear-gradient(135deg, #8B7CF6, #6C4FE0);
+}
+/* CORREGIDO: 3 clases de especificidad (no 2) — la regla base
+   ".field-select-trigger .chevron-select" (más abajo en el archivo) usa
+   2 clases también, y con la misma especificidad gana la declarada
+   después en el archivo (que es esa base, gris). Se sube a 3 para que
+   esta gane siempre, sin depender del orden. */
+.campo-resaltado-suave.campo-aplicar-abono .chevron-select,
+.campo-resaltado-suave.campo-metodo-pago .chevron-select{ stroke:#fff; }
 .field-textarea{
   resize:none;
   min-height:88px;
@@ -6652,7 +6672,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <div class="form-field sin-margen">
         <label class="field-label" for="input-valor-abono">Valor</label>
         <div class="field-with-icon">
-          <input class="field-input campo-resaltado-suave" id="input-valor-abono" type="text" inputmode="numeric" placeholder="Toca y escribe" required>
+          <input class="field-input campo-resaltado-suave campo-valor-abono" id="input-valor-abono" type="text" inputmode="numeric" placeholder="Toca y escribe" required>
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="3"></circle></svg>
         </div>
       </div>
@@ -6672,7 +6692,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
       <div class="form-field sin-margen">
         <label class="field-label" for="select-aplicar-abono">Aplicar abono a*</label>
-        <select class="field-input field-select campo-resaltado-suave" id="select-aplicar-abono" required>
+        <select class="field-input field-select campo-resaltado-suave campo-aplicar-abono" id="select-aplicar-abono" required>
           <option value="capital_interes" selected>Capital y interés</option>
           <option value="abono">Abono</option>
           <option value="solo_interes">Solo interés</option>
@@ -6685,7 +6705,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
       <div class="form-field sin-margen">
         <label class="field-label" for="select-metodo-pago">Método de Pago</label>
-        <select class="field-input field-select campo-resaltado-suave" id="select-metodo-pago">
+        <select class="field-input field-select campo-resaltado-suave campo-metodo-pago" id="select-metodo-pago">
           <option value="efectivo" selected>Efectivo</option>
           <option value="transferencia">Transferencia</option>
         </select>
