@@ -1,0 +1,48 @@
+COBROS — App PWA (funciona 100% sin conexión)
+================================================
+
+QUÉ INCLUYE ESTE ZIP
+- index.html   → la app completa (interfaz + lógica)
+- manifest.json → hace que el navegador pueda "instalarla" como app
+- sw.js         → Service Worker: guarda todo en caché para que funcione
+                   sin wifi, sin datos móviles y sin ninguna conexión
+- icons/        → íconos de la app (192px y 512px)
+
+CÓMO FUNCIONA SIN INTERNET
+Todos los datos (clientes, cuotas, montos, fechas, recordatorios) se
+guardan en el almacenamiento local del teléfono (localStorage), no en
+un servidor. El Service Worker (sw.js) guarda una copia de todos los
+archivos la primera vez que se abre la app, así que después de esa
+primera carga la app abre y funciona igual con wifi, con datos móviles,
+con solo uno de los dos, o sin ninguna conexión.
+
+IMPORTANTE: para que se pueda "instalar" (ícono en pantalla de inicio)
+y para que el Service Worker funcione, estos archivos deben abrirse
+desde una dirección web (http/https), NO haciendo doble clic en
+index.html directamente desde el teléfono o el computador. Los
+navegadores bloquean los Service Workers en archivos abiertos así.
+
+OPCIONES PARA PONERLA EN FUNCIONAMIENTO
+
+Opción 1 — Hosting gratis en minutos (recomendado si solo quieres
+probarla o usarla desde el navegador):
+  1. Sube esta carpeta completa (manteniendo la misma estructura de
+     archivos) a un servicio como GitHub Pages, Netlify o Vercel.
+  2. Abre la URL que te den en el celular con Chrome.
+  3. Toca el menú (⋮) → "Instalar app" o "Agregar a pantalla de inicio".
+  4. Desde ahí ya queda instalada y funciona sin conexión.
+
+Opción 2 — Convertirla en APK con Capacitor (ya que la usas para
+PrestaApp):
+  1. Crea un proyecto Capacitor nuevo y copia estos archivos a la
+     carpeta "www" del proyecto (igual estructura, sin modificar nada).
+  2. Sincroniza y genera el APK como ya lo hiciste con PrestaApp.
+  3. Al ser Capacitor, no dependes de hosting externo ni de conexión
+     para que abra: todo queda empaquetado dentro del APK.
+
+DATOS DE EJEMPLO
+La primera vez que se abre, la app carga los 7 clientes que aparecen
+en la imagen de referencia (Diana Martinez, Gustavo Palacios, Lorena,
+Andres Loaiza, Francis Peña, Valentina Montoya, Camilo Osorio), todos
+programados para el día en que la abras por primera vez. Puedes
+editarlos o eliminarlos, y agregar cobros nuevos con el botón "+".
