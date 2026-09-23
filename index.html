@@ -23689,6 +23689,35 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   renderizarChipsRutas();
 
   // ==========================================================
+  // NUEVO — a pedido, tras reportarse que el cierre inesperado seguía
+  // ocurriendo desde Clientes y desde el Detalle del Préstamo: esta app
+  // está pensada para empaquetarse como APK con Capacitor (ver el puente
+  // de respaldos más arriba). Empaquetada así, el botón/gesto Atrás de
+  // Android lo intercepta el propio Capacitor de forma NATIVA (Java/
+  // Kotlin) — su comportamiento por defecto (sin un manejador propio
+  // registrado) es: si el WebView "puede retroceder", retrocede; si no,
+  // CIERRA LA APP directamente. Ese comportamiento nativo por defecto no
+  // siempre respeta con fidelidad el historial que este mismo archivo
+  // arma con history.pushState (según la versión de Capacitor/WebView
+  // instalada) — así que, aunque el mecanismo de más abajo (popstate) sí
+  // funciona probado como página web, podía seguir fallando ya
+  // empaquetada en el teléfono real. La solución: registrar un
+  // manejador PROPIO de Capacitor (App.addListener('backButton', ...))
+  // que toma el control por completo, sin depender de esa delegación —
+  // reutilizando, sin duplicar, la MISMA función de decisión que ya usa
+  // el mecanismo de popstate (ver manejarBotonAtras, definida ahí abajo
+  // pero referenciada aquí porque JS "iza" las funciones nombradas).
+  // ==========================================================
+  if(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App){
+    window.Capacitor.Plugins.App.addListener('backButton', ()=>{
+      // Si había algo que deshacer dentro de la app, ya se hizo — no
+      // salir. Si no (estábamos en Inicio), ahí sí se sale de la app,
+      // que es el comportamiento esperado de Android en la pantalla raíz.
+      if(!manejarBotonAtras()) window.Capacitor.Plugins.App.exitApp();
+    });
+  }
+
+  // ==========================================================
   // NUEVO — AUDITORÍA APK: integración con el botón "Atrás" físico/gesto
   // de Android.
   //
@@ -23725,10 +23754,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // botón Atrás simplemente consume sin efecto visible la próxima vez
   // — nunca se pierde información ni se salta una pantalla de más.
   // ==========================================================
-  (function integracionBotonAtrasAndroid(){
+  // NUEVO: función de decisión compartida — la usa tanto el manejador
+  // nativo de Capacitor (arriba) como el mecanismo de popstate (abajo),
+  // para no tener la misma lógica escrita dos veces en el archivo.
+  function manejarBotonAtras(){
     const pantallasApilables = Array.from(document.querySelectorAll('[id^="screen-"]'))
       .filter(el => el.id !== 'screen-inicio' && document.getElementById('btn-cerrar-' + el.id.slice('screen-'.length)));
-
     // CORREGIDO: a pedido — Clientes, Préstamos, Pagos y Reportes se
     // habían dejado fuera a propósito (no tienen un botón "cerrar", se
     // navegan por pestañas). Pero eso significaba que, estando en
@@ -23737,6 +23768,27 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // completo. Ahora también se apilan, y Atrás las manda a Inicio
     // (reutilizando tal cual navegarAPantallaPrincipal, la misma función
     // que ya usa el menú inferior).
+    const pantallasDePestana = ['screen-clientes', 'screen-prestamos', 'screen-pagos', 'screen-reportes']
+      .map(id => document.getElementById(id))
+      .filter(Boolean);
+    const estaVisible = el => el.style.display !== 'none' && el.style.display !== '';
+
+    const actual = pantallasApilables.find(estaVisible);
+    if(actual){
+      const btnCerrar = document.getElementById('btn-cerrar-' + actual.id.slice('screen-'.length));
+      if(btnCerrar){ btnCerrar.click(); return true; }
+    }
+    const actualPestana = pantallasDePestana.find(estaVisible);
+    if(actualPestana){
+      navegarAPantallaPrincipal('inicio', document.querySelector('.nav-item[data-nav="inicio"]'));
+      return true;
+    }
+    return false; // en Inicio, sin nada más que deshacer dentro de la app
+  }
+
+  (function integracionBotonAtrasAndroid(){
+    const pantallasApilables = Array.from(document.querySelectorAll('[id^="screen-"]'))
+      .filter(el => el.id !== 'screen-inicio' && document.getElementById('btn-cerrar-' + el.id.slice('screen-'.length)));
     const pantallasDePestana = ['screen-clientes', 'screen-prestamos', 'screen-pagos', 'screen-reportes']
       .map(id => document.getElementById(id))
       .filter(Boolean);
@@ -23765,20 +23817,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     pantallasApilables.forEach(el => observer.observe(el, { attributes:true, attributeFilter:['style'] }));
     pantallasDePestana.forEach(el => observer.observe(el, { attributes:true, attributeFilter:['style'] }));
 
-    window.addEventListener('popstate', ()=>{
-      const actual = pantallasApilables.find(estaVisible);
-      if(actual){
-        const btnCerrar = document.getElementById('btn-cerrar-' + actual.id.slice('screen-'.length));
-        if(btnCerrar) btnCerrar.click();
-        return;
-      }
-      const actualPestana = pantallasDePestana.find(estaVisible);
-      if(actualPestana){
-        navegarAPantallaPrincipal('inicio', document.querySelector('.nav-item[data-nav="inicio"]'));
-        return;
-      }
-      // ninguna pantalla apilable ni de pestaña visible: se deja que Android maneje Atrás con normalidad
-    });
+    // CORREGIDO: ya no duplica la lógica de decisión — llama a
+    // manejarBotonAtras() (definida arriba), la misma que usa el
+    // manejador nativo de Capacitor.
+    window.addEventListener('popstate', manejarBotonAtras);
   })();
 
   // ==========================================================
@@ -24292,6 +24334,27 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       enlace.click();
       document.body.removeChild(enlace);
       setTimeout(()=> URL.revokeObjectURL(url), 60000);
+    });
+
+    // NUEVO: a pedido — al presionar Retroceso sobre un dígito que tiene
+    // OTROS dígitos después (por ejemplo, el "4" de "400.000"), en vez de
+    // borrarlo de una (lo que deja solo ceros detrás y "colapsa" el
+    // valor a 0), la PRIMERA vez solo lo selecciona — así el siguiente
+    // número que se escriba lo reemplaza en el lugar, sin tener que
+    // mantener presionado para seleccionarlo a mano. Presionar Retroceso
+    // una SEGUNDA vez (ya con el dígito seleccionado) sí lo borra de
+    // verdad, como es de esperarse.
+    inputValor.addEventListener('keydown', (e)=>{
+      if(e.key !== 'Backspace') return;
+      if(inputValor.selectionStart !== inputValor.selectionEnd) return; // ya hay algo seleccionado: dejar que Retroceso lo borre normal
+      const pos = inputValor.selectionStart;
+      if(pos === 0) return; // nada antes del cursor
+      const valor = inputValor.value;
+      if(!/\d/.test(valor[pos - 1])) return; // lo de antes no es un dígito (ej. el punto de miles): dejar el comportamiento normal
+      const hayDigitoDespues = valor.slice(pos).replace(/[^\d]/g, '').length > 0;
+      if(!hayDigitoDespues) return; // es el ÚLTIMO dígito del número: borrarlo de una tiene sentido, no hace falta seleccionar primero
+      e.preventDefault();
+      inputValor.setSelectionRange(pos - 1, pos);
     });
 
     // ---- Formateo en vivo del valor a simular ----
