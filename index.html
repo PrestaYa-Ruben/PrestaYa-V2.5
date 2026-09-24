@@ -3082,6 +3082,64 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .confirm-modal-title{ font-size:17px; font-weight:600; color:var(--text); margin-bottom:8px; }
 .confirm-modal-mensaje{ font-size:14px; color:var(--text-secondary); font-weight:400; line-height:1.5; margin-bottom:22px; }
 .confirm-modal-botones{ display:flex; gap:10px; }
+/* NUEVO: a pedido — teclado numérico para el PIN de acceso (pantalla de
+   bloqueo al abrir la app, y los pasos de crear/cambiar/verificar el
+   PIN desde Ajustes → Seguridad). Un solo diseño reutilizado en los
+    dos contextos — ver .pin-teclado-oscuro para la variante de la
+   pantalla de bloqueo (fondo navy en vez de blanco). */
+.pin-teclado{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:16px;
+  max-width:260px;
+  margin:0 auto;
+}
+.pin-tecla{
+  width:68px;
+  height:68px;
+  border-radius:var(--radius-full);
+  border:1.5px solid var(--border);
+  background:var(--surface);
+  font-size:24px;
+  font-weight:600;
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+.pin-tecla:active{ background:var(--background); }
+.pin-tecla-vacia{ visibility:hidden; pointer-events:none; }
+.pin-tecla-borrar svg{ width:24px; height:24px; stroke:currentColor; }
+
+.pin-teclado-oscuro .pin-tecla{
+  border-color:rgba(255,255,255,0.28);
+  background:rgba(255,255,255,0.08);
+  color:#fff;
+}
+.pin-teclado-oscuro .pin-tecla:active{ background:rgba(255,255,255,0.2); }
+
+.pin-punto{
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  border:2px solid var(--border);
+  background:transparent;
+  transition:background .12s ease, border-color .12s ease;
+  flex-shrink:0;
+}
+.pin-punto.pin-punto-lleno{ background:var(--primary); border-color:var(--primary); }
+.pin-punto-oscuro{ border-color:rgba(255,255,255,0.45); }
+.pin-punto-oscuro.pin-punto-lleno{ background:#fff; border-color:#fff; }
+
+@keyframes pin-sacudida{
+  10%, 90%{ transform:translateX(-6px); }
+  20%, 80%{ transform:translateX(6px); }
+  30%, 50%, 70%{ transform:translateX(-9px); }
+  40%, 60%{ transform:translateX(9px); }
+}
+.pin-sacudida{ animation:pin-sacudida .45s; }
+
 .confirm-modal-btn{
   flex:1;
   padding:13px;
@@ -5176,6 +5234,33 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
      Pagos, Reportes y Ajustes mismo. Cada ítem reutiliza tal cual la
      función/flujo ya existente de cada pantalla — no se duplica
      ninguna lógica. -->
+<!-- NUEVO: a pedido — pantalla de bloqueo con PIN. Vive AQUÍ, fuera de
+     cualquier pantalla (mainScreens/screen-inicio), para no repetir el
+     mismo problema que tuvo antes el menú lateral estando anidado: si
+     viviera dentro de una pantalla que se oculta, se ocultaría con ella
+     aunque debiera seguir bloqueando el resto de la app. z-index muy
+     alto — por encima de absolutamente todo lo demás, para que bloquee
+     de verdad mientras esté activa. -->
+<div id="pin-bloqueo-overlay" style="display:none; position:fixed; inset:0; z-index:9999; background:var(--primary); flex-direction:column; align-items:center; justify-content:center; padding:24px;">
+  <div style="text-align:center; margin-bottom:36px;">
+    <div style="font-size:32px; font-weight:800; color:#fff;">Presta<span style="color:var(--success);">Ya</span></div>
+    <p id="pin-bloqueo-subtitulo" style="color:rgba(255,255,255,0.75); font-size:14px; margin-top:8px;">Ingresa tu PIN para continuar</p>
+  </div>
+  <div id="pin-bloqueo-puntos" style="display:flex; justify-content:center; gap:16px; margin-bottom:14px;"></div>
+  <!-- NUEVO: a pedido — campo de contraseña, para cuando el tipo de
+       seguridad activo sea "password" en vez de "pin" (ver
+       tipoSeguridadActiva en JS). -->
+  <div id="pin-bloqueo-password-wrap" style="display:none; position:relative; width:100%; max-width:280px; margin-bottom:14px;">
+    <input type="password" id="pin-bloqueo-password" placeholder="Escribe tu contraseña" autocomplete="off" style="width:100%; box-sizing:border-box; padding:14px 44px 14px 16px; border-radius:var(--radius-md); border:1.5px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.08); color:#fff; font-size:15px; outline:none;">
+    <button type="button" id="btn-ver-pin-bloqueo-password" aria-label="Mostrar contraseña" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; padding:6px; color:rgba(255,255,255,0.8); cursor:pointer;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+    </button>
+  </div>
+  <p id="pin-bloqueo-error" style="color:#FCA5A5; font-size:13px; font-weight:600; min-height:18px; margin-bottom:10px;"></p>
+  <div id="pin-bloqueo-teclado" class="pin-teclado pin-teclado-oscuro"></div>
+  <button type="button" class="primary-button" id="btn-continuar-pin-bloqueo-password" style="display:none; width:100%; max-width:280px;">Continuar</button>
+</div>
+
 <div id="menu-lateral-overlay" class="menu-lateral-overlay" style="display:none;">
   <div class="menu-lateral-panel" id="menu-lateral-panel">
     <div class="menu-lateral-header">
@@ -7437,6 +7522,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   <!-- LISTA DE AJUSTES -->
   <section class="settings-list">
 
+    <div class="card settings-item" id="item-seguridad" role="button" tabindex="0">
+      <div class="icon-container gris"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+      <div class="info">
+        <div class="title">Seguridad</div>
+        <div class="subtitle" id="subtitulo-item-seguridad">PIN de acceso desactivado</div>
+      </div>
+      <div class="trailing chevron">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+    </div>
+
     <div class="card settings-item" id="item-control-caja" role="button" tabindex="0">
       <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"></path><path d="M17 14h.01"></path><path d="M3 8h18v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"></path></svg></div>
       <div class="info">
@@ -7700,6 +7796,93 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
      mismo archivo — reutiliza el mismo sistema de tarjetas del
      resto de la app.
      ========================================================== -->
+<!-- NUEVO: a pedido — PIN de acceso, activable y desactivable. Guarda
+     solo un hash simple del PIN (nunca el PIN en texto plano), y no
+     depende de ningún servidor — todo el control vive en este mismo
+     teléfono, igual que el resto de la app. -->
+<div class="app" id="screen-seguridad" style="display:none;">
+  <header class="header">
+    <button class="back-btn" id="btn-cerrar-seguridad" aria-label="Volver">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </button>
+    <h1>Seguridad</h1>
+    <span class="header-spacer"></span>
+  </header>
+  <section style="padding:20px 16px;">
+    <div class="card" style="padding:18px 16px;">
+      <div class="mora-toggle-row" style="margin-bottom:0;">
+        <div class="mora-toggle-text">
+          <div class="mora-toggle-title">Solicitar código al abrir</div>
+          <!-- CORREGIDO: a pedido — ahora puede ser un PIN de 4 dígitos O
+               una contraseña, así que el texto ya no asume uno de los 2. -->
+          <div class="mora-toggle-subtitle">Pide un PIN o contraseña cada vez que se abre la app, para que nadie más pueda ver tus datos</div>
+        </div>
+        <button type="button" class="toggle-switch" id="toggle-pin-activo" role="switch" aria-checked="false" aria-label="Solicitar código al abrir"></button>
+      </div>
+    </div>
+    <button type="button" class="card settings-item" id="btn-cambiar-pin" style="display:none; margin-top:14px; width:100%; text-align:left; border:none; cursor:pointer;">
+      <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+      <div class="info">
+        <div class="title" id="titulo-btn-cambiar-pin">Cambiar PIN</div>
+        <div class="subtitle" id="subtitulo-btn-cambiar-pin">Actualiza tu PIN de acceso actual</div>
+      </div>
+      <div class="trailing chevron">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+    </button>
+    <p id="texto-ayuda-seguridad" style="font-size:12.5px; color:var(--text-secondary); text-align:center; margin-top:16px; line-height:1.5;">Si olvidas tu PIN o contraseña, no hay forma de recuperarlo desde la app — tendrías que borrar los datos del navegador, lo que también borraría tu información. Guárdalo en un lugar seguro.</p>
+  </section>
+</div>
+
+<!-- NUEVO: a pedido — al activar la protección por primera vez, elegir
+     entre PIN (4 dígitos) o Contraseña, antes de pasar al modal de
+     crearla. -->
+<div id="elegir-tipo-seguridad-overlay" class="confirm-modal-overlay" style="display:none;">
+  <div class="confirm-modal-card" style="max-width:320px;">
+    <div class="confirm-modal-title">¿Cómo prefieres protegerla?</div>
+    <p style="font-size:13.5px; color:var(--text-secondary); margin:-4px 0 18px;">Puedes cambiarlo más adelante desactivando y activando de nuevo</p>
+    <button type="button" class="card settings-item" id="btn-elegir-tipo-pin" style="width:100%; text-align:left; border:1.5px solid var(--border); cursor:pointer; margin-bottom:10px;">
+      <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+      <div class="info">
+        <div class="title">PIN de 4 dígitos</div>
+        <div class="subtitle">Rápido de escribir con el teclado numérico</div>
+      </div>
+    </button>
+    <button type="button" class="card settings-item" id="btn-elegir-tipo-password" style="width:100%; text-align:left; border:1.5px solid var(--border); cursor:pointer;">
+      <div class="icon-container green"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><line x1="12" y1="15" x2="12" y2="17"></line></svg></div>
+      <div class="info">
+        <div class="title">Contraseña</div>
+        <div class="subtitle">Letras y números, más larga si quieres</div>
+      </div>
+    </button>
+    <button type="button" class="confirm-modal-btn cancelar" id="btn-cancelar-elegir-tipo" style="width:100%; margin-top:14px;">Cancelar</button>
+  </div>
+</div>
+
+<!-- NUEVO: modal reutilizable para crear, confirmar, verificar o cambiar
+     el PIN — un solo teclado numérico para los distintos pasos del
+     flujo (ver iniciarFlujoPin en JS), en vez de duplicar la interfaz.
+     CORREGIDO: a pedido — ahora también puede mostrar un campo de
+     contraseña en vez del teclado (#pin-gestion-password), según el
+     tipo elegido — ver tipoSeguridadEnCurso en JS. -->
+<div id="pin-gestion-overlay" class="confirm-modal-overlay" style="display:none;">
+  <div class="confirm-modal-card" style="max-width:320px;">
+    <div class="confirm-modal-title" id="pin-gestion-titulo">Crea tu PIN</div>
+    <p id="pin-gestion-subtitulo" style="font-size:13.5px; color:var(--text-secondary); margin:-4px 0 18px;">Ingresa 4 dígitos</p>
+    <div id="pin-gestion-puntos" style="display:flex; justify-content:center; gap:14px; margin-bottom:22px;"></div>
+    <div id="pin-gestion-password-wrap" style="display:none; position:relative; margin-bottom:14px;">
+      <input type="password" id="pin-gestion-password" class="field-input" placeholder="Escribe tu contraseña" style="padding-right:44px;" autocomplete="off">
+      <button type="button" id="btn-ver-pin-gestion-password" aria-label="Mostrar contraseña" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; padding:6px; color:var(--text-secondary); cursor:pointer;">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      </button>
+    </div>
+    <p id="pin-gestion-error" style="color:var(--danger); font-size:13px; font-weight:600; min-height:18px; margin:-10px 0 10px;"></p>
+    <div id="pin-gestion-teclado" class="pin-teclado"></div>
+    <button type="button" class="primary-button" id="btn-continuar-pin-gestion-password" style="display:none; width:100%; margin-bottom:10px;">Continuar</button>
+    <button type="button" class="confirm-modal-btn cancelar" id="btn-cancelar-pin-gestion" style="width:100%; margin-top:14px;">Cancelar</button>
+  </div>
+</div>
+
 <div class="app" id="screen-copia-seguridad" style="display:none;">
 
   <header class="header">
@@ -10569,6 +10752,354 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     screenAjustes.style.display = 'block';
     window.scrollTo(0,0);
   });
+
+  // ==========================================================
+  // NUEVO — a pedido: código de acceso, activable y desactivable, con 2
+  // formas a elegir: PIN de 4 dígitos o Contraseña. Todo el control vive
+  // en este mismo teléfono (un hash simple en localStorage, nunca el
+  // código en texto plano) — no depende de ningún servidor, igual que
+  // el resto de la app.
+  // ==========================================================
+  const PIN_ACTIVO_KEY = 'prestapp_pin_activo';
+  const PIN_HASH_KEY = 'prestapp_pin_hash';
+  const SEGURIDAD_TIPO_KEY = 'prestapp_seguridad_tipo'; // 'pin' | 'password'
+
+  // Hash simple (no criptográfico de verdad — no hace falta más para
+  // este caso: solo evita que el código quede a la vista en texto plano
+  // si alguien abre las herramientas de desarrollador o revisa el
+  // almacenamiento del navegador directamente). Sirve igual para un PIN
+  // de 4 dígitos que para una contraseña de cualquier largo.
+  function hashPin(valor){
+    let hash = 0;
+    for(let i = 0; i < valor.length; i++){
+      hash = ((hash << 5) - hash) + valor.charCodeAt(i);
+      hash |= 0;
+    }
+    return String(hash);
+  }
+  function pinEstaActivo(){
+    try{ return localStorage.getItem(PIN_ACTIVO_KEY) === '1'; }
+    catch(err){ return false; }
+  }
+  function pinCoincide(valor){
+    try{ return hashPin(valor) === localStorage.getItem(PIN_HASH_KEY); }
+    catch(err){ return false; }
+  }
+  // NUEVO: tipo YA GUARDADO (el que protege la app ahora mismo). Por
+  // defecto 'pin' — así el PIN que alguien ya haya activado antes de
+  // este cambio se sigue tratando como PIN, sin pedirle que lo rehaga.
+  function tipoSeguridadGuardado(){
+    return localStorage.getItem(SEGURIDAD_TIPO_KEY) || 'pin';
+  }
+  function guardarPinNuevo(valor, tipo){
+    localStorage.setItem(PIN_HASH_KEY, hashPin(valor));
+    localStorage.setItem(PIN_ACTIVO_KEY, '1');
+    localStorage.setItem(SEGURIDAD_TIPO_KEY, tipo);
+  }
+  function desactivarPinGuardado(){
+    localStorage.setItem(PIN_ACTIVO_KEY, '0');
+    localStorage.removeItem(PIN_HASH_KEY);
+    localStorage.removeItem(SEGURIDAD_TIPO_KEY);
+  }
+
+  const screenSeguridad = document.getElementById('screen-seguridad');
+  const itemSeguridad = document.getElementById('item-seguridad');
+  const subtituloItemSeguridad = document.getElementById('subtitulo-item-seguridad');
+  const togglePinActivo = document.getElementById('toggle-pin-activo');
+  const btnCambiarPin = document.getElementById('btn-cambiar-pin');
+
+  function actualizarUISeguridad(){
+    const activo = pinEstaActivo();
+    const tipo = tipoSeguridadGuardado();
+    const esPassword = tipo === 'password';
+    togglePinActivo.classList.toggle('on', activo);
+    togglePinActivo.setAttribute('aria-checked', String(activo));
+    btnCambiarPin.style.display = activo ? 'flex' : 'none';
+    subtituloItemSeguridad.textContent = !activo ? 'Código de acceso desactivado' : (esPassword ? 'Contraseña activada' : 'PIN activado');
+    document.getElementById('titulo-btn-cambiar-pin').textContent = esPassword ? 'Cambiar contraseña' : 'Cambiar PIN';
+    document.getElementById('subtitulo-btn-cambiar-pin').textContent = esPassword ? 'Actualiza tu contraseña de acceso actual' : 'Actualiza tu PIN de acceso actual';
+  }
+  actualizarUISeguridad();
+
+  itemSeguridad.addEventListener('click', ()=>{
+    screenAjustes.style.display = 'none';
+    screenSeguridad.style.display = 'block';
+    window.scrollTo(0,0);
+  });
+  document.getElementById('btn-cerrar-seguridad').addEventListener('click', ()=>{
+    screenSeguridad.style.display = 'none';
+    screenAjustes.style.display = 'block';
+    window.scrollTo(0,0);
+  });
+
+  // ---------- Teclado numérico + campo de contraseña reutilizables (crear/confirmar/verificar/cambiar, y la pantalla de bloqueo) ----------
+  const TEXTOS_PIN = {
+    crear: { tituloPin:'Crea tu PIN', subPin:'Ingresa 4 dígitos', tituloPass:'Crea tu contraseña', subPass:'Escribe la contraseña que quieras usar' },
+    confirmar: { tituloPin:'Confirma tu PIN', subPin:'Ingresa los mismos 4 dígitos otra vez', tituloPass:'Confirma tu contraseña', subPass:'Escribe la misma contraseña otra vez' },
+    'verificar-desactivar': { tituloPin:'Ingresa tu PIN', subPin:'Para poder desactivar la protección', tituloPass:'Ingresa tu contraseña', subPass:'Para poder desactivar la protección' },
+    'verificar-cambiar': { tituloPin:'Ingresa tu PIN actual', subPin:'Para poder cambiarlo por uno nuevo', tituloPass:'Ingresa tu contraseña actual', subPass:'Para poder cambiarla por una nueva' },
+    nuevo: { tituloPin:'Nuevo PIN', subPin:'Ingresa 4 dígitos nuevos', tituloPass:'Nueva contraseña', subPass:'Escribe la contraseña nueva' },
+    'confirmar-nuevo': { tituloPin:'Confirma el nuevo PIN', subPin:'Ingresa los mismos 4 dígitos otra vez', tituloPass:'Confirma la nueva contraseña', subPass:'Escribe la misma contraseña otra vez' }
+  };
+
+  let pinBuffer = '';
+  let pinModoActual = null;
+  let pinValorTemporal = '';
+  let tipoSeguridadEnCurso = 'pin'; // NUEVO: 'pin' | 'password' — qué mostrar/procesar en el paso actual del flujo
+
+  function construirTecladoPin(contenedor, oscuro){
+    contenedor.innerHTML = '';
+    if(oscuro) contenedor.classList.add('pin-teclado-oscuro');
+    const teclas = ['1','2','3','4','5','6','7','8','9','','0','borrar'];
+    teclas.forEach(t=>{
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      if(t === ''){
+        btn.className = 'pin-tecla pin-tecla-vacia';
+      }else if(t === 'borrar'){
+        btn.className = 'pin-tecla pin-tecla-borrar';
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>';
+        btn.addEventListener('click', ()=> manejarTeclaPin('borrar'));
+      }else{
+        btn.className = 'pin-tecla';
+        btn.textContent = t;
+        btn.addEventListener('click', ()=> manejarTeclaPin(t));
+      }
+      contenedor.appendChild(btn);
+    });
+  }
+  construirTecladoPin(document.getElementById('pin-gestion-teclado'), false);
+  construirTecladoPin(document.getElementById('pin-bloqueo-teclado'), true);
+
+  function pintarPuntosPin(contenedor, oscuro){
+    contenedor.innerHTML = '';
+    for(let i = 0; i < 4; i++){
+      const punto = document.createElement('div');
+      punto.className = 'pin-punto' + (oscuro ? ' pin-punto-oscuro' : '') + (i < pinBuffer.length ? ' pin-punto-lleno' : '');
+      contenedor.appendChild(punto);
+    }
+  }
+
+  function estaEnPantallaBloqueo(){
+    return document.getElementById('pin-bloqueo-overlay').style.display === 'flex';
+  }
+
+  // NUEVO: muestra la sección correcta (teclado+puntos, o campo de
+  // contraseña+botón Continuar) según tipoSeguridadEnCurso, tanto en el
+  // modal de gestión como en la pantalla de bloqueo.
+  function refrescarVistaPin(){
+    const esPassword = tipoSeguridadEnCurso === 'password';
+    if(estaEnPantallaBloqueo()){
+      document.getElementById('pin-bloqueo-puntos').style.display = esPassword ? 'none' : 'flex';
+      document.getElementById('pin-bloqueo-teclado').style.display = esPassword ? 'none' : 'grid';
+      document.getElementById('pin-bloqueo-password-wrap').style.display = esPassword ? 'block' : 'none';
+      document.getElementById('btn-continuar-pin-bloqueo-password').style.display = esPassword ? 'block' : 'none';
+      if(esPassword){
+        document.getElementById('pin-bloqueo-password').value = '';
+        document.getElementById('pin-bloqueo-password').focus();
+      }else{
+        pintarPuntosPin(document.getElementById('pin-bloqueo-puntos'), true);
+      }
+    }else{
+      const info = TEXTOS_PIN[pinModoActual];
+      document.getElementById('pin-gestion-titulo').textContent = esPassword ? info.tituloPass : info.tituloPin;
+      document.getElementById('pin-gestion-subtitulo').textContent = esPassword ? info.subPass : info.subPin;
+      document.getElementById('pin-gestion-puntos').style.display = esPassword ? 'none' : 'flex';
+      document.getElementById('pin-gestion-teclado').style.display = esPassword ? 'none' : 'grid';
+      document.getElementById('pin-gestion-password-wrap').style.display = esPassword ? 'block' : 'none';
+      document.getElementById('btn-continuar-pin-gestion-password').style.display = esPassword ? 'block' : 'none';
+      if(esPassword){
+        document.getElementById('pin-gestion-password').value = '';
+        setTimeout(()=> document.getElementById('pin-gestion-password').focus(), 50);
+      }else{
+        pintarPuntosPin(document.getElementById('pin-gestion-puntos'), false);
+      }
+    }
+  }
+
+  function mostrarErrorPin(mensaje){
+    const elError = estaEnPantallaBloqueo() ? document.getElementById('pin-bloqueo-error') : document.getElementById('pin-gestion-error');
+    const contenedorSacudida = estaEnPantallaBloqueo()
+      ? (tipoSeguridadEnCurso === 'password' ? document.getElementById('pin-bloqueo-password-wrap') : document.getElementById('pin-bloqueo-puntos'))
+      : (tipoSeguridadEnCurso === 'password' ? document.getElementById('pin-gestion-password-wrap') : document.getElementById('pin-gestion-puntos'));
+    elError.textContent = mensaje;
+    contenedorSacudida.classList.remove('pin-sacudida');
+    void contenedorSacudida.offsetWidth;
+    contenedorSacudida.classList.add('pin-sacudida');
+  }
+  function limpiarErrorPin(){
+    document.getElementById('pin-bloqueo-error').textContent = '';
+    document.getElementById('pin-gestion-error').textContent = '';
+  }
+
+  function manejarTeclaPin(tecla){
+    if(tecla === 'borrar'){
+      pinBuffer = pinBuffer.slice(0, -1);
+      refrescarVistaPin();
+      return;
+    }
+    if(pinBuffer.length >= 4) return;
+    pinBuffer += tecla;
+    refrescarVistaPin();
+    if(pinBuffer.length === 4) setTimeout(()=> procesarValorCompleto(pinBuffer), 150);
+  }
+
+  // NUEVO: recibe el valor ya armado (4 dígitos del teclado, o el texto
+  // del campo de contraseña) — así un solo flujo de decisión sirve para
+  // los 2 tipos, en vez de duplicar todo el switch.
+  function procesarValorCompleto(valorIngresado){
+    if(!valorIngresado){
+      mostrarErrorPin('Escribe tu contraseña');
+      return;
+    }
+    switch(pinModoActual){
+      case 'crear':
+        pinValorTemporal = valorIngresado;
+        iniciarFlujoPin('confirmar', tipoSeguridadEnCurso);
+        break;
+      case 'confirmar':
+        if(valorIngresado === pinValorTemporal){
+          guardarPinNuevo(valorIngresado, tipoSeguridadEnCurso);
+          cerrarModalGestionPin();
+          actualizarUISeguridad();
+          mostrarMensajeToast(tipoSeguridadEnCurso === 'password' ? 'Contraseña activada correctamente' : 'PIN activado correctamente');
+        }else{
+          iniciarFlujoPin('crear', tipoSeguridadEnCurso);
+          mostrarErrorPin('No coinciden — intenta de nuevo');
+        }
+        break;
+      case 'verificar-desactivar':
+        if(pinCoincide(valorIngresado)){
+          desactivarPinGuardado();
+          cerrarModalGestionPin();
+          actualizarUISeguridad();
+          mostrarMensajeToast('Protección desactivada');
+        }else{
+          pinBuffer = '';
+          refrescarVistaPin();
+          mostrarErrorPin(tipoSeguridadEnCurso === 'password' ? 'Contraseña incorrecta' : 'PIN incorrecto');
+        }
+        break;
+      case 'verificar-cambiar':
+        if(pinCoincide(valorIngresado)){
+          iniciarFlujoPin('nuevo', tipoSeguridadEnCurso);
+        }else{
+          pinBuffer = '';
+          refrescarVistaPin();
+          mostrarErrorPin(tipoSeguridadEnCurso === 'password' ? 'Contraseña incorrecta' : 'PIN incorrecto');
+        }
+        break;
+      case 'nuevo':
+        pinValorTemporal = valorIngresado;
+        iniciarFlujoPin('confirmar-nuevo', tipoSeguridadEnCurso);
+        break;
+      case 'confirmar-nuevo':
+        if(valorIngresado === pinValorTemporal){
+          guardarPinNuevo(valorIngresado, tipoSeguridadEnCurso);
+          cerrarModalGestionPin();
+          mostrarMensajeToast(tipoSeguridadEnCurso === 'password' ? 'Contraseña actualizada' : 'PIN actualizado');
+        }else{
+          iniciarFlujoPin('nuevo', tipoSeguridadEnCurso);
+          mostrarErrorPin('No coinciden — intenta de nuevo');
+        }
+        break;
+      case 'desbloquear':
+        if(pinCoincide(valorIngresado)){
+          document.getElementById('pin-bloqueo-overlay').style.display = 'none';
+        }else{
+          pinBuffer = '';
+          refrescarVistaPin();
+          mostrarErrorPin(tipoSeguridadEnCurso === 'password' ? 'Contraseña incorrecta' : 'PIN incorrecto');
+        }
+        break;
+    }
+  }
+
+  function iniciarFlujoPin(modo, tipo){
+    pinModoActual = modo;
+    if(tipo) tipoSeguridadEnCurso = tipo;
+    pinBuffer = '';
+    limpiarErrorPin();
+    document.getElementById('pin-gestion-overlay').style.display = 'flex';
+    refrescarVistaPin();
+  }
+  function cerrarModalGestionPin(){
+    document.getElementById('pin-gestion-overlay').style.display = 'none';
+    pinModoActual = null;
+    pinBuffer = '';
+    pinValorTemporal = '';
+    limpiarErrorPin();
+  }
+  document.getElementById('btn-cancelar-pin-gestion').addEventListener('click', cerrarModalGestionPin);
+
+  // NUEVO: campo de contraseña — botón "Continuar" y tecla Enter, tanto
+  // en el modal de gestión como en la pantalla de bloqueo.
+  document.getElementById('btn-continuar-pin-gestion-password').addEventListener('click', ()=>{
+    procesarValorCompleto(document.getElementById('pin-gestion-password').value);
+  });
+  document.getElementById('pin-gestion-password').addEventListener('keydown', e=>{
+    if(e.key === 'Enter') procesarValorCompleto(document.getElementById('pin-gestion-password').value);
+  });
+  document.getElementById('btn-continuar-pin-bloqueo-password').addEventListener('click', ()=>{
+    procesarValorCompleto(document.getElementById('pin-bloqueo-password').value);
+  });
+  document.getElementById('pin-bloqueo-password').addEventListener('keydown', e=>{
+    if(e.key === 'Enter') procesarValorCompleto(document.getElementById('pin-bloqueo-password').value);
+  });
+  // Mostrar/ocultar el texto de la contraseña (ambos campos)
+  function alternarVisibilidadPassword(input, boton){
+    const oculto = input.type === 'password';
+    input.type = oculto ? 'text' : 'password';
+    boton.innerHTML = oculto
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 8 11 8a21.8 21.8 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+  }
+  document.getElementById('btn-ver-pin-gestion-password').addEventListener('click', ()=>{
+    alternarVisibilidadPassword(document.getElementById('pin-gestion-password'), document.getElementById('btn-ver-pin-gestion-password'));
+  });
+  document.getElementById('btn-ver-pin-bloqueo-password').addEventListener('click', ()=>{
+    alternarVisibilidadPassword(document.getElementById('pin-bloqueo-password'), document.getElementById('btn-ver-pin-bloqueo-password'));
+  });
+
+  // NUEVO: elegir PIN o Contraseña, solo al activar por primera vez
+  // (para cambiar o verificar ya en uso, se respeta el tipo guardado).
+  const overlayElegirTipo = document.getElementById('elegir-tipo-seguridad-overlay');
+  document.getElementById('btn-elegir-tipo-pin').addEventListener('click', ()=>{
+    overlayElegirTipo.style.display = 'none';
+    iniciarFlujoPin('crear', 'pin');
+  });
+  document.getElementById('btn-elegir-tipo-password').addEventListener('click', ()=>{
+    overlayElegirTipo.style.display = 'none';
+    iniciarFlujoPin('crear', 'password');
+  });
+  document.getElementById('btn-cancelar-elegir-tipo').addEventListener('click', ()=>{
+    overlayElegirTipo.style.display = 'none';
+  });
+
+  togglePinActivo.addEventListener('click', ()=>{
+    if(pinEstaActivo()){
+      iniciarFlujoPin('verificar-desactivar', tipoSeguridadGuardado());
+    }else{
+      overlayElegirTipo.style.display = 'flex';
+    }
+  });
+  btnCambiarPin.addEventListener('click', ()=> iniciarFlujoPin('verificar-cambiar', tipoSeguridadGuardado()));
+
+  // ---------- Pantalla de bloqueo al abrir la app ----------
+  // NUEVO: se revisa apenas carga el script — si el código está activo,
+  // bloquea TODO de inmediato (la capa ya tiene z-index muy alto, por
+  // encima de cualquier otra pantalla), mostrando el teclado numérico o
+  // el campo de contraseña según el tipo guardado. Se desbloquea una
+  // sola vez por carga de la app — si el usuario cambia de pantalla
+  // dentro de la misma sesión, no se le vuelve a pedir.
+  if(pinEstaActivo()){
+    pinModoActual = 'desbloquear';
+    tipoSeguridadEnCurso = tipoSeguridadGuardado();
+    pinBuffer = '';
+    document.getElementById('pin-bloqueo-subtitulo').textContent = tipoSeguridadEnCurso === 'password' ? 'Ingresa tu contraseña para continuar' : 'Ingresa tu PIN para continuar';
+    document.getElementById('pin-bloqueo-overlay').style.display = 'flex';
+    refrescarVistaPin();
+  }
 
   // ---------- Helpers compartidos de respaldo (los usa el archivo local) ----------
   // Reúne TODOS los datos guardados por la app (las mismas claves que ya
