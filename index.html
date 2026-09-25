@@ -9118,14 +9118,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   <div class="imagen-comprobante-card">
     <img id="imagen-comprobante-img" src="" alt="Comprobante de pago">
     <!-- CORREGIDO: a pedido — este modal solo tenía "Cerrar", sin ninguna
-         forma de compartir la imagen (a diferencia de "compartir-plan-
-         overlay", el modal muy similar justo debajo, que sí lo tiene).
-         Se agrega el mismo botón "Compartir", con el mismo patrón ya
-         probado: panel nativo para adjuntar el archivo directamente si
-         el navegador lo soporta, si no, descarga directa del PNG. -->
+         forma de guardar la imagen (a diferencia de "compartir-plan-
+         overlay", el modal muy similar justo debajo). Se agrega un botón
+         de descarga directa — no usa navigator.share() porque en Android
+         eso suele agregar por su cuenta una línea de atribución con el
+         enlace de la app al compartir un archivo (ver el porqué en el
+         manejador de btn-compartir-imagen-comprobante, en JS). Con la
+         descarga, el usuario adjunta la imagen él mismo donde quiera, sin
+         que el sistema le agregue nada de más. -->
     <button type="button" class="primary-button" id="btn-compartir-imagen-comprobante" style="width:100%; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:8px;">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-      Compartir
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      Descargar imagen
     </button>
     <button type="button" class="btn-outline-share" id="btn-cerrar-imagen-comprobante" style="width:100%; margin:10px 0 0;">Cerrar</button>
   </div>
@@ -20879,16 +20882,18 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(!blob){ alert('No se pudo generar la imagen. Intenta de nuevo.'); return; }
 
     const nombreArchivo = 'comprobante-pago-' + claveFechaConOffset(0) + '.png';
-    const archivo = new File([blob], nombreArchivo, { type: 'image/png' });
 
-    if(navigator.share && navigator.canShare && navigator.canShare({ files: [archivo] })){
-      try{ await navigator.share({ files: [archivo], title: 'Comprobante de pago' }); return; }
-      catch(err){
-        if(err && err.name === 'AbortError') return; // el usuario canceló a propósito
-        console.warn('navigator.share no funcionó, se usa la descarga como respaldo:', err);
-      }
-    }
-
+    // CORREGIDO: a pedido — antes intentaba primero navigator.share(),
+    // que en Android (sobre todo desde una PWA instalada) suele agregar
+    // por su cuenta una línea de atribución con el enlace de la app al
+    // compartir un archivo — algo que el sistema operativo añade por su
+    // lado, no algo que se pudiera evitar solo ajustando los parámetros
+    // que se le pasan (quitar "title" no alcanza: el propio Android
+    // puede seguir sumando esa atribución). La única forma de garantizar
+    // que se comparta SOLO la imagen, sin nada de texto ni enlaces, es
+    // descargarla directo — así el usuario la adjunta él mismo donde
+    // quiera (WhatsApp, galería, etc.), sin que el sistema le agregue
+    // nada por su cuenta.
     const url = URL.createObjectURL(blob);
     const enlace = document.createElement('a');
     enlace.href = url;
