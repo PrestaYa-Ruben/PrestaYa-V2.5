@@ -9117,7 +9117,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 <div id="imagen-comprobante-overlay" class="confirm-modal-overlay" style="display:none;">
   <div class="imagen-comprobante-card">
     <img id="imagen-comprobante-img" src="" alt="Comprobante de pago">
-    <button type="button" class="primary-button" id="btn-cerrar-imagen-comprobante" style="margin-top:14px;">Cerrar</button>
+    <!-- CORREGIDO: a pedido — este modal solo tenía "Cerrar", sin ninguna
+         forma de compartir la imagen (a diferencia de "compartir-plan-
+         overlay", el modal muy similar justo debajo, que sí lo tiene).
+         Se agrega el mismo botón "Compartir", con el mismo patrón ya
+         probado: panel nativo para adjuntar el archivo directamente si
+         el navegador lo soporta, si no, descarga directa del PNG. -->
+    <button type="button" class="primary-button" id="btn-compartir-imagen-comprobante" style="width:100%; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:8px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+      Compartir
+    </button>
+    <button type="button" class="btn-outline-share" id="btn-cerrar-imagen-comprobante" style="width:100%; margin:10px 0 0;">Cerrar</button>
   </div>
 </div>
 
@@ -20846,15 +20856,48 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // NUEVO: extraído del botón "Comprobante (imagen)" del menú, para
   // poder reutilizarlo también al mantener presionada la tarjeta (ver
   // adjuntarLongPressGenerico más abajo).
+  let canvasImagenComprobanteActual = null; // NUEVO: para que btn-compartir-imagen-comprobante pueda usar el mismo canvas ya generado
   function abrirImagenComprobanteDetallePago(){
     if(!pagoEnDetalle) return;
     const { prestamo, cuota, pago } = pagoEnDetalle;
     const canvas = generarCanvasDetallePagoPantalla(prestamo, cuota, pago);
+    canvasImagenComprobanteActual = canvas;
     imagenComprobanteImg.src = canvas.toDataURL('image/png');
     imagenComprobanteOverlay.style.display = 'flex';
   }
   // "Comprobante (imagen)" — genera y muestra la imagen con el sello de marca
   document.getElementById('btn-detalle-comprobante-imagen').addEventListener('click', abrirImagenComprobanteDetallePago);
+
+  // NUEVO: a pedido — botón "Compartir" de este mismo modal (antes solo
+  // tenía "Cerrar"). Mismo patrón ya probado en btn-compartir-plan-enviar:
+  // panel nativo con el archivo adjunto si el navegador lo soporta, si
+  // no, descarga directa del PNG (funciona incluso en un WebView básico
+  // empaquetado como APK).
+  document.getElementById('btn-compartir-imagen-comprobante').addEventListener('click', async ()=>{
+    if(!canvasImagenComprobanteActual) return;
+    const blob = await new Promise(resolve => canvasImagenComprobanteActual.toBlob(resolve, 'image/png', 1));
+    if(!blob){ alert('No se pudo generar la imagen. Intenta de nuevo.'); return; }
+
+    const nombreArchivo = 'comprobante-pago-' + claveFechaConOffset(0) + '.png';
+    const archivo = new File([blob], nombreArchivo, { type: 'image/png' });
+
+    if(navigator.share && navigator.canShare && navigator.canShare({ files: [archivo] })){
+      try{ await navigator.share({ files: [archivo], title: 'Comprobante de pago' }); return; }
+      catch(err){
+        if(err && err.name === 'AbortError') return; // el usuario canceló a propósito
+        console.warn('navigator.share no funcionó, se usa la descarga como respaldo:', err);
+      }
+    }
+
+    const url = URL.createObjectURL(blob);
+    const enlace = document.createElement('a');
+    enlace.href = url;
+    enlace.download = nombreArchivo;
+    document.body.appendChild(enlace);
+    enlace.click();
+    document.body.removeChild(enlace);
+    setTimeout(()=> URL.revokeObjectURL(url), 60000);
+  });
 
   // NUEVO: a pedido — mantener presionada la tarjeta de "Detalle del
   // Pago" abre la misma imagen compartible de arriba. Versión genérica
