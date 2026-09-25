@@ -6623,12 +6623,21 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     </div>
 
     <div class="loan-tabs">
-      <button type="button" class="loan-tab active" id="tab-cuotas" data-tab="cuotas">Cuotas (<span id="tab-cuotas-count">0</span>)</button>
+      <!-- CORREGIDO: a pedido — "Cuotas" ahora se muestra como "Todas"
+           (el id/data-tab internos se dejan igual, solo cambia el texto
+           visible, para no tocar nada que ya dependa de esos nombres). -->
+      <button type="button" class="loan-tab active" id="tab-cuotas" data-tab="cuotas">Todas (<span id="tab-cuotas-count">0</span>)</button>
+      <!-- NUEVO: a pedido — pestaña "Pendientes" entre "Todas" y
+           "Pagadas". Reutiliza la misma tarjeta/fila que ya arma cada
+           cuota en "Todas" (ver crearItemCuota), solo que aquí se
+           filtran las que todavía no están 100% pagadas. -->
+      <button type="button" class="loan-tab" id="tab-pendientes" data-tab="pendientes">Pendientes (<span id="tab-pendientes-count">0</span>)</button>
       <button type="button" class="loan-tab" id="tab-pagos" data-tab="pagos">Pagadas (<span id="tab-pagos-count">0</span>)<span class="tab-recargo-badge" id="tab-pagos-recargo-badge" style="display:none;">R <span id="tab-pagos-recargo-count">0</span></span></button>
     </div>
 
     <div class="card cuotas-pagos-card">
       <div id="cuotas-lista"></div>
+      <div id="pendientes-lista" style="display:none;"></div>
       <div id="pagos-lista" style="display:none;"></div>
     </div>
 
@@ -15365,7 +15374,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     ctxTmp.font = 'bold 24px Arial, sans-serif';
     ctxTmp.fillText(obtenerNombreNegocio(), padX, margen + 42);
     ctxTmp.font = '16px Arial, sans-serif';
-    ctxTmp.fillText('Historial de crédito' + (ocultarCodigoEnRecibos() ? '' : ' · ' + (prestamo.codigo || '')), padX, margen + 70);
+    ctxTmp.fillText('Historial' + (ocultarCodigoEnRecibos() ? '' : ' · ' + (prestamo.codigo || '')), padX, margen + 70);
 
     // ---- 4) Bloque de información principal (2 columnas) ----
     const colIzqX = padX;
@@ -16096,6 +16105,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         prestamoEnDetalle = prestamosGuardados[indice];
         renderizarTarjetaDetallePrestamo(prestamoEnDetalle);
         renderizarListaCuotas(prestamoEnDetalle);
+        renderizarListaCuotasPendientes(prestamoEnDetalle);
       }
       actualizarMoraCobradaDashboard();
       actualizarCapitalCobradoDashboard();
@@ -18090,8 +18100,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // ícono de flecha ya quitado del encabezado).
 
   const tabCuotas = document.getElementById('tab-cuotas');
+  const tabPendientes = document.getElementById('tab-pendientes');
   const tabPagos = document.getElementById('tab-pagos');
   const cuotasLista = document.getElementById('cuotas-lista');
+  const pendientesLista = document.getElementById('pendientes-lista');
   const pagosLista = document.getElementById('pagos-lista');
   const btnCompartirCronograma = document.getElementById('btn-compartir-cronograma');
   const btnEditarPrestamoDetalle = document.getElementById('btn-editar-prestamo-detalle');
@@ -18243,79 +18255,97 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }
 
   // Renderiza la lista de Cuotas (con estado, badge y acción pagar/compartir)
+  // NUEVO: extraído de renderizarListaCuotas — arma UNA fila de cuota
+  // (tarjeta con número, monto, estado y sus acciones). Se usa tanto en
+  // "Todas" como en la nueva pestaña "Pendientes", para no duplicar
+  // toda esta lógica en dos lugares.
+  function crearItemCuota(prestamo, cuota){
+    const pagada = estaCuotaPagada(prestamo, cuota.numero);
+    const vencida = !pagada && cuotaVencida(prestamo, cuota);
+    const abonadoParcial = sumaAbonadaCuota(prestamo, cuota.numero); // NUEVO
+    const esAbonada = !pagada && !vencida && abonadoParcial > 0; // NUEVO: pago parcial, aún no vencida
+    const dias = vencida ? diasDeAtraso(cuota) : 0;
+    const estadoTexto = pagada ? 'Pagada' : (vencida ? 'Vencida' : (esAbonada ? 'Abonada' : 'Pendiente'));
+    const estadoClase = pagada ? 'pagada' : (vencida ? 'vencida' : (esAbonada ? 'abonada' : 'pendiente'));
+
+    const item = document.createElement('div');
+    item.className = 'cuota-item ' + estadoClase;
+    const fechaDePago = pagada ? fechaPagoCuota(prestamo, cuota.numero) : null;
+    // NUEVO: a pedido — texto de puntualidad justo debajo de "Pago: [fecha]"
+    // en esta tarjeta (Cuotas). Reutiliza tal cual la misma función ya
+    // construida para el comprobante (calcularPuntualidadPago /
+    // textoPuntualidadPago) — nada de cálculos nuevos, solo se muestra
+    // aquí también, con azul en vez de verde para "a tiempo/anticipado".
+    let puntualidadHtml = '';
+    if(pagada){
+      const pagosDeEstaCuota = pagosDeCuota(prestamo, cuota.numero);
+      const ultimoPagoCuota = pagosDeEstaCuota[pagosDeEstaCuota.length - 1];
+      const resultadoPuntualidad = calcularPuntualidadPago(cuota, ultimoPagoCuota);
+      if(resultadoPuntualidad){
+        const colorPuntualidad = resultadoPuntualidad.tipo === 'tarde' ? 'var(--danger)' : 'var(--primary)';
+        puntualidadHtml = `<div class="cuota-puntualidad" style="color:${colorPuntualidad};">${textoPuntualidadPago(resultadoPuntualidad)}</div>`;
+      }
+    }
+    item.innerHTML = `
+      <div class="cuota-numero ${estadoClase}">${cuota.numero}</div>
+      <div class="cuota-info">
+        <div class="cuota-monto">${formatearPesos(cuota.total)}</div>
+        <div class="cuota-fecha">Vence: ${formatearFechaCorta(new Date(cuota.fechaISO))}</div>
+        ${fechaDePago ? `<div class="cuota-fecha cuota-fecha-pago">Pago: ${formatearFechaCorta(new Date(fechaDePago))}</div>` : ''}
+        ${puntualidadHtml}
+        ${esAbonada ? `<div class="cuota-dias-atraso abonada">Abonado ${formatearPesos(abonadoParcial)} de ${formatearPesos(cuota.total)}</div><div class="cuota-saldo-parcial">Saldo: ${formatearPesos(cuota.total - abonadoParcial)}</div>` : ''}
+      </div>
+      <div class="cuota-estado-col">
+        <div class="cuota-badge ${estadoClase}">${estadoTexto}</div>
+        ${vencida ? `<div class="cuota-dias-atraso">${dias} ${dias === 1 ? 'día' : 'días'} de atraso</div>` : ''}
+      </div>
+      ${pagada ? `
+      <div class="cuota-accion compartir" role="button" aria-label="Compartir comprobante">
+        ${iconoCompartirMini()}
+      </div>` : ''}
+    `;
+    if(!pagada){
+      // CORREGIDO: antes cada cuota pendiente tenía 2 iconos sueltos
+      // (pagar / más opciones), además del botón flotante "Pagar" que
+      // ya existe abajo — a pedido, se simplificó: toda la fila es
+      // tocable y abre el mismo menú de siempre (que ahora también
+      // incluye "Pagar esta cuota", para poder pagar una cuota
+      // puntual y no solo la próxima que ya cubre el botón flotante).
+      item.style.cursor = 'pointer';
+      item.addEventListener('click', ()=> abrirMenuCuotaPendiente(prestamo, cuota));
+      // Tocar el círculo del número sigue siendo un atajo directo para
+      // compartir el "Recordatorio Amistoso" de esta cuota — se queda
+      // exactamente igual, con stopPropagation() para no abrir también
+      // el menú de la fila.
+      const circuloNumero = item.querySelector('.cuota-numero');
+      circuloNumero.style.cursor = 'pointer';
+      circuloNumero.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        compartirRecordatorioCuota(prestamo, cuota);
+      });
+    }else{
+      item.querySelector('.cuota-accion.compartir').addEventListener('click', ()=>{
+        compartirComprobanteCuota(prestamo, cuota);
+      });
+    }
+    return item;
+  }
+
   function renderizarListaCuotas(prestamo){
     cuotasLista.innerHTML = '';
-    (prestamo.plan || []).forEach(cuota=>{
-      const pagada = estaCuotaPagada(prestamo, cuota.numero);
-      const vencida = !pagada && cuotaVencida(prestamo, cuota);
-      const abonadoParcial = sumaAbonadaCuota(prestamo, cuota.numero); // NUEVO
-      const esAbonada = !pagada && !vencida && abonadoParcial > 0; // NUEVO: pago parcial, aún no vencida
-      const dias = vencida ? diasDeAtraso(cuota) : 0;
-      const estadoTexto = pagada ? 'Pagada' : (vencida ? 'Vencida' : (esAbonada ? 'Abonada' : 'Pendiente'));
-      const estadoClase = pagada ? 'pagada' : (vencida ? 'vencida' : (esAbonada ? 'abonada' : 'pendiente'));
+    (prestamo.plan || []).forEach(cuota=> cuotasLista.appendChild(crearItemCuota(prestamo, cuota)));
+  }
 
-      const item = document.createElement('div');
-      item.className = 'cuota-item ' + estadoClase;
-      const fechaDePago = pagada ? fechaPagoCuota(prestamo, cuota.numero) : null;
-      // NUEVO: a pedido — texto de puntualidad justo debajo de "Pago: [fecha]"
-      // en esta tarjeta (Cuotas). Reutiliza tal cual la misma función ya
-      // construida para el comprobante (calcularPuntualidadPago /
-      // textoPuntualidadPago) — nada de cálculos nuevos, solo se muestra
-      // aquí también, con azul en vez de verde para "a tiempo/anticipado".
-      let puntualidadHtml = '';
-      if(pagada){
-        const pagosDeEstaCuota = pagosDeCuota(prestamo, cuota.numero);
-        const ultimoPagoCuota = pagosDeEstaCuota[pagosDeEstaCuota.length - 1];
-        const resultadoPuntualidad = calcularPuntualidadPago(cuota, ultimoPagoCuota);
-        if(resultadoPuntualidad){
-          const colorPuntualidad = resultadoPuntualidad.tipo === 'tarde' ? 'var(--danger)' : 'var(--primary)';
-          puntualidadHtml = `<div class="cuota-puntualidad" style="color:${colorPuntualidad};">${textoPuntualidadPago(resultadoPuntualidad)}</div>`;
-        }
-      }
-      item.innerHTML = `
-        <div class="cuota-numero ${estadoClase}">${cuota.numero}</div>
-        <div class="cuota-info">
-          <div class="cuota-monto">${formatearPesos(cuota.total)}</div>
-          <div class="cuota-fecha">Vence: ${formatearFechaCorta(new Date(cuota.fechaISO))}</div>
-          ${fechaDePago ? `<div class="cuota-fecha cuota-fecha-pago">Pago: ${formatearFechaCorta(new Date(fechaDePago))}</div>` : ''}
-          ${puntualidadHtml}
-          ${esAbonada ? `<div class="cuota-dias-atraso abonada">Abonado ${formatearPesos(abonadoParcial)} de ${formatearPesos(cuota.total)}</div><div class="cuota-saldo-parcial">Saldo: ${formatearPesos(cuota.total - abonadoParcial)}</div>` : ''}
-        </div>
-        <div class="cuota-estado-col">
-          <div class="cuota-badge ${estadoClase}">${estadoTexto}</div>
-          ${vencida ? `<div class="cuota-dias-atraso">${dias} ${dias === 1 ? 'día' : 'días'} de atraso</div>` : ''}
-        </div>
-        ${pagada ? `
-        <div class="cuota-accion compartir" role="button" aria-label="Compartir comprobante">
-          ${iconoCompartirMini()}
-        </div>` : ''}
-      `;
-      if(!pagada){
-        // CORREGIDO: antes cada cuota pendiente tenía 2 iconos sueltos
-        // (pagar / más opciones), además del botón flotante "Pagar" que
-        // ya existe abajo — a pedido, se simplificó: toda la fila es
-        // tocable y abre el mismo menú de siempre (que ahora también
-        // incluye "Pagar esta cuota", para poder pagar una cuota
-        // puntual y no solo la próxima que ya cubre el botón flotante).
-        item.style.cursor = 'pointer';
-        item.addEventListener('click', ()=> abrirMenuCuotaPendiente(prestamo, cuota));
-        // Tocar el círculo del número sigue siendo un atajo directo para
-        // compartir el "Recordatorio Amistoso" de esta cuota — se queda
-        // exactamente igual, con stopPropagation() para no abrir también
-        // el menú de la fila.
-        const circuloNumero = item.querySelector('.cuota-numero');
-        circuloNumero.style.cursor = 'pointer';
-        circuloNumero.addEventListener('click', (e)=>{
-          e.stopPropagation();
-          compartirRecordatorioCuota(prestamo, cuota);
-        });
-      }else{
-        item.querySelector('.cuota-accion.compartir').addEventListener('click', ()=>{
-          compartirComprobanteCuota(prestamo, cuota);
-        });
-      }
-      cuotasLista.appendChild(item);
-    });
+  // NUEVO: a pedido — pestaña "Pendientes", con las mismas filas de
+  // "Todas" pero filtradas a las que aún no están 100% pagadas.
+  function renderizarListaCuotasPendientes(prestamo){
+    pendientesLista.innerHTML = '';
+    const pendientes = (prestamo.plan || []).filter(cuota => !estaCuotaPagada(prestamo, cuota.numero));
+    if(pendientes.length === 0){
+      pendientesLista.innerHTML = '<div class="lista-vacia-mensaje">No hay cuotas pendientes</div>';
+      return;
+    }
+    pendientes.forEach(cuota=> pendientesLista.appendChild(crearItemCuota(prestamo, cuota)));
   }
 
   // Renderiza la lista de Pagos ya registrados (con botón de 3 puntos por pago)
@@ -18366,6 +18396,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
   function actualizarTabsPrestamo(prestamo){
     document.getElementById('tab-cuotas-count').textContent = prestamo.cuotas;
+    // NUEVO: a pedido — contador de la pestaña "Pendientes" (cuotas que
+    // todavía no están 100% pagadas, sin importar si están vencidas o
+    // con un abono parcial).
+    const cantidadPendientes = (prestamo.plan || []).filter(c => !estaCuotaPagada(prestamo, c.numero)).length;
+    document.getElementById('tab-pendientes-count').textContent = cantidadPendientes;
     // Los recargos por mora no cuentan como "pagos" en este contador (son un cobro aparte)
     const pagosSinMora = pagosDe(prestamo).filter(p => p.aplicarA !== 'mora');
     const pagosMora = pagosDe(prestamo).filter(p => p.aplicarA === 'mora');
@@ -18377,17 +18412,39 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     badgeRecargo.style.display = pagosMora.length > 0 ? 'block' : 'none';
   }
 
+  // NUEVO: a pedido — 3 pestañas ahora (Todas / Pendientes / Pagadas) en
+  // vez de 2. Cada clic marca esa pestaña como activa y muestra solo su
+  // lista, ocultando las otras 2.
   tabCuotas.addEventListener('click', ()=>{
     tabCuotas.classList.add('active');
+    tabPendientes.classList.remove('active');
     tabPagos.classList.remove('active');
     cuotasLista.style.display = 'block';
+    pendientesLista.style.display = 'none';
+    pagosLista.style.display = 'none';
+  });
+  tabPendientes.addEventListener('click', ()=>{
+    tabPendientes.classList.add('active');
+    tabCuotas.classList.remove('active');
+    tabPagos.classList.remove('active');
+    pendientesLista.style.display = 'block';
+    cuotasLista.style.display = 'none';
     pagosLista.style.display = 'none';
   });
   tabPagos.addEventListener('click', ()=>{
+    // NUEVO: a pedido — si "Pagadas" ya estaba seleccionada, tocarla de
+    // nuevo abre el Historial compartible (misma función que ya usa el
+    // botón dentro de "Más opciones"), en vez de no hacer nada.
+    if(tabPagos.classList.contains('active')){
+      abrirHistorialCompartir();
+      return;
+    }
     tabPagos.classList.add('active');
     tabCuotas.classList.remove('active');
+    tabPendientes.classList.remove('active');
     pagosLista.style.display = 'block';
     cuotasLista.style.display = 'none';
+    pendientesLista.style.display = 'none';
   });
 
   // Refresca toda la pantalla de Detalle de Préstamo con los datos más recientes
@@ -18399,6 +18456,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     renderizarTarjetaDetallePrestamo(actualizado);
     renderizarListaCuotas(actualizado);
+    renderizarListaCuotasPendientes(actualizado);
     renderizarListaPagos(actualizado);
     actualizarTabsPrestamo(actualizado);
 
@@ -19609,6 +19667,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     // Refresca todo lo que pudiera mostrar este dato
     renderizarListaCuotas(prestamo);
+    renderizarListaCuotasPendientes(prestamo);
     renderizarListaPagos(prestamo);
     actualizarTabsPrestamo(prestamo);
     renderizarTarjetaDetallePrestamo(prestamo);
@@ -21096,12 +21155,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   });
   aplicarTogglesComprobanteDesdePrestamo(); // sincroniza el estado visual desde el arranque
 
-  document.getElementById('btn-compartir-historial').addEventListener('click', ()=>{
+  // NUEVO: extraído del manejador de btn-compartir-historial, para
+  // poder reutilizarlo también al tocar la pestaña "Pagadas" estando ya
+  // seleccionada (ver tabPagos.addEventListener más abajo).
+  function abrirHistorialCompartir(){
     if(!prestamoEnDetalle) return;
     canvasHistorialActual = generarCanvasHistorialCredito(prestamoEnDetalle, clienteEnDetalle);
     compartirHistorialImg.src = canvasHistorialActual.toDataURL('image/png');
     compartirHistorialOverlay.style.display = 'flex';
-  });
+  }
+  document.getElementById('btn-compartir-historial').addEventListener('click', abrirHistorialCompartir);
 
   document.getElementById('btn-cerrar-compartir-historial').addEventListener('click', ()=>{
     compartirHistorialOverlay.style.display = 'none';
@@ -21347,6 +21410,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // Refresca la tarjeta de detalle y la lista de cuotas con el nuevo valor
     renderizarTarjetaDetallePrestamo(prestamoEnDetalle);
     renderizarListaCuotas(prestamoEnDetalle);
+    renderizarListaCuotasPendientes(prestamoEnDetalle);
     // El saldo del préstamo cambió: refresca también las listas que lo muestran
     if(typeof renderizarClientes === 'function') renderizarClientes(clientesFiltrados());
     if(typeof renderizarListaPrestamos === 'function') renderizarListaPrestamos();
