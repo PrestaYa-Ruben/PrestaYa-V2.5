@@ -20843,14 +20843,59 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     compartirComprobanteOverlay.style.display = 'flex';
   });
 
-  // "Comprobante (imagen)" — genera y muestra la imagen con el sello de marca
-  document.getElementById('btn-detalle-comprobante-imagen').addEventListener('click', ()=>{
+  // NUEVO: extraído del botón "Comprobante (imagen)" del menú, para
+  // poder reutilizarlo también al mantener presionada la tarjeta (ver
+  // adjuntarLongPressGenerico más abajo).
+  function abrirImagenComprobanteDetallePago(){
     if(!pagoEnDetalle) return;
     const { prestamo, cuota, pago } = pagoEnDetalle;
     const canvas = generarCanvasDetallePagoPantalla(prestamo, cuota, pago);
     imagenComprobanteImg.src = canvas.toDataURL('image/png');
     imagenComprobanteOverlay.style.display = 'flex';
-  });
+  }
+  // "Comprobante (imagen)" — genera y muestra la imagen con el sello de marca
+  document.getElementById('btn-detalle-comprobante-imagen').addEventListener('click', abrirImagenComprobanteDetallePago);
+
+  // NUEVO: a pedido — mantener presionada la tarjeta de "Detalle del
+  // Pago" abre la misma imagen compartible de arriba. Versión genérica
+  // del long-press que ya existe para las tarjetas de cliente (misma
+  // temporización y tolerancia de movimiento, pero con un callback
+  // cualquiera en vez de siempre abrir el menú de cliente) — no se tocó
+  // aquella función, para no arriesgar nada de lo que ya funciona ahí.
+  function adjuntarLongPressGenerico(elemento, callback){
+    let temporizador = null;
+    let activado = false;
+    let inicioX = 0, inicioY = 0;
+    const MS = 650, TOLERANCIA_PX = 10;
+
+    function cancelar(){
+      if(temporizador){ clearTimeout(temporizador); temporizador = null; }
+    }
+    elemento.addEventListener('pointerdown', (e)=>{
+      if(e.pointerType === 'mouse' && e.button !== 0) return;
+      inicioX = e.clientX;
+      inicioY = e.clientY;
+      activado = false;
+      cancelar();
+      temporizador = setTimeout(()=>{
+        activado = true;
+        if(navigator.vibrate) navigator.vibrate(12);
+        callback();
+      }, MS);
+    });
+    elemento.addEventListener('pointermove', (e)=>{
+      if(!temporizador) return;
+      if(Math.abs(e.clientX - inicioX) > TOLERANCIA_PX || Math.abs(e.clientY - inicioY) > TOLERANCIA_PX) cancelar();
+    });
+    elemento.addEventListener('pointerup', cancelar);
+    elemento.addEventListener('pointercancel', cancelar);
+    elemento.addEventListener('pointerleave', cancelar);
+    elemento.addEventListener('contextmenu', (e)=> e.preventDefault());
+    elemento.addEventListener('click', (e)=>{
+      if(activado){ e.preventDefault(); e.stopPropagation(); activado = false; }
+    }, true);
+  }
+  adjuntarLongPressGenerico(document.querySelector('#screen-detalle-pago .pago-detalle-card'), abrirImagenComprobanteDetallePago);
 
   // "Compartir como texto" (mensaje de texto con los datos del pago)
   document.getElementById('btn-detalle-compartir-texto').addEventListener('click', async ()=>{
