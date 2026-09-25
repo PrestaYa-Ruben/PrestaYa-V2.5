@@ -3250,10 +3250,13 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   justify-content:space-between;
   padding:18px 18px 14px;
   margin-bottom:6px;
-  border-bottom:1px solid var(--border);
+  /* CAMBIO: a pedido — encabezado con el mismo azul de acento que ya
+     usa el resto de la app (comprobantes, pantalla de bloqueo, etc.),
+     en vez de blanco liso. */
+  background:var(--primary);
 }
-.menu-lateral-logo{ font-size:20px; font-weight:800; color:var(--primary); }
-.menu-lateral-cerrar{ width:34px; height:34px; display:flex; align-items:center; justify-content:center; color:var(--text-secondary); flex-shrink:0; }
+.menu-lateral-logo{ font-size:20px; font-weight:800; color:#fff; } /* CORREGIDO: antes var(--primary) — sobre fondo azul ya no se vería */
+.menu-lateral-cerrar{ width:34px; height:34px; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.85); flex-shrink:0; } /* CORREGIDO: antes gris — sobre fondo azul ya no se vería bien */
 .menu-lateral-cerrar svg{ width:19px; height:19px; stroke:currentColor; }
 .menu-lateral-item{
   display:flex;
@@ -5310,6 +5313,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <div class="menu-lateral-item" id="menu-lateral-ajustes">
       <div class="icon-container gris"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>
       <span>Ajustes</span>
+    </div>
+
+    <!-- NUEVO: a pedido — acceso directo a exportar la copia de
+         seguridad, justo al final del menú lateral. Reutiliza tal cual
+         el mismo botón ya existente en Ajustes → Copia de seguridad
+         (ver su manejador en JS) — no duplica ninguna lógica, solo lo
+         dispara desde aquí también. -->
+    <div class="menu-lateral-item" id="menu-lateral-exportar-respaldo">
+      <div class="icon-container green"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></div>
+      <span>Exportar copia de seguridad</span>
     </div>
   </div>
 </div>
@@ -10378,6 +10391,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   document.getElementById('menu-lateral-ajustes').addEventListener('click', ()=>{
     cerrarMenuLateral();
     abrirAjustes();
+  });
+
+  // NUEVO: a pedido — dispara el mismo botón que ya existe en Ajustes →
+  // Copia de seguridad (btn-exportar-respaldo, más abajo), sin duplicar
+  // su lógica. Al momento del clic el script ya terminó de cargar por
+  // completo, así que ese botón y su manejador ya existen sin importar
+  // el orden en el archivo.
+  document.getElementById('menu-lateral-exportar-respaldo').addEventListener('click', ()=>{
+    cerrarMenuLateral();
+    document.getElementById('btn-exportar-respaldo').click();
   });
 
   // ==========================================================
@@ -15488,7 +15511,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           ctxTmp.fillText(String(numeroCuotaPago), col1X + col1Ancho / 2, y + 23);
         }
         ctxTmp.textAlign = 'left';
-        ctxTmp.fillText(formatearFechaHoraCorta(new Date(pago.fecha)), col2X + 10, y + 23);
+        ctxTmp.fillText(formatearFechaCorta(new Date(pago.fecha)), col2X + 10, y + 23);
         ctxTmp.fillText(nombresAplicarA[pago.aplicarA] || 'Interés y Capital', col3X + 10, y + 23);
         ctxTmp.font = 'bold 13px Arial, sans-serif';
         ctxTmp.fillText(formatearPesos(pago.monto), col4X + 10, y + 23);
@@ -20506,7 +20529,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     document.getElementById('detalle-pago-monto').textContent = formatearPesos(pago.monto);
     document.getElementById('detalle-pago-metodo').textContent = nombresMetodoPago[pago.metodoPago] || pago.metodoPago || 'Efectivo';
     document.getElementById('detalle-pago-cliente').textContent = clienteEnDetalle ? clienteEnDetalle.nombre : '—';
-    document.getElementById('detalle-pago-fecha').textContent = formatearFechaHoraCorta(new Date(pago.fecha));
+    document.getElementById('detalle-pago-fecha').textContent = formatearFechaCorta(new Date(pago.fecha));
     document.getElementById('detalle-pago-cuota').textContent =
       pago.aplicarA === 'mora' ? cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas :
       pago.aplicarA === 'abono' ? 'Abono' :
@@ -20647,7 +20670,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const filas = [];
     filas.push(['Cliente', clienteEnDetalle ? clienteEnDetalle.nombre : '—']);
     filas.push(['Monto del préstamo', formatearPesos(prestamo.valor)]);
-    filas.push(['Fecha del pago', formatearFechaHoraCorta(new Date(pago.fecha))]);
+    filas.push(['Fecha del pago', formatearFechaCorta(new Date(pago.fecha))]);
     if(obtenerReciboMostrarCuota()){
       // CORREGIDO: a pedido — ya no dice "N de Y" ni "Parcial". Ahora
       // siempre muestra cuántas cuotas quedaron 100% pagadas sobre el
