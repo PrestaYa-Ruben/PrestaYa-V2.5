@@ -24518,14 +24518,46 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // el mecanismo de popstate (ver manejarBotonAtras, definida ahí abajo
   // pero referenciada aquí porque JS "iza" las funciones nombradas).
   // ==========================================================
-  if(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App){
-    window.Capacitor.Plugins.App.addListener('backButton', ()=>{
-      // Si había algo que deshacer dentro de la app, ya se hizo — no
-      // salir. Si no (estábamos en Inicio), ahí sí se sale de la app,
-      // que es el comportamiento esperado de Android en la pantalla raíz.
-      if(!manejarBotonAtras()) window.Capacitor.Plugins.App.exitApp();
-    });
-  }
+  // CORREGIDO — a pedido, tras seguir reportándose el cierre inesperado:
+  // el registro de este listener se hacía UNA sola vez, en el mismo
+  // instante en que corre este script. Si el puente de Capacitor
+  // (window.Capacitor.Plugins.App) todavía no estaba listo en ese
+  // instante exacto (puede tardar unos milisegundos en inicializarse
+  // según el dispositivo/versión de WebView), la condición fallaba en
+  // silencio y el listener NUNCA se registraba — quedando la app
+  // completamente a merced del comportamiento nativo por defecto de
+  // Android (cerrar de una vez). Ahora se reintenta varias veces con un
+  // pequeño retraso creciente, y se detiene apenas lo logra registrar (o
+  // si ya había uno registrado, para no duplicarlo).
+  (function registrarBotonAtrasCapacitor(){
+    let yaRegistrado = false;
+    function intentar(){
+      if(yaRegistrado) return;
+      if(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App
+         && typeof window.Capacitor.Plugins.App.addListener === 'function'){
+        try{
+          window.Capacitor.Plugins.App.addListener('backButton', ()=>{
+            // Si había algo que deshacer dentro de la app, ya se hizo — no
+            // salir. Si no (estábamos en Inicio), ahí sí se sale de la app,
+            // que es el comportamiento esperado de Android en la pantalla raíz.
+            if(!manejarBotonAtras()) window.Capacitor.Plugins.App.exitApp();
+          });
+          yaRegistrado = true;
+        }catch(err){
+          console.warn('No se pudo registrar el manejador nativo de Atrás de Capacitor; se reintentará.', err);
+        }
+      }
+    }
+    intentar();
+    if(!yaRegistrado){
+      // Reintentos escalonados: justo después de que cargue todo el
+      // documento, y unos segundos más tarde por si el puente nativo
+      // tarda más en inicializarse en algunos dispositivos.
+      document.addEventListener('DOMContentLoaded', intentar);
+      window.addEventListener('load', intentar);
+      [300, 1000, 2500, 5000].forEach(ms => setTimeout(intentar, ms));
+    }
+  })();
 
   // ==========================================================
   // NUEVO — AUDITORÍA APK: integración con el botón "Atrás" físico/gesto
