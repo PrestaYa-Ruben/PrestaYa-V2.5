@@ -18915,7 +18915,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     cantidadCuotasStepper = 1;
 
     // Reiniciar el formulario
-    inputValorAbono.value = '';
+    // NUEVO: el campo "Valor" ya no queda vacío — se rellena por defecto con
+    // el valor pendiente de la cuota seleccionada (el mismo que se ve en
+    // "Valor de la Cuota"), para que el usuario no tenga que escribirlo a
+    // mano y para que "Resumen del Pago" (Interés/Capital) muestre de una
+    // vez los valores reales en vez de $0. Si el usuario quiere pagar otro
+    // monto, puede editar el campo libremente como siempre.
+    const cuotaInicialAbono = cuotasPendientesAbono[indiceCuotaAbono];
+    inputValorAbono.value = cuotaInicialAbono
+      ? formatearMiles(Math.round(pendienteDeCuota(prestamo, cuotaInicialAbono)))
+      : '';
     selectAplicarAbono.value = 'capital_interes';
     selectMetodoPago.value = 'efectivo';
     inputFechaAbono.value = claveFechaConOffset(0);
