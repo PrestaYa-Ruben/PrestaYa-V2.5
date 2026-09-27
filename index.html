@@ -1299,6 +1299,22 @@ body.tinte-dashboard-activo .stat-card.tinte-rojo .icon-container{ background:no
   box-shadow:0 0 0 3px var(--primary-light);
 }
 
+/* NUEVO: a pedido — en Nuevo Cliente (y Editar Cliente, que reutiliza
+   este mismo formulario) los bordes de los campos se marcan un poco más
+   para que se distingan mejor. Se deja el resto de formularios de la
+   app (Nuevo Préstamo, Agregar Abono, Ajustes, etc.) exactamente igual
+   que antes, ya que todos comparten la misma clase .field-input. */
+#screen-nuevo-cliente .field-input{
+  border-width:2px;
+  border-color:#B7C0D1;
+}
+body.modo-oscuro #screen-nuevo-cliente .field-input{
+  border-color:#4B5468;
+}
+#screen-nuevo-cliente .field-input:focus{
+  border-color:var(--primary);
+}
+
 /* CAMBIO: a pedido — se reemplaza el pulso ámbar por un color degradado
    permanente y distinto en cada uno de los 3 campos (Valor / Aplicar
    abono a / Método de Pago en Agregar Abono), en vez de una animación.
@@ -1566,6 +1582,73 @@ body.tinte-dashboard-activo .stat-card.tinte-rojo .icon-container{ background:no
   display:flex;
   align-items:flex-end;
   gap:10px;
+}
+
+/* NUEVO: fila de 2 campos lado a lado (a pedido, se usa para separar
+   Teléfono / Teléfono de WhatsApp en Nuevo Cliente — genérica, se puede
+   reutilizar donde haga falta). Cada .form-field hijo lleva su propio
+   "flex:1" inline, igual que ya se hace en .fecha-nota-row.
+   CORREGIDO: a pedido — con letra "Grande" (Ajustes → Apariencia) o en
+   pantallas angostas, los campos se salían/desbordaban hacia el lateral
+   derecho en vez de encogerse. Es un comportamiento clásico de flexbox:
+   por defecto un elemento flex no se encoge más allá del ancho de su
+   contenido (min-width:auto), así que el <input> lo empujaba más ancho
+   que su columna. "min-width:0" en cada columna corrige eso — ahora sí
+   se ajustan al espacio real disponible sin desbordarse. */
+.fila-doble-campo{
+  display:flex;
+  gap:10px;
+}
+.fila-doble-campo > .form-field{
+  min-width:0;
+}
+
+/* NUEVO: tarjeta "Pegar datos" en Nuevo Cliente — a pedido, permite
+   pegar el mensaje de texto que el cliente envía con sus propios datos
+   y que el sistema intente rellenar los campos del formulario solo. */
+.tarjeta-pegar-datos{
+  padding:16px;
+  margin-bottom:6px;
+}
+.tarjeta-pegar-datos-header{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-bottom:6px;
+}
+.tarjeta-pegar-datos-header svg{ width:21px; height:21px; stroke:var(--warning); flex-shrink:0; }
+.tarjeta-pegar-datos-header span{ font-size:15.5px; font-weight:700; color:var(--text); }
+.tarjeta-pegar-datos-desc{
+  font-size:13px;
+  color:var(--text-secondary);
+  line-height:1.45;
+  margin-bottom:12px;
+}
+.tarjeta-pegar-datos textarea{ margin-bottom:12px; }
+.tarjeta-pegar-datos-botones{
+  display:flex;
+  gap:10px;
+}
+.tarjeta-pegar-datos-botones button{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  padding:13px 14px;
+  border-radius:var(--radius-md);
+  font-size:14px;
+  font-weight:600;
+}
+.tarjeta-pegar-datos-botones button svg{ width:17px; height:17px; stroke:currentColor; flex-shrink:0; }
+.btn-detectar-datos-cliente{
+  background:var(--primary);
+  color:#fff;
+}
+.btn-limpiar-pegar-datos-cliente{
+  background:var(--background);
+  color:var(--text);
+  border:1px solid var(--border);
 }
 .add-note-btn{
   display:flex;
@@ -4238,6 +4321,13 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   stroke:none;
 }
 
+/* NUEVO: ícono de la fila "Teléfono de WhatsApp" — mismo verde que ya
+   usa el enlace "Mensaje", relleno (no trazo) igual que el ícono oficial. */
+.detail-row-icon-whatsapp{
+  stroke:none;
+  fill:var(--success);
+}
+
 .client-since{
   text-align:right;
   font-size:13px;
@@ -6135,6 +6225,28 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   <!-- FORMULARIO -->
   <form class="form-section" id="form-nuevo-cliente">
 
+    <!-- NUEVO: a pedido — pegar el mensaje de texto que envía el cliente
+         con sus propios datos (Nombre, Cédula, Teléfono, etc.) y que el
+         sistema intente detectarlos y rellenar los campos de abajo solo.
+         Es un atajo opcional: si algo no se detecta, ese campo
+         simplemente queda para llenarlo a mano como siempre — no impide
+         seguir usando el formulario de forma normal. -->
+    <div class="card tarjeta-pegar-datos">
+      <div class="tarjeta-pegar-datos-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.5h1a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v0a2 2 0 0 1 2-2z" fill="none"></path><path d="M9 4H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"></path></svg>
+        <span>Pegar datos</span>
+      </div>
+      <div class="tarjeta-pegar-datos-desc">Copia el mensaje del cliente (Nombre, Cédula, Teléfono, etc.) y pégalo aquí. El sistema llena los campos automáticamente.</div>
+      <textarea class="field-input field-textarea" id="input-pegar-datos-cliente" rows="4" placeholder="Pega aquí el texto copiado..."></textarea>
+      <div class="tarjeta-pegar-datos-botones">
+        <button type="button" class="btn-detectar-datos-cliente" id="btn-detectar-datos-cliente">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 20 6"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          Detectar datos
+        </button>
+        <button type="button" class="btn-limpiar-pegar-datos-cliente" id="btn-limpiar-pegar-datos-cliente">Limpiar</button>
+      </div>
+    </div>
+
     <div class="avatar-preview">
       <div class="avatar-circle avatar-circle-lg">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
@@ -6146,9 +6258,18 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <input class="field-input" id="input-nombre" type="text" placeholder="Toca y escribe" required>
     </div>
 
-    <div class="form-field">
-      <label class="field-label" for="input-telefono">Teléfono</label>
-      <input class="field-input" id="input-telefono" type="tel" placeholder="Toca y escribe" required>
+    <!-- CORREGIDO: a pedido — la fila de Teléfono se divide en 2 columnas,
+         para poder registrar por separado el teléfono normal y el
+         teléfono de WhatsApp del cliente (a veces son distintos). -->
+    <div class="fila-doble-campo">
+      <div class="form-field" style="flex:1;">
+        <label class="field-label" for="input-telefono">Teléfono</label>
+        <input class="field-input" id="input-telefono" type="tel" placeholder="Toca y escribe" required>
+      </div>
+      <div class="form-field" style="flex:1;">
+        <label class="field-label" for="input-telefono-whatsapp">Teléfono de WhatsApp</label>
+        <input class="field-input" id="input-telefono-whatsapp" type="tel" placeholder="Toca y escribe">
+      </div>
     </div>
 
     <div class="form-field">
@@ -6260,6 +6381,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.79 14.02c-.24.68-1.4 1.3-1.93 1.38-.49.08-1.11.11-1.79-.11-.41-.13-.94-.3-1.62-.6-2.85-1.23-4.71-4.1-4.85-4.29-.14-.19-1.16-1.54-1.16-2.94s.72-2.09.98-2.38c.24-.27.53-.33.71-.33.18 0 .35 0 .5.01.16.01.38-.06.59.45.24.58.81 2 .88 2.14.07.14.12.31.02.5-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.29.75 1.24 1.62 2.01 1.11.99 2.05 1.3 2.34 1.44.29.15.46.13.63-.05.17-.19.72-.84.92-1.13.19-.29.38-.24.63-.14.26.1 1.65.78 1.93.92.29.15.48.22.55.34.07.13.07.71-.17 1.39z"></path></svg>
             Mensaje
           </a>
+        </div>
+
+        <!-- NUEVO: solo se muestra si el cliente tiene un teléfono de
+             WhatsApp registrado (distinto del teléfono normal de arriba). -->
+        <div class="detail-row" id="fila-telefono-whatsapp" style="display:none;">
+          <svg class="detail-row-icon detail-row-icon-whatsapp" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.79 14.02c-.24.68-1.4 1.3-1.93 1.38-.49.08-1.11.11-1.79-.11-.41-.13-.94-.3-1.62-.6-2.85-1.23-4.71-4.1-4.85-4.29-.14-.19-1.16-1.54-1.16-2.94s.72-2.09.98-2.38c.24-.27.53-.33.71-.33.18 0 .35 0 .5.01.16.01.38-.06.59.45.24.58.81 2 .88 2.14.07.14.12.31.02.5-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.29.75 1.24 1.62 2.01 1.11.99 2.05 1.3 2.34 1.44.29.15.46.13.63-.05.17-.19.72-.84.92-1.13.19-.29.38-.24.63-.14.26.1 1.65.78 1.93.92.29.15.48.22.55.34.07.13.07.71-.17 1.39z"></path></svg>
+          <span class="detail-row-value" id="detalle-telefono-whatsapp">--</span>
         </div>
 
         <div class="detail-row" id="fila-documento">
@@ -14043,6 +14171,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     document.getElementById('input-nombre').value = cliente.nombre || '';
     document.getElementById('input-telefono').value = cliente.telefono || '';
+    document.getElementById('input-telefono-whatsapp').value = cliente.telefonoWhatsapp || ''; // NUEVO
     document.getElementById('input-documento').value = cliente.documento || '';
     poblarSelectRutas(cliente.ruta || ''); // NUEVO: preselecciona la ruta ya asignada
     document.getElementById('input-direccion').value = cliente.direccion || '';
@@ -14073,6 +14202,170 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     this.value = formatearMiles(this.value);
   });
 
+  // ==========================================================
+  // NUEVO — a pedido: "Pegar datos". Intenta detectar Nombre, Cédula,
+  // Teléfono, Teléfono de WhatsApp, Dirección y Notas dentro de un texto
+  // pegado (ej. el mensaje que el propio cliente envía por WhatsApp con
+  // sus datos) y rellenar los campos del formulario automáticamente.
+  // Es solo una ayuda opcional: nunca borra ni bloquea un campo que no
+  // logra detectar — ese queda igual para llenarlo a mano como siempre.
+  // Primero busca líneas con etiqueta explícita ("Nombre: Juan Pérez"),
+  // y si no encuentra algo así, recurre a heurísticas de respaldo
+  // (números sueltos, palabras típicas de una dirección, etc.) — no es
+  // infalible con cualquier texto, pero cubre los formatos más comunes.
+  // ==========================================================
+  function detectarDatosClientePegados(texto){
+    const resultado = {};
+    if(!texto || !texto.trim()) return resultado;
+
+    // CORREGIDO: a pedido — se refuerza la detección para que reconozca más
+    // formatos reales de mensajes (viñetas "- ", numeración "1)", negrita de
+    // WhatsApp con asteriscos "*Nombre:*", más sinónimos por campo, y el
+    // caso de la etiqueta sola en una línea con el valor en la línea de
+    // abajo). El objetivo sigue siendo el mismo: quedarse SOLO con el dato,
+    // nunca con la palabra de la etiqueta.
+    const lineas = texto.split(/\r?\n/)
+      .map(l => l
+        .replace(/[*_~`]/g, '')              // quita negrita/cursiva/tachado de WhatsApp
+        .replace(/^[\s\-–—•‣▪●○◦►»]+/, '')    // quita viñetas/guiones al inicio
+        .replace(/^\d+[\.\)]\s*/, '')         // quita numeración tipo "1. " o "1) "
+        .trim()
+      )
+      .filter(Boolean);
+    const usadas = new Set(); // índices de línea ya asignados a un campo
+
+    // ---- 1) Búsqueda por etiqueta explícita ("Campo: valor"), con
+    // bastantes sinónimos por campo — cubre tanto "Cédula:" como "CC:",
+    // "Documento:", "Nro documento:", etc. ----
+    const patrones = {
+      nombre: /^(nombres?(\s+y\s+apellidos?)?(\s+completos?)?|cliente)\s*[:\-]\s*(.*)$/i,
+      documento: /^(c[eé]dula(\s+de\s+ciudadan[ií]a)?|documento|(n[uú]mero|n[roº]\.?)\s+de\s+documento|cc|dni|nit|identificaci[oó]n)\s*[:\-]\s*(.*)$/i,
+      whatsapp: /^(whats\s?app|wsp|n[uú]mero\s+de\s+whats\s?app)\s*[:\-]\s*(.*)$/i,
+      telefono: /^(tel[eé]fono|celular|cel\.?|m[oó]vil|contacto|(n[uú]mero|n[roº]\.?)(\s+de\s+contacto)?|tel\.?)\s*[:\-]\s*(.*)$/i,
+      direccion: /^(direcci[oó]n|dir\.?|domicilio)\s*[:\-]\s*(.*)$/i,
+      notas: /^(notas?|observaci[oó]n(es)?|comentarios?)\s*[:\-]\s*(.*)$/i
+    };
+    lineas.forEach((linea, i)=>{
+      if(usadas.has(i)) return;
+      for(const campo in patrones){
+        const m = linea.match(patrones[campo]);
+        if(m){
+          let valor = m[m.length - 1].trim();
+          usadas.add(i);
+          // CORREGIDO: si la etiqueta va sola ("Nombre:") y el valor real
+          // quedó en la línea siguiente, lo toma de ahí — pero nunca si esa
+          // línea siguiente es a su vez OTRA etiqueta (ej. "Nombre:" seguido
+          // directo de "Cédula: 123", sin que el cliente haya escrito su
+          // nombre), para no confundir una etiqueta vacía con un dato.
+          if(!valor && i + 1 < lineas.length && !usadas.has(i + 1)){
+            const siguienteEsEtiqueta = Object.values(patrones).some(p => p.test(lineas[i + 1]));
+            if(!siguienteEsEtiqueta){
+              valor = lineas[i + 1].trim();
+              usadas.add(i + 1);
+            }
+          }
+          if(valor && !resultado[campo]) resultado[campo] = valor;
+          return;
+        }
+      }
+    });
+
+    // ---- 2) Números sueltos (sin etiqueta) — respaldo para teléfono/cédula ----
+    if(!resultado.telefono || !resultado.documento){
+      const numerosEncontrados = [];
+      lineas.forEach((linea, i)=>{
+        if(usadas.has(i)) return;
+        const coincidencias = linea.match(/(?:\+?57\s?)?(?:\(\d{1,4}\)[\s\-]?)?\d[\d\s\-\.]{5,14}\d/g) || [];
+        coincidencias.forEach(c=>{
+          let soloDigitos = c.replace(/[^\d]/g, '');
+          if(soloDigitos.length === 12 && soloDigitos.startsWith('57')) soloDigitos = soloDigitos.slice(2);
+          if(soloDigitos.length >= 6 && soloDigitos.length <= 10){
+            numerosEncontrados.push({ valor: soloDigitos, linea: i });
+          }
+        });
+      });
+
+      // Prioriza como teléfono el que "parece celular colombiano" (10 dígitos, empieza en 3)
+      const candidatoTelefono = !resultado.telefono
+        ? (numerosEncontrados.find(n => n.valor.length === 10 && n.valor.startsWith('3'))
+          || numerosEncontrados.find(n => n.valor.length === 10)
+          || numerosEncontrados[0])
+        : null;
+
+      if(candidatoTelefono){
+        resultado.telefono = candidatoTelefono.valor;
+        usadas.add(candidatoTelefono.linea);
+      }
+      if(!resultado.documento){
+        const candidatoDocumento = numerosEncontrados.find(n => n !== candidatoTelefono);
+        if(candidatoDocumento) resultado.documento = candidatoDocumento.valor;
+      }
+    }
+
+    // ---- 3) Nombre — primero frases conversacionales ("mi nombre es...",
+    // "me llamo...", "soy..."), y si no aparece ninguna, por posición
+    // (ignorando saludos típicos como "Hola, buenas") ----
+    if(!resultado.nombre){
+      const patronNombreConversacional = /\b(?:mi nombre es|me llamo|habla)\s+([a-záéíóúñ\s]{3,60})|^\s*soy\s+([a-záéíóúñ\s]{3,60})/i;
+      for(let i = 0; i < lineas.length; i++){
+        if(usadas.has(i)) continue;
+        const m = lineas[i].match(patronNombreConversacional);
+        if(m){
+          resultado.nombre = (m[1] || m[2]).trim().replace(/[.,;].*$/, '').trim();
+          usadas.add(i);
+          break;
+        }
+      }
+    }
+    if(!resultado.nombre){
+      const palabrasSaludo = /\b(hola|buenas|buenos\s+d[ií]as|buenas\s+tardes|buenas\s+noches|cordial\s+saludo|le\s+escribe|un\s+gusto|c[oó]mo\s+est[aá]|espero\s+se\s+encuentre|por\s+medio\s+de)\b/i;
+      const idx = lineas.findIndex((linea, i)=>
+        !usadas.has(i) &&
+        /[a-záéíóúñ]/i.test(linea) &&
+        !/\d{4,}/.test(linea) &&
+        linea.length <= 60 &&
+        !palabrasSaludo.test(linea)
+      );
+      if(idx !== -1){ resultado.nombre = lineas[idx]; usadas.add(idx); }
+    }
+
+    // ---- 4) Dirección por palabras clave, si no se encontró por etiqueta ----
+    if(!resultado.direccion){
+      const idx = lineas.findIndex((linea, i)=>
+        !usadas.has(i) &&
+        /\b(calle|carrera|avenida|diagonal|transversal|cra|cll|kra|klr|av\.?|manzana|mz|barrio|apto|apartamento|casa)\b/i.test(linea)
+      );
+      if(idx !== -1) resultado.direccion = lineas[idx];
+    }
+
+    return resultado;
+  }
+
+  const inputPegarDatosCliente = document.getElementById('input-pegar-datos-cliente');
+  const btnDetectarDatosCliente = document.getElementById('btn-detectar-datos-cliente');
+  const btnLimpiarPegarDatosCliente = document.getElementById('btn-limpiar-pegar-datos-cliente');
+
+  btnDetectarDatosCliente.addEventListener('click', ()=>{
+    const detectado = detectarDatosClientePegados(inputPegarDatosCliente.value);
+
+    if(Object.keys(detectado).length === 0){
+      alert('No se pudo detectar ningún dato en el texto pegado. Puedes llenar los campos manualmente.');
+      return;
+    }
+
+    if(detectado.nombre) document.getElementById('input-nombre').value = detectado.nombre;
+    if(detectado.telefono) document.getElementById('input-telefono').value = detectado.telefono;
+    if(detectado.whatsapp) document.getElementById('input-telefono-whatsapp').value = detectado.whatsapp;
+    if(detectado.documento) document.getElementById('input-documento').value = formatearMiles(detectado.documento);
+    if(detectado.direccion) document.getElementById('input-direccion').value = detectado.direccion;
+    if(detectado.notas) document.getElementById('input-notas').value = detectado.notas;
+  });
+
+  btnLimpiarPegarDatosCliente.addEventListener('click', ()=>{
+    inputPegarDatosCliente.value = '';
+    inputPegarDatosCliente.focus();
+  });
+
   // NUEVO: desplegable "Referencia" — mismo mecanismo que ya usa el perfil
   // del cliente (max-height animado), aquí abre/cierra los 4 campos.
   const referenciaToggle = document.getElementById('referencia-toggle');
@@ -14098,6 +14391,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   function guardarClienteDesdeFormulario(){
     const inputNombre = document.getElementById('input-nombre');
     const inputTelefono = document.getElementById('input-telefono');
+    const inputTelefonoWhatsapp = document.getElementById('input-telefono-whatsapp'); // NUEVO
     const inputDocumento = document.getElementById('input-documento');
     const selectRuta = document.getElementById('select-ruta-cliente');
     const inputDireccion = document.getElementById('input-direccion');
@@ -14105,6 +14399,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     const nombre = inputNombre.value.trim();
     const telefono = inputTelefono.value.trim();
+    const telefonoWhatsapp = inputTelefonoWhatsapp.value.trim(); // NUEVO
     const documento = inputDocumento.value.trim();
     const ruta = selectRuta ? selectRuta.value : ''; // NUEVO: ruta asignada (puede quedar "Sin asignar" = '')
     const direccion = inputDireccion.value.trim();
@@ -14135,14 +14430,14 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       if(indice !== -1){
         clientesGuardados[indice] = {
           ...clientesGuardados[indice],
-          nombre, telefono, documento, ruta, direccion, notas, referencia
+          nombre, telefono, telefonoWhatsapp, documento, ruta, direccion, notas, referencia
         };
       }
     }else{
       // ---- Modo creación: agrega un cliente nuevo al inicio ----
       clientesGuardados.unshift({
         id: Date.now(),
-        nombre, telefono, documento, ruta, direccion, notas, referencia
+        nombre, telefono, telefonoWhatsapp, documento, ruta, direccion, notas, referencia
       });
     }
 
@@ -14271,9 +14566,25 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     });
     renderizarPrestamosCliente(cliente.id);
 
-    // "Mensaje" funcional: abre un chat de WhatsApp con el número registrado del cliente
-    if(cliente.telefono && cliente.telefono.trim()){
-      const numeroLimpio = cliente.telefono.replace(/[^\d]/g, '');
+    // NUEVO: fila "Teléfono de WhatsApp" — solo se muestra si el cliente
+    // tiene uno registrado (distinto del teléfono normal de arriba).
+    const filaTelefonoWhatsapp = document.getElementById('fila-telefono-whatsapp');
+    if(cliente.telefonoWhatsapp && cliente.telefonoWhatsapp.trim()){
+      document.getElementById('detalle-telefono-whatsapp').textContent = cliente.telefonoWhatsapp;
+      filaTelefonoWhatsapp.style.display = 'flex';
+    }else{
+      filaTelefonoWhatsapp.style.display = 'none';
+    }
+
+    // "Mensaje" funcional: abre un chat de WhatsApp con el número registrado
+    // del cliente. CORREGIDO: a pedido — ahora prioriza el "Teléfono de
+    // WhatsApp" si el cliente tiene uno registrado (por si es distinto del
+    // teléfono normal); si no lo tiene, sigue usando el teléfono de siempre,
+    // exactamente como antes.
+    const numeroParaMensaje = (cliente.telefonoWhatsapp && cliente.telefonoWhatsapp.trim())
+      || (cliente.telefono && cliente.telefono.trim());
+    if(numeroParaMensaje){
+      const numeroLimpio = numeroParaMensaje.replace(/[^\d]/g, '');
       linkMensaje.href = 'https://wa.me/' + numeroLimpio;
       linkMensaje.style.display = 'flex';
     }else{
