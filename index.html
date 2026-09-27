@@ -3961,9 +3961,10 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .movimiento-caja-eliminar svg{ width:18px; height:18px; stroke:currentColor; }
 
 /* ==========================================================
-   NUEVO — Apertura y Cierre de Caja (corte diario de EFECTIVO físico,
-   independiente de "Caja disponible" del Centro Financiero, que mezcla
-   efectivo y transferencias — ver calcularMovimientosEfectivoDelDia()).
+   NUEVO — Apertura y Cierre de Caja (turnos libres, se puede abrir y
+   cerrar varias veces al día; el total combina efectivo + transferencias
+   — ver calcularMovimientosCajaDelDia()). Independiente de "Caja
+   disponible" del Centro Financiero.
    ========================================================== */
 .cc-hero-valor{
   font-size:30px;
@@ -7764,7 +7765,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
   <section class="detail-body">
 
-    <!-- ESTADO 1: aún no se abrió caja hoy -->
+    <!-- ESTADO 1: no hay ningún corte abierto en este momento -->
     <div id="corte-caja-sin-abrir" style="display:none;">
       <div class="card" style="padding:20px 18px; text-align:center;">
         <div class="avatar-preview" style="padding:0 0 6px;">
@@ -7772,25 +7773,25 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01"></path><path d="M18 12h.01"></path></svg>
           </div>
         </div>
-        <div class="section-title" style="margin-bottom:6px;">Todavía no abres caja hoy</div>
+        <div class="section-title" style="margin-bottom:6px;">No tienes caja abierta</div>
         <div style="font-size:13px; color:var(--text-secondary); margin-bottom:18px; line-height:1.4;">
-          Escribe con cuánto efectivo arrancas el día. A partir de ahí, la app calcula sola cuánto deberías tener a la hora de cerrar.
+          Escribe con cuánto arrancas este turno (efectivo + lo que ya tengas). Puedes abrir y cerrar caja las veces que necesites en el mismo día.
         </div>
         <div class="form-field" style="text-align:left;">
-          <label class="field-label" for="input-monto-apertura-caja">Monto de apertura (efectivo)</label>
+          <label class="field-label" for="input-monto-apertura-caja">Monto de apertura</label>
           <input class="field-input" id="input-monto-apertura-caja" type="text" inputmode="numeric" placeholder="$ 0">
         </div>
         <button type="button" class="primary-button" id="btn-abrir-caja" style="width:100%; margin-top:14px;">Abrir caja</button>
       </div>
     </div>
 
-    <!-- ESTADO 2: caja abierta hoy, aún sin cerrar -->
+    <!-- ESTADO 2: hay un corte abierto (puede ser el 1°, 2° o 3° del día) -->
     <div id="corte-caja-abierta" style="display:none;">
       <div class="card" style="padding:22px 18px; position:relative;">
-        <button type="button" class="info-tarjeta-btn" data-info-titulo="Cómo se calcula" data-info-texto="Solo cuenta dinero en EFECTIVO: parte del monto de apertura, suma los abonos cobrados en efectivo y lo aportado a capital, y resta los préstamos entregados, los gastos y los retiros del día. Los pagos por transferencia, Nequi u otro medio digital no afectan este cálculo — no son billetes que debas tener en la mano.">
+        <button type="button" class="info-tarjeta-btn" data-info-titulo="Cómo se calcula" data-info-texto="Parte del monto de apertura, suma TODO lo que entró (abonos de clientes por cualquier medio — efectivo, transferencia, Nequi, etc. — más aportes de capital) y resta lo que salió (préstamos entregados, gastos, retiros y retiros de capital) desde que abriste este turno. Si ya cerraste caja antes hoy mismo, solo cuenta lo nuevo desde ese cierre, sin duplicar nada.">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
         </button>
-        <div class="loan-detail-label" style="text-align:center;">Deberías tener en efectivo ahora</div>
+        <div class="loan-detail-label" style="text-align:center;">Deberías tener ahora</div>
         <div class="cc-hero-valor" id="cc-esperado-ahora">$0</div>
         <div class="cc-hero-sub" id="cc-apertura-hora-texto">Caja abierta —</div>
 
@@ -7800,11 +7801,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
             <span class="cc-resumen-valor" id="cc-apertura-monto">$0</span>
           </div>
           <div class="cc-resumen-fila">
-            <span class="cc-resumen-label">Entradas en efectivo (hoy)</span>
+            <span class="cc-resumen-label">Entradas de este turno</span>
             <span class="cc-resumen-valor entrada" id="cc-entradas-efectivo">+$0</span>
           </div>
           <div class="cc-resumen-fila">
-            <span class="cc-resumen-label">Salidas en efectivo (hoy)</span>
+            <span class="cc-resumen-label">Salidas de este turno</span>
             <span class="cc-resumen-valor salida" id="cc-salidas-efectivo">-$0</span>
           </div>
         </div>
@@ -7814,7 +7815,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <!-- Sub-formulario de cierre, oculto hasta tocar "Cerrar caja" -->
         <div class="cc-form-cierre" id="cc-form-cierre" style="display:none;">
           <div class="form-field" style="text-align:left;">
-            <label class="field-label" for="input-monto-contado-caja">¿Cuánto efectivo contaste?</label>
+            <label class="field-label" for="input-monto-contado-caja">¿Cuánto contaste en total?</label>
             <input class="field-input" id="input-monto-contado-caja" type="text" inputmode="numeric" placeholder="$ 0">
           </div>
           <button type="button" class="primary-button" id="btn-confirmar-cierre-caja" style="width:100%; margin-top:12px;">Confirmar cierre</button>
@@ -7824,32 +7825,15 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       </div>
     </div>
 
-    <!-- ESTADO 3: caja ya cerrada hoy (resumen de solo lectura) -->
-    <div id="corte-caja-cerrada-hoy" style="display:none;">
-      <div class="card" style="padding:20px 18px;">
-        <div class="section-title" style="margin-bottom:4px;">Cierre de hoy</div>
-        <div style="font-size:12.5px; color:var(--text-secondary);" id="cc-cerrada-horas-texto">—</div>
-        <div id="cc-veredicto-hoy"></div>
-        <div style="margin-top:14px;">
-          <div class="cc-resumen-fila">
-            <span class="cc-resumen-label">Monto de apertura</span>
-            <span class="cc-resumen-valor" id="cc-cerrada-apertura">$0</span>
-          </div>
-          <div class="cc-resumen-fila">
-            <span class="cc-resumen-label">Esperado al cierre</span>
-            <span class="cc-resumen-valor" id="cc-cerrada-esperado">$0</span>
-          </div>
-          <div class="cc-resumen-fila">
-            <span class="cc-resumen-label">Contado</span>
-            <span class="cc-resumen-valor" id="cc-cerrada-contado">$0</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Historial de cortes anteriores -->
+    <!-- Historial de cortes anteriores, con calendario para buscar por fecha -->
     <div style="margin-top:22px;">
       <div class="section-title" style="margin-bottom:12px;">Historial de cortes</div>
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:14px;">
+        <div class="form-field" style="flex:1;">
+          <input class="field-input" id="input-filtro-historial-caja" type="date" placeholder="Buscar por fecha">
+        </div>
+        <button type="button" class="btn-limpiar-pegar-datos-cliente" id="btn-ver-todos-historial-caja" style="display:none; white-space:nowrap;">Ver todos</button>
+      </div>
       <div id="lista-historial-cortes-caja"></div>
     </div>
 
@@ -25023,18 +25007,23 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   buscadorMovimientosNegocio.addEventListener('input', renderizarMovimientosNegocio);
 
   // ==========================================================
-  // NUEVO — Apertura y Cierre de Caja: corte diario de EFECTIVO físico.
-  // Totalmente independiente de calcularCentroFinanciero()/cajaDisponible
-  // (esas fórmulas NO se tocan, siguen mezclando efectivo + transferencias
-  // tal cual estaban). Este corte solo cuenta billetes reales:
-  //   - Abonos de clientes: solo los cobrados con metodoPago 'efectivo'
-  //     (transferencia/Nequi/Bancolombia/Davivienda quedan afuera).
-  //   - Préstamos entregados, gastos, retiros y aportes/retiros de
-  //     capital: la app todavía no tiene un "medio" propio para estos
-  //     (siempre se asumen en efectivo, igual que en el resto de la app
-  //     — por ejemplo Centro Financiero tampoco los separa). Si en el
-  //     futuro alguno de estos se paga por transferencia, se podría
-  //     agregar ese campo más adelante sin romper este corte.
+  // NUEVO — Apertura y Cierre de Caja. Totalmente independiente de
+  // calcularCentroFinanciero()/cajaDisponible (esas fórmulas NO se
+  // tocan). Este corte junta en un solo total TODO lo que entra
+  // (abonos de clientes, sin importar el método de pago — efectivo,
+  // transferencia, Nequi, etc. — más aportes de capital) y todo lo que
+  // sale (préstamos entregados, gastos, retiros y retiros de capital).
+  //
+  // CORREGIDO: a pedido — ya no es "un corte por día". Se puede abrir y
+  // cerrar caja las veces que haga falta en el mismo día (turnos). Como
+  // los abonos/movimientos solo guardan la FECHA (sin hora exacta), no
+  // hay forma de saber cuáles pasaron durante el turno 1 y cuáles en el
+  // turno 2 mirando cada uno por separado. La solución: cada corte que
+  // se cierra guarda una "fotografía" del acumulado del día completo
+  // hasta ese instante (entradasCumulativasAlCierre/salidas...). El
+  // siguiente corte del mismo día resta esa fotografía del acumulado
+  // actual, y así solo se queda con lo nuevo desde el cierre anterior
+  // — sin duplicar ni perder nada entre turnos.
   // ==========================================================
   const CORTES_CAJA_KEY = 'prestapp_cortes_caja';
 
@@ -25047,17 +25036,18 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   function guardarCortesCajaStorage(lista){
     localStorage.setItem(CORTES_CAJA_KEY, JSON.stringify(lista));
   }
-  let cortesCajaGuardados = cargarCortesCaja(); // [{id, fecha:'YYYY-MM-DD', horaApertura, montoApertura, horaCierre, montoEsperado, montoContado, diferencia, estado:'abierta'|'cerrada'}]
+  let cortesCajaGuardados = cargarCortesCaja(); // [{id, fecha:'YYYY-MM-DD', horaApertura, montoApertura, horaCierre, montoEsperado, montoContado, diferencia, entradasAsignadas, salidasAsignadas, entradasCumulativasAlCierre, salidasCumulativasAlCierre, estado:'abierta'|'cerrada'}]
 
-  // Suma, para un día calendario puntual (clave 'YYYY-MM-DD' LOCAL), todo
-  // lo que entra y sale SOLO en efectivo.
-  function calcularMovimientosEfectivoDelDia(fechaClave){
+  // Suma, para un día calendario puntual (clave 'YYYY-MM-DD' LOCAL), TODO
+  // lo que entra y sale — sin distinguir método de pago (a pedido: el
+  // total combina efectivo + transferencias + cualquier otro medio).
+  function calcularMovimientosCajaDelDia(fechaClave){
     let entradas = 0, salidas = 0;
 
     prestamosGuardados.forEach(prestamo=>{
       pagosDe(prestamo).forEach(pago=>{
         if(claveFechaLocal(new Date(pago.fecha)) !== fechaClave) return;
-        if((pago.metodoPago || 'efectivo') === 'efectivo') entradas += (pago.monto || 0);
+        entradas += (pago.monto || 0);
       });
       if(prestamo.fecha === fechaClave){
         salidas += (prestamo.valor || 0);
@@ -25073,9 +25063,43 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     return { entradas, salidas };
   }
 
-  function corteCajaDeHoy(){
-    const hoy = claveFechaConOffset(0);
-    return cortesCajaGuardados.find(c => c.fecha === hoy) || null;
+  function corteAbiertoActual(){
+    return cortesCajaGuardados.find(c => c.estado === 'abierta') || null;
+  }
+
+  // El corte cerrado más reciente de un mismo día calendario — es la
+  // "fotografía" que el corte actual debe restar para no duplicar lo que
+  // el turno anterior ya se atribuyó.
+  function corteAnteriorMismoDia(corte){
+    return cortesCajaGuardados
+      .filter(c => c.fecha === corte.fecha && c.estado === 'cerrada' && c.id !== corte.id)
+      .sort((a, b)=> new Date(b.horaCierre) - new Date(a.horaCierre))[0] || null;
+  }
+
+  // El corte cerrado más reciente en general (cualquier día) — se usa
+  // para sugerir el monto de apertura del próximo corte (lo último que
+  // se contó normalmente sigue físicamente en la caja).
+  function ultimoCorteCerrado(){
+    return cortesCajaGuardados
+      .filter(c => c.estado === 'cerrada')
+      .sort((a, b)=> new Date(b.horaCierre) - new Date(a.horaCierre))[0] || null;
+  }
+
+  // Calcula cuánto le corresponde a ESTE corte (ya sea para mostrarlo en
+  // vivo mientras sigue abierto, o para congelarlo al momento de cerrar).
+  function calcularEsperadoCorte(corte){
+    const totalesHoy = calcularMovimientosCajaDelDia(corte.fecha); // acumulado del día completo, EN VIVO
+    const anterior = corteAnteriorMismoDia(corte);
+    const entradasBase = anterior ? (anterior.entradasCumulativasAlCierre || 0) : 0;
+    const salidasBase = anterior ? (anterior.salidasCumulativasAlCierre || 0) : 0;
+    const entradas = totalesHoy.entradas - entradasBase;
+    const salidas = totalesHoy.salidas - salidasBase;
+    return {
+      entradas, salidas,
+      montoEsperado: corte.montoApertura + entradas - salidas,
+      totalesHoyEntradas: totalesHoy.entradas,
+      totalesHoySalidas: totalesHoy.salidas
+    };
   }
 
   function abrirCorteCaja(montoApertura){
@@ -25088,6 +25112,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       montoEsperado: null,
       montoContado: null,
       diferencia: null,
+      entradasAsignadas: null,
+      salidasAsignadas: null,
+      entradasCumulativasAlCierre: null,
+      salidasCumulativasAlCierre: null,
       estado: 'abierta'
     };
     cortesCajaGuardados.push(nuevo);
@@ -25096,12 +25124,15 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }
 
   function cerrarCorteCaja(corte, montoContado){
-    const { entradas, salidas } = calcularMovimientosEfectivoDelDia(corte.fecha);
-    const montoEsperado = corte.montoApertura + entradas - salidas;
+    const calc = calcularEsperadoCorte(corte);
     corte.horaCierre = new Date().toISOString();
-    corte.montoEsperado = montoEsperado;
+    corte.entradasAsignadas = calc.entradas;
+    corte.salidasAsignadas = calc.salidas;
+    corte.entradasCumulativasAlCierre = calc.totalesHoyEntradas;
+    corte.salidasCumulativasAlCierre = calc.totalesHoySalidas;
+    corte.montoEsperado = calc.montoEsperado;
     corte.montoContado = montoContado;
-    corte.diferencia = montoContado - montoEsperado;
+    corte.diferencia = montoContado - calc.montoEsperado;
     corte.estado = 'cerrada';
     guardarCortesCajaStorage(cortesCajaGuardados);
     return corte;
@@ -25124,9 +25155,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   const inputMontoContadoCaja = document.getElementById('input-monto-contado-caja');
   const corteCajaSinAbrirEl = document.getElementById('corte-caja-sin-abrir');
   const corteCajaAbiertaEl = document.getElementById('corte-caja-abierta');
-  const corteCajaCerradaHoyEl = document.getElementById('corte-caja-cerrada-hoy');
   const ccFormCierre = document.getElementById('cc-form-cierre');
   const ccVeredictoPreview = document.getElementById('cc-veredicto-preview');
+  const inputFiltroHistorialCaja = document.getElementById('input-filtro-historial-caja');
+  const btnVerTodosHistorialCaja = document.getElementById('btn-ver-todos-historial-caja');
+  let filtroFechaHistorialCaja = null; // null = sin filtro, muestra todos
 
   // Reutiliza el mismo formateador de miles ya usado en el resto de la app
   inputMontoAperturaCaja.addEventListener('input', ()=>{
@@ -25153,24 +25186,30 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // Vista previa EN VIVO mientras escribe cuánto contó, antes de confirmar
   // el cierre — así ve el color (azul/rojo/ámbar) de inmediato.
   function previsualizarVeredictoCierre(){
-    const corte = corteCajaDeHoy();
+    const corte = corteAbiertoActual();
     if(!corte) return;
-    const contado = numeroDesdeCampo(inputMontoContadoCaja.value);
     if(!inputMontoContadoCaja.value.trim()){
       ccVeredictoPreview.style.display = 'none';
       return;
     }
-    const { entradas, salidas } = calcularMovimientosEfectivoDelDia(corte.fecha);
-    const esperadoAhora = corte.montoApertura + entradas - salidas;
-    const diferencia = contado - esperadoAhora;
+    const contado = numeroDesdeCampo(inputMontoContadoCaja.value);
+    const calc = calcularEsperadoCorte(corte);
+    const diferencia = contado - calc.montoEsperado;
     pintarVeredicto(ccVeredictoPreview, veredictoDiferencia(diferencia), diferencia);
   }
 
+  // NUEVO: filtro por fecha (calendario) — si hay un día elegido, solo
+  // muestra los cortes cerrados de ESE día (pueden ser varios, si hubo
+  // más de un turno).
   function renderizarHistorialCortesCaja(){
     const contenedor = document.getElementById('lista-historial-cortes-caja');
-    const cerrados = cortesCajaGuardados
+    let cerrados = cortesCajaGuardados
       .filter(c => c.estado === 'cerrada')
       .sort((a, b)=> new Date(b.horaApertura) - new Date(a.horaApertura));
+
+    if(filtroFechaHistorialCaja){
+      cerrados = cerrados.filter(c => c.fecha === filtroFechaHistorialCaja);
+    }
 
     contenedor.innerHTML = '';
     if(cerrados.length === 0){
@@ -25178,7 +25217,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       vacio.className = 'empty-state';
       vacio.innerHTML = `
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle></svg>
-        <p>Todavía no tienes cortes de caja cerrados.</p>
+        <p>${filtroFechaHistorialCaja ? 'No hay cortes cerrados ese día.' : 'Todavía no tienes cortes de caja cerrados.'}</p>
       `;
       contenedor.appendChild(vacio);
       return;
@@ -25191,7 +25230,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       item.innerHTML = `
         <div class="cc-historial-info">
           <div class="cc-historial-fecha">${formatearFechaCorta(new Date(corte.fecha + 'T00:00:00'))}</div>
-          <div class="cc-historial-sub">Apertura ${formatearPesos(corte.montoApertura)} · Contado ${formatearPesos(corte.montoContado)}</div>
+          <div class="cc-historial-sub">${formatearHoraCorta(corte.horaApertura)}–${formatearHoraCorta(corte.horaCierre)} · Apertura ${formatearPesos(corte.montoApertura)} · Contado ${formatearPesos(corte.montoContado)}</div>
         </div>
         <span class="cc-historial-chip ${veredicto.tipo}">${veredicto.titulo}</span>
       `;
@@ -25200,39 +25239,30 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }
 
   function actualizarPantallaCorteCaja(){
-    const corte = corteCajaDeHoy();
+    const corte = corteAbiertoActual();
 
     corteCajaSinAbrirEl.style.display = (!corte) ? 'block' : 'none';
-    corteCajaAbiertaEl.style.display = (corte && corte.estado === 'abierta') ? 'block' : 'none';
-    corteCajaCerradaHoyEl.style.display = (corte && corte.estado === 'cerrada') ? 'block' : 'none';
+    corteCajaAbiertaEl.style.display = corte ? 'block' : 'none';
 
     if(!corte){
-      inputMontoAperturaCaja.value = '';
+      // Sugiere como monto de apertura lo último que se contó (esa plata
+      // sigue físicamente en la caja) — el usuario puede cambiarlo.
+      const anterior = ultimoCorteCerrado();
+      inputMontoAperturaCaja.value = anterior ? formatearMiles(anterior.montoContado) : '';
     }
 
-    if(corte && corte.estado === 'abierta'){
-      const { entradas, salidas } = calcularMovimientosEfectivoDelDia(corte.fecha);
-      const esperadoAhora = corte.montoApertura + entradas - salidas;
-      document.getElementById('cc-esperado-ahora').textContent = formatearPesos(esperadoAhora);
+    if(corte){
+      const calc = calcularEsperadoCorte(corte);
+      document.getElementById('cc-esperado-ahora').textContent = formatearPesos(calc.montoEsperado);
       document.getElementById('cc-apertura-hora-texto').textContent = 'Caja abierta a las ' + formatearHoraCorta(corte.horaApertura);
       document.getElementById('cc-apertura-monto').textContent = formatearPesos(corte.montoApertura);
-      document.getElementById('cc-entradas-efectivo').textContent = '+' + formatearPesos(entradas);
-      document.getElementById('cc-salidas-efectivo').textContent = '-' + formatearPesos(salidas);
+      document.getElementById('cc-entradas-efectivo').textContent = '+' + formatearPesos(calc.entradas);
+      document.getElementById('cc-salidas-efectivo').textContent = '-' + formatearPesos(calc.salidas);
       // El formulario de cierre y su input quedan cerrados/limpios cada
       // vez que se entra o se refresca esta pantalla.
       ccFormCierre.style.display = 'none';
       inputMontoContadoCaja.value = '';
       ccVeredictoPreview.style.display = 'none';
-    }
-
-    if(corte && corte.estado === 'cerrada'){
-      const veredicto = veredictoDiferencia(corte.diferencia);
-      pintarVeredicto(document.getElementById('cc-veredicto-hoy'), veredicto, corte.diferencia);
-      document.getElementById('cc-cerrada-horas-texto').textContent =
-        'Abierta ' + formatearHoraCorta(corte.horaApertura) + ' · Cerrada ' + formatearHoraCorta(corte.horaCierre);
-      document.getElementById('cc-cerrada-apertura').textContent = formatearPesos(corte.montoApertura);
-      document.getElementById('cc-cerrada-esperado').textContent = formatearPesos(corte.montoEsperado);
-      document.getElementById('cc-cerrada-contado').textContent = formatearPesos(corte.montoContado);
     }
 
     renderizarHistorialCortesCaja();
@@ -25241,7 +25271,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   document.getElementById('btn-abrir-caja').addEventListener('click', ()=>{
     const monto = numeroDesdeCampo(inputMontoAperturaCaja.value);
     if(monto <= 0){
-      alert('Escribe con cuánto efectivo abres la caja.');
+      alert('Escribe con cuánto abres la caja.');
       inputMontoAperturaCaja.focus();
       return;
     }
@@ -25256,17 +25286,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   });
 
   document.getElementById('btn-confirmar-cierre-caja').addEventListener('click', ()=>{
-    const corte = corteCajaDeHoy();
+    const corte = corteAbiertoActual();
     if(!corte) return;
     if(!inputMontoContadoCaja.value.trim()){
-      alert('Escribe cuánto efectivo contaste.');
+      alert('Escribe cuánto contaste.');
       inputMontoContadoCaja.focus();
       return;
     }
     const contado = numeroDesdeCampo(inputMontoContadoCaja.value);
     mostrarConfirmacion(
       'Cerrar caja',
-      '¿Confirmar el cierre de caja de hoy con ' + formatearPesos(contado) + ' contados? Esta acción no se puede deshacer.',
+      '¿Confirmar el cierre de este turno de caja con ' + formatearPesos(contado) + ' contados? Esta acción no se puede deshacer.',
       'Confirmar cierre',
       ()=>{
         cerrarCorteCaja(corte, contado);
@@ -25274,6 +25304,20 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         mostrarMensajeToast('Caja cerrada correctamente.');
       }
     );
+  });
+
+  // NUEVO: calendario para buscar cortes por fecha en el historial.
+  convertirInputFechaAPersonalizado(inputFiltroHistorialCaja, 'Buscar por fecha');
+  inputFiltroHistorialCaja.addEventListener('change', ()=>{
+    filtroFechaHistorialCaja = inputFiltroHistorialCaja.value || null;
+    btnVerTodosHistorialCaja.style.display = filtroFechaHistorialCaja ? 'inline-flex' : 'none';
+    renderizarHistorialCortesCaja();
+  });
+  btnVerTodosHistorialCaja.addEventListener('click', ()=>{
+    filtroFechaHistorialCaja = null;
+    inputFiltroHistorialCaja.value = '';
+    btnVerTodosHistorialCaja.style.display = 'none';
+    renderizarHistorialCortesCaja();
   });
 
   let origenScreenCorteCaja = 'inicio';
