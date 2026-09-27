@@ -9923,15 +9923,29 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // bloquearlo en todos los navegadores/celulares, así que se refuerza acá
   // a mano: si estás arriba del todo y el dedo sigue bajando, se cancela
   // el gesto antes de que el navegador llegue a activar la recarga.
+  //
+  // CORREGIDO: a pedido — "más fluidez al deslizar, que no se sienta
+  // pegado" (se notaba sobre todo en formularios largos, como Nuevo
+  // Cliente). El bloqueo de arriba necesita un touchmove SIN pasivo —
+  // es la única forma de poder cancelar el gesto — pero un touchmove no
+  // pasivo puesto en TODO momento, en TODA la app, obliga al navegador a
+  // esperar a que este código termine de correr en CADA movimiento del
+  // dedo, en cualquier parte de la pantalla (no solo arriba del todo),
+  // antes de poder desplazar el contenido: es la causa #1, bien
+  // documentada, de un scroll con tirones en vez de fluido. Ahora ese
+  // listener "pesado" solo queda puesto mientras la pantalla está arriba
+  // del todo (el único momento en que puede llegar a dispararse el
+  // pull-to-refresh) y se retira apenas se empieza a bajar. En el resto
+  // del recorrido — que es la inmensa mayoría de cualquier deslizada, y
+  // todo el tramo intermedio de un formulario largo — el scroll queda
+  // completamente libre, sin ningún código de por medio.
   let pullToRefreshInicioY = 0;
   let pullToRefreshInicioX = 0;
-  document.addEventListener('touchstart', (e)=>{
-    if(e.touches.length === 1){
-      pullToRefreshInicioY = e.touches[0].clientY;
-      pullToRefreshInicioX = e.touches[0].clientX;
-    }
-  }, { passive: true });
-  document.addEventListener('touchmove', (e)=>{
+  let pullToRefreshListenerPuesto = false;
+  function estaArribaDelTodoPullToRefresh(){
+    return (window.scrollY || document.documentElement.scrollTop || document.body.scrollTop) <= 0;
+  }
+  function manejarTouchMovePullToRefresh(e){
     if(e.touches.length !== 1) return;
     const yActual = e.touches[0].clientY;
     const xActual = e.touches[0].clientX;
@@ -9942,11 +9956,39 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // bloqueo corría en CADA movimiento del dedo sin distinguir
     // dirección, lo que le restaba fluidez al deslizar el carrusel.
     if(Math.abs(deltaX) > Math.abs(deltaY)) return;
-    const arribaDelTodo = (window.scrollY || document.documentElement.scrollTop || document.body.scrollTop) <= 0;
-    if(arribaDelTodo && deltaY > 0){
+    if(estaArribaDelTodoPullToRefresh() && deltaY > 0){
       e.preventDefault();
     }
-  }, { passive: false });
+  }
+  function actualizarBloqueoPullToRefresh(){
+    if(estaArribaDelTodoPullToRefresh()){
+      if(!pullToRefreshListenerPuesto){
+        document.addEventListener('touchmove', manejarTouchMovePullToRefresh, { passive: false });
+        pullToRefreshListenerPuesto = true;
+      }
+    }else if(pullToRefreshListenerPuesto){
+      document.removeEventListener('touchmove', manejarTouchMovePullToRefresh);
+      pullToRefreshListenerPuesto = false;
+    }
+  }
+  document.addEventListener('touchstart', (e)=>{
+    if(e.touches.length === 1){
+      pullToRefreshInicioY = e.touches[0].clientY;
+      pullToRefreshInicioX = e.touches[0].clientX;
+    }
+    actualizarBloqueoPullToRefresh();
+  }, { passive: true });
+  // El scroll puede llegar arriba del todo A MITAD de un mismo gesto
+  // (sin soltar el dedo) — este listener, también pasivo y liviano,
+  // detecta ese momento y activa el bloqueo aunque el dedo no haya
+  // arrancado arriba del todo.
+  window.addEventListener('scroll', actualizarBloqueoPullToRefresh, { passive: true });
+  document.addEventListener('touchend', ()=>{
+    if(pullToRefreshListenerPuesto){
+      document.removeEventListener('touchmove', manejarTouchMovePullToRefresh);
+      pullToRefreshListenerPuesto = false;
+    }
+  }, { passive: true });
 
   // ---------- Mensaje flotante pequeño (toast) — reutilizable en toda la app ----------
   // NUEVO: acepta un elemento de referencia opcional — si se pasa, el
