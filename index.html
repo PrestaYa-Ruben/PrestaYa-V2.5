@@ -13547,10 +13547,20 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       item.querySelector('.documento-libre-item-info').addEventListener('click', ()=> abrirEditorDocumentoLibre(doc.id));
       item.querySelector('.documento-libre-item-eliminar').addEventListener('click', (e)=>{
         e.stopPropagation();
-        documentosLibresGuardados = documentosLibresGuardados.filter(d=>d.id !== doc.id);
-        guardarDocumentosLibres(documentosLibresGuardados);
-        renderizarListaDocumentosLibres();
-        mostrarMensajeToast('Documento eliminado');
+        // NUEVO — a pedido: antes se borraba de inmediato al tocar la
+        // caneca; ahora pide confirmación (reutiliza mostrarConfirmacion,
+        // el mismo modal que ya usa el resto de la app).
+        mostrarConfirmacion(
+          'Eliminar documento',
+          '¿Seguro que quieres eliminar "' + (doc.nombre || 'este documento') + '"? Esta acción no se puede deshacer.',
+          'Eliminar',
+          ()=>{
+            documentosLibresGuardados = documentosLibresGuardados.filter(d=>d.id !== doc.id);
+            guardarDocumentosLibres(documentosLibresGuardados);
+            renderizarListaDocumentosLibres();
+            mostrarMensajeToast('Documento eliminado');
+          }
+        );
       });
       lista.appendChild(item);
     });
