@@ -4038,6 +4038,14 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .cc-historial-chip.sobra{ background:var(--warning-light); color:var(--warning); }
 .cc-historial-chip.abierta{ background:var(--primary-light); color:var(--primary); }
 
+/* ==========================================================
+   NUEVO — Base de Datos (agenda de contactos independiente, en el
+   menú lateral). Reutiliza .card/.client-row/.avatar-circle/
+   .search-row/.tarjeta-pegar-datos/.confirm-modal-* que ya existían,
+   sin duplicar CSS que ya servía para lo mismo.
+   ========================================================== */
+.bd-item-vacio{ text-align:center; color:var(--text-secondary); font-size:14px; padding:30px 10px; }
+
 /* --- Filtro por Ruta / Administrar Rutas --- */
 .ruta-check-item{
   display:flex;
@@ -5487,6 +5495,14 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <div class="menu-lateral-item" id="menu-lateral-documentos">
       <div class="icon-container green"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg></div>
       <span>Documentos</span>
+    </div>
+    <!-- NUEVO: a pedido — "Base de Datos": agenda de contactos
+         independiente del sistema de Clientes/Créditos (otro conjunto
+         de campos: Barrio, Ciudad, Empresa, etc.), pensada para guardar
+         datos de gente que aún no es cliente. -->
+    <div class="menu-lateral-item" id="menu-lateral-base-datos">
+      <div class="icon-container gris"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14a9 3 0 0 0 18 0V5"></path><path d="M3 12a9 3 0 0 0 18 0"></path></svg></div>
+      <span>Base de Datos</span>
     </div>
     <div class="menu-lateral-item" id="menu-lateral-rutas">
       <div class="icon-container red"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 1.447-.894L9 7m0 13 6-3m-6 3V7m6 10 4.553 2.276A1 1 0 0 0 21 18.382V7.618a1 1 0 0 0-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg></div>
@@ -7838,6 +7854,132 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     </div>
 
   </section>
+</div>
+
+<!-- ==========================================================
+     NUEVO — Base de Datos: agenda de contactos independiente del
+     sistema de Clientes/Créditos, accesible desde el menú lateral.
+     Guarda su propia lista en localStorage (prestapp_base_datos),
+     con su propio "Pegar datos" y su propia Copia de seguridad.
+     ========================================================== -->
+<div class="app" id="screen-base-datos" style="display:none;">
+  <header class="header">
+    <button class="back-btn" id="btn-cerrar-base-datos" aria-label="Volver">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <h1>Base de Datos</h1>
+    <span class="header-spacer"></span>
+  </header>
+  <section class="detail-body">
+
+    <!-- Pegar datos -->
+    <div class="card tarjeta-pegar-datos">
+      <div class="tarjeta-pegar-datos-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.5h1a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v0a2 2 0 0 1 2-2z" fill="none"></path><path d="M9 4H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"></path></svg>
+        <span>Pegar datos</span>
+      </div>
+      <div class="tarjeta-pegar-datos-desc">Copia el mensaje del cliente (Nombre, Cédula, Teléfono, Barrio, Ciudad, etc.) y pégalo aquí. El sistema llena los campos automáticamente.</div>
+      <textarea class="field-input field-textarea" id="input-pegar-datos-bd" rows="4" placeholder="Pega aquí el texto copiado..."></textarea>
+      <div class="tarjeta-pegar-datos-botones">
+        <button type="button" class="btn-detectar-datos-cliente" id="btn-detectar-datos-bd">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 20 6"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          Detectar datos
+        </button>
+        <button type="button" class="btn-limpiar-pegar-datos-cliente" id="btn-limpiar-pegar-datos-bd">Limpiar</button>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <div>
+      <div class="section-title" style="margin-bottom:12px;">Datos del cliente</div>
+      <form class="form-section" id="form-base-datos" style="padding:0;">
+        <div class="form-field">
+          <label class="field-label" for="input-bd-nombre">Nombre completo</label>
+          <input class="field-input" id="input-bd-nombre" type="text" placeholder="Toca y escribe">
+        </div>
+
+        <div class="form-field">
+          <label class="field-label" for="input-bd-cedula">Cédula</label>
+          <input class="field-input" id="input-bd-cedula" type="text" inputmode="numeric" placeholder="Toca y escribe">
+        </div>
+
+        <div class="fila-doble-campo">
+          <div class="form-field" style="flex:1;">
+            <label class="field-label" for="input-bd-telefono">Teléfono</label>
+            <input class="field-input" id="input-bd-telefono" type="tel" placeholder="Toca y escribe">
+          </div>
+          <div class="form-field" style="flex:1;">
+            <label class="field-label" for="input-bd-whatsapp">WhatsApp</label>
+            <input class="field-input" id="input-bd-whatsapp" type="tel" placeholder="Toca y escribe">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="field-label" for="input-bd-direccion">Dirección</label>
+          <input class="field-input" id="input-bd-direccion" type="text" placeholder="Toca y escribe">
+        </div>
+
+        <div class="fila-doble-campo">
+          <div class="form-field" style="flex:1;">
+            <label class="field-label" for="input-bd-barrio">Barrio</label>
+            <input class="field-input" id="input-bd-barrio" type="text" placeholder="Toca y escribe">
+          </div>
+          <div class="form-field" style="flex:1;">
+            <label class="field-label" for="input-bd-ciudad">Ciudad</label>
+            <input class="field-input" id="input-bd-ciudad" type="text" placeholder="Toca y escribe">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="field-label" for="input-bd-empresa">Empresa o lugar de trabajo</label>
+          <input class="field-input" id="input-bd-empresa" type="text" placeholder="Toca y escribe">
+        </div>
+
+        <div class="card" style="padding:14px 16px;">
+          <div class="mora-toggle-row" style="padding:0;">
+            <div class="mora-toggle-text">
+              <div class="mora-toggle-title">Acepta recordatorio de pago</div>
+              <div class="mora-toggle-subtitle">El cliente está de acuerdo en recibir recordatorios de pago.</div>
+            </div>
+            <button type="button" class="toggle-switch toggle-verde on" id="toggle-bd-recordatorio" role="switch" aria-checked="true" aria-label="Acepta recordatorio de pago"></button>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button type="submit" class="primary-button" id="btn-guardar-bd" style="flex:1;">Guardar cliente</button>
+          <button type="button" class="btn-limpiar-pegar-datos-cliente" id="btn-limpiar-form-bd" style="flex-shrink:0; padding-left:18px; padding-right:18px;">Limpiar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Buscador -->
+    <div class="search-row" style="padding:0;">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="buscador-bd" placeholder="Buscar cliente guardado..." aria-label="Buscar cliente guardado">
+      </div>
+    </div>
+
+    <!-- Lista de clientes guardados -->
+    <div>
+      <div id="lista-base-datos"></div>
+      <div class="bd-item-vacio" id="bd-vacio-mensaje" style="display:none;">Todavía no has guardado ningún cliente aquí.</div>
+    </div>
+
+  </section>
+</div>
+
+<!-- Detalle de un cliente guardado en la Base de Datos (solo lectura) -->
+<div id="bd-detalle-overlay" class="confirm-modal-overlay" style="display:none; align-items:flex-start; padding-top:50px; padding-bottom:40px; overflow-y:auto; background:rgba(20,30,60,0.45);">
+  <div class="confirm-modal-card" style="max-width:380px;">
+    <div class="avatar-circle avatar-circle-lg" id="bd-detalle-avatar" style="margin:0 auto 12px;">--</div>
+    <div class="confirm-modal-title" id="bd-detalle-nombre" style="margin-bottom:16px;">Nombre</div>
+    <div style="text-align:left;" id="bd-detalle-filas"></div>
+    <div class="confirm-modal-botones" style="margin-top:20px;">
+      <button type="button" class="confirm-modal-btn cancelar" id="btn-cerrar-bd-detalle">Cerrar</button>
+      <button type="button" class="confirm-modal-btn confirmar" id="btn-eliminar-bd-detalle">Eliminar</button>
+    </div>
+  </div>
 </div>
 
 <!-- ==========================================================
@@ -25166,6 +25308,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const valor = numeroDesdeCampo(inputMontoAperturaCaja.value);
     inputMontoAperturaCaja.value = valor ? formatearMiles(valor) : '';
   });
+  // NUEVO — a pedido: el monto de apertura viene sugerido (lo último que
+  // se contó), pero debe quedar totalmente editable cada vez que se abre
+  // caja. Al tocar el campo, selecciona todo el texto para que con solo
+  // empezar a escribir se reemplace el sugerido, en vez de quedar pegado
+  // detrás del cursor.
+  inputMontoAperturaCaja.addEventListener('focus', function(){ this.select(); });
   inputMontoContadoCaja.addEventListener('input', ()=>{
     const valor = numeroDesdeCampo(inputMontoContadoCaja.value);
     inputMontoContadoCaja.value = valor ? formatearMiles(valor) : '';
@@ -25338,6 +25486,380 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     bottomNav.style.display = 'flex';
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
     const navItemOrigen = document.querySelector('.nav-item[data-nav="' + origenScreenCorteCaja + '"]');
+    if(navItemOrigen) navItemOrigen.classList.add('active');
+    window.scrollTo(0, 0);
+  });
+
+  // ==========================================================
+  // NUEVO — Base de Datos: agenda de contactos independiente del
+  // sistema de Clientes/Créditos (otro conjunto de campos, otra
+  // clave de localStorage: prestapp_base_datos). Accesible desde el
+  // menú lateral, con su propio "Pegar datos" y su propia Copia de
+  // seguridad — no toca ningún dato ni cálculo de Clientes/Préstamos.
+  // ==========================================================
+  const BASE_DATOS_KEY = 'prestapp_base_datos';
+  function cargarBaseDatos(){ try{ const g = localStorage.getItem(BASE_DATOS_KEY); return g ? JSON.parse(g) : []; }catch(e){ return []; } }
+  function guardarBaseDatosStorage(lista){ localStorage.setItem(BASE_DATOS_KEY, JSON.stringify(lista)); }
+  let baseDatosGuardada = cargarBaseDatos();
+
+  const screenBaseDatos = document.getElementById('screen-base-datos');
+  const listaBaseDatosEl = document.getElementById('lista-base-datos');
+  const bdVacioMensaje = document.getElementById('bd-vacio-mensaje');
+  const buscadorBaseDatos = document.getElementById('buscador-bd');
+
+  // ---------- Detección de "Pegar datos" (Nombre, Cédula, Teléfono,
+  // WhatsApp, Dirección, Barrio, Ciudad, Empresa) — mismo mecanismo que
+  // ya usa Nuevo Cliente (detectarDatosClientePegados), extendido acá
+  // con los 3 campos nuevos que no existen en el formulario de Clientes. ----------
+  function detectarDatosBaseDeDatos(texto){
+    const resultado = {};
+    if(!texto || !texto.trim()) return resultado;
+
+    const lineas = texto.split(/\r?\n/)
+      .map(l => l
+        .replace(/[*_~`]/g, '')
+        .replace(/^[\s\-–—•‣▪●○◦►»]+/, '')
+        .replace(/^\d+[\.\)]\s*/, '')
+        .trim()
+      )
+      .filter(Boolean);
+    const usadas = new Set();
+
+    const patrones = {
+      nombre: /^(nombres?(\s+y\s+apellidos?)?(\s+completos?)?|cliente)\s*[:\-]\s*(.*)$/i,
+      cedula: /^(c[eé]dula(\s+de\s+ciudadan[ií]a)?|documento|(n[uú]mero|n[roº]\.?)\s+de\s+documento|cc|dni|nit|identificaci[oó]n)\s*[:\-]\s*(.*)$/i,
+      whatsapp: /^(whats\s?app|wsp|n[uú]mero\s+de\s+whats\s?app)\s*[:\-]\s*(.*)$/i,
+      telefono: /^(tel[eé]fono|celular|cel\.?|m[oó]vil|contacto|(n[uú]mero|n[roº]\.?)(\s+de\s+contacto)?|tel\.?)\s*[:\-]\s*(.*)$/i,
+      direccion: /^(direcci[oó]n|dir\.?|domicilio)\s*[:\-]\s*(.*)$/i,
+      barrio: /^(barrio)\s*[:\-]\s*(.*)$/i,
+      ciudad: /^(ciudad|municipio)\s*[:\-]\s*(.*)$/i,
+      empresa: /^(empresa|compa[ñn][ií]a|negocio|lugar\s+de\s+(trabajo|empleo)|sitio\s+de\s+trabajo|ocupaci[oó]n|oficio|profesi[oó]n|empleador|trabajo)\s*[:\-]\s*(.*)$/i
+    };
+    lineas.forEach((linea, i)=>{
+      if(usadas.has(i)) return;
+      for(const campo in patrones){
+        const m = linea.match(patrones[campo]);
+        if(m){
+          let valor = m[m.length - 1].trim();
+          usadas.add(i);
+          if(!valor && i + 1 < lineas.length && !usadas.has(i + 1)){
+            const siguienteEsEtiqueta = Object.values(patrones).some(p => p.test(lineas[i + 1]));
+            if(!siguienteEsEtiqueta){
+              valor = lineas[i + 1].trim();
+              usadas.add(i + 1);
+            }
+          }
+          if(valor && !resultado[campo]) resultado[campo] = valor;
+          return;
+        }
+      }
+    });
+
+    if(!resultado.telefono || !resultado.cedula){
+      const numerosEncontrados = [];
+      lineas.forEach((linea, i)=>{
+        if(usadas.has(i)) return;
+        const coincidencias = linea.match(/(?:\+?57\s?)?(?:\(\d{1,4}\)[\s\-]?)?\d[\d\s\-\.]{5,14}\d/g) || [];
+        coincidencias.forEach(c=>{
+          let soloDigitos = c.replace(/[^\d]/g, '');
+          if(soloDigitos.length === 12 && soloDigitos.startsWith('57')) soloDigitos = soloDigitos.slice(2);
+          if(soloDigitos.length >= 6 && soloDigitos.length <= 10){
+            numerosEncontrados.push({ valor: soloDigitos, linea: i });
+          }
+        });
+      });
+
+      const candidatoTelefono = !resultado.telefono
+        ? (numerosEncontrados.find(n => n.valor.length === 10 && n.valor.startsWith('3'))
+          || numerosEncontrados.find(n => n.valor.length === 10)
+          || numerosEncontrados[0])
+        : null;
+
+      if(candidatoTelefono){
+        resultado.telefono = candidatoTelefono.valor;
+        usadas.add(candidatoTelefono.linea);
+      }
+      if(!resultado.cedula){
+        const candidatoCedula = numerosEncontrados.find(n => n !== candidatoTelefono);
+        if(candidatoCedula) resultado.cedula = candidatoCedula.valor;
+      }
+    }
+
+    if(!resultado.nombre){
+      const patronNombreConversacional = /\b(?:mi nombre es|me llamo|habla)\s+([a-záéíóúñ\s]{3,60})|^\s*soy\s+([a-záéíóúñ\s]{3,60})/i;
+      for(let i = 0; i < lineas.length; i++){
+        if(usadas.has(i)) continue;
+        const m = lineas[i].match(patronNombreConversacional);
+        if(m){
+          resultado.nombre = (m[1] || m[2]).trim().replace(/[.,;].*$/, '').trim();
+          usadas.add(i);
+          break;
+        }
+      }
+    }
+    if(!resultado.nombre){
+      const palabrasSaludo = /\b(hola|buenas|buenos\s+d[ií]as|buenas\s+tardes|buenas\s+noches|cordial\s+saludo|le\s+escribe|un\s+gusto|c[oó]mo\s+est[aá]|espero\s+se\s+encuentre|por\s+medio\s+de)\b/i;
+      const idx = lineas.findIndex((linea, i)=>
+        !usadas.has(i) &&
+        /[a-záéíóúñ]/i.test(linea) &&
+        !/\d{4,}/.test(linea) &&
+        linea.length <= 60 &&
+        !palabrasSaludo.test(linea)
+      );
+      if(idx !== -1){ resultado.nombre = lineas[idx]; usadas.add(idx); }
+    }
+
+    if(!resultado.direccion){
+      const idx = lineas.findIndex((linea, i)=>
+        !usadas.has(i) &&
+        /\b(calle|carrera|avenida|diagonal|transversal|cra|cll|kra|klr|av\.?|manzana|mz|apto|apartamento|casa)\b/i.test(linea)
+      );
+      if(idx !== -1) resultado.direccion = lineas[idx];
+    }
+
+    // ---- Empresa/trabajo por frase, sin etiqueta ni dos puntos — cubre
+    // mensajes redactados de forma natural ("Trabajo en Almacenes XYZ",
+    // "Labora en la finca El Roble") que no traían "Empresa:" ----
+    if(!resultado.empresa){
+      const idx = lineas.findIndex((linea, i)=>
+        !usadas.has(i) &&
+        /\b(trabaj[ao](ndo)?\s+en|labor[ao](ndo)?\s+en|due[ñn]o\s+de|propietari[oa]\s+de)\b/i.test(linea)
+      );
+      if(idx !== -1){
+        const m = lineas[idx].match(/\b(?:trabaj[ao](?:ndo)?\s+en|labor[ao](?:ndo)?\s+en|due[ñn]o\s+de|propietari[oa]\s+de)\s+(.*)$/i);
+        resultado.empresa = (m && m[1] ? m[1] : lineas[idx]).trim().replace(/[.,;].*$/, '').trim();
+        usadas.add(idx);
+      }
+    }
+
+    return resultado;
+  }
+
+  const inputPegarDatosBd = document.getElementById('input-pegar-datos-bd');
+  document.getElementById('btn-detectar-datos-bd').addEventListener('click', ()=>{
+    const detectado = detectarDatosBaseDeDatos(inputPegarDatosBd.value);
+    if(Object.keys(detectado).length === 0){
+      alert('No se pudo detectar ningún dato en el texto pegado. Puedes llenar los campos manualmente.');
+      return;
+    }
+    if(detectado.nombre) document.getElementById('input-bd-nombre').value = detectado.nombre;
+    if(detectado.cedula) document.getElementById('input-bd-cedula').value = formatearMiles(detectado.cedula);
+    if(detectado.telefono) document.getElementById('input-bd-telefono').value = detectado.telefono;
+    if(detectado.whatsapp) document.getElementById('input-bd-whatsapp').value = detectado.whatsapp;
+    if(detectado.direccion) document.getElementById('input-bd-direccion').value = detectado.direccion;
+    if(detectado.barrio) document.getElementById('input-bd-barrio').value = detectado.barrio;
+    if(detectado.ciudad) document.getElementById('input-bd-ciudad').value = detectado.ciudad;
+    if(detectado.empresa) document.getElementById('input-bd-empresa').value = detectado.empresa;
+  });
+  document.getElementById('btn-limpiar-pegar-datos-bd').addEventListener('click', ()=>{
+    inputPegarDatosBd.value = '';
+    inputPegarDatosBd.focus();
+  });
+
+  // Mismo formateador de miles ya usado en el resto de la app
+  document.getElementById('input-bd-cedula').addEventListener('input', function(){
+    this.value = formatearMiles(this.value);
+  });
+
+  // ---------- Toggle "Acepta recordatorio de pago" ----------
+  const toggleBdRecordatorio = document.getElementById('toggle-bd-recordatorio');
+  toggleBdRecordatorio.addEventListener('click', ()=>{
+    const activo = !toggleBdRecordatorio.classList.contains('on');
+    toggleBdRecordatorio.classList.toggle('on', activo);
+    toggleBdRecordatorio.setAttribute('aria-checked', String(activo));
+  });
+
+  // ---------- Construir una fila de la lista guardada ----------
+  function crearFilaBaseDatos(entrada){
+    const card = document.createElement('div');
+    card.className = 'card client-row';
+    card.dataset.id = entrada.id;
+
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar-circle';
+    avatar.textContent = entrada.nombre ? iniciales(entrada.nombre) : '?';
+
+    const info = document.createElement('div');
+    info.className = 'info';
+    const name = document.createElement('div');
+    name.className = 'name';
+    name.textContent = entrada.nombre || '(Sin nombre)';
+    const sub = document.createElement('div');
+    sub.className = 'phone';
+    const partesSub = [entrada.cedula, entrada.ciudad].filter(Boolean);
+    sub.textContent = partesSub.length ? partesSub.join(' · ') : (entrada.telefono || 'Sin datos adicionales');
+    info.appendChild(name);
+    info.appendChild(sub);
+
+    const trailing = document.createElement('div');
+    trailing.className = 'trailing chevron';
+    trailing.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+
+    card.appendChild(avatar);
+    card.appendChild(info);
+    card.appendChild(trailing);
+    card.addEventListener('click', ()=> abrirDetalleBaseDatos(entrada));
+    return card;
+  }
+
+  // ---------- Buscador ----------
+  function baseDatosFiltrada(){
+    const q = (buscadorBaseDatos.value || '').trim().toLowerCase();
+    if(!q) return baseDatosGuardada;
+    return baseDatosGuardada.filter(e=>
+      (e.nombre || '').toLowerCase().includes(q) ||
+      (e.cedula || '').toLowerCase().includes(q) ||
+      (e.telefono || '').toLowerCase().includes(q) ||
+      (e.whatsapp || '').toLowerCase().includes(q) ||
+      (e.ciudad || '').toLowerCase().includes(q) ||
+      (e.barrio || '').toLowerCase().includes(q) ||
+      (e.empresa || '').toLowerCase().includes(q)
+    );
+  }
+
+  // ---------- Renderizar la lista ----------
+  function renderizarBaseDatos(lista){
+    listaBaseDatosEl.innerHTML = '';
+    if(baseDatosGuardada.length === 0){
+      bdVacioMensaje.textContent = 'Todavía no has guardado ningún cliente aquí.';
+      bdVacioMensaje.style.display = 'block';
+      return;
+    }
+    if(lista.length === 0){
+      bdVacioMensaje.textContent = 'No se encontraron coincidencias.';
+      bdVacioMensaje.style.display = 'block';
+      return;
+    }
+    bdVacioMensaje.style.display = 'none';
+    lista.slice().reverse().forEach(entrada => listaBaseDatosEl.appendChild(crearFilaBaseDatos(entrada)));
+  }
+  buscadorBaseDatos.addEventListener('input', ()=> renderizarBaseDatos(baseDatosFiltrada()));
+
+  // ---------- Guardar (formulario) ----------
+  const formBaseDatos = document.getElementById('form-base-datos');
+  function limpiarFormularioBaseDatos(){
+    ['input-bd-nombre','input-bd-cedula','input-bd-telefono','input-bd-whatsapp','input-bd-direccion','input-bd-barrio','input-bd-ciudad','input-bd-empresa'].forEach(id=>{
+      document.getElementById(id).value = '';
+    });
+    toggleBdRecordatorio.classList.add('on');
+    toggleBdRecordatorio.setAttribute('aria-checked', 'true');
+    inputPegarDatosBd.value = '';
+  }
+  document.getElementById('btn-limpiar-form-bd').addEventListener('click', limpiarFormularioBaseDatos);
+
+  formBaseDatos.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const nombre = document.getElementById('input-bd-nombre').value.trim();
+    if(!nombre){
+      alert('Escribe al menos el nombre del cliente.');
+      return;
+    }
+    const nuevaEntrada = {
+      id: Date.now(),
+      nombre,
+      cedula: document.getElementById('input-bd-cedula').value.trim(),
+      telefono: document.getElementById('input-bd-telefono').value.trim(),
+      whatsapp: document.getElementById('input-bd-whatsapp').value.trim(),
+      direccion: document.getElementById('input-bd-direccion').value.trim(),
+      barrio: document.getElementById('input-bd-barrio').value.trim(),
+      ciudad: document.getElementById('input-bd-ciudad').value.trim(),
+      empresa: document.getElementById('input-bd-empresa').value.trim(),
+      aceptaRecordatorio: toggleBdRecordatorio.classList.contains('on'),
+      fechaCreacion: new Date().toISOString()
+    };
+    baseDatosGuardada.push(nuevaEntrada);
+    guardarBaseDatosStorage(baseDatosGuardada);
+    buscadorBaseDatos.value = '';
+    renderizarBaseDatos(baseDatosGuardada);
+    mostrarMensajeToast('Cliente guardado correctamente.');
+    limpiarFormularioBaseDatos();
+  });
+
+  // ---------- Detalle (solo lectura) ----------
+  let entradaBaseDatosEnDetalle = null;
+  const bdDetalleOverlay = document.getElementById('bd-detalle-overlay');
+
+  function abrirDetalleBaseDatos(entrada){
+    entradaBaseDatosEnDetalle = entrada;
+    document.getElementById('bd-detalle-avatar').textContent = entrada.nombre ? iniciales(entrada.nombre) : '?';
+    document.getElementById('bd-detalle-nombre').textContent = entrada.nombre || '(Sin nombre)';
+
+    const filasDefinicion = [
+      ['Cédula', entrada.cedula],
+      ['Teléfono', entrada.telefono],
+      ['WhatsApp', entrada.whatsapp],
+      ['Dirección', entrada.direccion],
+      ['Barrio', entrada.barrio],
+      ['Ciudad', entrada.ciudad],
+      ['Empresa o lugar de trabajo', entrada.empresa],
+      ['Acepta recordatorio de pago', entrada.aceptaRecordatorio ? 'Sí' : 'No']
+    ];
+    const cont = document.getElementById('bd-detalle-filas');
+    cont.innerHTML = '';
+    filasDefinicion.forEach(([label, valor])=>{
+      if(valor === undefined || valor === null || valor === '') return;
+      const fila = document.createElement('div');
+      fila.className = 'cc-resumen-fila';
+      const spanLabel = document.createElement('span');
+      spanLabel.className = 'cc-resumen-label';
+      spanLabel.textContent = label;
+      const spanValor = document.createElement('span');
+      spanValor.className = 'cc-resumen-valor';
+      spanValor.style.textAlign = 'right';
+      spanValor.textContent = valor;
+      fila.appendChild(spanLabel);
+      fila.appendChild(spanValor);
+      cont.appendChild(fila);
+    });
+
+    bdDetalleOverlay.style.display = 'flex';
+  }
+
+  function cerrarDetalleBaseDatos(){
+    bdDetalleOverlay.style.display = 'none';
+    entradaBaseDatosEnDetalle = null;
+  }
+  document.getElementById('btn-cerrar-bd-detalle').addEventListener('click', cerrarDetalleBaseDatos);
+  bdDetalleOverlay.addEventListener('click', (e)=>{ if(e.target === bdDetalleOverlay) cerrarDetalleBaseDatos(); });
+
+  document.getElementById('btn-eliminar-bd-detalle').addEventListener('click', ()=>{
+    if(!entradaBaseDatosEnDetalle) return;
+    const idParaEliminar = entradaBaseDatosEnDetalle.id;
+    const nombreParaEliminar = entradaBaseDatosEnDetalle.nombre || 'este cliente';
+    mostrarConfirmacion(
+      'Eliminar cliente',
+      '¿Seguro que quieres eliminar "' + nombreParaEliminar + '" de la Base de Datos? Esta acción no se puede deshacer.',
+      'Eliminar',
+      ()=>{
+        baseDatosGuardada = baseDatosGuardada.filter(e => e.id !== idParaEliminar);
+        guardarBaseDatosStorage(baseDatosGuardada);
+        cerrarDetalleBaseDatos();
+        renderizarBaseDatos(baseDatosFiltrada());
+        mostrarMensajeToast('Cliente eliminado.');
+      }
+    );
+  });
+
+  // ---------- Abrir/cerrar la pantalla desde el menú lateral ----------
+  let origenScreenBaseDatos = 'inicio';
+  document.getElementById('menu-lateral-base-datos').addEventListener('click', ()=>{
+    cerrarMenuLateral();
+    const destinoActivo = Object.keys(mainScreens).find(k => mainScreens[k].style.display !== 'none' && mainScreens[k].style.display !== '');
+    origenScreenBaseDatos = destinoActivo || 'inicio';
+    Object.values(mainScreens).forEach(s=> s.style.display = 'none');
+    buscadorBaseDatos.value = '';
+    renderizarBaseDatos(baseDatosGuardada);
+    screenBaseDatos.style.display = 'block';
+    bottomNav.style.display = 'none';
+    window.scrollTo(0, 0);
+  });
+
+  document.getElementById('btn-cerrar-base-datos').addEventListener('click', ()=>{
+    screenBaseDatos.style.display = 'none';
+    mainScreens[origenScreenBaseDatos].style.display = 'block';
+    bottomNav.style.display = 'flex';
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    const navItemOrigen = document.querySelector('.nav-item[data-nav="' + origenScreenBaseDatos + '"]');
     if(navItemOrigen) navItemOrigen.classList.add('active');
     window.scrollTo(0, 0);
   });
