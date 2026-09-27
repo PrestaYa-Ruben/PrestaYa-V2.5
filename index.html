@@ -10871,19 +10871,44 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     cerrarMenuLateral();
     navegarAPantallaPrincipal('reportes');
   });
+  // CORREGIDO: a pedido — Estadísticas/Ranking/Documentos "pasaban por"
+  // Ajustes al abrirse desde el menú lateral (ver btn-cerrar-* de cada
+  // una), así que Atrás/Retroceso terminaba dejando a la persona en
+  // Ajustes en vez de en la pantalla donde de verdad estaba. Ahora se
+  // recuerda cuál pantalla principal estaba activa ANTES de abrir el
+  // menú lateral (mismo mecanismo ya usado por Corte de Caja y Base de
+  // Datos) y, si se abrió por ahí, el botón de cerrar de cada una
+  // regresa a esa pantalla en vez de a Ajustes. Abrirlas desde dentro de
+  // Ajustes (la tarjeta de siempre) sigue funcionando exactamente igual
+  // que antes — ver los btn-cerrar-* correspondientes.
+  let origenScreenEstadisticas = null;
   document.getElementById('menu-lateral-estadisticas').addEventListener('click', ()=>{
     cerrarMenuLateral();
-    abrirAjustes();
+    const destinoActivo = Object.keys(mainScreens).find(k => mainScreens[k].style.display !== 'none' && mainScreens[k].style.display !== '');
+    origenScreenEstadisticas = destinoActivo || 'inicio';
+    Object.values(mainScreens).forEach(s=> s.style.display = 'none');
+    screenAjustes.style.display = 'none';
+    bottomNav.style.display = 'none';
     document.getElementById('item-estadisticas').click();
   });
+  let origenScreenRanking = null;
   document.getElementById('menu-lateral-ranking').addEventListener('click', ()=>{
     cerrarMenuLateral();
-    abrirAjustes();
+    const destinoActivo = Object.keys(mainScreens).find(k => mainScreens[k].style.display !== 'none' && mainScreens[k].style.display !== '');
+    origenScreenRanking = destinoActivo || 'inicio';
+    Object.values(mainScreens).forEach(s=> s.style.display = 'none');
+    screenAjustes.style.display = 'none';
+    bottomNav.style.display = 'none';
     document.getElementById('item-ranking-clientes').click();
   });
+  let origenScreenDocumentos = null;
   document.getElementById('menu-lateral-documentos').addEventListener('click', ()=>{
     cerrarMenuLateral();
-    abrirAjustes();
+    const destinoActivo = Object.keys(mainScreens).find(k => mainScreens[k].style.display !== 'none' && mainScreens[k].style.display !== '');
+    origenScreenDocumentos = destinoActivo || 'inicio';
+    Object.values(mainScreens).forEach(s=> s.style.display = 'none');
+    screenAjustes.style.display = 'none';
+    bottomNav.style.display = 'none';
     document.getElementById('item-documentos').click();
   });
   document.getElementById('menu-lateral-rutas').addEventListener('click', ()=>{
@@ -13054,7 +13079,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
   document.getElementById('btn-cerrar-estadisticas').addEventListener('click', ()=>{
     screenEstadisticas.style.display = 'none';
-    screenAjustes.style.display = 'block';
+    if(origenScreenEstadisticas){
+      mainScreens[origenScreenEstadisticas].style.display = 'block';
+      bottomNav.style.display = 'flex';
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+      const navItemOrigen = document.querySelector('.nav-item[data-nav="' + origenScreenEstadisticas + '"]');
+      if(navItemOrigen) navItemOrigen.classList.add('active');
+      origenScreenEstadisticas = null;
+    }else{
+      screenAjustes.style.display = 'block';
+    }
     window.scrollTo(0, 0);
   });
 
@@ -13291,7 +13325,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   });
   document.getElementById('btn-cerrar-ranking-clientes').addEventListener('click', ()=>{
     screenRankingClientes.style.display = 'none';
-    screenAjustes.style.display = 'block';
+    if(origenScreenRanking){
+      mainScreens[origenScreenRanking].style.display = 'block';
+      bottomNav.style.display = 'flex';
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+      const navItemOrigen = document.querySelector('.nav-item[data-nav="' + origenScreenRanking + '"]');
+      if(navItemOrigen) navItemOrigen.classList.add('active');
+      origenScreenRanking = null;
+    }else{
+      screenAjustes.style.display = 'block';
+    }
     window.scrollTo(0, 0);
   });
   document.getElementById('btn-cerrar-ranking-detalle').addEventListener('click', ()=>{
@@ -13510,7 +13553,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   });
   document.getElementById('btn-cerrar-documentos').addEventListener('click', ()=>{
     screenDocumentos.style.display = 'none';
-    screenAjustes.style.display = 'block';
+    if(origenScreenDocumentos){
+      mainScreens[origenScreenDocumentos].style.display = 'block';
+      bottomNav.style.display = 'flex';
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+      const navItemOrigen = document.querySelector('.nav-item[data-nav="' + origenScreenDocumentos + '"]');
+      if(navItemOrigen) navItemOrigen.classList.add('active');
+      origenScreenDocumentos = null;
+    }else{
+      screenAjustes.style.display = 'block';
+    }
     window.scrollTo(0, 0);
   });
 
