@@ -4063,6 +4063,19 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
    --primary es navy y no se lee sobre fondo oscuro). */
 :root{ --resumen-pactado:#2563EB; }
 body.modo-oscuro{ --resumen-pactado:#60A5FA; }
+/* NUEVO: etiqueta "Crédito 1 / Crédito 2" en la tarjeta de crédito */
+.loan-num-credito{
+  display:inline-block;
+  margin-top:6px;
+  padding:2px 9px;
+  border-radius:var(--radius-full);
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--resumen-pactado);
+  background:rgba(37,99,235,0.12);
+  border:1px solid rgba(37,99,235,0.25);
+  letter-spacing:0.1px;
+}
 /* Separación entre los dos bloques del resumen de préstamos activos */
 .resumen-activos-separador{ border:none; border-top:2px solid var(--text-secondary); opacity:0.35; margin:6px 0; }
 /* Versión compacta del modal: menos alto, letra más pequeña y más liviana.
@@ -6712,7 +6725,29 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   <section class="form-section" id="form-recordatorio">
     <div class="loan-client-tag" id="chip-cliente-recordatorio">Cliente</div>
 
-    <div class="form-field">
+    <!-- NUEVO: a pedido — clientes con varios créditos. El interruptor
+         crea de una vez un recordatorio por cada crédito activo (con la
+         próxima cuota pendiente de cada uno). Solo se muestra al crear
+         uno nuevo y si el cliente tiene 2 o más créditos con cuotas
+         pendientes. -->
+    <div class="card" id="fila-recordatorio-todos-creditos" style="display:none; padding:14px 16px;">
+      <div class="mora-toggle-row" style="padding:0;">
+        <div class="mora-toggle-text">
+          <div class="mora-toggle-title">Crear para todos sus créditos</div>
+          <div class="mora-toggle-subtitle" id="subtitulo-recordatorio-todos-creditos">Un recordatorio por cada crédito, con su próxima cuota pendiente.</div>
+        </div>
+        <button type="button" class="toggle-switch toggle-verde" id="toggle-recordatorio-todos-creditos" role="switch" aria-checked="false" aria-label="Crear recordatorio para todos sus créditos"></button>
+      </div>
+    </div>
+
+    <!-- NUEVO: primero se elige el crédito y la lista de cuotas muestra
+         solo las de ese crédito. Oculto si el cliente tiene uno solo. -->
+    <div class="form-field" id="campo-credito-recordatorio" style="display:none;">
+      <label class="field-label" for="select-credito-recordatorio">¿Para qué crédito?</label>
+      <select class="field-input field-select" id="select-credito-recordatorio"></select>
+    </div>
+
+    <div class="form-field" id="campo-cuota-recordatorio">
       <label class="field-label" for="select-cuota-recordatorio">¿Para qué cuota?</label>
       <select class="field-input field-select" id="select-cuota-recordatorio"></select>
     </div>
@@ -11398,6 +11433,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     toggleMostrarCodigoCredito.classList.toggle('toggle-verde', activo);
     toggleMostrarCodigoCredito.setAttribute('aria-checked', String(activo));
   }
+  // NUEVO: a pedido — el usuario pidió ocultar el ID del crédito en toda
+  // la app. Se apaga UNA sola vez "Mostrar ID del crédito" (queda marcado
+  // para no repetirse); después se puede volver a encender en Ajustes →
+  // Apariencia cuando se quiera.
+  try{
+    if(localStorage.getItem('prestapp_codigo_credito_oculto_migrado') !== '1'){
+      localStorage.setItem(MOSTRAR_CODIGO_CREDITO_KEY, '0');
+      localStorage.setItem('prestapp_codigo_credito_oculto_migrado', '1');
+    }
+  }catch(err){ mostrarCodigoCreditoEnMemoria = false; }
   aplicarMostrarCodigoCredito(cargarMostrarCodigoCredito());
 
   toggleMostrarCodigoCredito.addEventListener('click', ()=>{
@@ -11420,6 +11465,23 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   const OCULTAR_CODIGO_RECIBO_KEY = 'prestapp_ocultar_codigo_recibo';
   let ocultarCodigoReciboEnMemoria = false;
   const toggleOcultarCodigoRecibo = document.getElementById('toggle-ocultar-codigo-recibo');
+
+  // NUEVO: ayudantes para los textos armados en JS (listas, selectores,
+  // avisos), que el CSS de body.ocultar-codigo-credito no alcanza.
+  function mostrandoCodigoCredito(){
+    return !document.body.classList.contains('ocultar-codigo-credito');
+  }
+  // Nombre corto de un crédito para mostrar en pantalla: con el ID
+  // visible → "Crédito 2 · PRE-…" (o solo el código); con el ID oculto →
+  // "Crédito 2", o `siNoHay` si el cliente tiene un solo crédito.
+  function nombreCreditoPantalla(prestamo, siNoHay){
+    const n = (typeof numeroCreditoCliente === 'function') ? numeroCreditoCliente(prestamo) : null;
+    const numero = n ? 'Crédito ' + n : '';
+    if(mostrandoCodigoCredito() && prestamo && prestamo.codigo){
+      return numero ? numero + ' · ' + prestamo.codigo : prestamo.codigo;
+    }
+    return numero || (siNoHay === undefined ? 'Crédito' : siNoHay);
+  }
 
   function ocultarCodigoEnRecibos(){
     try{ return localStorage.getItem(OCULTAR_CODIGO_RECIBO_KEY) === '1'; }
@@ -18748,6 +18810,20 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // mostrarCliente (nuevo, opcional, default false): agrega el nombre del cliente bajo el
   // código — se usa solo en la pantalla global; en Detalle de Cliente no cambia nada porque
   // ese llamado sigue pasando un solo argumento.
+  // NUEVO: número de crédito del cliente ("Crédito 1", "Crédito 2"…).
+  // Solo existe si el préstamo está activo y el cliente tiene más de un
+  // crédito activo; se numeran del más antiguo (fecha de inicio) al más
+  // reciente. Devuelve null si no aplica. Única fuente para la etiqueta
+  // de la tarjeta y para el selector de Programar Recordatorio.
+  function numeroCreditoCliente(prestamo){
+    if(!prestamo || prestamo.estado !== 'activo') return null;
+    const activosCliente = prestamosGuardados
+      .filter(p => p.clienteId === prestamo.clienteId && p.estado === 'activo')
+      .sort((a, b)=> (a.fecha || '').localeCompare(b.fecha || '') || (a.id - b.id));
+    if(activosCliente.length < 2) return null;
+    return activosCliente.findIndex(p => p.id === prestamo.id) + 1;
+  }
+
   function crearTarjetaPrestamo(prestamo, mostrarCliente){
     // Cuotas realmente completas (no cuenta registros de pago sueltos: un
     // recargo por mora o un abono parcial no deben inflar el progreso)
@@ -18764,6 +18840,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // desaparece: pasa a ser una línea secundaria más chica, debajo.
     const clienteTarjeta = clientesGuardados.find(c => c.id === prestamo.clienteId);
 
+    // NUEVO: a pedido — etiqueta "Crédito 1", "Crédito 2"… cuando el
+    // cliente tiene más de un crédito activo. Se numeran del más antiguo
+    // (fecha de inicio) al más reciente, así el número de cada crédito
+    // no cambia al crear uno nuevo.
+    const numeroCreditoTarjeta = numeroCreditoCliente(prestamo);
+    const etiquetaNumeroCredito = numeroCreditoTarjeta ? 'Crédito ' + numeroCreditoTarjeta : '';
+
     const card = document.createElement('div');
     card.className = 'card loan-card-full loan-card-' + estadoVisual;
     card.innerHTML = `
@@ -18771,6 +18854,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <div>
           <div class="loan-card-nombre-principal">${clienteTarjeta ? escaparHtml(clienteTarjeta.nombre) : 'Cliente eliminado'}</div>
           <div class="loan-code">${prestamo.codigo || ''}</div>
+          ${etiquetaNumeroCredito ? `<span class="loan-num-credito">${etiquetaNumeroCredito}</span>` : ''}
         </div>
         <div class="loan-card-top-derecha">
           <div class="loan-badge ${estadoVisual}">${etiquetaEstadoVisual(estadoVisual)}</div>
@@ -19280,11 +19364,15 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           // ambas direcciones (el nuevo apunta al viejo, y el viejo al nuevo).
           if(prestamo.renovadoDesdeId){
             const origen = prestamosGuardados.find(p => p.id === prestamo.renovadoDesdeId);
-            if(origen) return `<div class="loan-detail-footer-date" style="color:var(--primary); font-weight:600;">Renovación de ${origen.codigo}</div>`;
+            // CAMBIO: sin el ID visible, se describe con la fecha de inicio
+            // del otro crédito en vez de su código.
+            const refOrigen = origen && mostrandoCodigoCredito() ? origen.codigo : (origen ? 'crédito del ' + formatearFechaCorta(new Date(origen.fecha + 'T00:00:00')) : '');
+            if(origen) return `<div class="loan-detail-footer-date" style="color:var(--primary); font-weight:600;">Renovación de ${escaparHtml(refOrigen)}</div>`;
           }
           if(prestamo.renovadoHaciaId){
             const destino = prestamosGuardados.find(p => p.id === prestamo.renovadoHaciaId);
-            if(destino) return `<div class="loan-detail-footer-date" style="color:var(--primary); font-weight:600;">Renovado hacia ${destino.codigo}</div>`;
+            const refDestino = destino && mostrandoCodigoCredito() ? destino.codigo : (destino ? 'crédito del ' + formatearFechaCorta(new Date(destino.fecha + 'T00:00:00')) : '');
+            if(destino) return `<div class="loan-detail-footer-date" style="color:var(--primary); font-weight:600;">Renovado hacia ${escaparHtml(refDestino)}</div>`;
           }
           return '';
         })()}
@@ -22577,7 +22665,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(!prestamoEnDetalle) return;
     mostrarConfirmacion(
       'Eliminar préstamo',
-      '¿Seguro deseas borrar el préstamo ' + (prestamoEnDetalle.codigo || '') + '? Esta acción no se puede deshacer.',
+      '¿Seguro deseas borrar ' + (mostrandoCodigoCredito() && prestamoEnDetalle.codigo ? 'el préstamo ' + prestamoEnDetalle.codigo : 'este préstamo') + '? Esta acción no se puede deshacer.',
       'Eliminar',
       ()=>{
         prestamosGuardados = prestamosGuardados.filter(p => p.id !== prestamoEnDetalle.id);
@@ -22648,7 +22736,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }
 
   function textoOpcionCuota(prestamo, cuota){
-    return (prestamo.codigo || 'Préstamo') + ' · Cuota ' + cuota.numero + ' · ' +
+    // CAMBIO: el código del crédito solo se antepone si "Mostrar ID del
+    // crédito" está activo (el crédito ya se eligió en el selector de arriba).
+    const prefijo = mostrandoCodigoCredito() ? (prestamo.codigo || 'Préstamo') + ' · ' : '';
+    return prefijo + 'Cuota ' + cuota.numero + ' · ' +
       formatearPesos(cuota.total) + ' · Vence ' + formatearFechaCorta(new Date(cuota.fechaISO));
   }
 
@@ -22668,45 +22759,134 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   let clienteParaRecordatorio = null;
   let origenFormularioRecordatorio = 'inicio'; // 'inicio' | 'detalle-cliente' — a dónde volver al cerrar
 
-  function llenarSelectCuotas(clienteId, seleccionarPrestamoId, seleccionarNumeroCuota){
-    const pendientes = cuotasPendientesCliente(clienteId);
-    selectCuotaRecordatorio.innerHTML = '';
+  // ==========================================================
+  // CAMBIO: a pedido — clientes con varios créditos. Las cuotas se
+  // agrupan por crédito: primero se elige el crédito (selector nuevo,
+  // oculto si hay uno solo) y la lista de cuotas muestra solo las de ese
+  // crédito. El valor del <select> de cuotas sigue siendo
+  // "prestamoId|numeroCuota", así que el guardado no cambia de formato.
+  // ==========================================================
+  const selectCreditoRecordatorio = document.getElementById('select-credito-recordatorio');
+  const campoCreditoRecordatorio = document.getElementById('campo-credito-recordatorio');
+  const campoCuotaRecordatorio = document.getElementById('campo-cuota-recordatorio');
+  const filaTodosCreditosRecordatorio = document.getElementById('fila-recordatorio-todos-creditos');
+  const toggleTodosCreditosRecordatorio = document.getElementById('toggle-recordatorio-todos-creditos');
+  let cuotasRecordatorioPorCredito = new Map(); // prestamoId -> [{ prestamo, cuota }]
+  let recordatorioParaTodosCreditos = false;
 
-    let yaIncluida = false;
-    pendientes.forEach(({ prestamo, cuota })=>{
+  function llenarCuotasDeCreditoRecordatorio(prestamoId, numeroCuotaSeleccionada){
+    selectCuotaRecordatorio.innerHTML = '';
+    (cuotasRecordatorioPorCredito.get(prestamoId) || []).forEach(({ prestamo, cuota })=>{
       const opt = document.createElement('option');
       opt.value = prestamo.id + '|' + cuota.numero;
       opt.textContent = textoOpcionCuota(prestamo, cuota);
-      if(prestamo.id === seleccionarPrestamoId && cuota.numero === seleccionarNumeroCuota) yaIncluida = true;
       selectCuotaRecordatorio.appendChild(opt);
     });
+    if(numeroCuotaSeleccionada){
+      selectCuotaRecordatorio.value = prestamoId + '|' + numeroCuotaSeleccionada;
+    }
+    // El <select> se acaba de repoblar; el trigger personalizado debe
+    // reflejar la opción que quedó seleccionada.
+    if(selectCuotaRecordatorio._refrescarTriggerPersonalizado) selectCuotaRecordatorio._refrescarTriggerPersonalizado();
+  }
+
+  function llenarSelectCuotas(clienteId, seleccionarPrestamoId, seleccionarNumeroCuota){
+    const pendientes = cuotasPendientesCliente(clienteId);
+    cuotasRecordatorioPorCredito = new Map();
+    const agregar = item => {
+      if(!cuotasRecordatorioPorCredito.has(item.prestamo.id)) cuotasRecordatorioPorCredito.set(item.prestamo.id, []);
+      cuotasRecordatorioPorCredito.get(item.prestamo.id).push(item);
+    };
+    pendientes.forEach(agregar);
 
     // Si se está editando un recordatorio cuya cuota ya no figura como
     // "pendiente" (se pagó, o el préstamo cambió), igual se deja visible
     // para no perder la referencia al guardar cambios.
+    const yaIncluida = pendientes.some(({ prestamo, cuota }) => prestamo.id === seleccionarPrestamoId && cuota.numero === seleccionarNumeroCuota);
+    let agregadaExtra = false;
     if(seleccionarPrestamoId && seleccionarNumeroCuota && !yaIncluida){
       const prestamo = prestamosGuardados.find(p => p.id === seleccionarPrestamoId);
       const cuota = prestamo ? (prestamo.plan || []).find(c => c.numero === seleccionarNumeroCuota) : null;
-      if(prestamo && cuota){
-        const opt = document.createElement('option');
-        opt.value = prestamo.id + '|' + cuota.numero;
-        opt.textContent = textoOpcionCuota(prestamo, cuota);
-        selectCuotaRecordatorio.appendChild(opt);
-      }
+      if(prestamo && cuota){ agregar({ prestamo, cuota }); agregadaExtra = true; }
     }
 
-    if(seleccionarPrestamoId && seleccionarNumeroCuota){
-      selectCuotaRecordatorio.value = seleccionarPrestamoId + '|' + seleccionarNumeroCuota;
-    }
+    // Selector de crédito — CAMBIO: a pedido, cada opción muestra el
+    // número de crédito ("Crédito 1", igual que la etiqueta de la tarjeta)
+    // además del código, y van ordenadas Crédito 1, Crédito 2…
+    const ordenCredito = id => {
+      const items = cuotasRecordatorioPorCredito.get(id);
+      const n = numeroCreditoCliente(items[0].prestamo);
+      return n === null ? Infinity : n;
+    };
+    cuotasRecordatorioPorCredito = new Map(
+      Array.from(cuotasRecordatorioPorCredito.entries()).sort((a, b)=> ordenCredito(a[0]) - ordenCredito(b[0]))
+    );
+    selectCreditoRecordatorio.innerHTML = '';
+    cuotasRecordatorioPorCredito.forEach((items, prestamoId)=>{
+      const prestamo = items[0].prestamo;
+      const nCredito = numeroCreditoCliente(prestamo);
+      const nPendientes = pendientes.filter(x => x.prestamo.id === prestamoId).length;
+      const opt = document.createElement('option');
+      opt.value = String(prestamoId);
+      opt.textContent = nombreCreditoPantalla(prestamo) + ' · ' + formatearPesos(prestamo.valor || 0) +
+        (nPendientes ? ' · ' + nPendientes + (nPendientes === 1 ? ' cuota pendiente' : ' cuotas pendientes') : '');
+      selectCreditoRecordatorio.appendChild(opt);
+    });
+    const creditos = Array.from(cuotasRecordatorioPorCredito.keys());
+    const creditoInicial = (seleccionarPrestamoId && cuotasRecordatorioPorCredito.has(seleccionarPrestamoId)) ? seleccionarPrestamoId : creditos[0];
+    if(creditoInicial !== undefined) selectCreditoRecordatorio.value = String(creditoInicial);
+    if(selectCreditoRecordatorio._refrescarTriggerPersonalizado) selectCreditoRecordatorio._refrescarTriggerPersonalizado();
+    campoCreditoRecordatorio.style.display = creditos.length > 1 ? '' : 'none';
 
-    // El <select> se acaba de repoblar con <option> nuevas; si no se le
-    // asignó .value arriba (ej. recordatorio nuevo, sin cuota
-    // preseleccionada), el trigger personalizado igual debe reflejar la
-    // primera opción que quedó seleccionada por defecto.
-    if(selectCuotaRecordatorio._refrescarTriggerPersonalizado) selectCuotaRecordatorio._refrescarTriggerPersonalizado();
+    llenarCuotasDeCreditoRecordatorio(creditoInicial, creditoInicial === seleccionarPrestamoId ? seleccionarNumeroCuota : null);
 
-    return pendientes.length > 0 || yaIncluida;
+    return pendientes.length > 0 || agregadaExtra;
   }
+
+  selectCreditoRecordatorio.addEventListener('change', ()=>{
+    llenarCuotasDeCreditoRecordatorio(Number(selectCreditoRecordatorio.value), null);
+  });
+
+  // Créditos con cuotas pendientes y la PRÓXIMA cuota pendiente de cada uno
+  // (cuotasPendientesCliente ya las devuelve en orden del plan).
+  function proximaCuotaPorCredito(clienteId){
+    const porCredito = new Map();
+    cuotasPendientesCliente(clienteId).forEach(({ prestamo, cuota })=>{
+      if(!porCredito.has(prestamo.id)) porCredito.set(prestamo.id, { prestamo, cuota });
+    });
+    return porCredito;
+  }
+
+  function aplicarModoTodosCreditosRecordatorio(){
+    toggleTodosCreditosRecordatorio.classList.toggle('on', recordatorioParaTodosCreditos);
+    toggleTodosCreditosRecordatorio.setAttribute('aria-checked', String(recordatorioParaTodosCreditos));
+    const nCreditos = cuotasRecordatorioPorCredito.size;
+    campoCreditoRecordatorio.style.display = (!recordatorioParaTodosCreditos && nCreditos > 1) ? '' : 'none';
+    campoCuotaRecordatorio.style.display = recordatorioParaTodosCreditos ? 'none' : '';
+    const nProximas = clienteParaRecordatorio ? proximaCuotaPorCredito(clienteParaRecordatorio.id).size : 0;
+    document.getElementById('subtitulo-recordatorio-todos-creditos').textContent = recordatorioParaTodosCreditos
+      ? 'Se crearán ' + nProximas + ' recordatorios, uno por crédito, con la próxima cuota pendiente de cada uno.'
+      : 'Un recordatorio por cada crédito, con su próxima cuota pendiente.';
+    if(recordatorioEditandoId === null){
+      textoBtnGuardarRecordatorio.textContent = recordatorioParaTodosCreditos
+        ? 'Guardar ' + nProximas + ' Recordatorios'
+        : 'Guardar Recordatorio';
+    }
+  }
+
+  // Muestra el interruptor solo al crear uno nuevo y si hay 2+ créditos
+  // con cuotas pendientes; siempre arranca apagado.
+  function prepararOpcionTodosCreditosRecordatorio(esNuevo){
+    recordatorioParaTodosCreditos = false;
+    const nCreditos = clienteParaRecordatorio ? proximaCuotaPorCredito(clienteParaRecordatorio.id).size : 0;
+    filaTodosCreditosRecordatorio.style.display = (esNuevo && nCreditos > 1) ? '' : 'none';
+    aplicarModoTodosCreditosRecordatorio();
+  }
+
+  toggleTodosCreditosRecordatorio.addEventListener('click', ()=>{
+    recordatorioParaTodosCreditos = !recordatorioParaTodosCreditos;
+    aplicarModoTodosCreditosRecordatorio();
+  });
 
   // NUEVO: encuentra cuál pantalla está realmente visible en este momento
   // (todas comparten la clase "app") — así "Programar Recordatorio" puede
@@ -22816,6 +22996,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // esa cuota queda preseleccionada en el desplegable en vez de la
     // primera cuota pendiente por defecto.
     llenarSelectCuotas(cliente.id, prestamoIdPreseleccionado || null, numeroCuotaPreseleccionado || null);
+    prepararOpcionTodosCreditosRecordatorio(true);
     inputFechaRecordatorio.value = claveFechaConOffset(0);
     inputHoraRecordatorio.value = '';
     inputNotaRecordatorio.value = '';
@@ -22848,6 +23029,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     textoBtnGuardarRecordatorio.textContent = 'Guardar Cambios';
     chipClienteRecordatorio.textContent = cliente.nombre;
     llenarSelectCuotas(cliente.id, recordatorio.prestamoId, recordatorio.numeroCuota);
+    prepararOpcionTodosCreditosRecordatorio(false);
     inputFechaRecordatorio.value = recordatorio.fecha;
     inputHoraRecordatorio.value = recordatorio.hora || '';
     inputNotaRecordatorio.value = recordatorio.nota || '';
@@ -22898,11 +23080,69 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
   btnCerrarRecordatorio.addEventListener('click', cerrarFormularioRecordatorio);
 
+  // CAMBIO: a pedido — antes se permitía UN solo recordatorio pendiente
+  // por cliente; ahora es uno por CRÉDITO, para que un cliente con varios
+  // créditos pueda tener un recordatorio para cada uno. No se compara
+  // contra el recordatorio que se está editando, para no bloquearse a sí
+  // mismo al guardar sin cambios.
+  function existeRecordatorioPendienteCredito(clienteId, prestamoId, excluirId){
+    return recordatoriosGuardados.some(r =>
+      r.id !== excluirId &&
+      r.estado === 'pendiente' &&
+      r.clienteId === clienteId &&
+      r.prestamoId === prestamoId
+    );
+  }
+
   btnGuardarRecordatorio.addEventListener('click', ()=>{
+    const fecha = inputFechaRecordatorio.value;
+
+    // NUEVO: modo "Crear para todos sus créditos" — un recordatorio por
+    // crédito activo, con la próxima cuota pendiente de cada uno. Los
+    // créditos que ya tienen un recordatorio pendiente se saltan.
+    if(recordatorioParaTodosCreditos && recordatorioEditandoId === null){
+      if(!fecha){
+        alert('Selecciona la fecha del recordatorio.');
+        return;
+      }
+      const clienteId = clienteParaRecordatorio.id;
+      const base = Date.now();
+      let creados = 0;
+      const omitidos = [];
+      proximaCuotaPorCredito(clienteId).forEach(({ prestamo, cuota })=>{
+        if(existeRecordatorioPendienteCredito(clienteId, prestamo.id, null)){
+          omitidos.push(nombreCreditoPantalla(prestamo));
+          return;
+        }
+        recordatoriosGuardados.push({
+          id: base + creados, // ids únicos aunque se creen en el mismo milisegundo
+          clienteId,
+          prestamoId: prestamo.id,
+          numeroCuota: cuota.numero,
+          fecha,
+          hora: inputHoraRecordatorio.value || '',
+          nota: inputNotaRecordatorio.value.trim(),
+          estado: 'pendiente'
+        });
+        creados++;
+      });
+      if(creados === 0){
+        alert('Todos los créditos de este cliente ya tienen un recordatorio pendiente.');
+        return;
+      }
+      guardarRecordatoriosStorage(recordatoriosGuardados);
+      actualizarCobros();
+      cerrarFormularioRecordatorio();
+      mostrarMensajeToast(
+        (creados === 1 ? 'Se creó 1 recordatorio' : 'Se crearon ' + creados + ' recordatorios') +
+        (omitidos.length ? ' (ya tenían: ' + omitidos.join(', ') + ')' : '')
+      );
+      return;
+    }
+
     const partes = (selectCuotaRecordatorio.value || '').split('|');
     const prestamoId = partes[0] ? Number(partes[0]) : null;
     const numeroCuota = partes[1] ? Number(partes[1]) : null;
-    const fecha = inputFechaRecordatorio.value;
 
     if(!prestamoId || !numeroCuota){
       alert('Selecciona para qué cuota es el recordatorio.');
@@ -22913,19 +23153,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       return;
     }
 
-    // NUEVO: avisa si el cliente YA TIENE un recordatorio pendiente —
-    // sin importar la cuota ni la fecha que se le vaya a poner a este
-    // nuevo — para evitar que un mismo cliente quede con más de un
-    // recordatorio pendiente a la vez. No se compara contra el
-    // recordatorio que se está editando (recordatorioEditandoId), para
-    // no bloquearse a sí mismo al guardar sin cambios.
-    const yaExiste = recordatoriosGuardados.some(r =>
-      r.id !== recordatorioEditandoId &&
-      r.estado === 'pendiente' &&
-      r.clienteId === clienteParaRecordatorio.id
-    );
-    if(yaExiste){
-      alert('Ya existe un recordatorio pendiente para este cliente.');
+    if(existeRecordatorioPendienteCredito(clienteParaRecordatorio.id, prestamoId, recordatorioEditandoId)){
+      const prestamoDup = prestamosGuardados.find(p => p.id === prestamoId);
+      const nombreDup = prestamoDup ? nombreCreditoPantalla(prestamoDup, '') : '';
+      alert('Ya existe un recordatorio pendiente para este crédito' + (nombreDup ? ' (' + nombreDup + ')' : '') + '.');
       return;
     }
 
@@ -23148,7 +23379,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       </div>
       <div class="info">
         <div class="name">${escaparHtml(cliente.nombre)}</div>
-        <div class="quota">Cuota #${cuota.numero} - ${formatearPesos(cuota.total)}<span class="recordatorio-chip">${fechaChip}</span></div>
+        <div class="quota">${(()=>{ const nc = nombreCreditoPantalla(prestamo, ''); return nc ? escaparHtml(nc) + ' · ' : ''; })()}Cuota #${cuota.numero} - ${formatearPesos(cuota.total)}<span class="recordatorio-chip">${fechaChip}</span></div>
       </div>
       <div class="actions">
         <div class="chevron">
@@ -25413,7 +25644,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const signo = mov.entrada ? '+' : '-';
     const card = document.createElement('div');
     card.className = 'card movimiento-caja-item';
-    const detalleLinea = [mov.cliente, mov.credito].filter(Boolean).join(' · ');
+    // CAMBIO: el código del crédito solo se muestra si "Mostrar ID del
+    // crédito" está activo (el buscador lo sigue encontrando igual).
+    const detalleLinea = [mov.cliente, mostrandoCodigoCredito() ? mov.credito : null].filter(Boolean).join(' · ');
     card.innerHTML = `
       <div class="icon-container ${COLOR_MOVIMIENTO_NEGOCIO[mov.tipo] || 'blue'}">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${mov.entrada
@@ -26715,6 +26948,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   convertirSelectAPersonalizado(document.getElementById('select-ruta-cliente'), 'Ruta');
   convertirSelectAPersonalizado(document.getElementById('select-categoria-gasto'), 'Categoría del Gasto');
   convertirSelectAPersonalizado(document.getElementById('select-cuota-recordatorio'), 'Cuota');
+  convertirSelectAPersonalizado(document.getElementById('select-credito-recordatorio'), 'Crédito');
 
   // NUEVO: reemplaza el calendario nativo de Android en todos los campos
   // de fecha del sistema por el calendario propio de la app.
