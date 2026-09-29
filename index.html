@@ -4056,6 +4056,13 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 .gs-cat-barra{ height:6px; border-radius:var(--radius-full); background:var(--background); overflow:hidden; }
 .gs-cat-relleno{ height:100%; border-radius:var(--radius-full); background:var(--danger); opacity:0.8; }
 .gasto-item{ cursor:pointer; }
+/* NUEVO: tarjeta "Préstamos Activos" del detalle del cliente, tocable */
+.stat-card-tocable{ cursor:pointer; transition:transform .12s ease; }
+.stat-card-tocable:active{ transform:scale(0.97); }
+/* Azul fijo para "lo pactado" en el resumen de préstamos activos (el
+   --primary es navy y no se lee sobre fondo oscuro). */
+:root{ --resumen-pactado:#2563EB; }
+body.modo-oscuro{ --resumen-pactado:#60A5FA; }
 .gs-admin-cat-fila{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-top:1px solid var(--border); }
 .gs-admin-cat-fila:first-child{ border-top:none; }
 .gs-admin-cat-nombre{ font-size:14px; font-weight:600; color:var(--text); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -6553,7 +6560,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     <!-- ESTADÍSTICAS DE PRÉSTAMOS -->
     <div class="detail-stats">
-      <div class="card stat-card-sm">
+      <!-- NUEVO: a pedido — al tocarla abre el resumen financiero de los
+           préstamos activos del cliente (ver resumen-activos-cliente-overlay). -->
+      <div class="card stat-card-sm stat-card-tocable" id="card-stat-prestamos-activos" role="button" tabindex="0" aria-label="Ver resumen de préstamos activos">
         <div class="value" id="stat-prestamos-activos">0</div>
         <div class="label">Préstamos Activos</div>
       </div>
@@ -9417,6 +9426,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
      lo bloquean silenciosamente) para acciones destructivas como
      eliminar un cliente o un préstamo.
      ========================================================== -->
+<!-- NUEVO: resumen de los préstamos activos de un cliente (se abre al
+     tocar la tarjeta "Préstamos Activos" del detalle del cliente). Solo
+     lectura: usa las funciones de cálculo que ya existían. -->
+<div id="resumen-activos-cliente-overlay" class="confirm-modal-overlay" style="display:none; background:rgba(20,30,60,0.45);">
+  <div class="confirm-modal-card" style="max-width:360px;">
+    <div class="confirm-modal-title" style="margin-bottom:2px;">Préstamos activos</div>
+    <div style="font-size:13px; color:var(--text-secondary); margin-bottom:14px;" id="resumen-activos-cliente-sub"></div>
+    <div style="text-align:left;" id="resumen-activos-cliente-filas"></div>
+    <div id="resumen-activos-cliente-nota" style="display:none; font-size:12.5px; color:var(--text-secondary); margin-top:10px;">Este cliente no tiene préstamos activos.</div>
+    <button type="button" class="confirm-modal-btn cancelar" id="btn-cerrar-resumen-activos-cliente" style="width:100%; margin-top:18px;">Cerrar</button>
+  </div>
+</div>
+
 <div id="confirm-modal-overlay" class="confirm-modal-overlay" style="display:none;">
   <div class="confirm-modal-card">
     <div class="confirm-modal-icon">
@@ -18815,6 +18837,83 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // NUEVO: qué pestaña de "Historial de Créditos" está activa — se
   // reinicia a "activo" cada vez que se abre la ficha de un cliente.
   let filtroEstadoHistorialCreditos = 'activo';
+
+  // ==========================================================
+  // NUEVO — a pedido: resumen de préstamos activos del cliente, al tocar
+  // la tarjeta "Préstamos Activos". Solo lectura; reutiliza tal cual las
+  // funciones de cálculo que ya usa el resto de la app (Centro
+  // Financiero / Ticket de crédito): interesTotalPrestamo,
+  // capitalRecuperadoPrestamo, carteraPendientePrestamo e
+  // interesCobradoPrestamo. No hay ninguna fórmula nueva.
+  // ==========================================================
+  const resumenActivosClienteOverlay = document.getElementById('resumen-activos-cliente-overlay');
+
+  function abrirResumenActivosCliente(){
+    if(!clienteEnDetalle) return;
+    const activos = prestamosGuardados.filter(p => p.clienteId === clienteEnDetalle.id && p.estado === 'activo');
+    const sumar = fn => activos.reduce((s, p) => s + (fn(p) || 0), 0);
+
+    const interesTotal = sumar(interesTotalPrestamo);
+    const interesCobrado = sumar(interesCobradoPrestamo);
+    // Progreso: cuotas pagadas / cuotas totales — mismo criterio que la
+    // barra de "Progreso" de cada crédito y el anillo del avatar.
+    const cuotasPagadas = activos.reduce((s, p) => s + (p.plan || []).filter(c => estaCuotaPagada(p, c.numero)).length, 0);
+    const cuotasTotales = activos.reduce((s, p) => s + (p.cuotas || 0), 0);
+    const progreso = cuotasTotales > 0 ? Math.min(100, Math.round((cuotasPagadas / cuotasTotales) * 100)) : 0;
+
+    // Color según el contexto: azul = lo pactado, verde = lo que ya entró,
+    // naranja = lo que falta por cobrar (mismo naranja de la tarjeta
+    // "Pendiente").
+    const COLOR = { base:'var(--text)', pactado:'var(--resumen-pactado)', cobrado:'var(--success)', pendiente:'var(--warning)' };
+    const filas = [
+      ['Total prestado', formatearPesos(sumar(p => p.valor)), COLOR.base],
+      ['Total a pagar', formatearPesos(sumar(p => p.totalAPagar)), COLOR.pactado],
+      ['Interés total', formatearPesos(interesTotal), COLOR.pactado],
+      ['Total abonado', formatearPesos(sumar(totalAbonadoPrestamo)), COLOR.cobrado],
+      ['Capital recuperado', formatearPesos(sumar(capitalRecuperadoPrestamo)), COLOR.cobrado],
+      ['Capital pendiente', formatearPesos(sumar(carteraPendientePrestamo)), COLOR.pendiente],
+      ['Interés cobrado', formatearPesos(interesCobrado), COLOR.cobrado],
+      ['Interés pendiente', formatearPesos(Math.max(interesTotal - interesCobrado, 0)), COLOR.pendiente],
+      ['Progreso', progreso + '%', COLOR.cobrado]
+    ];
+    const cont = document.getElementById('resumen-activos-cliente-filas');
+    cont.innerHTML = '';
+    filas.forEach(([etiqueta, valor, color])=>{
+      const fila = document.createElement('div');
+      fila.className = 'cc-resumen-fila';
+      const l = document.createElement('span');
+      l.className = 'cc-resumen-label';
+      l.textContent = etiqueta;
+      const v = document.createElement('span');
+      v.className = 'cc-resumen-valor';
+      v.style.color = color;
+      v.textContent = valor;
+      fila.appendChild(l);
+      fila.appendChild(v);
+      cont.appendChild(fila);
+    });
+
+    // Barra de progreso debajo del listado (misma barra de las tarjetas
+    // de crédito), con el conteo de cuotas.
+    const barra = document.createElement('div');
+    barra.style.cssText = 'padding:4px 0 2px;';
+    barra.innerHTML = `
+      <div class="loan-progress-track"><div class="loan-progress-fill" style="width:${progreso}%;"></div></div>
+      <div style="font-size:12px; color:var(--text-secondary); margin-top:6px; text-align:right;">${cuotasPagadas} de ${cuotasTotales} cuotas pagadas</div>`;
+    cont.appendChild(barra);
+
+    document.getElementById('resumen-activos-cliente-sub').textContent = clienteEnDetalle.nombre +
+      (activos.length ? ' · ' + activos.length + (activos.length === 1 ? ' crédito activo' : ' créditos activos') : '');
+    document.getElementById('resumen-activos-cliente-nota').style.display = activos.length ? 'none' : 'block';
+    resumenActivosClienteOverlay.style.display = 'flex';
+  }
+  function cerrarResumenActivosCliente(){ resumenActivosClienteOverlay.style.display = 'none'; }
+
+  const cardStatPrestamosActivos = document.getElementById('card-stat-prestamos-activos');
+  cardStatPrestamosActivos.addEventListener('click', abrirResumenActivosCliente);
+  cardStatPrestamosActivos.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); abrirResumenActivosCliente(); } });
+  document.getElementById('btn-cerrar-resumen-activos-cliente').addEventListener('click', cerrarResumenActivosCliente);
+  resumenActivosClienteOverlay.addEventListener('click', (e)=>{ if(e.target === resumenActivosClienteOverlay) cerrarResumenActivosCliente(); });
 
   function renderizarPrestamosCliente(clienteId){
     const listaContenedor = document.getElementById('lista-prestamos-cliente');
