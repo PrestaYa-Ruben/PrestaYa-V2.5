@@ -4046,6 +4046,21 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
    ========================================================== */
 .bd-item-vacio{ text-align:center; color:var(--text-secondary); font-size:14px; padding:30px 10px; }
 
+/* NUEVO — Gastos: desglose por categoría con barra proporcional */
+.gs-cat-fila{ padding:10px 0; border-top:1px solid var(--border); }
+.gs-cat-fila:first-child{ border-top:none; }
+.gs-cat-top{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:6px; }
+.gs-cat-nombre{ font-size:13.5px; font-weight:600; color:var(--text); }
+.gs-cat-monto{ font-size:14px; font-weight:700; color:var(--text); white-space:nowrap; }
+.gs-cat-porc{ font-size:12px; font-weight:500; color:var(--text-secondary); margin-left:6px; }
+.gs-cat-barra{ height:6px; border-radius:var(--radius-full); background:var(--background); overflow:hidden; }
+.gs-cat-relleno{ height:100%; border-radius:var(--radius-full); background:var(--danger); opacity:0.8; }
+.gasto-item{ cursor:pointer; }
+.gs-admin-cat-fila{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-top:1px solid var(--border); }
+.gs-admin-cat-fila:first-child{ border-top:none; }
+.gs-admin-cat-nombre{ font-size:14px; font-weight:600; color:var(--text); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.gs-admin-cat-fijo{ font-size:12px; color:var(--text-secondary); padding:0 4px; }
+
 /* --- Filtro por Ruta / Administrar Rutas --- */
 .ruta-check-item{
   display:flex;
@@ -5480,6 +5495,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <div class="menu-lateral-item" id="menu-lateral-corte-caja">
       <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01"></path><path d="M18 12h.01"></path></svg></div>
       <span>Apertura y Cierre de Caja</span>
+    </div>
+    <!-- NUEVO: a pedido — Gastos del negocio, con pantalla propia. -->
+    <div class="menu-lateral-item" id="menu-lateral-gastos">
+      <div class="icon-container red"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><line x1="8" y1="8" x2="16" y2="8"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="8" y1="16" x2="12" y2="16"></line></svg></div>
+      <span>Gastos</span>
     </div>
 
     <hr class="loan-divider" style="margin:10px 0;">
@@ -7854,6 +7874,128 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     </div>
 
   </section>
+</div>
+
+<!-- ==========================================================
+     NUEVO — Gastos: pantalla propia, en el menú lateral. NO crea una
+     lista aparte: lee y escribe los mismos movimientos de caja de tipo
+     "gasto" que ya usa Centro Financiero ("Registrar Movimiento"), así
+     que Caja, Utilidad, Reportes y Corte de Caja siguen cuadrando igual.
+     ========================================================== -->
+<div class="app" id="screen-gastos" style="display:none;">
+  <header class="header">
+    <button class="back-btn" id="btn-cerrar-gastos" aria-label="Volver">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <h1>Gastos</h1>
+    <span class="header-spacer"></span>
+  </header>
+
+  <div class="tabs" id="tabs-gastos-periodo" style="padding:14px 14px 4px;">
+    <button type="button" class="tab-button active" data-periodo="hoy">Hoy</button>
+    <button type="button" class="tab-button" data-periodo="semana">Semana</button>
+    <button type="button" class="tab-button" data-periodo="mes">Mes</button>
+    <button type="button" class="tab-button" data-periodo="todo">Todo</button>
+  </div>
+
+  <section class="detail-body" style="padding-top:8px;">
+
+    <!-- Filtro por rango de fechas (Desde / Hasta). Si se usa, manda
+         sobre las pestañas Hoy/Semana/Mes/Todo. -->
+    <div>
+      <div class="fila-doble-campo">
+        <div class="form-field" style="flex:1; min-width:0;">
+          <label class="field-label" for="input-gastos-desde">Desde</label>
+          <input class="field-input" id="input-gastos-desde" type="date" placeholder="Desde">
+        </div>
+        <div class="form-field" style="flex:1; min-width:0;">
+          <label class="field-label" for="input-gastos-hasta">Hasta</label>
+          <input class="field-input" id="input-gastos-hasta" type="date" placeholder="Hasta">
+        </div>
+      </div>
+      <button type="button" class="btn-limpiar-pegar-datos-cliente" id="btn-quitar-fechas-gastos" style="display:none; margin-top:10px; width:100%; padding:11px 14px; border-radius:var(--radius-md); font-weight:600; font-size:13.5px;">Quitar fechas</button>
+    </div>
+
+    <!-- Total del período -->
+    <div class="card" style="padding:20px 18px;">
+      <div class="loan-detail-label" style="text-align:center;" id="gs-total-titulo">Gastos de hoy</div>
+      <div class="cc-hero-valor" id="gs-total-valor" style="color:var(--danger);">$0</div>
+      <div class="cc-hero-sub" id="gs-total-sub">Sin gastos registrados</div>
+    </div>
+
+    <button type="button" class="primary-button" id="btn-registrar-gasto" style="width:100%;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Registrar gasto
+    </button>
+
+    <!-- Desglose por categoría -->
+    <div class="card" style="padding:16px 18px;" id="gs-desglose-card">
+      <div class="section-title" style="margin-bottom:8px;">Por categoría</div>
+      <div id="gs-desglose-lista"></div>
+    </div>
+
+    <!-- Lista -->
+    <div>
+      <div class="section-title" style="margin-bottom:10px;">Gastos registrados</div>
+      <div class="tabs" id="chips-categoria-gastos" style="padding:0 0 12px;"></div>
+      <div id="lista-gastos"></div>
+      <div class="bd-item-vacio" id="gastos-vacio-mensaje" style="display:none;">No hay gastos en este período.</div>
+    </div>
+
+  </section>
+</div>
+
+<!-- Formulario: registrar / editar un gasto -->
+<div id="gasto-form-overlay" class="confirm-modal-overlay" style="display:none; align-items:flex-start; padding-top:40px; padding-bottom:40px; overflow-y:auto; background:rgba(20,30,60,0.45);">
+  <div class="mora-hoy-card" style="text-align:left;">
+    <div class="confirm-modal-title" id="gasto-form-titulo" style="margin-bottom:16px; text-align:center;">Registrar gasto</div>
+
+    <div class="form-section" style="padding:0; gap:16px;">
+      <div class="form-field">
+        <label class="field-label" for="input-gasto-monto">Valor</label>
+        <input class="field-input" id="input-gasto-monto" type="text" inputmode="numeric" placeholder="$ 0">
+      </div>
+
+      <div class="form-field">
+        <label class="field-label" for="select-gasto-categoria">Categoría</label>
+        <select class="field-input field-select" id="select-gasto-categoria"></select>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn-limpiar-pegar-datos-cliente" id="btn-nueva-categoria-gasto" style="padding:8px 14px; font-size:13px; border-radius:var(--radius-md);">+ Nueva categoría</button>
+          <button type="button" class="btn-limpiar-pegar-datos-cliente" id="btn-administrar-categorias-gasto" style="padding:8px 14px; font-size:13px; border-radius:var(--radius-md);">Administrar</button>
+        </div>
+        <!-- NUEVO: lista de categorías con caneca para eliminarlas -->
+        <div class="card" id="admin-categorias-gasto" style="display:none; padding:4px 14px; box-shadow:none;">
+          <div id="lista-admin-categorias-gasto"></div>
+        </div>
+        <div id="nueva-categoria-gasto-wrap" style="display:none; gap:8px;">
+          <input class="field-input" id="input-nueva-categoria-gasto" type="text" placeholder="Ej: Arriendo, Gasolina" style="flex:1; min-width:0;">
+          <button type="button" class="btn-detectar-datos-cliente" id="btn-agregar-categoria-gasto" style="flex-shrink:0; padding:0 16px;">Agregar</button>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="field-label" for="input-gasto-concepto">Concepto</label>
+        <input class="field-input" id="input-gasto-concepto" type="text" placeholder="Ej: Gasolina moto ruta norte">
+      </div>
+
+      <div class="form-field">
+        <label class="field-label" for="input-gasto-fecha">Fecha del gasto</label>
+        <input class="field-input" id="input-gasto-fecha" type="date">
+      </div>
+
+      <div class="form-field">
+        <label class="field-label">Método de pago</label>
+        <div class="tabs" id="tabs-gasto-metodo" style="padding:0;">
+          <button type="button" class="tab-button active" data-metodo="efectivo">Efectivo</button>
+          <button type="button" class="tab-button" data-metodo="transferencia">Transferencia</button>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="primary-button" id="btn-guardar-gasto" style="width:100%; margin-top:20px; margin-bottom:10px;">Guardar gasto</button>
+    <button type="button" class="confirm-modal-btn confirmar" id="btn-anular-gasto" style="width:100%; margin-bottom:10px; display:none;">Anular gasto</button>
+    <button type="button" class="confirm-modal-btn cancelar" id="btn-cerrar-gasto-form" style="width:100%;">Cancelar</button>
+  </div>
 </div>
 
 <!-- ==========================================================
@@ -25028,7 +25170,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   const _abrirNuevoMovimientoCajaOriginal = abrirNuevoMovimientoCaja;
   abrirNuevoMovimientoCaja = function(tipoPorDefecto){
     _abrirNuevoMovimientoCajaOriginal(tipoPorDefecto);
-    selectCategoriaGasto.value = 'Transporte';
+    // CORREGIDO: antes fijo en 'Transporte'; como ahora las categorías se
+    // pueden eliminar, se toma la primera disponible.
+    selectCategoriaGasto.value = selectCategoriaGasto.options.length ? selectCategoriaGasto.options[0].value : 'Otro';
     actualizarVisibilidadCategoriaGasto();
   };
 
@@ -25913,6 +26057,508 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     renderizarBaseDatos(baseDatosGuardada);
     screenBaseDatos.style.display = 'block';
     bottomNav.style.display = 'none';
+    window.scrollTo(0, 0);
+  });
+
+  // ==========================================================
+  // NUEVO — Gastos (pantalla propia, desde el menú lateral).
+  // Trabaja sobre los MISMOS movimientos de caja tipo 'gasto' que ya
+  // guarda "Registrar Movimiento" (movimientosCajaGuardados): no hay
+  // lista paralela ni fórmulas nuevas — Caja, Centro Financiero,
+  // Reportes y Corte de Caja siguen leyendo esos mismos registros.
+  // Agrega: filtros por período/fecha/categoría, desglose, edición,
+  // anulación (mismo criterio "anulado" de siempre), método de pago y
+  // categorías personalizadas.
+  // ==========================================================
+  const CATEGORIAS_GASTO_BASE = ['Transporte','Papelería','Publicidad','Comisiones','Mantenimiento','Servicios','Otro'];
+  const CATEGORIAS_GASTO_EXTRA_KEY = 'prestapp_categorias_gasto_extra';
+  function cargarCategoriasGastoExtra(){ try{ const g = localStorage.getItem(CATEGORIAS_GASTO_EXTRA_KEY); return g ? JSON.parse(g) : []; }catch(e){ return []; } }
+  function guardarCategoriasGastoExtra(lista){ try{ localStorage.setItem(CATEGORIAS_GASTO_EXTRA_KEY, JSON.stringify(lista)); }catch(e){} }
+  let categoriasGastoExtra = cargarCategoriasGastoExtra();
+
+  // NUEVO: categorías eliminadas por la persona (incluidas las que venían
+  // por defecto). Solo se quitan del selector: los gastos ya guardados
+  // con esa categoría la conservan tal cual, para no alterar el historial.
+  const CATEGORIAS_GASTO_OCULTAS_KEY = 'prestapp_categorias_gasto_ocultas';
+  function cargarCategoriasGastoOcultas(){ try{ const g = localStorage.getItem(CATEGORIAS_GASTO_OCULTAS_KEY); return g ? JSON.parse(g) : []; }catch(e){ return []; } }
+  function guardarCategoriasGastoOcultas(lista){ try{ localStorage.setItem(CATEGORIAS_GASTO_OCULTAS_KEY, JSON.stringify(lista)); }catch(e){} }
+  let categoriasGastoOcultas = cargarCategoriasGastoOcultas();
+  const estaOcultaCategoriaGasto = c => categoriasGastoOcultas.some(x => x.toLowerCase() === String(c).toLowerCase());
+
+  // Base (sin "Otro") + personalizadas, menos las eliminadas, y "Otro"
+  // siempre al final (no se puede eliminar: es el comodín).
+  function categoriasGasto(){
+    const lista = [];
+    const agregar = c => { if(c && c !== 'Otro' && !estaOcultaCategoriaGasto(c) && !lista.some(x => x.toLowerCase() === c.toLowerCase())) lista.push(c); };
+    CATEGORIAS_GASTO_BASE.forEach(agregar);
+    categoriasGastoExtra.forEach(agregar);
+    movimientosCajaGuardados.forEach(m => { if(m.tipo === 'gasto') agregar(m.categoria); });
+    lista.push('Otro');
+    return lista;
+  }
+  function poblarSelectCategoriasGasto(selectEl){
+    if(!selectEl) return;
+    const valorPrevio = selectEl.value;
+    const cats = categoriasGasto();
+    selectEl.innerHTML = '';
+    cats.forEach(c=>{
+      const o = document.createElement('option');
+      o.value = c; o.textContent = c;
+      selectEl.appendChild(o);
+    });
+    selectEl.value = cats.includes(valorPrevio) ? valorPrevio : cats[0];
+  }
+
+  const screenGastos = document.getElementById('screen-gastos');
+  const gastoFormOverlay = document.getElementById('gasto-form-overlay');
+  const inputGastoMonto = document.getElementById('input-gasto-monto');
+  const selectGastoCategoria = document.getElementById('select-gasto-categoria');
+  const inputGastoConcepto = document.getElementById('input-gasto-concepto');
+  const inputGastoFecha = document.getElementById('input-gasto-fecha');
+  const inputGastosDesde = document.getElementById('input-gastos-desde');
+  const inputGastosHasta = document.getElementById('input-gastos-hasta');
+  const btnQuitarFechasGastos = document.getElementById('btn-quitar-fechas-gastos');
+  const nuevaCategoriaGastoWrap = document.getElementById('nueva-categoria-gasto-wrap');
+  const inputNuevaCategoriaGasto = document.getElementById('input-nueva-categoria-gasto');
+
+  let periodoGastosActivo = 'hoy';
+  // Rango 'YYYY-MM-DD' (cualquiera de los dos puede ir vacío). Si hay
+  // alguno, manda sobre las pestañas de período.
+  let desdeFiltroGastos = null;
+  let hastaFiltroGastos = null;
+  function hayRangoFechasGastos(){ return !!(desdeFiltroGastos || hastaFiltroGastos); }
+  let categoriaFiltroGastos = null; // null = todas
+  let gastoEditandoId = null;
+  let metodoGastoActivo = 'efectivo';
+
+  const TITULOS_PERIODO_GASTOS = { hoy:'Gastos de hoy', semana:'Gastos de esta semana', mes:'Gastos de este mes', todo:'Todos los gastos' };
+  const ICONO_GASTO_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><line x1="8" y1="8" x2="16" y2="8"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>';
+
+  function gastosDelPeriodo(){
+    let lista = movimientosCajaGuardados.filter(m => m.tipo === 'gasto' && !m.anulado);
+    if(hayRangoFechasGastos()){
+      // Comparación por clave de día local 'YYYY-MM-DD' (orden de texto =
+      // orden de fecha), ambos extremos incluidos.
+      lista = lista.filter(m=>{
+        const k = claveFechaLocal(new Date(m.fecha));
+        return (!desdeFiltroGastos || k >= desdeFiltroGastos) && (!hastaFiltroGastos || k <= hastaFiltroGastos);
+      });
+    }else if(periodoGastosActivo !== 'todo'){
+      const rango = calcularRangoFechas(periodoGastosActivo);
+      lista = lista.filter(m => { const f = new Date(m.fecha); return f >= rango.inicio && f <= rango.fin; });
+    }
+    return lista.sort((a, b)=> (new Date(b.fecha) - new Date(a.fecha)) || (b.id - a.id));
+  }
+
+  function crearTarjetaGasto(mov){
+    const metodoTxt = mov.metodoPago === 'transferencia' ? 'Transferencia' : (mov.metodoPago === 'efectivo' ? 'Efectivo' : '');
+    const card = document.createElement('div');
+    card.className = 'card movimiento-caja-item gasto-item';
+    card.innerHTML = `
+      <div class="icon-container red">${ICONO_GASTO_SVG}</div>
+      <div class="movimiento-caja-info">
+        <div class="movimiento-caja-top">
+          <span class="movimiento-caja-monto">-${formatearPesos(mov.monto || 0)}</span>
+          <span class="movimiento-caja-fecha">${formatearFechaCorta(new Date(mov.fecha))}</span>
+        </div>
+        <div class="movimiento-caja-concepto">${escaparHtml(mov.concepto || mov.categoria || 'Gasto')}</div>
+        <div class="movimiento-caja-tipo">${escaparHtml([mov.categoria || 'Sin categoría', metodoTxt].filter(Boolean).join(' · '))}</div>
+      </div>
+      <div class="trailing chevron" style="color:var(--text-secondary); flex-shrink:0;">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>`;
+    card.addEventListener('click', ()=> abrirFormularioGasto(mov.id));
+    return card;
+  }
+
+  function renderizarGastos(){
+    const delPeriodo = gastosDelPeriodo();
+    const total = delPeriodo.reduce((s, m)=> s + (m.monto || 0), 0);
+
+    // ---- Total ----
+    const fCorta = k => formatearFechaCorta(new Date(k + 'T00:00:00'));
+    let tituloTotal = TITULOS_PERIODO_GASTOS[periodoGastosActivo];
+    if(desdeFiltroGastos && hastaFiltroGastos){
+      tituloTotal = desdeFiltroGastos === hastaFiltroGastos
+        ? 'Gastos del ' + fCorta(desdeFiltroGastos)
+        : 'Gastos del ' + fCorta(desdeFiltroGastos) + ' al ' + fCorta(hastaFiltroGastos);
+    }else if(desdeFiltroGastos){
+      tituloTotal = 'Gastos desde el ' + fCorta(desdeFiltroGastos);
+    }else if(hastaFiltroGastos){
+      tituloTotal = 'Gastos hasta el ' + fCorta(hastaFiltroGastos);
+    }
+    document.getElementById('gs-total-titulo').textContent = tituloTotal;
+    document.getElementById('gs-total-valor').textContent = formatearPesos(total);
+    const n = delPeriodo.length;
+    let sub = n === 0 ? 'Sin gastos registrados' : (n === 1 ? '1 gasto' : n + ' gastos');
+    const enEfectivo = delPeriodo.filter(m => m.metodoPago === 'efectivo').reduce((s, m)=> s + (m.monto || 0), 0);
+    const enTransferencia = delPeriodo.filter(m => m.metodoPago === 'transferencia').reduce((s, m)=> s + (m.monto || 0), 0);
+    // El reparto solo se muestra si todos los gastos del período tienen
+    // método (los registrados desde Centro Financiero no lo traen), para
+    // no mostrar un "Efectivo $0" que no sea cierto.
+    const todosConMetodo = n > 0 && delPeriodo.every(m => m.metodoPago === 'efectivo' || m.metodoPago === 'transferencia');
+    if(todosConMetodo){
+      sub += ' · Efectivo ' + formatearPesos(enEfectivo) + ' · Transf. ' + formatearPesos(enTransferencia);
+    }
+    document.getElementById('gs-total-sub').textContent = sub;
+
+    // ---- Desglose por categoría ----
+    const porCategoria = {};
+    delPeriodo.forEach(m=>{
+      const c = m.categoria || 'Sin categoría';
+      porCategoria[c] = (porCategoria[c] || 0) + (m.monto || 0);
+    });
+    const categoriasOrdenadas = Object.keys(porCategoria).sort((a, b)=> porCategoria[b] - porCategoria[a]);
+    const desgloseCard = document.getElementById('gs-desglose-card');
+    const desgloseLista = document.getElementById('gs-desglose-lista');
+    desgloseLista.innerHTML = '';
+    desgloseCard.style.display = categoriasOrdenadas.length ? '' : 'none';
+    categoriasOrdenadas.forEach(c=>{
+      const porc = total > 0 ? Math.round((porCategoria[c] / total) * 100) : 0;
+      const fila = document.createElement('div');
+      fila.className = 'gs-cat-fila';
+      fila.innerHTML = `
+        <div class="gs-cat-top">
+          <span class="gs-cat-nombre">${escaparHtml(c)}</span>
+          <span class="gs-cat-monto">${formatearPesos(porCategoria[c])}<span class="gs-cat-porc">${porc}%</span></span>
+        </div>
+        <div class="gs-cat-barra"><div class="gs-cat-relleno" style="width:${Math.max(porc, 2)}%;"></div></div>`;
+      desgloseLista.appendChild(fila);
+    });
+
+    // ---- Chips de categoría (solo las que tienen gastos en el período) ----
+    if(categoriaFiltroGastos && !porCategoria[categoriaFiltroGastos]) categoriaFiltroGastos = null;
+    const chips = document.getElementById('chips-categoria-gastos');
+    chips.innerHTML = '';
+    chips.style.display = categoriasOrdenadas.length > 1 ? '' : 'none';
+    [null, ...categoriasOrdenadas].forEach(c=>{
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'tab-button tab-pequeno' + (categoriaFiltroGastos === c ? ' active' : '');
+      chip.textContent = c === null ? 'Todas' : c;
+      chip.addEventListener('click', ()=>{
+        categoriaFiltroGastos = c;
+        renderizarGastos();
+      });
+      chips.appendChild(chip);
+    });
+
+    // ---- Lista ----
+    const lista = document.getElementById('lista-gastos');
+    const vacio = document.getElementById('gastos-vacio-mensaje');
+    lista.innerHTML = '';
+    const visibles = categoriaFiltroGastos
+      ? delPeriodo.filter(m => (m.categoria || 'Sin categoría') === categoriaFiltroGastos)
+      : delPeriodo;
+    vacio.style.display = visibles.length ? 'none' : 'block';
+    visibles.forEach(m => lista.appendChild(crearTarjetaGasto(m)));
+  }
+
+  // ---------- Filtros: período y fecha puntual ----------
+  function marcarTabPeriodoGastos(){
+    document.querySelectorAll('#tabs-gastos-periodo .tab-button').forEach(b=>{
+      b.classList.toggle('active', !hayRangoFechasGastos() && b.dataset.periodo === periodoGastosActivo);
+    });
+    btnQuitarFechasGastos.style.display = hayRangoFechasGastos() ? 'block' : 'none';
+  }
+  function limpiarRangoFechasGastos(){
+    desdeFiltroGastos = null;
+    hastaFiltroGastos = null;
+    inputGastosDesde.value = '';
+    inputGastosHasta.value = '';
+  }
+  document.querySelectorAll('#tabs-gastos-periodo .tab-button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      periodoGastosActivo = btn.dataset.periodo;
+      limpiarRangoFechasGastos();
+      marcarTabPeriodoGastos();
+      renderizarGastos();
+    });
+  });
+  convertirInputFechaAPersonalizado(inputGastosDesde, 'Desde');
+  convertirInputFechaAPersonalizado(inputGastosHasta, 'Hasta');
+  function aplicarRangoFechasGastos(){
+    desdeFiltroGastos = inputGastosDesde.value || null;
+    hastaFiltroGastos = inputGastosHasta.value || null;
+    // Si quedaron al revés (Desde después de Hasta), se intercambian solas.
+    if(desdeFiltroGastos && hastaFiltroGastos && desdeFiltroGastos > hastaFiltroGastos){
+      const tmp = desdeFiltroGastos;
+      desdeFiltroGastos = hastaFiltroGastos;
+      hastaFiltroGastos = tmp;
+      inputGastosDesde.value = desdeFiltroGastos;
+      inputGastosHasta.value = hastaFiltroGastos;
+    }
+    marcarTabPeriodoGastos();
+    renderizarGastos();
+  }
+  inputGastosDesde.addEventListener('change', aplicarRangoFechasGastos);
+  inputGastosHasta.addEventListener('change', aplicarRangoFechasGastos);
+  btnQuitarFechasGastos.addEventListener('click', ()=>{
+    limpiarRangoFechasGastos();
+    marcarTabPeriodoGastos();
+    renderizarGastos();
+  });
+
+  // ---------- Formulario (registrar / editar) ----------
+  function seleccionarMetodoGasto(metodo){
+    metodoGastoActivo = metodo === 'transferencia' ? 'transferencia' : 'efectivo';
+    document.querySelectorAll('#tabs-gasto-metodo .tab-button').forEach(b=>{
+      b.classList.toggle('active', b.dataset.metodo === metodoGastoActivo);
+    });
+  }
+  document.querySelectorAll('#tabs-gasto-metodo .tab-button').forEach(btn=>{
+    btn.addEventListener('click', ()=> seleccionarMetodoGasto(btn.dataset.metodo));
+  });
+
+  function abrirFormularioGasto(id){
+    const mov = id ? movimientosCajaGuardados.find(m => m.id === id) : null;
+    gastoEditandoId = mov ? mov.id : null;
+    poblarSelectCategoriasGasto(selectGastoCategoria);
+    const cats = categoriasGasto();
+
+    document.getElementById('gasto-form-titulo').textContent = mov ? 'Editar gasto' : 'Registrar gasto';
+    document.getElementById('btn-guardar-gasto').textContent = mov ? 'Guardar cambios' : 'Guardar gasto';
+    document.getElementById('btn-anular-gasto').style.display = mov ? 'block' : 'none';
+
+    inputGastoMonto.value = mov ? formatearMiles(mov.monto || 0) : '';
+    // Si el gasto que se edita tiene una categoría ya eliminada, se agrega
+    // solo para este formulario, para que guardar no se la cambie.
+    if(mov && mov.categoria && !cats.includes(mov.categoria)){
+      const o = document.createElement('option');
+      o.value = mov.categoria; o.textContent = mov.categoria;
+      selectGastoCategoria.insertBefore(o, selectGastoCategoria.lastElementChild);
+    }
+    const categoriaInicial = mov
+      ? (mov.categoria || 'Otro')
+      : (categoriaFiltroGastos && cats.includes(categoriaFiltroGastos) ? categoriaFiltroGastos : cats[0]);
+    selectGastoCategoria.value = categoriaInicial;
+    inputGastoConcepto.value = mov ? (mov.concepto || '') : '';
+    inputGastoFecha.value = mov ? claveFechaLocal(new Date(mov.fecha)) : ((desdeFiltroGastos && desdeFiltroGastos === hastaFiltroGastos) ? desdeFiltroGastos : claveFechaConOffset(0));
+    seleccionarMetodoGasto(mov && mov.metodoPago ? mov.metodoPago : 'efectivo');
+
+    nuevaCategoriaGastoWrap.style.display = 'none';
+    inputNuevaCategoriaGasto.value = '';
+    document.getElementById('admin-categorias-gasto').style.display = 'none';
+    gastoFormOverlay.style.display = 'flex';
+    gastoFormOverlay.scrollTop = 0;
+  }
+  function cerrarFormularioGasto(){
+    gastoFormOverlay.style.display = 'none';
+    gastoEditandoId = null;
+  }
+
+  // Tras cualquier cambio, se refrescan las mismas vistas que ya refresca
+  // "Registrar Movimiento" (Caja/Centro Financiero y Reportes).
+  function refrescarVistasTrasGasto(){
+    try{ actualizarCaja(); }catch(err){ console.warn('[Gastos] No se pudo refrescar Caja:', err); }
+    try{ actualizarReportes(); }catch(err){ console.warn('[Gastos] No se pudo refrescar Reportes:', err); }
+    renderizarGastos();
+  }
+
+  inputGastoMonto.addEventListener('input', ()=>{
+    const valor = numeroDesdeCampo(inputGastoMonto.value);
+    inputGastoMonto.value = valor ? formatearMiles(valor) : '';
+  });
+  inputGastoMonto.addEventListener('focus', function(){ this.select(); });
+
+  document.getElementById('btn-registrar-gasto').addEventListener('click', ()=> abrirFormularioGasto(null));
+  document.getElementById('btn-cerrar-gasto-form').addEventListener('click', cerrarFormularioGasto);
+  gastoFormOverlay.addEventListener('click', (e)=>{ if(e.target === gastoFormOverlay) cerrarFormularioGasto(); });
+
+  document.getElementById('btn-guardar-gasto').addEventListener('click', ()=>{
+    const monto = numeroDesdeCampo(inputGastoMonto.value);
+    if(monto <= 0){
+      alert('Escribe el valor del gasto.');
+      inputGastoMonto.focus();
+      return;
+    }
+    if(!inputGastoFecha.value){
+      alert('Selecciona la fecha del gasto.');
+      return;
+    }
+    const datos = {
+      monto,
+      categoria: selectGastoCategoria.value || 'Otro',
+      concepto: inputGastoConcepto.value.trim(),
+      fecha: new Date(inputGastoFecha.value + 'T00:00:00').toISOString(),
+      metodoPago: metodoGastoActivo
+    };
+    const editando = gastoEditandoId !== null;
+    if(editando){
+      const mov = movimientosCajaGuardados.find(m => m.id === gastoEditandoId);
+      if(mov){
+        Object.assign(mov, datos);
+        mov.fechaEdicion = new Date().toISOString();
+      }
+    }else{
+      movimientosCajaGuardados.push(Object.assign({ id: Date.now(), tipo: 'gasto' }, datos));
+    }
+    guardarMovimientosCajaStorage(movimientosCajaGuardados);
+    cerrarFormularioGasto();
+    refrescarVistasTrasGasto();
+    mostrarMensajeToast(editando ? 'Gasto actualizado' : 'Gasto registrado');
+  });
+
+  document.getElementById('btn-anular-gasto').addEventListener('click', ()=>{
+    const id = gastoEditandoId;
+    if(id === null) return;
+    mostrarConfirmacion(
+      '¿Anular este gasto?',
+      'El gasto quedará anulado (no se borra, queda en el historial de caja para auditoría) y dejará de contarse en los totales.',
+      'Anular',
+      ()=>{
+        const mov = movimientosCajaGuardados.find(m => m.id === id);
+        if(!mov) return;
+        mov.anulado = true;
+        mov.fechaAnulacion = new Date().toISOString();
+        guardarMovimientosCajaStorage(movimientosCajaGuardados);
+        cerrarFormularioGasto();
+        refrescarVistasTrasGasto();
+        mostrarMensajeToast('Gasto anulado');
+      }
+    );
+  });
+
+  // ---------- Categorías personalizadas ----------
+  document.getElementById('btn-nueva-categoria-gasto').addEventListener('click', ()=>{
+    const abierta = nuevaCategoriaGastoWrap.style.display !== 'none';
+    nuevaCategoriaGastoWrap.style.display = abierta ? 'none' : 'flex';
+    if(!abierta) inputNuevaCategoriaGasto.focus();
+  });
+  function agregarCategoriaGasto(){
+    let nombre = inputNuevaCategoriaGasto.value.trim().replace(/\s+/g, ' ');
+    if(!nombre){ inputNuevaCategoriaGasto.focus(); return; }
+    nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+    const existente = categoriasGasto().find(c => c.toLowerCase() === nombre.toLowerCase());
+    if(!existente){
+      // Si era una categoría eliminada antes, simplemente vuelve a aparecer.
+      if(estaOcultaCategoriaGasto(nombre)){
+        categoriasGastoOcultas = categoriasGastoOcultas.filter(x => x.toLowerCase() !== nombre.toLowerCase());
+        guardarCategoriasGastoOcultas(categoriasGastoOcultas);
+      }
+      if(!CATEGORIAS_GASTO_BASE.some(c => c.toLowerCase() === nombre.toLowerCase()) &&
+         !categoriasGastoExtra.some(c => c.toLowerCase() === nombre.toLowerCase())){
+        categoriasGastoExtra.push(nombre);
+        guardarCategoriasGastoExtra(categoriasGastoExtra);
+      }
+      nombre = categoriasGasto().find(c => c.toLowerCase() === nombre.toLowerCase()) || nombre;
+      poblarSelectCategoriasGasto(selectGastoCategoria);
+      poblarSelectCategoriasGasto(document.getElementById('select-categoria-gasto'));
+      renderizarAdminCategoriasGasto();
+    }
+    selectGastoCategoria.value = existente || nombre;
+    inputNuevaCategoriaGasto.value = '';
+    nuevaCategoriaGastoWrap.style.display = 'none';
+    mostrarMensajeToast(existente ? 'Esa categoría ya existe' : 'Categoría agregada');
+  }
+  document.getElementById('btn-agregar-categoria-gasto').addEventListener('click', agregarCategoriaGasto);
+  inputNuevaCategoriaGasto.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ e.preventDefault(); agregarCategoriaGasto(); } });
+
+  // ---------- NUEVO: Administrar / eliminar categorías ----------
+  const ICONO_CANECA_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
+
+  function renderizarAdminCategoriasGasto(){
+    const cont = document.getElementById('lista-admin-categorias-gasto');
+    cont.innerHTML = '';
+    categoriasGasto().forEach(c=>{
+      const fila = document.createElement('div');
+      fila.className = 'gs-admin-cat-fila';
+      const nombre = document.createElement('span');
+      nombre.className = 'gs-admin-cat-nombre';
+      nombre.textContent = c;
+      fila.appendChild(nombre);
+      if(c === 'Otro'){
+        const fijo = document.createElement('span');
+        fijo.className = 'gs-admin-cat-fijo';
+        fijo.textContent = 'Fija';
+        fila.appendChild(fijo);
+      }else{
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'movimiento-caja-eliminar';
+        btn.setAttribute('aria-label', 'Eliminar categoría ' + c);
+        btn.innerHTML = ICONO_CANECA_SVG;
+        btn.addEventListener('click', ()=> eliminarCategoriaGasto(c));
+        fila.appendChild(btn);
+      }
+      cont.appendChild(fila);
+    });
+  }
+
+  function eliminarCategoriaGasto(nombre){
+    const enUso = movimientosCajaGuardados.filter(m => m.tipo === 'gasto' && !m.anulado && m.categoria === nombre).length;
+    mostrarConfirmacion(
+      'Eliminar categoría',
+      '¿Eliminar "' + nombre + '"? ' + (enUso === 0
+        ? 'Dejará de aparecer al registrar gastos.'
+        : (enUso === 1 ? 'El gasto que ya la usa la conserva' : 'Los ' + enUso + ' gastos que ya la usan la conservan') + '; solo deja de aparecer para gastos nuevos.'),
+      'Eliminar',
+      ()=>{
+        const valorAntes = selectGastoCategoria.value;
+        categoriasGastoExtra = categoriasGastoExtra.filter(c => c.toLowerCase() !== nombre.toLowerCase());
+        guardarCategoriasGastoExtra(categoriasGastoExtra);
+        if(!estaOcultaCategoriaGasto(nombre)){
+          categoriasGastoOcultas.push(nombre);
+          guardarCategoriasGastoOcultas(categoriasGastoOcultas);
+        }
+        poblarSelectCategoriasGasto(selectGastoCategoria);
+        poblarSelectCategoriasGasto(document.getElementById('select-categoria-gasto'));
+        // Si se está editando un gasto que usa justo esa categoría, se
+        // mantiene en este formulario para no cambiársela al guardar.
+        if(valorAntes === nombre && gastoEditandoId !== null){
+          const mov = movimientosCajaGuardados.find(m => m.id === gastoEditandoId);
+          if(mov && mov.categoria === nombre){
+            const o = document.createElement('option');
+            o.value = nombre; o.textContent = nombre;
+            selectGastoCategoria.insertBefore(o, selectGastoCategoria.lastElementChild);
+            selectGastoCategoria.value = nombre;
+          }
+        }
+        renderizarAdminCategoriasGasto();
+        mostrarMensajeToast('Categoría eliminada');
+      }
+    );
+  }
+
+  document.getElementById('btn-administrar-categorias-gasto').addEventListener('click', ()=>{
+    const panel = document.getElementById('admin-categorias-gasto');
+    const abierto = panel.style.display !== 'none';
+    if(!abierto) renderizarAdminCategoriasGasto();
+    panel.style.display = abierto ? 'none' : 'block';
+  });
+
+  poblarSelectCategoriasGasto(selectGastoCategoria);
+  // Las categorías personalizadas también quedan disponibles en
+  // "Registrar Movimiento" de Centro Financiero.
+  poblarSelectCategoriasGasto(document.getElementById('select-categoria-gasto'));
+  convertirSelectAPersonalizado(selectGastoCategoria, 'Categoría del gasto');
+  convertirInputFechaAPersonalizado(inputGastoFecha, 'Fecha del gasto');
+
+  // ---------- Abrir/cerrar desde el menú lateral (recuerda el origen) ----------
+  let origenScreenGastos = 'inicio';
+  document.getElementById('menu-lateral-gastos').addEventListener('click', ()=>{
+    cerrarMenuLateral();
+    const destinoActivo = Object.keys(mainScreens).find(k => mainScreens[k].style.display !== 'none' && mainScreens[k].style.display !== '');
+    origenScreenGastos = destinoActivo || 'inicio';
+    Object.values(mainScreens).forEach(s=> s.style.display = 'none');
+    periodoGastosActivo = 'hoy';
+    categoriaFiltroGastos = null;
+    limpiarRangoFechasGastos();
+    marcarTabPeriodoGastos();
+    renderizarGastos();
+    screenGastos.style.display = 'block';
+    bottomNav.style.display = 'none';
+    window.scrollTo(0, 0);
+  });
+
+  document.getElementById('btn-cerrar-gastos').addEventListener('click', ()=>{
+    cerrarFormularioGasto();
+    screenGastos.style.display = 'none';
+    mainScreens[origenScreenGastos].style.display = 'block';
+    bottomNav.style.display = 'flex';
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    const navItemOrigen = document.querySelector('.nav-item[data-nav="' + origenScreenGastos + '"]');
+    if(navItemOrigen) navItemOrigen.classList.add('active');
     window.scrollTo(0, 0);
   });
 
