@@ -2512,6 +2512,35 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   border-radius:var(--radius-full);
 }
 .btn-mas-opciones-pildora svg{ width:17px; height:17px; }
+/* NUEVO: fila Editar / Cronograma / Más opciones del Detalle del Préstamo.
+   Un poco más compactas para que las 3 quepan en una sola línea. */
+.fila-acciones-prestamo{ display:flex; gap:8px; margin:14px 0 10px; }
+/* Botones de color, los 3 del mismo ancho. Colores fijos (no dependen
+   del color de acento): rojo, verde, y blanco con borde azul. */
+.btn-accion-prestamo{
+  flex:1 1 0;
+  min-width:0;
+  padding:13px 4px;
+  border-radius:var(--radius-md);
+  border:1.5px solid transparent;
+  font-size:11.5px;
+  font-weight:600;
+  letter-spacing:0.3px;
+  text-transform:uppercase;
+  text-align:center;
+  line-height:1.15;
+  transition:transform .15s ease;
+}
+.btn-accion-prestamo:active{ transform:scale(0.96); }
+.btn-accion-prestamo.editar{ background:#D9534F; color:#fff; }
+.btn-accion-prestamo.cronograma{ background:#4CA564; color:#fff; }
+/* CAMBIO: a pedido — borde gris suave (antes azul intenso) */
+.btn-accion-prestamo.historial{ background:var(--surface); color:var(--text); border:1.5px solid #C9CED6; }
+body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
+@media (max-width:380px){
+  .fila-acciones-prestamo{ gap:6px; }
+  .btn-accion-prestamo{ font-size:11px; letter-spacing:0.1px; }
+}
 
 /* --- Tabs Cuotas / Pagos --- */
 .loan-tabs{
@@ -6965,7 +6994,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
          Editar, Eliminar). El botón "Recordar" por WhatsApp se quitó por
          completo: esa misma función ya está al tocar el número de
          cualquier cuota pendiente (Recordatorio Amistoso). -->
-    <div style="display:flex; justify-content:flex-end; margin:14px 0;">
+    <!-- CAMBIO: a pedido — "Editar" y "Cronograma" salieron del menú "Más
+         opciones" y ahora son 2 píldoras a su izquierda. Conservan sus
+         mismos ids, así que sus manejadores de clic no cambian. -->
+    <!-- CAMBIO: a pedido — fila de 3 botones de color, del mismo ancho:
+         Historial (blanco con borde gris), Cronograma (verde) y Editar
+         (rojo). "Historial" también salió del menú "Más opciones". Los 3
+         conservan sus ids de siempre. "Más opciones" queda debajo. -->
+    <div class="fila-acciones-prestamo">
+      <button type="button" class="btn-accion-prestamo historial" id="btn-compartir-historial">Historial</button>
+      <button type="button" class="btn-accion-prestamo cronograma" id="btn-compartir-cronograma">Cronograma</button>
+      <button type="button" class="btn-accion-prestamo editar" id="btn-editar-prestamo-detalle">Editar</button>
+    </div>
+    <div style="display:flex; justify-content:flex-end; margin:0 0 14px;">
       <button type="button" class="btn-mas-opciones-prestamo btn-mas-opciones-pildora" id="btn-mas-opciones-prestamo">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle><circle cx="5" cy="12" r="1.5"></circle></svg>
         <span>Más opciones</span>
@@ -9639,20 +9680,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 <div id="menu-mas-opciones-prestamo-overlay" class="action-sheet-overlay" style="display:none;">
   <div class="action-sheet-wrap">
     <div class="action-sheet-card">
-      <div class="action-sheet-item" id="btn-compartir-cronograma">
-        <div class="icon-container blue">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-        </div>
-        <span>Cronograma</span>
-      </div>
-
-      <div class="action-sheet-item" id="btn-compartir-historial">
-        <div class="icon-container blue">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
-        </div>
-        <span>Historial</span>
-      </div>
-
+      <!-- "Cronograma" y "Editar" ahora son píldoras junto al botón "Más
+           opciones" (ver .fila-acciones-prestamo). -->
       <div class="action-sheet-item" id="btn-aplicar-descuento">
         <div class="icon-container gris">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
@@ -9669,13 +9698,6 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
         </div>
         <span>Renovar crédito</span>
-      </div>
-
-      <div class="action-sheet-item" id="btn-editar-prestamo-detalle">
-        <div class="icon-container blue">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 4.5a2.121 2.121 0 0 1 3 3L12 16l-4 1 1-4Z"></path><path d="M11 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path></svg>
-        </div>
-        <span>Editar</span>
       </div>
 
       <div class="action-sheet-item danger" id="btn-eliminar-prestamo-detalle">
