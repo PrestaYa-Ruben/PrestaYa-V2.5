@@ -869,7 +869,7 @@ a{ text-decoration:none; color:inherit; }
 .stat-card .icon-container{ margin-bottom:0; }
 .stat-card .value{
   font-size:22px;
-  font-weight:800; /* CAMBIO: antes 600 — "números grandes y gruesos" a pedido */
+  font-weight:700; /* CAMBIO: a pedido — un poco menos de peso (antes 800) */
   letter-spacing:-0.6px;
   color:var(--text);
   position:relative;
@@ -21368,30 +21368,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       const parte1 = nombre.slice(0, marca[1].length);
       const parte2 = nombre.slice(nombre.length - marca[2].length);
       const ancho1 = ctx.measureText(parte1).width;
-      // "Presta" en un lienzo aparte, para pintar de verde SOLO el asta de la P
-      const escLogo = 2, margenLogo = 8, baseLogo = tam * 1.05;
-      const lienzoLogo = document.createElement('canvas');
-      lienzoLogo.width = Math.ceil((ancho1 + margenLogo * 2) * escLogo);
-      lienzoLogo.height = Math.ceil(tam * 1.4 * escLogo);
-      const cl = lienzoLogo.getContext('2d');
-      cl.scale(escLogo, escLogo);
-      cl.font = ctx.font;
-      cl.textBaseline = 'alphabetic';
-      cl.fillStyle = '#FFFFFF';
-      cl.fillText(parte1, margenLogo, baseLogo);
-      cl.globalCompositeOperation = 'source-atop';
-      const gradAsta = cl.createLinearGradient(0, baseLogo - tam * 0.45, 0, baseLogo);
-      gradAsta.addColorStop(0, '#8FE24B');
-      gradAsta.addColorStop(1, '#35B546');
-      cl.fillStyle = gradAsta;
-      cl.beginPath();
-      cl.moveTo(margenLogo - 4, baseLogo + 4);
-      cl.lineTo(margenLogo + tam * 0.27, baseLogo + 4);
-      cl.lineTo(margenLogo + tam * 0.35, baseLogo - tam * 0.40);
-      cl.lineTo(margenLogo - 4, baseLogo - tam * 0.26);
-      cl.closePath();
-      cl.fill();
-      ctx.drawImage(lienzoLogo, xNombre - margenLogo, yBase - baseLogo, lienzoLogo.width / escLogo, lienzoLogo.height / escLogo);
+      // A pedido: "Presta" va totalmente en blanco (se quitó el detalle
+      // verde que tenía el asta de la P); solo "Ya" queda en verde.
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillText(parte1, xNombre, yBase);
       const gradYa = ctx.createLinearGradient(0, yBase - tam * 0.75, 0, yBase);
       gradYa.addColorStop(0, '#9BE64F');
       gradYa.addColorStop(1, '#3DBB48');
