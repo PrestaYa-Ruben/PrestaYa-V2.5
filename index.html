@@ -2520,6 +2520,24 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 /* NUEVO: fila Editar / Cronograma / Más opciones del Detalle del Préstamo.
    Un poco más compactas para que las 3 quepan en una sola línea. */
 .fila-acciones-prestamo{ display:flex; gap:8px; margin:14px 0 10px; }
+/* Acceso rápido: interruptor "Saldo pendiente" del comprobante */
+.acceso-saldo-comprobante{
+  display:flex; align-items:center; gap:10px;
+  min-width:0; flex:1; max-width:250px;
+  padding:7px 10px 7px 12px;
+  background:var(--surface, #fff);
+  border:1.5px solid var(--border, #E2E8F0);
+  border-radius:14px;
+  cursor:pointer;
+}
+.acceso-saldo-texto{ flex:1; min-width:0; }
+.acceso-saldo-titulo{ font-size:13px; font-weight:600; color:var(--text-primary); line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.acceso-saldo-sub{ font-size:11px; font-weight:400; color:var(--text-secondary); line-height:1.2; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.acceso-saldo-comprobante .toggle-switch{ flex-shrink:0; }
+@media (max-width:400px){
+  .acceso-saldo-titulo{ white-space:normal; font-size:12.5px; }
+  .acceso-saldo-sub{ display:none; }
+}
 /* Botones de color, los 3 del mismo ancho. Colores fijos (no dependen
    del color de acento): rojo, verde, y blanco con borde azul. */
 .btn-accion-prestamo{
@@ -7036,8 +7054,18 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <button type="button" class="btn-accion-prestamo cronograma" id="btn-compartir-cronograma">Cronograma</button>
       <button type="button" class="btn-accion-prestamo editar" id="btn-editar-prestamo-detalle">Editar</button>
     </div>
-    <div style="display:flex; justify-content:flex-end; margin:0 0 14px;">
-      <button type="button" class="btn-mas-opciones-prestamo btn-mas-opciones-pildora" id="btn-mas-opciones-prestamo">
+    <!-- CAMBIO: a pedido — acceso rápido al interruptor "Saldo pendiente"
+         del comprobante (mismo id y mismo manejador de siempre), a la
+         izquierda de "Más opciones", justo encima de las cuotas. -->
+    <div style="display:flex; flex-direction:row-reverse; align-items:center; justify-content:space-between; gap:10px; margin:0 0 14px;"><!-- CAMBIO: a pedido — "Más opciones" a la izquierda y "Saldo pendiente" a la derecha (row-reverse) -->
+      <div class="acceso-saldo-comprobante" id="acceso-saldo-comprobante">
+        <div class="acceso-saldo-texto">
+          <div class="acceso-saldo-titulo">Saldo pendiente</div>
+          <div class="acceso-saldo-sub">Mostrar en el comprobante</div>
+        </div>
+        <button type="button" class="toggle-switch" id="toggle-comprobante-saldo" role="switch" aria-checked="false" aria-label="Mostrar saldo pendiente en el comprobante"></button>
+      </div>
+      <button type="button" class="btn-mas-opciones-prestamo btn-mas-opciones-pildora" id="btn-mas-opciones-prestamo" style="flex-shrink:0;">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle><circle cx="5" cy="12" r="1.5"></circle></svg>
         <span>Más opciones</span>
       </button>
@@ -7080,14 +7108,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <div style="padding:22px 16px;">
       <div class="section-title" style="margin-bottom:2px;">Comprobante de cada abono</div>
       <p style="font-size:12.5px; color:var(--text-secondary); font-weight:400; margin-bottom:10px;">Qué se incluye en la imagen que se comparte al registrar o ver el abono de una cuota.</p>
-      <div class="mora-toggle-row" style="padding:0;">
-        <div class="mora-toggle-text">
-          <div class="mora-toggle-title">Saldo pendiente</div>
-          <div class="mora-toggle-subtitle">Incluye el saldo pendiente del crédito</div>
-        </div>
-        <button type="button" class="toggle-switch" id="toggle-comprobante-saldo" role="switch" aria-checked="false" aria-label="Mostrar saldo pendiente en el comprobante"></button>
-      </div>
-      <hr class="loan-divider" style="margin:14px 0;">
+      <!-- CAMBIO: a pedido — el interruptor "Saldo pendiente" salió de aquí
+           y ahora vive arriba, junto a la píldora "Más opciones" (ver
+           .acceso-saldo-comprobante), porque se usa a diario. -->
       <div class="mora-toggle-row" style="padding:0;">
         <div class="mora-toggle-text">
           <div class="mora-toggle-title">Fecha de próximo pago</div>
@@ -22612,6 +22635,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   document.getElementById('toggle-comprobante-saldo').addEventListener('click', ()=>{
     guardarReciboSaldo(!mostrarReciboSaldo());
     aplicarTogglesComprobanteDesdePrestamo();
+  });
+  // NUEVO: toda la cajita del acceso rápido es tocable (no solo el interruptor).
+  document.getElementById('acceso-saldo-comprobante').addEventListener('click', (e)=>{
+    if(e.target.closest('#toggle-comprobante-saldo')) return; // ya lo maneja el interruptor
+    document.getElementById('toggle-comprobante-saldo').click();
   });
   document.getElementById('toggle-comprobante-proximo').addEventListener('click', ()=>{
     guardarReciboProximo(!mostrarReciboProximo());
