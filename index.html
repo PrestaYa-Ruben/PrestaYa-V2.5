@@ -4384,33 +4384,33 @@ body.modo-oscuro{ --resumen-pactado:#60A5FA; }
   /* REDISEÑADO — a pedido, especificación exacta: degradado pastel
      violeta/rosa a azul cian, sombra suave de flotación, esquinas más
      redondeadas y borde sutil. */
-  /* CAMBIO: a pedido — fondo amarillo sólido #FFD102 (antes degradado
-     pastel violeta/azul). Color fijo, igual en modo claro y oscuro. */
-  background:#FFD102;
+  /* CAMBIO: a pedido — se quitó el amarillo #FFD102 y se dejó un azul
+     muy suave, de la misma familia del azul marino de la app, con el
+     borde resaltado en un azul un poco más marcado. Color fijo, igual en
+     modo claro y oscuro. */
+  background:#EAF0FB;
   border-radius:18px;
-  /* CAMBIO: a pedido — borde resaltado: más grueso y en un dorado más
-     oscuro que el fondo, para que el contorno de la tarjeta se note. */
-  border:2.5px solid #C99700;
-  box-shadow:0 4px 20px rgba(0,0,0,0.08);
+  border:1.5px solid #D3DCF2; /* CAMBIO: a pedido — borde más tenue (antes 2px #AFC0E8) */
+  box-shadow:0 4px 20px rgba(31,47,104,0.08);
 }
-/* Sobre el amarillo, todo el contenido de la tarjeta va en tonos oscuros
+/* Sobre este fondo claro, todo el contenido de la tarjeta va en tonos oscuros
    para que se lea (también en modo oscuro, donde el texto normal de la app
    es claro). Los colores vivos (cian, verde WhatsApp, gris claro) se
    reemplazan por versiones oscuras solo dentro de esta tarjeta. */
 .profile-card .profile-card-name,
 .profile-card .detail-row-value{ color:#0F172A; }
 .profile-card .detail-row-value.vacio{ color:#0F172A; opacity:0.6; }
-.profile-card .detail-row-icon{ stroke:#0F172A; }
-.profile-card .profile-card-name-toggle svg{ stroke:#0F172A; }
-.profile-card .edit-profile-btn{ color:#0F172A; }
-.profile-card .detail-row{ border-bottom-color:rgba(15,23,42,0.14); }
-.profile-card .profile-divider{ border-top-color:rgba(15,23,42,0.14); }
-.profile-card .detail-row-link{ color:#0F172A; }
-.profile-card .detail-row-link-whatsapp{ color:#0B6B2E; }
+.profile-card .detail-row-icon{ stroke:#1F2F68; }
+.profile-card .profile-card-name-toggle svg{ stroke:#1F2F68; }
+.profile-card .edit-profile-btn{ color:#1F2F68; }
+.profile-card .detail-row{ border-bottom-color:rgba(31,47,104,0.13); }
+.profile-card .profile-divider{ border-top-color:rgba(31,47,104,0.13); }
+.profile-card .detail-row-link{ color:#1F2F68; }
+.profile-card .detail-row-link-whatsapp{ color:#128A3E; }
 .profile-card .client-since{ color:rgba(15,23,42,0.68); }
 .card.profile-card .cliente-nivel-badge{ color:rgba(15,23,42,0.68); background:none; border:none; opacity:1; }
-.profile-card .detail-row-icon.detail-row-icon-whatsapp{ stroke:none; fill:#0B6B2E; }
-.profile-card .cliente-estado-badge.activo{ background:rgba(255,255,255,0.6); color:#116B32; border-color:rgba(17,107,50,0.45); }
+.profile-card .detail-row-icon.detail-row-icon-whatsapp{ stroke:none; fill:#128A3E; }
+.profile-card .cliente-estado-badge.activo{ background:rgba(24,201,104,0.14); color:#15803D; border-color:rgba(24,201,104,0.5); }
 .profile-card .cliente-estado-badge.inhabilitado{ background:rgba(255,255,255,0.6); }
 .profile-card-top{
   display:flex;
