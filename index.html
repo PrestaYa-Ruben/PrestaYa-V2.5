@@ -16251,39 +16251,42 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     ctx.save();
     ctx.translate(centroX, centroY);
     ctx.rotate(-14 * Math.PI / 180);
-    ctx.globalAlpha = 0.85;
+    ctx.globalAlpha = 1;   // CAMBIO: tinta sólida, sin transparencia, para que se vea nítido
 
     // NUEVO: sombra sutil para dar sensación de relieve, como si el
     // timbre estuviera realmente presionado sobre el papel del comprobante.
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.32)';
-    ctx.shadowBlur = 3;
-    ctx.shadowOffsetX = 1.5;
-    ctx.shadowOffsetY = 1.5;
+    // CAMBIO: se quitó la sombra difuminada — emborronaba los bordes del
+    // sello. Ahora el trazo queda limpio y definido.
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.lineJoin = 'round';
 
     // CAMBIO: sello en DOS líneas — "CRÉDITO" arriba y "PAGADO" debajo —
     // en vez de todo en una sola línea. CAMBIO: un poco más grande que
     // antes (24px, subido desde 20px).
     const lineaUno = 'CRÉDITO';
     const lineaDos = 'PAGADO';
-    ctx.font = 'bold 24px Arial, sans-serif';
+    ctx.font = "800 28px Inter, 'Segoe UI', Roboto, Arial, sans-serif";
     const anchoTexto = Math.max(ctx.measureText(lineaUno).width, ctx.measureText(lineaDos).width);
-    const padX = 15, padY = 9;
-    const altoLinea = 24;
+    const padX = 17, padY = 10;
+    const altoLinea = 28;
     const espacioEntreLineas = 5;
     const altoTextoTotal = altoLinea * 2 + espacioEntreLineas;
     const selloAncho = anchoTexto + padX * 2;
     const selloAlto = altoTextoTotal + padY * 2;
 
-    ctx.strokeStyle = '#22A559';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#E0111F';
+    ctx.lineWidth = 3.4;
     trazarRectRedondeado(ctx, -selloAncho / 2, -selloAlto / 2, selloAncho, selloAlto, 6);
     ctx.stroke();
     // marco doble, como un timbre de verdad
-    trazarRectRedondeado(ctx, -selloAncho / 2 + 4, -selloAlto / 2 + 4, selloAncho - 8, selloAlto - 8, 3.5);
-    ctx.lineWidth = 1.2;
+    trazarRectRedondeado(ctx, -selloAncho / 2 + 5, -selloAlto / 2 + 5, selloAncho - 10, selloAlto - 10, 3.5);
+    ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    ctx.fillStyle = '#22A559';
+    ctx.fillStyle = '#E0111F';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(lineaUno, 0, -(altoLinea + espacioEntreLineas) / 2 + 1);
@@ -21213,304 +21216,427 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     // ==========================================================
     // REDISEÑO COMPLETO DEL COMPROBANTE (pedido explícito del usuario,
-    // con imagen de referencia): encabezado más alto con el logo de la
-    // marca, bloque "ABONO REALIZADO" muy destacado, filas de datos con
-    // ícono + etiqueta + valor en 2 columnas, y pie con ícono de
-    // confirmación. Ningún cálculo/lógica financiera cambió — esto solo
-    // reemplaza cómo se DIBUJA el mismo comprobante. (dibujarIconoComprobante
-    // e iconoParaEtiquetaComprobante ahora son funciones compartidas — ver
-    // más arriba, justo antes de esta función — para poder reutilizarse
-    // también en el Resumen de Crédito.)
+    // con imagen de referencia como DISEÑO MAESTRO): encabezado azul con
+    // el nombre del negocio y franja verde decorativa, check verde,
+    // "ABONO REALIZADO" + monto gigante sobre caja verde muy clara,
+    // píldora verde de puntualidad, tarjeta de datos de UNA columna
+    // (ícono en cajita azul claro + etiqueta + valor), agradecimiento con
+    // escudo y pie decorativo curvo azul/verde.
+    // Ningún cálculo/lógica cambió — esto solo reemplaza cómo se DIBUJA el
+    // mismo comprobante. Los datos siguen saliendo de las mismas variables
+    // de arriba (cliente, fecha, cuota, monto, puntualidad).
+    // ==========================================================
+
+    // Campos que el nuevo diseño ya NO muestra como fila (el monto abonado
+    // va en grande arriba; el resto se eliminó a pedido).
+    const ETIQUETAS_FUERA_DEL_DISENO = ['Monto del préstamo', 'Valor de la cuota', 'Abono realizado', 'Valor abonado', 'Estado', 'Modalidad de pago'];
+    filas = filas.filter(fila => fila && !ETIQUETAS_FUERA_DEL_DISENO.includes(fila[0]));
 
     const canvas = document.createElement('canvas');
-    // CAMBIO: se quitó el margen exterior de 30px alrededor de la tarjeta
-    // (antes cardX=30, cardY=30, con 600px de ancho de canvas para dejar
-    // aire de sobra) — ahora el canvas mide EXACTAMENTE lo mismo que la
-    // tarjeta, sin fondo de página detrás. Las esquinas ya eran
-    // redondeadas, así que quedan transparentes solas (nunca se pintan,
-    // porque están fuera de esa forma).
     const cardX = 0, cardY = 0, anchoCard = 540;
-    const anchoLogicoComprobante = anchoCard;
-    // CAMBIO: encabezado bastante más compacto (148 → 108) — ya no muestra
-    // el número/referencia del crédito (pedido explícito del usuario:
-    // "no necesito mostrar esa referencia visualmente"), así que ese
-    // espacio se recupera en vez de dejarlo vacío.
-    const alturaHeader = 108;
-    const alturaBloqueAbono = 140 + (resultadoPuntualidad ? 26 : 0); // CORREGIDO: antes +34px (para la píldora con caja) — ahora solo texto, un poco menos de espacio
-    const alturaFilaPar = 88;
-    const alturaPie = 80;
+    const W = anchoCard;
+    const centroX = W / 2;
 
-    const numFilasVisuales = Math.max(1, Math.ceil(filas.length / 2));
-    const yInicioFilas = cardY + alturaHeader + alturaBloqueAbono;
-    const yFinFilas = yInicioFilas + numFilasVisuales * alturaFilaPar;
-    const altoCard = (yFinFilas - cardY) + alturaPie;
-    const altoLogicoComprobante = altoCard; // CAMBIO: sin margen inferior extra
-    // CORREGIDO: este comprobante se comparte directo por WhatsApp — antes
-    // usaba una nitidez más alta de lo necesario (escala 4x), lo que lo
-    // hacía tardar notoriamente más en generarse; ahora usa la misma
-    // escala estándar y rápida que el resto de imágenes del sistema (ver
-    // prepararCanvasNitido()).
-    const ctx = prepararCanvasNitido(canvas, anchoLogicoComprobante, altoLogicoComprobante, 2);
+    // Tipografía: la misma Inter de la app si ya está cargada; si no (sin
+    // conexión), el navegador cae solo a la sans-serif disponible.
+    const FAMILIA = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+    const fuente = (peso, tam, cursiva) => (cursiva ? 'italic ' : '') + peso + ' ' + tam + 'px ' + FAMILIA;
 
-    // NUEVO: el comprobante de RECARGO POR MORA siempre usa el rojo fijo
-    // de la paleta (#E4032E), sin importar el color que esté elegido en
-    // Ajustes → Plantilla de recibo → Color del encabezado — ese color
-    // configurado sigue aplicando normal a los demás comprobantes (pago
-    // normal, abono, Detalle del Crédito, etc.), solo el de recargo
-    // queda fijo en rojo para que se distinga de un vistazo.
-    const colorAcento = esRecargoMora ? '#E4032E' : obtenerColorEncabezadoRecibo();
-    const colorIconoFondo = 'rgba(30, 42, 92, 0.08)';
-    const colorTextoGris = '#7B8794';
-    const colorTextoOscuro = '#151A23';
-    const colorVerde = '#22A559'; // NUEVO: mismo verde que "PAGADA", para el valor del abono realizado
-
-    // Tarjeta blanca (documento financiero, bordes redondeados) — SIN
-    // fondo de página detrás (transparente)
-    ctx.fillStyle = '#FFFFFF';
-    trazarRectRedondeado(ctx, cardX, cardY, anchoCard, altoCard, 26);
-    ctx.fill();
-
-    // ---------- Encabezado navy: solo esquinas SUPERIORES redondeadas ----------
-    // CAMBIO: antes se recortaba con trazarRectRedondeado (4 esquinas
-    // redondeadas) — el encabezado terminaba con una curva visible contra
-    // el cuerpo blanco. Ahora usa un trazado propio (solo este comprobante)
-    // con las esquinas inferiores completamente rectas, para que quede
-    // integrado como una sola pieza con el resto de la tarjeta.
-    ctx.beginPath();
-    ctx.moveTo(cardX, cardY + alturaHeader);
-    ctx.lineTo(cardX, cardY + 26);
-    ctx.arcTo(cardX, cardY, cardX + 26, cardY, 26);
-    ctx.lineTo(cardX + anchoCard - 26, cardY);
-    ctx.arcTo(cardX + anchoCard, cardY, cardX + anchoCard, cardY + 26, 26);
-    ctx.lineTo(cardX + anchoCard, cardY + alturaHeader);
-    ctx.closePath();
-    ctx.fillStyle = colorAcento;
-    ctx.fill();
-
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 33px Arial, sans-serif';
-    ctx.fillText(obtenerNombreNegocio(), cardX + 25, cardY + 48);
-    ctx.font = '18px Arial, sans-serif';
-    ctx.globalAlpha = 0.85;
-    ctx.fillText(esRecargoMora ? 'Comprobante de recargo' : 'Comprobante de pago', cardX + 25, cardY + 78);
-    ctx.globalAlpha = 1;
-    // NOTA: el número/referencia del crédito (PRE-2026-000000) ya NO se
-    // muestra en este comprobante — pedido explícito del usuario, sin
-    // importar el interruptor de Ajustes → Apariencia (ese interruptor
-    // sigue aplicando en los demás comprobantes/recibos del sistema).
-
-    // Logo — mismo isotipo redondo "P" que ya usa la app en otras marcas
-    // de agua/sellos, dentro de un círculo con borde blanco.
-    const logoCx = cardX + anchoCard - 52, logoCy = cardY + alturaHeader / 2;
-    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(logoCx, logoCy, 24, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 24px Arial, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('P', logoCx + 1, logoCy + 2);
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
-
-    // ---------- Bloque destacado "ABONO REALIZADO" ----------
-    const centroX = cardX + anchoCard / 2;
-    let yAbono = cardY + alturaHeader + 43;
-    ctx.fillStyle = colorAcento;
-    ctx.font = 'bold 17px Arial, sans-serif';
-    ctx.textAlign = 'center';
-    const etiquetaAbono = esRecargoMora ? 'RECARGO PAGADO' : 'ABONO REALIZADO';
-    const anchoEtiquetaAbono = ctx.measureText(etiquetaAbono).width;
-    ctx.fillText(etiquetaAbono, centroX, yAbono);
-    // líneas decorativas a los costados de la etiqueta
-    ctx.strokeStyle = 'rgba(30, 42, 92, 0.25)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(centroX - anchoEtiquetaAbono / 2 - 60, yAbono - 5);
-    ctx.lineTo(centroX - anchoEtiquetaAbono / 2 - 16, yAbono - 5);
-    ctx.moveTo(centroX + anchoEtiquetaAbono / 2 + 16, yAbono - 5);
-    ctx.lineTo(centroX + anchoEtiquetaAbono / 2 + 60, yAbono - 5);
-    ctx.stroke();
-
-    // CAMBIO: el valor principal ahora se ve más "grueso" — se rellena y
-    // además se traza un contorno fino del mismo color encima, lo que
-    // simula un peso de fuente mayor sin depender de una tipografía extra.
-    const textoMontoAbono = formatearPesos(montoAbonado);
-    ctx.fillStyle = colorAcento;
-    ctx.font = 'bold 66px Arial, sans-serif';
-    ctx.fillText(textoMontoAbono, centroX, yAbono + 64);
-    ctx.strokeStyle = colorAcento;
-    ctx.lineWidth = 1.6;
-    ctx.strokeText(textoMontoAbono, centroX, yAbono + 64);
-    ctx.textAlign = 'left';
-
-    // NUEVO: "Puntualidad del pago" — texto en color justo debajo del
-    // monto (sin píldora de fondo, a pedido), verde si fue anticipado/a
-    // tiempo, rojo si fue tarde. Solo se dibuja si el interruptor está
-    // activo Y el pago aplica (no mora, no abono).
-    if(resultadoPuntualidad){
-      // CORREGIDO: a pedido — solo en esta imagen compartida (comprobante),
-      // "anticipado" se une con "a tiempo" en un mismo mensaje. La
-      // pantalla de Cuotas y el Detalle del Pago en vivo siguen usando
-      // textoPuntualidadPago() tal cual, sin este cambio.
-      const textoPuntualidad = resultadoPuntualidad.tipo === 'anticipado' ? 'PAGO A TIEMPO' : textoPuntualidadPago(resultadoPuntualidad);
-      const colorPuntualidad = resultadoPuntualidad.tipo === 'tarde' ? '#DC2626' : '#15803D';
-      ctx.font = 'bold 17px Arial, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = colorPuntualidad;
-      ctx.fillText(textoPuntualidad, centroX, yAbono + 95);
-      ctx.textAlign = 'left';
+    // Mezcla dos colores hex (t=0 → a, t=1 → b) — para derivar el degradado
+    // del encabezado a partir del color elegido en Plantilla de recibo.
+    function mezclarHex(a, b, t){
+      const n = h => { h = String(h).replace('#', ''); if(h.length === 3) h = h.split('').map(c => c + c).join(''); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16) || 0); };
+      const ca = n(a), cb = n(b);
+      return 'rgb(' + ca.map((v, i) => Math.round(v + (cb[i] - v) * t)).join(',') + ')';
     }
 
-    // Línea divisoria bajo el bloque de abono
-    ctx.strokeStyle = '#EDF0F4';
-    ctx.lineWidth = 1;
+    // ---------- Paleta (solo colores presentes en la referencia) ----------
+    // El recargo por mora conserva su rojo fijo de siempre para distinguirse.
+    const colorEncabezado = esRecargoMora ? '#C4002A' : obtenerColorEncabezadoRecibo();
+    const AZUL_OSCURO = '#0B2360';
+    const colorTitulo = esRecargoMora ? '#B4001F' : AZUL_OSCURO;
+    const VERDE = '#22B14C';
+    const VERDE_OSCURO = '#17933A';
+    const VERDE_MUY_CLARO = '#E7F6EA';
+    const GRIS_ETIQUETA = '#5F6F8F';
+    const BORDE_SUAVE = '#E2E8F2';
+    const AZUL_MUY_CLARO = '#E6EEFB';
+
+    // ---------- Medidas (proporciones tomadas de la referencia) ----------
+    const alturaHeader = 110;
+    const hayPildora = !!resultadoPuntualidad;
+    const yEtiquetaAbono = alturaHeader + 46;   // línea base de "ABONO REALIZADO"
+    const xCajaMonto = 59, anchoCajaMonto = W - 118, yCajaMonto = alturaHeader + 62, altoCajaMonto = 103;
+    const altoPildora = 41;
+    const yPildora = yCajaMonto + altoCajaMonto - 3; // se monta apenas sobre la caja, como en la referencia
+    const xTarjeta = 24, anchoTarjeta = W - 48;
+    const yTarjeta = hayPildora ? (yPildora + altoPildora + 17) : (yCajaMonto + altoCajaMonto + 22);
+    const altoFila = 88, tamIcono = 60, padTarjeta = 18;
+    const numFilas = Math.max(filas.length, 1);
+    const altoTarjeta = padTarjeta * 2 + numFilas * altoFila - (altoFila - tamIcono);
+    const yFinTarjeta = yTarjeta + altoTarjeta;
+    const altoCard = yFinTarjeta + 140;          // agradecimiento + pie curvo
+    const H = altoCard;
+    const RADIO_CARD = 18;
+
+    const ctx = prepararCanvasNitido(canvas, W, H, 2);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // Todo se recorta a la tarjeta redondeada (fondo transparente afuera).
+    ctx.save();
+    trazarRectRedondeado(ctx, cardX, cardY, W, H, RADIO_CARD);
+    ctx.clip();
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, W, H);
+
+    // ==================== 1) ENCABEZADO ====================
+    ctx.save();
     ctx.beginPath();
-    ctx.moveTo(cardX + 25, yInicioFilas - 12);
-    ctx.lineTo(cardX + anchoCard - 25, yInicioFilas - 12);
+    ctx.rect(0, 0, W, alturaHeader);
+    ctx.clip();
+    const gradHeader = ctx.createLinearGradient(0, 0, W, alturaHeader);
+    gradHeader.addColorStop(0, mezclarHex(colorEncabezado, '#000000', 0.06));
+    gradHeader.addColorStop(0.6, mezclarHex(colorEncabezado, '#2F6BFF', 0.14));
+    gradHeader.addColorStop(1, mezclarHex(colorEncabezado, '#2F6BFF', 0.34));
+    ctx.fillStyle = gradHeader;
+    ctx.fillRect(0, 0, W, alturaHeader);
+    // Triángulo más claro de la esquina derecha
+    ctx.beginPath();
+    ctx.moveTo(W, 34);
+    ctx.lineTo(W, alturaHeader);
+    ctx.lineTo(W - 74, alturaHeader);
+    ctx.closePath();
+    ctx.fillStyle = mezclarHex(colorEncabezado, '#3B8BFF', 0.5);
+    ctx.globalAlpha = 0.55;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    // Franja verde diagonal (se desvanece hacia abajo-izquierda)
+    const gradFranja = ctx.createLinearGradient(522, -6, 428, 92);
+    gradFranja.addColorStop(0, 'rgba(140,224,74,1)');
+    gradFranja.addColorStop(0.55, 'rgba(58,180,74,0.85)');
+    gradFranja.addColorStop(1, 'rgba(58,180,74,0)');
+    ctx.strokeStyle = gradFranja;
+    ctx.lineWidth = 30;
+    ctx.beginPath();
+    ctx.moveTo(526, -10);
+    ctx.lineTo(430, 90);
+    ctx.stroke();
+    ctx.restore();
+
+    // Nombre del negocio (itálica extra negrita). Si es "PrestaYa", se
+    // dibuja como la marca: "Presta" en blanco con el asta de la P en verde
+    // y "Ya" en verde. Cualquier otro nombre va en blanco, ajustado al ancho.
+    (function dibujarNombreNegocio(){
+      const nombre = String(obtenerNombreNegocio() || '').trim() || 'PrestaYa';
+      const xNombre = 36, yBase = 60, anchoMax = 330;
+      let tam = 44;   // A pedido: nombre del negocio más pequeño (antes 56)
+      ctx.font = fuente(800, tam, true);
+      while(ctx.measureText(nombre).width > anchoMax && tam > 24){ tam -= 2; ctx.font = fuente(800, tam, true); }
+      const marca = nombre.match(/^(presta)\s?(ya)$/i);
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+      if(!marca){
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(nombre, xNombre, yBase);
+        return;
+      }
+      const parte1 = nombre.slice(0, marca[1].length);
+      const parte2 = nombre.slice(nombre.length - marca[2].length);
+      const ancho1 = ctx.measureText(parte1).width;
+      // "Presta" en un lienzo aparte, para pintar de verde SOLO el asta de la P
+      const escLogo = 2, margenLogo = 8, baseLogo = tam * 1.05;
+      const lienzoLogo = document.createElement('canvas');
+      lienzoLogo.width = Math.ceil((ancho1 + margenLogo * 2) * escLogo);
+      lienzoLogo.height = Math.ceil(tam * 1.4 * escLogo);
+      const cl = lienzoLogo.getContext('2d');
+      cl.scale(escLogo, escLogo);
+      cl.font = ctx.font;
+      cl.textBaseline = 'alphabetic';
+      cl.fillStyle = '#FFFFFF';
+      cl.fillText(parte1, margenLogo, baseLogo);
+      cl.globalCompositeOperation = 'source-atop';
+      const gradAsta = cl.createLinearGradient(0, baseLogo - tam * 0.45, 0, baseLogo);
+      gradAsta.addColorStop(0, '#8FE24B');
+      gradAsta.addColorStop(1, '#35B546');
+      cl.fillStyle = gradAsta;
+      cl.beginPath();
+      cl.moveTo(margenLogo - 4, baseLogo + 4);
+      cl.lineTo(margenLogo + tam * 0.27, baseLogo + 4);
+      cl.lineTo(margenLogo + tam * 0.35, baseLogo - tam * 0.40);
+      cl.lineTo(margenLogo - 4, baseLogo - tam * 0.26);
+      cl.closePath();
+      cl.fill();
+      ctx.drawImage(lienzoLogo, xNombre - margenLogo, yBase - baseLogo, lienzoLogo.width / escLogo, lienzoLogo.height / escLogo);
+      const gradYa = ctx.createLinearGradient(0, yBase - tam * 0.75, 0, yBase);
+      gradYa.addColorStop(0, '#9BE64F');
+      gradYa.addColorStop(1, '#3DBB48');
+      ctx.fillStyle = gradYa;
+      ctx.fillText(parte2, xNombre + ancho1, yBase);
+    })();
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.globalAlpha = 0.92;
+    ctx.font = fuente(400, 18);   // A pedido: subtítulo más pequeño (antes 22)
+    ctx.textAlign = 'left';
+    ctx.fillText(esRecargoMora ? 'Comprobante de recargo' : 'Comprobante de pago', 36, 87);
+    ctx.globalAlpha = 1;
+    // NOTA: el número/referencia del crédito ya NO se muestra en este
+    // comprobante (pedido anterior del usuario, se mantiene).
+
+    // ==================== 2) BLOQUE DEL ABONO ====================
+    // A pedido: se retiró el círculo verde con el check y sus destellos.
+
+    // "ABONO REALIZADO"
+    ctx.fillStyle = colorTitulo;
+    ctx.font = fuente(700, 21);   // A pedido: más pequeño (antes 26)
+    ctx.textAlign = 'center';
+    ctx.fillText(esRecargoMora ? 'RECARGO PAGADO' : 'ABONO REALIZADO', centroX, yEtiquetaAbono);
+
+    // Caja verde muy clara + monto (el elemento más grande del comprobante)
+    trazarRectRedondeado(ctx, xCajaMonto, yCajaMonto, anchoCajaMonto, altoCajaMonto, 30);
+    ctx.fillStyle = esRecargoMora ? '#FDECEF' : VERDE_MUY_CLARO;
+    ctx.fill();
+    // A pedido: el valor abonado se muestra SIN el signo "$" (solo en el dibujo).
+    const textoMontoAbono = String(formatearPesos(montoAbonado)).replace(/^\s*\$\s*/, '');
+    let tamMonto = 78;
+    ctx.font = fuente(800, tamMonto);
+    while(ctx.measureText(textoMontoAbono).width > anchoCajaMonto - 44 && tamMonto > 34){ tamMonto -= 2; ctx.font = fuente(800, tamMonto); }
+    ctx.fillStyle = colorTitulo;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(textoMontoAbono, centroX, yCajaMonto + altoCajaMonto / 2 + tamMonto * 0.04);
+    // A pedido: se quitó el contorno que le daba peso extra al monto.
+    ctx.textBaseline = 'alphabetic';
+
+    // Píldora de puntualidad (solo si el interruptor "Puntualidad del pago"
+    // está activo y el pago aplica): verde si fue a tiempo/anticipado, roja
+    // si fue tarde. "Anticipado" se sigue mostrando como "PAGO A TIEMPO".
+    if(hayPildora){
+      const textoPuntualidad = resultadoPuntualidad.tipo === 'anticipado' ? 'PAGO A TIEMPO' : textoPuntualidadPago(resultadoPuntualidad);
+      const esTarde = resultadoPuntualidad.tipo === 'tarde';
+      ctx.font = fuente(800, 16);   // A pedido: etiqueta más pequeña (antes 20)
+      const anchoTextoPildora = ctx.measureText(textoPuntualidad).width;
+      const radioReloj = 11.5, separacion = 11;
+      const anchoContenido = radioReloj * 2 + separacion + 1.5 + separacion + anchoTextoPildora;
+      // A pedido: sin fondo; solo reloj + texto, en verde (a tiempo) o rojo (tarde).
+      const colorPuntualidad = esTarde ? '#D32F2F' : VERDE_OSCURO;
+      const xContenido = centroX - anchoContenido / 2;
+      const cyPildora = yPildora + altoPildora / 2 + 4;
+      // reloj
+      const cxReloj = xContenido + radioReloj;
+      ctx.strokeStyle = colorPuntualidad;
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.arc(cxReloj, cyPildora, radioReloj - 1.1, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cxReloj, cyPildora - 5.8);
+      ctx.lineTo(cxReloj, cyPildora);
+      ctx.lineTo(cxReloj + 4.2, cyPildora + 3);
+      ctx.stroke();
+      // separador
+      const xSep = xContenido + radioReloj * 2 + separacion;
+      ctx.globalAlpha = 0.75;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(xSep, cyPildora - 9);
+      ctx.lineTo(xSep, cyPildora + 9);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      // texto
+      ctx.fillStyle = colorPuntualidad;
+      ctx.font = fuente(800, 16);   // A pedido: etiqueta más pequeña (antes 20)
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(textoPuntualidad, xSep + separacion, cyPildora + 1);
+      ctx.textBaseline = 'alphabetic';
+    }
+
+    // ==================== 3) TARJETA DE INFORMACIÓN ====================
+    trazarRectRedondeado(ctx, xTarjeta, yTarjeta, anchoTarjeta, altoTarjeta, 15);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fill();
+    ctx.strokeStyle = BORDE_SUAVE;
+    ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // ---------- Filas de datos: ícono + etiqueta + valor, 2 columnas ----------
-    const colIzqX = cardX + 25;
-    const colDerX = cardX + anchoCard / 2 + 12;
-    const tamIcono = 42;
-    let y = yInicioFilas;
-
-    // NUEVO: ancho de texto realmente disponible en cada columna, antes de
-    // llegar a la columna vecina (izquierda) o al borde de la tarjeta
-    // (derecha) — se usa para que un nombre/concepto largo nunca se monte
-    // encima del ícono de al lado.
-    const margenEntreColumnas = 10;
-    const anchoDisponibleIzq = (colDerX - margenEntreColumnas) - (colIzqX + tamIcono + 12);
-    const anchoDisponibleDer = (cardX + anchoCard - 25) - (colDerX + tamIcono + 12);
-
-    // NUEVO: si el texto (etiqueta o valor) no entra en el ancho
-    // disponible de su columna, primero se reduce el tamaño de letra poco
-    // a poco (sin llegar a verse ilegible) y, si aun así no entra, se
-    // corta con "…" — así un nombre o concepto largo nunca invade la
-    // columna vecina ni se monta sobre su ícono.
-    function ajustarTextoAAncho(texto, tamBase, tamMinimo, negrita, anchoDisponible){
-      const prefijo = negrita ? 'bold ' : '';
+    // Si el texto no entra en el ancho disponible, primero se reduce la
+    // letra poco a poco y, si aun así no entra, se corta con "…".
+    function ajustarTextoAAncho(texto, tamBase, tamMinimo, peso, anchoDisponible){
       let tam = tamBase;
-      ctx.font = prefijo + tam + 'px Arial, sans-serif';
+      ctx.font = fuente(peso, tam);
       while(ctx.measureText(texto).width > anchoDisponible && tam > tamMinimo){
         tam -= 1;
-        ctx.font = prefijo + tam + 'px Arial, sans-serif';
+        ctx.font = fuente(peso, tam);
       }
       let textoFinal = texto;
       while(ctx.measureText(textoFinal + '…').width > anchoDisponible && textoFinal.length > 1){
         textoFinal = textoFinal.slice(0, -1);
       }
       if(textoFinal !== texto) textoFinal += '…';
-      return { texto: textoFinal, tam, prefijo };
+      return { texto: textoFinal, tam };
     }
 
-    // NUEVO: color del valor según la etiqueta — "Estado" y "Abono
-    // realizado"/"Valor abonado" (pago confirmado) van en el mismo verde;
-    // el resto se mantiene en el tono oscuro estándar.
-    function colorValorCelda(etiqueta){
-      if(etiqueta === 'Estado' || etiqueta === 'Abono realizado' || etiqueta === 'Valor abonado') return colorVerde;
-      return colorTextoOscuro;
+    // Íconos lineales de la tarjeta (persona / calendario / lista), con el
+    // trazo un poco más grueso que pide este tamaño de cajita. Cualquier
+    // otro tipo (método, saldo, concepto…) usa el dibujante compartido.
+    function dibujarIconoFila(tipo, x, y){
+      if(tipo !== 'persona' && tipo !== 'calendario' && tipo !== 'numero'){
+        dibujarIconoComprobante(ctx, x, y, tamIcono, tipo, AZUL_OSCURO, AZUL_MUY_CLARO);
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        return;
+      }
+      trazarRectRedondeado(ctx, x, y, tamIcono, tamIcono, 17);
+      ctx.fillStyle = AZUL_MUY_CLARO;
+      ctx.fill();
+      const cx = x + tamIcono / 2, cy = y + tamIcono / 2;
+      ctx.strokeStyle = AZUL_OSCURO;
+      ctx.fillStyle = AZUL_OSCURO;
+      ctx.lineWidth = 2.8;
+      if(tipo === 'persona'){
+        ctx.beginPath();
+        ctx.arc(cx, cy - 7.5, 6.6, 0, Math.PI * 2);
+        ctx.stroke();
+        // Hombros: arco arriba y base recta con esquinas suaves.
+        ctx.beginPath();
+        ctx.moveTo(cx - 13, cy + 13);
+        ctx.bezierCurveTo(cx - 13, cy - 1, cx + 13, cy - 1, cx + 13, cy + 13);
+        ctx.quadraticCurveTo(cx + 13, cy + 16.5, cx + 9.5, cy + 16.5);
+        ctx.lineTo(cx - 9.5, cy + 16.5);
+        ctx.quadraticCurveTo(cx - 13, cy + 16.5, cx - 13, cy + 13);
+        ctx.closePath();
+        ctx.stroke();
+      }else if(tipo === 'calendario'){
+        trazarRectRedondeado(ctx, cx - 13, cy - 10.5, 26, 24, 4.5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx - 13, cy - 2.5); ctx.lineTo(cx + 13, cy - 2.5);
+        ctx.moveTo(cx - 6, cy - 15); ctx.lineTo(cx - 6, cy - 8);
+        ctx.moveTo(cx + 6, cy - 15); ctx.lineTo(cx + 6, cy - 8);
+        ctx.stroke();
+      }else{
+        [-8.5, 0, 8.5].forEach(dy=>{
+          ctx.beginPath();
+          ctx.arc(cx - 11.5, cy + dy, 1.9, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(cx - 5, cy + dy);
+          ctx.lineTo(cx + 13, cy + dy);
+          ctx.stroke();
+        });
+      }
     }
 
-    // CAMBIO: si una fila queda con una sola celda (ej. "Abono realizado"
-    // sin pareja porque ahí antes iba "Saldo pendiente", ya eliminado), esa
-    // celda se centra usando TODO el ancho de la tarjeta en vez de quedar
-    // pegada a la izquierda con un hueco visible del lado derecho.
-    function dibujarCeldaComprobante(x, yFila, etiqueta, valor, centrada, anchoDisponible){
-      let xDibujoIcono = x;
-      let xTexto = x + tamIcono + 12;
-      if(centrada){
-        ctx.font = '15px Arial, sans-serif';
-        const anchoEtiqueta = ctx.measureText(etiqueta).width;
-        ctx.font = 'bold 20px Arial, sans-serif';
-        const anchoValor = ctx.measureText(String(valor)).width;
-        const anchoTexto = Math.max(anchoEtiqueta, anchoValor);
-        const anchoBloque = tamIcono + 12 + anchoTexto;
-        xDibujoIcono = centroX - anchoBloque / 2;
-        xTexto = xDibujoIcono + tamIcono + 12;
-      }
-      // NUEVO: el ancho disponible para centrada=true es más generoso (casi
-      // toda la tarjeta) porque esa celda ya ocupa las 2 columnas juntas.
-      const anchoTope = centrada ? (anchoCard - 50 - tamIcono - 12) : anchoDisponible;
-      const etiquetaAjustada = ajustarTextoAAncho(etiqueta, 15, 12, false, anchoTope);
-      const valorAjustado = ajustarTextoAAncho(String(valor), 20, 14, true, anchoTope);
+    const xIcono = xTarjeta + 24;
+    const xTextoFila = xIcono + tamIcono + 22;
+    const anchoTextoFila = (xTarjeta + anchoTarjeta - 22) - xTextoFila;
+    filas.forEach((fila, i)=>{
+      const yIcono = yTarjeta + padTarjeta + i * altoFila;
+      dibujarIconoFila(iconoParaEtiquetaComprobante(fila[0]), xIcono, yIcono);
 
-      dibujarIconoComprobante(ctx, xDibujoIcono, yFila, tamIcono, iconoParaEtiquetaComprobante(etiqueta), colorAcento, colorIconoFondo);
-      ctx.fillStyle = colorTextoGris;
-      ctx.font = etiquetaAjustada.tam + 'px Arial, sans-serif';
-      ctx.fillText(etiquetaAjustada.texto, xTexto, yFila + 17);
-      ctx.fillStyle = colorValorCelda(etiqueta);
-      ctx.font = 'bold ' + valorAjustado.tam + 'px Arial, sans-serif';
-      ctx.fillText(valorAjustado.texto, xTexto, yFila + 41);
-    }
+      const etiquetaAjustada = ajustarTextoAAncho(String(fila[0]), 19, 14, 400, anchoTextoFila);
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = GRIS_ETIQUETA;
+      ctx.font = fuente(400, etiquetaAjustada.tam);
+      ctx.fillText(etiquetaAjustada.texto, xTextoFila, yIcono + 20);
 
-    for(let i = 0; i < filas.length; i += 2){
-      // CAMBIO: la fila que queda sola (ej. "Modalidad de pago") ya no se
-      // centra — se alinea igual que el resto, en la columna izquierda.
-      if(filas[i]){
-        dibujarCeldaComprobante(colIzqX, y, filas[i][0], filas[i][1], false, anchoDisponibleIzq);
-      }
-      if(filas[i + 1]){
-        dibujarCeldaComprobante(colDerX, y, filas[i + 1][0], filas[i + 1][1], false, anchoDisponibleDer);
-      }
+      const valorAjustado = ajustarTextoAAncho(String(fila[1]), 24, 16, 700, anchoTextoFila);
+      ctx.fillStyle = AZUL_OSCURO;
+      ctx.font = fuente(700, valorAjustado.tam);
+      ctx.fillText(valorAjustado.texto, xTextoFila, yIcono + 49);
 
-      if(i + 2 < filas.length){
-        ctx.strokeStyle = '#EDF0F4';
+      if(i < filas.length - 1){
+        ctx.strokeStyle = BORDE_SUAVE;
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(cardX + 25, y + alturaFilaPar - 18);
-        ctx.lineTo(cardX + anchoCard - 25, y + alturaFilaPar - 18);
+        ctx.moveTo(xIcono, yIcono + tamIcono + (altoFila - tamIcono) / 2);
+        ctx.lineTo(xTarjeta + anchoTarjeta - 24, yIcono + tamIcono + (altoFila - tamIcono) / 2);
         ctx.stroke();
       }
-      y += alturaFilaPar;
-    }
+    });
 
-    // ---------- Pie: ícono de confirmación + agradecimiento ----------
-    ctx.strokeStyle = '#EDF0F4';
-    ctx.lineWidth = 1;
+    // ==================== 4) AGRADECIMIENTO ====================
+    // A pedido: bloque de agradecimiento más pequeño (escudo al 82 %).
+    ctx.save();
+    ctx.translate(100, yFinTarjeta + 50);
+    ctx.scale(0.82, 0.82);
+    const escX = 0, escY = 0;
+    ctx.strokeStyle = AZUL_OSCURO;
+    ctx.lineWidth = 3.2;
     ctx.beginPath();
-    ctx.moveTo(cardX + 25, yFinFilas + 6);
-    ctx.lineTo(cardX + anchoCard - 25, yFinFilas + 6);
-    ctx.stroke();
-
-    const piePersona = yFinFilas + alturaPie / 2 + 4;
-    // escudo con check, mismo estilo de trazo que el resto de los íconos
-    const escX = centroX - 118, escY = piePersona - 1, esc = 1.05;
-    ctx.strokeStyle = colorAcento;
-    ctx.lineWidth = 2.1;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.beginPath();
-    ctx.moveTo(escX, escY - 11 * esc);
-    ctx.lineTo(escX + 9 * esc, escY - 7 * esc);
-    ctx.lineTo(escX + 9 * esc, escY + 2 * esc);
-    ctx.quadraticCurveTo(escX + 9 * esc, escY + 10 * esc, escX, escY + 13 * esc);
-    ctx.quadraticCurveTo(escX - 9 * esc, escY + 10 * esc, escX - 9 * esc, escY + 2 * esc);
-    ctx.lineTo(escX - 9 * esc, escY - 7 * esc);
+    ctx.moveTo(escX, escY - 24);
+    ctx.lineTo(escX + 20, escY - 16);
+    ctx.lineTo(escX + 20, escY + 2);
+    ctx.quadraticCurveTo(escX + 20, escY + 17, escX, escY + 25);
+    ctx.quadraticCurveTo(escX - 20, escY + 17, escX - 20, escY + 2);
+    ctx.lineTo(escX - 20, escY - 16);
     ctx.closePath();
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(escX - 4 * esc, escY + 1 * esc);
-    ctx.lineTo(escX - 1 * esc, escY + 4 * esc);
-    ctx.lineTo(escX + 4.5 * esc, escY - 3.5 * esc);
+    ctx.moveTo(escX - 8.5, escY + 1);
+    ctx.lineTo(escX - 2.5, escY + 7);
+    ctx.lineTo(escX + 9, escY - 6.5);
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.strokeStyle = '#C9D2E3';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(133, yFinTarjeta + 31);
+    ctx.lineTo(133, yFinTarjeta + 70);
     ctx.stroke();
 
     ctx.textAlign = 'left';
-    ctx.fillStyle = colorTextoOscuro;
-    ctx.font = 'bold 17px Arial, sans-serif';
-    ctx.fillText(esRecargoMora ? '¡Gracias por su pago!' : '¡Gracias por su pago!', escX + 20, piePersona - 4);
-    ctx.fillStyle = colorTextoGris;
-    ctx.font = '14.5px Arial, sans-serif';
-    ctx.fillText('Su compromiso nos ayuda a seguir creciendo.', escX + 20, piePersona + 14);
+    ctx.fillStyle = AZUL_OSCURO;
+    ctx.font = fuente(800, 18);
+    ctx.fillText('¡Gracias por su pago!', 150, yFinTarjeta + 47);
+    const subtituloPie = ajustarTextoAAncho('Su compromiso nos ayuda a seguir creciendo.', 14, 11, 400, W - 150 - 18);
+    ctx.fillStyle = GRIS_ETIQUETA;
+    ctx.font = fuente(400, subtituloPie.tam);
+    ctx.fillText(subtituloPie.texto, 150, yFinTarjeta + 68);
+
+    // ==================== 5) PIE DECORATIVO CURVO ====================
+    // Curva azul (izquierda, gruesa) que se afina hacia la derecha
+    const gradPieAzul = ctx.createLinearGradient(0, H, W, H);
+    gradPieAzul.addColorStop(0, mezclarHex(colorEncabezado, '#000000', 0.04));
+    gradPieAzul.addColorStop(0.7, mezclarHex(colorEncabezado, '#2F6BFF', 0.25));
+    gradPieAzul.addColorStop(1, mezclarHex(colorEncabezado, '#17933A', 0.55));
+    ctx.fillStyle = gradPieAzul;
+    ctx.beginPath();
+    ctx.moveTo(0, H - 60);
+    ctx.bezierCurveTo(W * 0.22, H - 26, W * 0.5, H - 9, W * 0.74, H - 10);
+    ctx.quadraticCurveTo(W * 0.9, H - 12, W, H - 32);
+    ctx.lineTo(W, H);
+    ctx.lineTo(0, H);
+    ctx.closePath();
+    ctx.fill();
+    // Media luna verde (derecha), separada por un filo blanco
+    ctx.beginPath();
+    ctx.moveTo(W, H - 84);
+    ctx.quadraticCurveTo(W * 0.84, H - 30, W * 0.5, H - 15);
+    ctx.quadraticCurveTo(W * 0.86, H - 14, W, H - 37);
+    ctx.closePath();
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    const gradPieVerde = ctx.createLinearGradient(W * 0.5, H, W, H - 84);
+    gradPieVerde.addColorStop(0, '#2FB344');
+    gradPieVerde.addColorStop(1, '#8FE24B');
+    ctx.fillStyle = gradPieVerde;
+    ctx.fill();
+
+    ctx.restore(); // fin del recorte a la tarjeta redondeada
     ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
 
     // NUEVO: sello "CRÉDITO PAGADO" cuando este préstamo ya quedó
     // completamente saldado (no aplica a un recargo de mora suelto).
     if(prestamo.estado === 'finalizado' && !esRecargoMora){
-      dibujarSelloCreditoPagado(ctx, cardX, cardY, anchoCard, altoCard);
+      // El sello va sobre el espacio libre a la derecha de las últimas
+      // filas de la tarjeta de datos, para no tapar el monto ni la píldora.
+      // (La función centra el sello en x + ancho*0.4, y + alto/2.)
+      dibujarSelloCreditoPagado(ctx, W - 134, yFinTarjeta - altoFila - 6, 0, 0);
     }
 
     return canvas;
