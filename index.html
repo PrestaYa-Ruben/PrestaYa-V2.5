@@ -21266,7 +21266,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const alturaHeader = 110;
     const hayPildora = !!resultadoPuntualidad;
     const yEtiquetaAbono = alturaHeader + 46;   // línea base de "ABONO REALIZADO"
-    const xCajaMonto = 59, anchoCajaMonto = W - 118, yCajaMonto = alturaHeader + 62, altoCajaMonto = 103;
+    const xCajaMonto = 59, anchoCajaMonto = W - 118, yCajaMonto = alturaHeader + 62, altoCajaMonto = 84;
     const altoPildora = 41;
     const yPildora = yCajaMonto + altoCajaMonto - 3; // se monta apenas sobre la caja, como en la referencia
     const xTarjeta = 24, anchoTarjeta = W - 48;
@@ -21397,14 +21397,36 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     trazarRectRedondeado(ctx, xCajaMonto, yCajaMonto, anchoCajaMonto, altoCajaMonto, 30);
     ctx.fillStyle = esRecargoMora ? '#FDECEF' : VERDE_MUY_CLARO;
     ctx.fill();
-    // A pedido: el valor abonado se muestra SIN el signo "$" (solo en el dibujo).
-    const textoMontoAbono = String(formatearPesos(montoAbonado)).replace(/^\s*\$\s*/, '');
-    let tamMonto = 78;
-    ctx.font = fuente(800, tamMonto);
-    while(ctx.measureText(textoMontoAbono).width > anchoCajaMonto - 44 && tamMonto > 34){ tamMonto -= 2; ctx.font = fuente(800, tamMonto); }
+    // A pedido: el valor abonado vuelve a mostrarse CON el signo "$".
+    // A pedido: el "$" se dibuja aparte, más pequeño que el número y
+    // separado por un pequeño espacio (solo en el dibujo; el valor no cambia).
+    const textoMontoCompleto = String(formatearPesos(montoAbonado));
+    const llevaSignoPesos = /^\s*\$/.test(textoMontoCompleto);
+    const textoMontoAbono = textoMontoCompleto.replace(/^\s*\$\s*/, '');
+    const PROPORCION_SIGNO = 0.72;
+    let tamMonto = 60;   // A pedido: monto más pequeño (antes 78) y con menos peso (600, antes 800)
+    function medirMontoAbono(){
+      ctx.font = fuente(600, tamMonto * PROPORCION_SIGNO);
+      const anchoSigno = llevaSignoPesos ? ctx.measureText('$').width : 0;
+      const espacioSigno = llevaSignoPesos ? tamMonto * 0.24 : 0;
+      ctx.font = fuente(600, tamMonto);
+      const anchoNumero = ctx.measureText(textoMontoAbono).width;
+      return { anchoSigno, espacioSigno, anchoNumero, total: anchoSigno + espacioSigno + anchoNumero };
+    }
+    let medidaMonto = medirMontoAbono();
+    while(medidaMonto.total > anchoCajaMonto - 44 && tamMonto > 34){ tamMonto -= 2; medidaMonto = medirMontoAbono(); }
     ctx.fillStyle = colorTitulo;
-    ctx.textBaseline = 'middle';
-    ctx.fillText(textoMontoAbono, centroX, yCajaMonto + altoCajaMonto / 2 + tamMonto * 0.04);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    const xMonto = centroX - medidaMonto.total / 2;
+    const yBaseMonto = yCajaMonto + altoCajaMonto / 2 + tamMonto * 0.36;
+    if(llevaSignoPesos){
+      ctx.font = fuente(600, tamMonto * PROPORCION_SIGNO);
+      ctx.fillText('$', xMonto, yBaseMonto - tamMonto * 0.09);
+    }
+    ctx.font = fuente(600, tamMonto);
+    ctx.fillText(textoMontoAbono, xMonto + medidaMonto.anchoSigno + medidaMonto.espacioSigno, yBaseMonto);
+    ctx.textAlign = 'center';
     // A pedido: se quitó el contorno que le daba peso extra al monto.
     ctx.textBaseline = 'alphabetic';
 
