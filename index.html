@@ -132,6 +132,11 @@ body.acento-verde-oscuro{ --primary:#005800; --primary-dark:#003D00; --primary-l
 body.acento-vinotinto{ --primary:#b00000; --primary-dark:#8a0000; --primary-light:rgba(176,0,0,0.14); }
 body.acento-plateado{ --primary:#8a8a8a; --primary-dark:#6e6e6e; --primary-light:rgba(138,138,138,0.14); }
 body.acento-verde-lima{ --primary:#78b03e; --primary-dark:#5f8f2f; --primary-light:rgba(120,176,62,0.14); }
+/* NUEVO: a pedido — ámbar #F8BD21. Igual que Plateado y Verde lima, el
+   círculo del selector muestra el color exacto, pero --primary usa un tono
+   más oscuro de la misma familia para que el texto blanco de los botones
+   se pueda leer. */
+body.acento-ambar{ --primary:#C28A00; --primary-dark:#9E7000; --primary-light:rgba(248,189,33,0.20); }
 
 /* NUEVO: Apariencia — Tamaño de letra. "zoom" escala texto, espaciados
    y tamaños de forma pareja (equivalente al zoom del navegador), lo que
@@ -4100,9 +4105,11 @@ body.modo-oscuro{ --resumen-pactado:#60A5FA; }
   border-radius:var(--radius-full);
   font-size:11.5px;
   font-weight:600;
-  color:var(--resumen-pactado);
-  background:rgba(37,99,235,0.12);
-  border:1px solid rgba(37,99,235,0.25);
+  /* CAMBIO: a pedido — fondo ámbar #F8BD21 (fijo, no depende del acento).
+     Letra oscura: sobre este amarillo, el blanco o el azul no se leen. */
+  color:#1A2030;
+  background:#F8BD21;
+  border:1px solid rgba(0,0,0,0.10);
   letter-spacing:0.1px;
 }
 /* Separación entre los dos bloques del resumen de préstamos activos */
@@ -8486,6 +8493,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <button type="button" class="acento-swatch" data-acento="verde-lima" style="background:#92d050;" aria-label="Verde lima">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
         </button>
+        <!-- NUEVO: a pedido — ámbar -->
+        <button type="button" class="acento-swatch" data-acento="ambar" style="background:#F8BD21;" aria-label="Ámbar">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </button>
       </div>
     </div>
 
@@ -8758,6 +8769,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
         </button>
         <button type="button" class="acento-swatch" data-color="#92d050" style="background:#92d050;" aria-label="Verde lima">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </button>
+        <!-- NUEVO: a pedido — ámbar -->
+        <button type="button" class="acento-swatch" data-color="#F8BD21" style="background:#F8BD21;" aria-label="Ámbar">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
         </button>
       </div>
@@ -11392,7 +11407,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     catch(err){ tamanoTextoEnMemoria = valor; }
   }
 
-  const CLASES_ACENTO = ['acento-morado', 'acento-verde-azulado', 'acento-coral', 'acento-verde', 'acento-naranja', 'acento-azul-marino', 'acento-grafito', 'acento-verde-oscuro', 'acento-vinotinto', 'acento-plateado', 'acento-verde-lima']; // 'azul' es el valor por defecto, sin clase
+  const CLASES_ACENTO = ['acento-morado', 'acento-verde-azulado', 'acento-coral', 'acento-verde', 'acento-naranja', 'acento-azul-marino', 'acento-grafito', 'acento-verde-oscuro', 'acento-vinotinto', 'acento-plateado', 'acento-verde-lima', 'acento-ambar']; // 'azul' es el valor por defecto, sin clase
   const CLASES_TAMANO = ['texto-pequeno', 'texto-grande']; // 'normal' es el valor por defecto, sin clase
 
   const toggleModoOscuro = document.getElementById('toggle-modo-oscuro');
