@@ -2127,6 +2127,59 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
 .loan-note svg{ width:16px; height:16px; stroke:var(--primary); flex-shrink:0; margin-top:1px; }
 
 /* ==========================================================
+   REDISEÑO — a pedido, con imagen de referencia: tarjeta de crédito
+   del cliente (.loan-card-full). Solo cambia la presentación.
+   ========================================================== */
+.loan-card-full{ padding:14px 15px 15px; border-radius:16px; }
+.loan-card-full.loan-card-activo{ background:#EEFAF2; border:2px solid #86D5A3; }
+/* Estas dos tarjetas tienen fondo claro fijo (verde/rosado) también en
+   modo oscuro, así que su texto usa siempre los tonos oscuros. */
+.loan-card-full.loan-card-activo,
+.loan-card-full.loan-card-vencido{ --text:#18202F; --text-secondary:#5A6880; }
+.loan-card-full .loan-card-top{ align-items:flex-start; gap:10px; margin-bottom:6px; }
+.loan-card-full .loan-card-top > div:first-child{ min-width:0; flex:1; }
+.loan-card-full .loan-card-nombre-principal{ font-size:16.5px; font-weight:800; letter-spacing:-0.2px; max-width:none; }
+.loan-card-full .loan-amount{ font-size:25px; font-weight:800; letter-spacing:-0.7px; margin:8px 0 0; }
+.loan-card-full .loan-num-credito{ margin-top:5px; }
+.loan-card-full .loan-badge{ display:inline-flex; align-items:center; gap:6px; font-weight:700; padding:5px 13px 5px 11px; }
+.loan-card-full .loan-badge::before{ content:''; width:8px; height:8px; border-radius:50%; background:#fff; flex-shrink:0; }
+.loan-card-full .loan-card-top-derecha{ gap:6px; }
+.loan-card-full .loan-card-recordatorio-btn svg{ width:19px; height:19px; }
+.loan-card-full .loan-divider{ border-top-color:rgba(20,30,60,0.12); margin:4px 0; }
+.loan-card-full .loan-row{ padding:3px 0; font-size:14.5px; }
+.loan-card-full .loan-row .loan-row-label{ font-weight:500; }
+.loan-card-full .loan-row .loan-row-value{ font-weight:700; }
+.loan-card-full .loan-row .loan-row-value .loan-freq{ font-weight:700; }
+.loan-card-full .loan-row .loan-row-value.loan-abonado{ color:#2F5FD0; }
+.loan-card-full .loan-progress-header{ font-size:13.5px; font-weight:500; padding-top:3px; margin-bottom:5px; }
+.loan-card-full .loan-progress-track{ height:9px; }
+.loan-card-full .loan-note{
+  margin-top:12px;
+  padding:11px 13px;
+  background:#E6EDFB;
+  border:1px solid #D5E0F7;
+  border-left:1px solid #D5E0F7;
+  border-radius:14px;
+  align-items:center;
+  gap:12px;
+  color:#18202F;
+}
+.loan-card-full .loan-note-icono{
+  width:38px; height:38px; border-radius:50%;
+  background:#2F5FD0;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.loan-card-full .loan-note-icono svg{ width:18px; height:18px; stroke:#fff; margin:0; }
+.loan-card-full .loan-note-contenido{
+  flex:1; min-width:0;
+  padding-left:12px;
+  border-left:1.5px solid #AFC4EF;
+}
+.loan-card-full .loan-note-titulo{ font-size:13.5px; font-weight:700; color:#2F5FD0; line-height:1.2; margin-bottom:2px; }
+.loan-card-full .loan-note-contenido span{ display:block; font-size:13.5px; font-weight:500; line-height:1.38; color:#18202F; overflow-wrap:anywhere; }
+
+/* ==========================================================
    DETALLE DE PRÉSTAMO — tarjeta ampliada, tabs, cuotas/pagos
    ========================================================== */
 .loan-detail-card{ padding:20px; }
@@ -19009,6 +19062,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           <div class="loan-card-nombre-principal">${clienteTarjeta ? escaparHtml(clienteTarjeta.nombre) : 'Cliente eliminado'}</div>
           <div class="loan-code">${prestamo.codigo || ''}</div>
           ${etiquetaNumeroCredito ? `<span class="loan-num-credito">${etiquetaNumeroCredito}</span>` : ''}
+          <div class="loan-amount">${formatearPesos(prestamo.valor)}</div>
         </div>
         <div class="loan-card-top-derecha">
           <div class="loan-badge ${estadoVisual}">${etiquetaEstadoVisual(estadoVisual)}</div>
@@ -19017,7 +19071,6 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           </button>
         </div>
       </div>
-      <div class="loan-amount">${formatearPesos(prestamo.valor)}</div>
       <hr class="loan-divider">
       <div class="loan-row">
         <span class="loan-row-label">Fecha inicio:</span>
@@ -19050,8 +19103,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       </div>
       ${prestamo.nota ? `
       <div class="loan-note">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
-        <span></span>
+        <div class="loan-note-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+        </div>
+        <div class="loan-note-contenido">
+          <div class="loan-note-titulo">Notas</div>
+          <span></span>
+        </div>
       </div>` : ''}
     `;
     if(prestamo.nota){
