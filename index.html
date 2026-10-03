@@ -7128,6 +7128,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <button type="button" class="toggle-switch" id="toggle-comprobante-cuota" role="switch" aria-checked="false" aria-label="Mostrar número de cuota en el comprobante"></button>
       </div>
       <hr class="loan-divider" style="margin:14px 0;">
+      <!-- NUEVO: a pedido — interruptor "Método de pago" (el mismo ajuste
+           global de Ajustes → Plantilla de recibo y de Detalle del Pago). -->
+      <div class="mora-toggle-row" style="padding:0;">
+        <div class="mora-toggle-text">
+          <div class="mora-toggle-title">Método de pago</div>
+          <div class="mora-toggle-subtitle">Ej. "Efectivo" o "Transferencia"</div>
+        </div>
+        <button type="button" class="toggle-switch" id="toggle-comprobante-metodo" role="switch" aria-checked="false" aria-label="Mostrar método de pago en el comprobante"></button>
+      </div>
+      <hr class="loan-divider" style="margin:14px 0;">
       <div class="mora-toggle-row" style="padding:0;">
         <div class="mora-toggle-text">
           <div class="mora-toggle-title">Puntualidad del pago</div>
@@ -12511,6 +12521,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     guardarReciboMostrarMetodo(nuevo);
     marcarTogglesCamposRecibo();
     refrescarFilasOpcionalesRecibo();
+    if(typeof aplicarTogglesComprobanteDesdePrestamo === 'function') aplicarTogglesComprobanteDesdePrestamo();
   });
   toggleReciboCuota.addEventListener('click', ()=>{
     const nuevo = !obtenerReciboMostrarCuota();
@@ -21204,6 +21215,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       // este abono (así un abono que sobra hacia la siguiente cuota, sin
       // completarla, no la cuenta todavía).
       ['Cuota', cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas],
+      // NUEVO: a pedido — el comprobante normal también puede mostrar el
+      // método de pago (se oculta con el interruptor "Método de pago").
+      ['Método de pago', metodo],
       ['Valor de la cuota', formatearPesos(cuotaRealPrestamo(prestamo))],
       ['Abono realizado', formatearPesos(montoAbonado)],
       ['Estado', todasLasCuotasCubiertasQuedaronPagadas ? 'Pagada' : 'Abono registrado'],
@@ -21289,7 +21303,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // ---------- Medidas (proporciones tomadas de la referencia) ----------
     const alturaHeader = 110;
     const hayPildora = !!resultadoPuntualidad;
-    const yEtiquetaAbono = alturaHeader + 46;   // línea base de "ABONO REALIZADO"
+    const yEtiquetaAbono = alturaHeader + 47;   // línea base de "ABONO REALIZADO"
     const xCajaMonto = 59, anchoCajaMonto = W - 118, yCajaMonto = alturaHeader + 62, altoCajaMonto = 84;
     const altoPildora = 41;
     const yPildora = yCajaMonto + altoCajaMonto - 3; // se monta apenas sobre la caja, como en la referencia
@@ -21299,7 +21313,25 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const numFilas = Math.max(filas.length, 1);
     const altoTarjeta = padTarjeta * 2 + numFilas * altoFila - (altoFila - tamIcono);
     const yFinTarjeta = yTarjeta + altoTarjeta;
-    const altoCard = yFinTarjeta + 140;          // agradecimiento + pie curvo
+    // Mensaje del pie (a pedido): se parte en varias líneas según el ancho.
+    const TEXTO_PIE = '¡Tu puntualidad tiene valor! Mantén tu crédito al día y asegura tu respaldo financiero cuando lo necesites.';
+    const TAM_PIE = 14, INTERLINEA_PIE = 19, ANCHO_PIE = W - 150 - 26;
+    const lineasPie = (function(){
+      const medidor = document.createElement('canvas').getContext('2d');
+      medidor.font = '400 ' + TAM_PIE + "px Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+      const lineas = []; let actual = '';
+      TEXTO_PIE.split(' ').forEach(palabra=>{
+        const prueba = actual ? actual + ' ' + palabra : palabra;
+        if(actual && medidor.measureText(prueba).width > ANCHO_PIE){ lineas.push(actual); actual = palabra; }
+        else actual = prueba;
+      });
+      if(actual) lineas.push(actual);
+      return lineas;
+    })();
+    const altoBloquePie = 26 + lineasPie.length * INTERLINEA_PIE;   // título + líneas
+    const yInicioPie = yFinTarjeta + 26;
+    const yCentroPie = yInicioPie + altoBloquePie / 2;
+    const altoCard = yInicioPie + altoBloquePie + 28;
     const H = altoCard;
     const RADIO_CARD = 18;
 
@@ -21393,7 +21425,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     // "ABONO REALIZADO"
     ctx.fillStyle = colorTitulo;
-    ctx.font = fuente(700, 21);   // A pedido: más pequeño (antes 26)
+    ctx.font = fuente(700, 17);   // A pedido: aún más pequeño (antes 21; al inicio 26)
     ctx.textAlign = 'center';
     ctx.fillText(esRecargoMora ? 'RECARGO PAGADO' : 'ABONO REALIZADO', centroX, yEtiquetaAbono);
 
@@ -21585,7 +21617,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // ==================== 4) AGRADECIMIENTO ====================
     // A pedido: bloque de agradecimiento más pequeño (escudo al 82 %).
     ctx.save();
-    ctx.translate(100, yFinTarjeta + 50);
+    ctx.translate(100, yCentroPie);
     ctx.scale(0.82, 0.82);
     const escX = 0, escY = 0;
     ctx.strokeStyle = AZUL_OSCURO;
@@ -21609,48 +21641,21 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     ctx.strokeStyle = '#C9D2E3';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(133, yFinTarjeta + 31);
-    ctx.lineTo(133, yFinTarjeta + 70);
+    ctx.moveTo(133, yInicioPie + 2);
+    ctx.lineTo(133, yInicioPie + altoBloquePie + 2);
     ctx.stroke();
 
     ctx.textAlign = 'left';
     ctx.fillStyle = AZUL_OSCURO;
     ctx.font = fuente(800, 18);
-    ctx.fillText('¡Gracias por su pago!', 150, yFinTarjeta + 47);
-    const subtituloPie = ajustarTextoAAncho('Su compromiso nos ayuda a seguir creciendo.', 14, 11, 400, W - 150 - 18);
+    ctx.fillText('¡Gracias por su pago!', 150, yInicioPie + 17);
     ctx.fillStyle = GRIS_ETIQUETA;
-    ctx.font = fuente(400, subtituloPie.tam);
-    ctx.fillText(subtituloPie.texto, 150, yFinTarjeta + 68);
+    ctx.font = fuente(400, TAM_PIE);
+    lineasPie.forEach((linea, i)=>{
+      ctx.fillText(linea, 150, yInicioPie + 21 + INTERLINEA_PIE * (i + 1));
+    });
 
-    // ==================== 5) PIE DECORATIVO CURVO ====================
-    // Curva azul (izquierda, gruesa) que se afina hacia la derecha
-    const gradPieAzul = ctx.createLinearGradient(0, H, W, H);
-    gradPieAzul.addColorStop(0, mezclarHex(colorEncabezado, '#000000', 0.04));
-    gradPieAzul.addColorStop(0.7, mezclarHex(colorEncabezado, '#2F6BFF', 0.25));
-    gradPieAzul.addColorStop(1, mezclarHex(colorEncabezado, '#17933A', 0.55));
-    ctx.fillStyle = gradPieAzul;
-    ctx.beginPath();
-    ctx.moveTo(0, H - 60);
-    ctx.bezierCurveTo(W * 0.22, H - 26, W * 0.5, H - 9, W * 0.74, H - 10);
-    ctx.quadraticCurveTo(W * 0.9, H - 12, W, H - 32);
-    ctx.lineTo(W, H);
-    ctx.lineTo(0, H);
-    ctx.closePath();
-    ctx.fill();
-    // Media luna verde (derecha), separada por un filo blanco
-    ctx.beginPath();
-    ctx.moveTo(W, H - 84);
-    ctx.quadraticCurveTo(W * 0.84, H - 30, W * 0.5, H - 15);
-    ctx.quadraticCurveTo(W * 0.86, H - 14, W, H - 37);
-    ctx.closePath();
-    ctx.strokeStyle = '#FFFFFF';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    const gradPieVerde = ctx.createLinearGradient(W * 0.5, H, W, H - 84);
-    gradPieVerde.addColorStop(0, '#2FB344');
-    gradPieVerde.addColorStop(1, '#8FE24B');
-    ctx.fillStyle = gradPieVerde;
-    ctx.fill();
+    // A pedido: se retiraron las curvas decorativas azul y verde del pie.
 
     ctx.restore(); // fin del recorte a la tarjeta redondeada
     ctx.textAlign = 'left';
@@ -21874,6 +21879,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     guardarReciboMostrarMetodo(!obtenerReciboMostrarMetodo());
     aplicarTogglesRecibo();
     if(typeof marcarTogglesCamposRecibo === 'function') marcarTogglesCamposRecibo();
+    if(typeof aplicarTogglesComprobanteDesdePrestamo === 'function') aplicarTogglesComprobanteDesdePrestamo();
   });
 
   // Aplica la preferencia guardada ya desde el arranque
@@ -22593,6 +22599,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     togglePuntualidad.classList.toggle('on', puntualidad);
     togglePuntualidad.classList.toggle('toggle-verde', puntualidad);
     togglePuntualidad.setAttribute('aria-checked', String(puntualidad));
+    const metodo = obtenerReciboMostrarMetodo();
+    const toggleMetodo = document.getElementById('toggle-comprobante-metodo');
+    toggleMetodo.classList.toggle('on', metodo);
+    toggleMetodo.classList.toggle('toggle-verde', metodo);
+    toggleMetodo.setAttribute('aria-checked', String(metodo));
   }
   // NUEVO: píldora "Más opciones" — abre/cierra la tarjeta de
   // interruptores del comprobante, mismo patrón fluido ya usado y
@@ -22629,6 +22640,14 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   document.getElementById('toggle-comprobante-cuota').addEventListener('click', ()=>{
     guardarReciboMostrarCuota(!obtenerReciboMostrarCuota());
     aplicarTogglesComprobanteDesdePrestamo();
+  });
+  // NUEVO: "Método de pago" — mismo ajuste global que en Ajustes →
+  // Plantilla de recibo y en Detalle del Pago; los tres quedan sincronizados.
+  document.getElementById('toggle-comprobante-metodo').addEventListener('click', ()=>{
+    guardarReciboMostrarMetodo(!obtenerReciboMostrarMetodo());
+    aplicarTogglesComprobanteDesdePrestamo();
+    if(typeof marcarTogglesCamposRecibo === 'function') marcarTogglesCamposRecibo();
+    if(typeof aplicarTogglesRecibo === 'function') aplicarTogglesRecibo();
   });
   document.getElementById('toggle-comprobante-puntualidad').addEventListener('click', ()=>{
     guardarReciboPuntualidad(!mostrarReciboPuntualidad());
