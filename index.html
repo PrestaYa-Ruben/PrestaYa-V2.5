@@ -16882,19 +16882,28 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const nombreCliente = cliente ? cliente.nombre : '';
     const filas = [
       ['Cliente', nombreCliente],
-      ['Monto del préstamo', formatearPesos(prestamo.valor)],
+      // CAMBIO: a pedido — nuevas etiquetas. El 3.er elemento conserva la
+      // etiqueta anterior solo para elegir el MISMO ícono de siempre.
+      ['Monto del crédito', formatearPesos(prestamo.valor), 'Monto del préstamo'],
       ['Fecha del crédito', formatearFechaCorta(new Date(prestamo.fecha + 'T00:00:00'))],
       ['N.° de cuotas', String(prestamo.cuotas)],
-      ['Valor de la cuota', formatearPesos(cuotaRealPrestamo(prestamo))],
-      ['Modalidad de pago', NOMBRES_FRECUENCIA[prestamo.frecuencia] || prestamo.frecuencia],
+      ['Valor por cuota', formatearPesos(cuotaRealPrestamo(prestamo)), 'Valor de la cuota'],
+      ['Frecuencia de pago', NOMBRES_FRECUENCIA[prestamo.frecuencia] || prestamo.frecuencia, 'Modalidad de pago'],
       ['Estado', prestamo.estado === 'finalizado' ? 'Finalizado' : 'Activo']
     ];
+    // NUEVO: a pedido — documento del cliente (bajo su nombre) y número de
+    // solicitud (encima de "CRÉDITO OTORGADO"). Solo se dibujan si existen.
+    const documentoCliente = cliente && cliente.documento ? String(cliente.documento).trim() : '';
+    const textoDocumentoCliente = documentoCliente
+      ? 'CC ' + (/^[\d.\s]+$/.test(documentoCliente) ? formatearMiles(documentoCliente.replace(/\D/g, '')) : documentoCliente)
+      : '';
+    const textoSolicitud = prestamo.codigo ? 'N.° solicitud ' + prestamo.codigo : '';
 
     const canvas = document.createElement('canvas');
     const cardX = 0, cardY = 0, anchoCard = 540;
     const anchoLogicoResumen = anchoCard;
     const alturaHeader = 108;
-    const alturaBloqueHero = 140;
+    const alturaBloqueHero = textoSolicitud ? 160 : 140;
     const alturaFilaPar = 88;
     const alturaPie = 80;
 
@@ -16924,7 +16933,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     ctx.arcTo(cardX + anchoCard, cardY, cardX + anchoCard, cardY + 26, 26);
     ctx.lineTo(cardX + anchoCard, cardY + alturaHeader);
     ctx.closePath();
-    ctx.fillStyle = colorAcento;
+    ctx.fillStyle = '#009A44';   // A pedido: franja superior verde (antes el color del encabezado, azul)
     ctx.fill();
 
     ctx.fillStyle = '#FFFFFF';
@@ -16935,24 +16944,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     ctx.fillText('Resumen de crédito', cardX + 25, cardY + 78);
     ctx.globalAlpha = 1;
 
-    // Logo — mismo isotipo redondo "P" que usa el Comprobante de Pago
-    const logoCx = cardX + anchoCard - 52, logoCy = cardY + alturaHeader / 2;
-    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(logoCx, logoCy, 24, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 24px Arial, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('P', logoCx + 1, logoCy + 2);
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
+    // A pedido: se quitó el isotipo "P" con su círculo de la esquina
+    // superior derecha; esa zona del encabezado queda limpia.
 
     // ---------- Bloque destacado "CRÉDITO OTORGADO" ----------
     const centroX = cardX + anchoCard / 2;
     let yHero = cardY + alturaHeader + 43;
+    if(textoSolicitud){
+      ctx.fillStyle = colorTextoGris;
+      ctx.font = '14.5px Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(textoSolicitud, centroX, cardY + alturaHeader + 30);
+      yHero += 20;
+    }
     ctx.fillStyle = colorAcento;
     ctx.font = 'bold 17px Arial, sans-serif';
     ctx.textAlign = 'center';
@@ -17008,6 +17012,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         ctx.font = prefijo + tam + 'px Arial, sans-serif';
       }
       let textoFinal = texto;
+      // CORREGIDO: solo se recorta si el texto de verdad no entra (antes se
+      // recortaba aunque cupiera, porque medía el texto ya con el "…").
+      if(ctx.measureText(texto).width <= anchoDisponible) return { texto, tam };
       while(ctx.measureText(textoFinal + '…').width > anchoDisponible && textoFinal.length > 1){
         textoFinal = textoFinal.slice(0, -1);
       }
@@ -17015,8 +17022,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       return { texto: textoFinal, tam };
     }
 
-    function dibujarCeldaResumen(x, yFila, etiqueta, valor, anchoDisponible){
-      dibujarIconoComprobante(ctx, x, yFila, tamIcono, iconoParaEtiquetaComprobante(etiqueta), colorAcento, colorIconoFondo);
+    function dibujarCeldaResumen(x, yFila, etiqueta, valor, anchoDisponible, etiquetaIcono){
+      dibujarIconoComprobante(ctx, x, yFila, tamIcono, iconoParaEtiquetaComprobante(etiquetaIcono || etiqueta), colorAcento, colorIconoFondo);
       const xTexto = x + tamIcono + 12;
       const etiquetaAjustada = ajustarTextoAAnchoResumen(etiqueta, 15, 12, false, anchoDisponible);
       const valorAjustado = ajustarTextoAAnchoResumen(String(valor), 20, 14, true, anchoDisponible);
@@ -17026,11 +17033,18 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       ctx.fillStyle = etiqueta === 'Estado' ? '#22A559' : colorTextoOscuro;
       ctx.font = 'bold ' + valorAjustado.tam + 'px Arial, sans-serif';
       ctx.fillText(valorAjustado.texto, xTexto, yFila + 41);
+      // Documento del cliente, pequeño y en gris, justo debajo del nombre
+      if(etiqueta === 'Cliente' && textoDocumentoCliente){
+        const docAjustado = ajustarTextoAAnchoResumen(textoDocumentoCliente, 13.5, 11, false, anchoDisponible);
+        ctx.fillStyle = colorTextoGris;
+        ctx.font = docAjustado.tam + 'px Arial, sans-serif';
+        ctx.fillText(docAjustado.texto, xTexto, yFila + 59);
+      }
     }
 
     for(let i = 0; i < filas.length; i += 2){
-      if(filas[i]) dibujarCeldaResumen(colIzqX, y, filas[i][0], filas[i][1], anchoDisponibleIzqResumen);
-      if(filas[i + 1]) dibujarCeldaResumen(colDerX, y, filas[i + 1][0], filas[i + 1][1], anchoDisponibleDerResumen);
+      if(filas[i]) dibujarCeldaResumen(colIzqX, y, filas[i][0], filas[i][1], anchoDisponibleIzqResumen, filas[i][2]);
+      if(filas[i + 1]) dibujarCeldaResumen(colDerX, y, filas[i + 1][0], filas[i + 1][1], anchoDisponibleDerResumen, filas[i + 1][2]);
 
       if(i + 2 < filas.length){
         ctx.strokeStyle = '#EDF0F4';
@@ -17052,7 +17066,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     ctx.stroke();
 
     const piePersona = yFinFilas + alturaPie / 2 + 4;
-    const escX = centroX - 118, escY = piePersona - 1, esc = 1.05;
+    // A pedido: nuevo pie — "<Negocio>, Soluciones financieras" y debajo
+    // "Solución efectiva a sus necesidades". El bloque (escudo + textos)
+    // se centra según el ancho real del texto.
+    const tituloPieResumen = (String(obtenerNombreNegocio() || '').trim() || 'PrestaYa') + ', Soluciones financieras';
+    const subtituloPieResumen = 'Solución efectiva a sus necesidades';
+    ctx.font = 'bold 17px Arial, sans-serif';
+    let anchoTextoPieResumen = ctx.measureText(tituloPieResumen).width;
+    ctx.font = '14.5px Arial, sans-serif';
+    anchoTextoPieResumen = Math.min(anchoCard - 90, Math.max(anchoTextoPieResumen, ctx.measureText(subtituloPieResumen).width));
+    const escX = centroX - (anchoTextoPieResumen + 20) / 2 + 5, escY = piePersona - 1, esc = 1.05;
     ctx.strokeStyle = colorAcento;
     ctx.lineWidth = 2.1;
     ctx.lineCap = 'round';
@@ -17075,10 +17098,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     ctx.textAlign = 'left';
     ctx.fillStyle = colorTextoOscuro;
     ctx.font = 'bold 17px Arial, sans-serif';
-    ctx.fillText('¡Gracias por su confianza!', escX + 20, piePersona - 4);
+    ctx.fillText(tituloPieResumen, escX + 20, piePersona - 4, anchoTextoPieResumen);
     ctx.fillStyle = colorTextoGris;
     ctx.font = '14.5px Arial, sans-serif';
-    ctx.fillText('Estamos para ayudarte en lo que necesites.', escX + 20, piePersona + 14);
+    ctx.fillText(subtituloPieResumen, escX + 20, piePersona + 14, anchoTextoPieResumen);
     ctx.textAlign = 'left';
 
     // Sello "CRÉDITO PAGADO" cuando este préstamo ya está finalizado.
