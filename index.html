@@ -4257,6 +4257,11 @@ body.modo-oscuro{ --resumen-pactado:#60A5FA; }
   color:var(--text);
 }
 .ruta-admin-item:last-child{ border-bottom:none; }
+.ruta-admin-nombre{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ruta-admin-color{ width:24px; height:24px; border-radius:50%; flex-shrink:0; border:2px solid var(--surface); box-shadow:0 0 0 1.5px rgba(20,30,60,0.25); cursor:pointer; }
+.ruta-admin-paleta{ flex-wrap:wrap; gap:10px; padding:10px 4px 12px; border-bottom:1px solid var(--border); }
+.ruta-admin-muestra{ width:30px; height:30px; border-radius:50%; border:2px solid var(--surface); box-shadow:0 0 0 1.5px rgba(20,30,60,0.18); cursor:pointer; }
+.ruta-admin-muestra.seleccionada{ box-shadow:0 0 0 2.5px var(--text); }
 .ruta-admin-eliminar{ color:var(--danger); display:flex; align-items:center; justify-content:center; padding:8px; flex-shrink:0; }
 .ruta-admin-eliminar svg{ width:18px; height:18px; stroke:currentColor; }
 .ruta-admin-vacio{ font-size:14px; color:var(--text-secondary); font-weight:400; padding:14px 4px; text-align:center; }
@@ -11783,6 +11788,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     'prestapp_clientes',
     'prestapp_prestamos',
     'prestapp_rutas',
+    'prestapp_rutas_colores',
     'prestapp_movimientos_caja',
     'prestapp_recordatorios',
     'prestapp_tinte_dashboard',
@@ -14764,6 +14770,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       etiquetaRuta.className = 'client-row-ruta';
       etiquetaRuta.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"></circle><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path><circle cx="18" cy="5" r="3"></circle></svg><span></span>';
       etiquetaRuta.querySelector('span').textContent = cliente.ruta.trim();
+      // NUEVO: la etiqueta toma el color de su ruta (Administrar Rutas).
+      const colorRutaEtiqueta = colorDeRuta(cliente.ruta);
+      etiquetaRuta.style.color = colorRutaEtiqueta;
+      etiquetaRuta.style.borderColor = colorRutaEtiqueta + '8C';
+      etiquetaRuta.style.background = colorRutaEtiqueta + '14';
       info.appendChild(etiquetaRuta);
     }
 
@@ -15087,6 +15098,31 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       console.warn('No se pudo guardar rutas en localStorage; se usará memoria temporal.', err);
       rutasEnMemoria = lista;
     }
+  }
+
+  // NUEVO: a pedido — color por ruta. Se guarda aparte, { "Martha": "#2563EB", … },
+  // para no cambiar el formato de la lista de rutas (sigue siendo un array
+  // de nombres). Una ruta sin color elegido toma uno de la paleta según su
+  // posición en la lista, así cada ruta arranca con un color distinto.
+  const RUTAS_COLORES_KEY = 'prestapp_rutas_colores';
+  const PALETA_COLORES_RUTA = ['#2B9A66', '#2563EB', '#7C3AED', '#DB2777', '#D97706', '#0891B2', '#DC2626', '#65A30D', '#9A3412', '#475569'];
+  let coloresRutasEnMemoria = {};
+  function cargarColoresRutas(){
+    try{
+      const guardado = JSON.parse(localStorage.getItem(RUTAS_COLORES_KEY) || '{}');
+      return (guardado && typeof guardado === 'object' && !Array.isArray(guardado)) ? guardado : {};
+    }catch(err){ return coloresRutasEnMemoria; }
+  }
+  function guardarColoresRutas(mapa){
+    coloresRutasEnMemoria = mapa;
+    try{ localStorage.setItem(RUTAS_COLORES_KEY, JSON.stringify(mapa)); }catch(err){ /* queda en memoria */ }
+  }
+  let coloresRutas = cargarColoresRutas();
+  function colorDeRuta(nombreRuta){
+    const nombre = String(nombreRuta || '').trim();
+    if(/^#[0-9a-f]{6}$/i.test(coloresRutas[nombre] || '')) return coloresRutas[nombre];
+    const indice = rutasGuardadas.findIndex(r => r === nombre);
+    return PALETA_COLORES_RUTA[(indice >= 0 ? indice : 0) % PALETA_COLORES_RUTA.length];
   }
 
   let rutasGuardadas = cargarRutas(); // array de nombres de ruta, ej. ["Martha", "Hectorillo"]
@@ -25385,7 +25421,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         // crédito activo. Sigue apareciendo igual en la búsqueda global
         // (lupa), que usa buscarClientesGlobal(), una función aparte que no
         // se toca.
-        if(filtroClienteActivo !== 'todos' && !tieneCreditoActivo) return false;
+        // CAMBIO: a pedido — los clientes SIN crédito activo ya no se
+        // listan en "Todos"; solo en su pestaña "Sin crédito". La excepción
+        // es cuando hay texto en el buscador de esta pantalla: ahí sí
+        // aparecen en "Todos", para poder encontrarlos por nombre o teléfono.
+        if(!tieneCreditoActivo && !(filtroClienteActivo === 'todos' && termino)) return false;
 
         if(filtroClienteActivo === 'con-credito'){
           return true; // ya se confirmó arriba que tiene crédito activo
@@ -25562,6 +25602,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   const inputNuevaRuta = document.getElementById('input-nueva-ruta');
   const listaAdministrarRutas = document.getElementById('lista-administrar-rutas');
 
+  let rutaConPaletaAbierta = null; // ruta cuya paleta de colores está desplegada
   function renderizarListaAdministrarRutas(){
     listaAdministrarRutas.innerHTML = '';
     if(rutasGuardadas.length === 0){
@@ -25571,14 +25612,45 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     rutasGuardadas.forEach(ruta=>{
       const fila = document.createElement('div');
       fila.className = 'ruta-admin-item';
+      const colorActualRuta = colorDeRuta(ruta);
       fila.innerHTML = `
-        <span>${ruta}</span>
+        <button type="button" class="ruta-admin-color" aria-label="Cambiar color de la ruta" style="background:${colorActualRuta}"></button>
+        <span class="ruta-admin-nombre">${ruta}</span>
         <button type="button" class="ruta-admin-eliminar" aria-label="Eliminar ruta">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
         </button>
       `;
       fila.querySelector('.ruta-admin-eliminar').addEventListener('click', ()=> eliminarRuta(ruta));
       listaAdministrarRutas.appendChild(fila);
+
+      // NUEVO: paleta de colores de la ruta — se despliega bajo la fila al
+      // tocar el círculo de color; al elegir uno se guarda y se refleja en
+      // la etiqueta de ruta de las tarjetas de clientes.
+      const paleta = document.createElement('div');
+      paleta.className = 'ruta-admin-paleta';
+      paleta.style.display = (rutaConPaletaAbierta === ruta) ? 'flex' : 'none';
+      PALETA_COLORES_RUTA.forEach(color=>{
+        const muestra = document.createElement('button');
+        muestra.type = 'button';
+        muestra.className = 'ruta-admin-muestra' + (color.toLowerCase() === colorActualRuta.toLowerCase() ? ' seleccionada' : '');
+        muestra.style.background = color;
+        muestra.setAttribute('aria-label', 'Color ' + color);
+        muestra.addEventListener('click', ()=>{
+          coloresRutas = Object.assign({}, coloresRutas, { [ruta]: color });
+          guardarColoresRutas(coloresRutas);
+          rutaConPaletaAbierta = null;
+          renderizarListaAdministrarRutas();
+          if(typeof renderizarClientes === 'function' && typeof clientesFiltrados === 'function'){
+            try{ renderizarClientes(clientesFiltrados()); }catch(err){ console.warn(err); }
+          }
+        });
+        paleta.appendChild(muestra);
+      });
+      listaAdministrarRutas.appendChild(paleta);
+      fila.querySelector('.ruta-admin-color').addEventListener('click', ()=>{
+        rutaConPaletaAbierta = (rutaConPaletaAbierta === ruta) ? null : ruta;
+        renderizarListaAdministrarRutas();
+      });
     });
   }
 
@@ -25589,8 +25661,14 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       'Los clientes asignados a esta ruta quedarán como "Sin asignar". Ningún otro dato del cliente se modifica.',
       'Eliminar',
       ()=>{
+        // Antes de quitar la ruta se fijan los colores actuales de las demás,
+        // para que no cambien al correrse su posición en la lista.
+        const coloresFijados = {};
+        rutasGuardadas.forEach(r=>{ if(r !== ruta) coloresFijados[r] = colorDeRuta(r); });
         rutasGuardadas = rutasGuardadas.filter(r => r !== ruta);
         guardarRutasStorage(rutasGuardadas);
+        coloresRutas = coloresFijados;
+        guardarColoresRutas(coloresRutas);
 
         let huboClientesActualizados = false;
         clientesGuardados.forEach(c=>{
