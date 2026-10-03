@@ -4453,17 +4453,51 @@ body.modo-oscuro{ --resumen-pactado:#60A5FA; }
 .client-row.client-row-mora .avanillo-relleno{ stroke:#E0465A; }
 .client-row.client-row-al-dia .avanillo-pista{ stroke:#CBD5D0; }
 .avatar-globo-cuotas{
-  position:absolute; top:-5px; right:-6px;
+  /* centrado sobre el avatar; el transform (puesto desde JS) lo lleva
+     al punto del anillo que le corresponde */
+  position:absolute; top:50%; left:50%;
   min-width:19px; height:19px; padding:0 4px;
+  margin:-9.5px 0 0 -9.5px;
   border-radius:10px;
   background:#2FAE5F; color:#fff;
   font-size:11px; font-weight:700; line-height:1;
   display:flex; align-items:center; justify-content:center;
   box-shadow:0 0 0 2px #EBF7EF;
-  z-index:1;
+  z-index:2;
+  transform:translateY(-27px);
+  transition:transform .9s cubic-bezier(.3,.7,.2,1);
+  will-change:transform;
 }
+.avatar-globo-cuotas.avatar-globo-faltan{ background:#F5A623; color:#3A2800; z-index:1; }
+/* Avatar como gráfico de torta: se llena en sentido horario desde arriba
+   según las cuotas pagadas. --torta-pct se registra para poder animarlo. */
+@property --torta-pct{ syntax:'<percentage>'; inherits:false; initial-value:0%; }
+.client-row-cliente .avatar-circle svg{ width:24px; height:24px; stroke:currentColor; }
+.avatar-circle.avatar-torta{
+  width:46px; height:46px;
+  --torta-color:#2FAE5F; --torta-fondo:#D9EEE1;
+  background:conic-gradient(var(--torta-color) var(--torta-pct), var(--torta-fondo) 0) !important;
+  transition:--torta-pct .9s cubic-bezier(.3,.7,.2,1);
+}
+.client-row.client-row-mora .avatar-circle.avatar-torta{ --torta-color:#E0465A; --torta-fondo:#F9D9DC; }
+@media (prefers-reduced-motion: reduce){ .avatar-circle.avatar-torta{ transition:none; } }
+.client-row.client-row-cliente .avatar-anillo-wrap{ margin:0 5px 0 4px; } /* aire para los globos, que sobresalen del anillo */
+@media (prefers-reduced-motion: reduce){ .avatar-globo-cuotas{ transition:none; } }
+.client-row-ruta{
+  display:inline-flex; align-items:center; gap:5px;
+  max-width:100%;
+  margin-top:6px; padding:3px 9px 3px 7px;
+  border:1px solid #9AD3B6; border-radius:8px;
+  background:rgba(255,255,255,0.55);
+  color:#2B9A66;
+  font-size:12.5px; font-weight:500; line-height:1.2;
+}
+.client-row-ruta svg{ width:14px; height:14px; stroke:currentColor; flex-shrink:0; }
+.client-row-ruta span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+body.modo-oscuro .client-row.client-row-sin-credito .client-row-ruta{ background:rgba(255,255,255,0.06); border-color:#3E8F6C; color:#6FD3A3; }
 .client-row.client-row-mora .avatar-globo-cuotas{ background:#D32F3A; box-shadow:0 0 0 2px #FDECEC; }
 .client-row.client-row-inhabilitado .avatar-globo-cuotas{ box-shadow:0 0 0 2px #F1F2F5; }
+.client-row.client-row-mora .avatar-globo-cuotas.avatar-globo-faltan{ background:#F5A623; }
 .client-row.client-row-con-lateral .info .name,
 .client-row.client-row-con-lateral .info .nota-cliente-tarjeta{ padding-right:0; }
 .client-row.client-row-cliente .info .name{ font-weight:700; margin-bottom:3px; }
@@ -14656,6 +14690,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     return nombre.split(' ').filter(Boolean).slice(0, 2).map(p => p[0].toUpperCase()).join('');
   }
 
+  // Última posición (ángulo) del globo de cuotas pagadas de cada cliente,
+  // para animar el desplazamiento cuando cambia. Solo en memoria.
+  const angulosGloboCliente = new Map();
+
   // ---------- Construir la tarjeta visual de un cliente ----------
   function crearTarjetaCliente(cliente){
     const card = document.createElement('div');
@@ -14667,8 +14705,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // NUEVO: si el cliente no tiene ruta asignada, se muestra "?" en el
     // círculo; si sí tiene ruta, se muestran las iniciales de esa ruta.
     const tieneRuta = cliente.ruta && cliente.ruta.trim();
-    avatar.textContent = tieneRuta ? iniciales(cliente.ruta) : '?';
-    avatar.classList.toggle('avatar-circle-sin-ruta', !tieneRuta);
+    // CAMBIO: a pedido — el círculo ya no muestra la inicial de la ruta
+    // (la ruta va ahora en su propia etiqueta). Con crédito activo se
+    // convierte en un gráfico de torta que se llena con las cuotas pagadas
+    // (ver más abajo); sin crédito muestra un ícono de persona.
+    avatar.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"></path></svg>';
 
     const info = document.createElement('div');
     info.className = 'info';
@@ -14716,6 +14757,15 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     info.appendChild(name);
     info.appendChild(phone);
+
+    // NUEVO: a pedido — etiqueta con la ruta del cliente (si tiene una).
+    if(tieneRuta){
+      const etiquetaRuta = document.createElement('div');
+      etiquetaRuta.className = 'client-row-ruta';
+      etiquetaRuta.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"></circle><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path><circle cx="18" cy="5" r="3"></circle></svg><span></span>';
+      etiquetaRuta.querySelector('span').textContent = cliente.ruta.trim();
+      info.appendChild(etiquetaRuta);
+    }
 
     if(prestamosActivosCliente.length > 0){
       const badge = document.createElement('div');
@@ -14806,6 +14856,35 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       globoCuotas.textContent = cuotasPagadasTotal;
       globoCuotas.setAttribute('aria-label', cuotasPagadasTotal + ' cuota(s) pagada(s)');
       wrapAvatar.appendChild(globoCuotas);
+      // NUEVO: a pedido — segundo globo, al lado contrario y de otro color,
+      // con las cuotas que FALTAN. Los dos globos son dinámicos: el de
+      // pagadas viaja por el anillo siguiendo la punta del avance (llega
+      // arriba al completar el crédito) y el de faltantes va siempre en el
+      // punto opuesto. Al pagar una cuota se desplazan con una animación
+      // desde su posición anterior (se recuerda por cliente, solo en memoria).
+      const cuotasFaltantesTotal = Math.max(0, cuotasTotalSum - cuotasPagadasTotal);
+      const globoFaltan = document.createElement('span');
+      globoFaltan.className = 'avatar-globo-cuotas avatar-globo-faltan';
+      globoFaltan.textContent = cuotasFaltantesTotal;
+      globoFaltan.setAttribute('aria-label', cuotasFaltantesTotal + ' cuota(s) por pagar');
+      wrapAvatar.appendChild(globoFaltan);
+      const anguloGlobo = cuotasTotalSum > 0 ? (cuotasPagadasTotal / cuotasTotalSum) * 360 : 0;
+      const transformarGlobo = (angulo)=> 'rotate(' + angulo + 'deg) translateY(-27px) rotate(' + (-angulo) + 'deg)';
+      const anguloPrevio = angulosGloboCliente.has(cliente.id) ? angulosGloboCliente.get(cliente.id) : 0;
+      // NUEVO: el avatar es una torta que se llena con el mismo avance (y
+      // se anima igual que los globos, desde el valor anterior).
+      avatar.innerHTML = '';
+      avatar.classList.add('avatar-torta');
+      avatar.setAttribute('aria-label', cuotasPagadasTotal + ' de ' + cuotasTotalSum + ' cuotas pagadas');
+      avatar.style.setProperty('--torta-pct', (anguloPrevio / 3.6) + '%');
+      globoCuotas.style.transform = transformarGlobo(anguloPrevio);
+      globoFaltan.style.transform = transformarGlobo(anguloPrevio + 180);
+      angulosGloboCliente.set(cliente.id, anguloGlobo);
+      requestAnimationFrame(()=> requestAnimationFrame(()=>{
+        globoCuotas.style.transform = transformarGlobo(anguloGlobo);
+        globoFaltan.style.transform = transformarGlobo(anguloGlobo + 180);
+        avatar.style.setProperty('--torta-pct', (anguloGlobo / 3.6) + '%');
+      }));
       card.appendChild(wrapAvatar);
     }else{
       card.appendChild(avatar);
