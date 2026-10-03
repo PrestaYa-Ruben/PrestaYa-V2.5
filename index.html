@@ -4439,6 +4439,59 @@ body.modo-oscuro{ --resumen-pactado:#60A5FA; }
 .client-row-recordatorio-btn svg{ width:16px; height:16px; stroke:currentColor; }
 
 /* ==========================================================
+   REDISEÑO — a pedido, con imagen de referencia: tarjetas de la
+   pantalla Clientes. Pestaña de color a la izquierda, globo de cuotas
+   pagadas en el avatar y columna derecha con avance + saldo pendiente.
+   ========================================================== */
+.client-row.client-row-cliente{ padding:13px 14px 13px 12px; gap:12px; border-left-width:6px; border-left-color:#AEB5C0; border-radius:12px; }
+.client-row.client-row-al-dia{ border-left-color:#2FAE5F; }
+.client-row.client-row-mora{ border-left-color:#E0111F; } /* solo la pestaña, en rojo intenso */
+.client-row.client-row-inhabilitado{ border-left-color:#9AA2AE; }
+/* Fondo claro fijo (verde/rosado) también en modo oscuro: texto siempre oscuro */
+.client-row.client-row-al-dia, .client-row.client-row-mora, .client-row.client-row-inhabilitado{ --text:#18202F; --text-secondary:#5A6880; }
+.client-row.client-row-mora .avanillo-pista{ stroke:#F3B6BB; }
+.client-row.client-row-mora .avanillo-relleno{ stroke:#E0465A; }
+.client-row.client-row-al-dia .avanillo-pista{ stroke:#CBD5D0; }
+.avatar-globo-cuotas{
+  position:absolute; top:-5px; right:-6px;
+  min-width:19px; height:19px; padding:0 4px;
+  border-radius:10px;
+  background:#2FAE5F; color:#fff;
+  font-size:11px; font-weight:700; line-height:1;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 0 2px #EBF7EF;
+  z-index:1;
+}
+.client-row.client-row-mora .avatar-globo-cuotas{ background:#D32F3A; box-shadow:0 0 0 2px #FDECEC; }
+.client-row.client-row-inhabilitado .avatar-globo-cuotas{ box-shadow:0 0 0 2px #F1F2F5; }
+.client-row.client-row-con-lateral .info .name,
+.client-row.client-row-con-lateral .info .nota-cliente-tarjeta{ padding-right:0; }
+.client-row.client-row-cliente .info .name{ font-weight:700; margin-bottom:3px; }
+.client-row-lateral{
+  flex-shrink:0;
+  width:112px;
+  align-self:stretch;
+  display:flex; flex-direction:column; align-items:flex-end; justify-content:flex-end;
+  padding-top:20px; /* deja libre el contador de créditos de la esquina */
+  text-align:right;
+}
+.crl-cuotas{ font-size:12.5px; font-weight:600; color:var(--text); white-space:nowrap; }
+.crl-barra{ width:100%; height:5px; border-radius:3px; background:rgba(20,30,60,0.16); overflow:hidden; margin:4px 0 7px; }
+.crl-barra-relleno{ height:100%; border-radius:3px; background:#2FAE5F; }
+.client-row.client-row-mora .crl-barra-relleno{ background:#E0465A; }
+.crl-saldo-etiqueta{ font-size:11px; font-weight:500; color:var(--text-secondary); line-height:1.1; white-space:nowrap; }
+.crl-saldo-valor{ font-size:15.5px; font-weight:800; color:#B4232A; letter-spacing:-0.3px; line-height:1.2; white-space:nowrap; }
+.client-row.client-row-cliente .info .phone span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+.client-row.client-row-al-dia .avatar-circle, .client-row.client-row-mora .avatar-circle{ background:#E3EAFB; color:#1F2F68; }
+.client-row.client-row-al-dia .avatar-circle.avatar-circle-sin-ruta, .client-row.client-row-mora .avatar-circle.avatar-circle-sin-ruta{ background:#F3F5F8; color:#5A6880; }
+@media (max-width:370px){
+  .client-row.client-row-cliente{ gap:9px; padding-left:10px; padding-right:11px; }
+  .client-row.client-row-cliente .info .phone{ font-size:13px; gap:4px; }
+  .client-row-lateral{ width:98px; }
+  .crl-saldo-valor{ font-size:14.5px; }
+}
+
+/* ==========================================================
    DETALLE DE CLIENTE — perfil, filas de info, estadísticas
    y acciones (mismo sistema visual + animación suave)
    ========================================================== */
@@ -14606,7 +14659,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // ---------- Construir la tarjeta visual de un cliente ----------
   function crearTarjetaCliente(cliente){
     const card = document.createElement('div');
-    card.className = 'card client-row';
+    card.className = 'card client-row client-row-cliente';
     card.dataset.id = cliente.id;
 
     const avatar = document.createElement('div');
@@ -14692,15 +14745,22 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         s + (p.plan || []).filter(c => estaCuotaPagada(p, c.numero)).length, 0);
       cuotasTotalSum = prestamosActivosCliente.reduce((s, p) => s + (p.cuotas || 0), 0);
 
-      if(saldoTotal > 0){
-        // NUEVO: cuotas pagadas / total, sumado entre todos los préstamos
-        // activos del cliente — se agrega en la MISMA línea del saldo para
-        // no aumentar el alto de la tarjeta.
-        const saldoLinea = document.createElement('div');
-        saldoLinea.className = 'saldo-cliente';
-        saldoLinea.textContent = 'Saldo p.: ' + formatearPesos(saldoTotal) + ' · ' + cuotasPagadasTotal + ' de ' + cuotasTotalSum;
-        info.appendChild(saldoLinea);
-      }
+      // REDISEÑO (a pedido, con imagen de referencia): la línea "Saldo p.:
+      // … · X de Y" se reemplaza por una columna a la derecha con
+      // "X / Y Cuotas" + barrita de avance y, abajo (donde estaba el ícono
+      // del reloj), el saldo pendiente. Mismos datos de siempre.
+      const lateral = document.createElement('div');
+      lateral.className = 'client-row-lateral';
+      const pctLateral = cuotasTotalSum > 0 ? Math.min(100, (cuotasPagadasTotal / cuotasTotalSum) * 100) : 0;
+      lateral.innerHTML = `
+        <div class="crl-cuotas">${cuotasPagadasTotal} / ${cuotasTotalSum} Cuotas</div>
+        <div class="crl-barra"><div class="crl-barra-relleno" style="width:${pctLateral}%"></div></div>
+        <div class="crl-saldo-etiqueta">Saldo pendiente</div>
+        <div class="crl-saldo-valor">${formatearPesos(saldoTotal)}</div>`;
+      card._lateralCliente = lateral;
+      card.classList.add('client-row-con-lateral');
+    }else{
+      card.classList.add('client-row-sin-credito');
     }
 
     // NUEVO: a pedido — si el cliente tiene una nota registrada, se muestra
@@ -14740,31 +14800,23 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         </svg>
       `;
       wrapAvatar.appendChild(avatar);
+      // NUEVO: globo contador sobre el avatar = cuotas pagadas.
+      const globoCuotas = document.createElement('span');
+      globoCuotas.className = 'avatar-globo-cuotas';
+      globoCuotas.textContent = cuotasPagadasTotal;
+      globoCuotas.setAttribute('aria-label', cuotasPagadasTotal + ' cuota(s) pagada(s)');
+      wrapAvatar.appendChild(globoCuotas);
       card.appendChild(wrapAvatar);
     }else{
       card.appendChild(avatar);
     }
     card.appendChild(info);
 
-    // NUEVO: ícono de recordatorio, esquina inferior derecha — se agrega
-    // al final para quedar pintado encima de todo lo demás si algo llega
-    // a superponerse.
-    // stopPropagation() en pointerdown Y en click, para que tocar este
-    // ícono no dispare ni el long-press ni el clic de abrir el cliente.
-    if(prestamosActivosCliente.length > 0){
-      const btnRecordatorioClienteCard = document.createElement('button');
-      btnRecordatorioClienteCard.type = 'button';
-      btnRecordatorioClienteCard.className = 'client-row-recordatorio-btn';
-      btnRecordatorioClienteCard.setAttribute('aria-label', 'Programar recordatorio');
-      btnRecordatorioClienteCard.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"></circle><polyline points="12 9 12 13 14.5 14.5"></polyline><path d="M5 3 2 6"></path><path d="M22 6l-3-3"></path></svg>';
-      btnRecordatorioClienteCard.addEventListener('pointerdown', (e)=> e.stopPropagation());
-      btnRecordatorioClienteCard.addEventListener('click', (e)=>{
-        e.preventDefault();
-        e.stopPropagation();
-        abrirFormularioRecordatorio(cliente);
-      });
-      card.appendChild(btnRecordatorioClienteCard);
-    }
+    // CAMBIO: a pedido — se retiró el ícono del reloj (recordatorio) de esta
+    // tarjeta; en su lugar va el saldo pendiente (columna lateral). El
+    // recordatorio sigue disponible desde la ficha del cliente y desde la
+    // tarjeta de cada crédito.
+    if(card._lateralCliente) card.appendChild(card._lateralCliente);
 
     // Al tocar la tarjeta se abre el detalle completo del cliente
     card.addEventListener('click', ()=> abrirDetalleCliente(cliente));
