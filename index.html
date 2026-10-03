@@ -2138,7 +2138,7 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
 .loan-card-full.loan-card-vencido{ --text:#18202F; --text-secondary:#5A6880; }
 .loan-card-full .loan-card-top{ align-items:flex-start; gap:10px; margin-bottom:6px; }
 .loan-card-full .loan-card-top > div:first-child{ min-width:0; flex:1; }
-.loan-card-full .loan-card-nombre-principal{ font-size:16.5px; font-weight:800; letter-spacing:-0.2px; max-width:none; }
+.loan-card-full .loan-card-nombre-principal{ font-size:16.5px; font-weight:600; /* a pedido: menos peso (antes 800) */ letter-spacing:-0.2px; max-width:none; }
 .loan-card-full .loan-amount{ font-size:25px; font-weight:800; letter-spacing:-0.7px; margin:8px 0 0; }
 .loan-card-full .loan-num-credito{ margin-top:5px; }
 .loan-card-full .loan-badge{ display:inline-flex; align-items:center; gap:6px; font-weight:700; padding:5px 13px 5px 11px; }
@@ -6874,7 +6874,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <div class="tabs" id="tabs-historial-creditos" style="padding:0 0 14px; align-items:center;">
       <button type="button" class="tab-button active" data-estado="activo">Activos (<span id="historial-count-activo">0</span>)</button>
       <button type="button" class="tab-button" data-estado="finalizado">Finalizados (<span id="historial-count-finalizado">0</span>)</button>
-      <button type="button" class="btn-compartir-historial-credito" id="btn-compartir-historial-credito" style="margin-left:auto;" aria-label="Compartir resumen del crédito">
+      <!-- CAMBIO: a pedido — el ícono de compartir se retiró de esta fila (queda oculto, no se borra, para no romper su manejador). El mismo Resumen de crédito se abre tocando la píldora de estado de cada tarjeta. -->
+      <button type="button" class="btn-compartir-historial-credito" id="btn-compartir-historial-credito" style="display:none;" aria-hidden="true" tabindex="-1" aria-label="Compartir resumen del crédito">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
       </button>
     </div>
