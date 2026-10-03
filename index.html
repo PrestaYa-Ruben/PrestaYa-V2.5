@@ -21472,8 +21472,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       const nombre = String(obtenerNombreNegocio() || '').trim() || 'PrestaYa';
       const xNombre = 36, yBase = 60, anchoMax = 330;
       let tam = 44;   // A pedido: nombre del negocio más pequeño (antes 56)
-      ctx.font = fuente(800, tam, true);
-      while(ctx.measureText(nombre).width > anchoMax && tam > 24){ tam -= 2; ctx.font = fuente(800, tam, true); }
+      ctx.font = fuente(800, tam, false);   // A pedido: nombre derecho (sin cursiva)
+      while(ctx.measureText(nombre).width > anchoMax && tam > 24){ tam -= 2; ctx.font = fuente(800, tam, false); }
       const marca = nombre.match(/^(presta)\s?(ya)$/i);
       ctx.textAlign = 'left';
       ctx.textBaseline = 'alphabetic';
