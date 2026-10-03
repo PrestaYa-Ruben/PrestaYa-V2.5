@@ -2679,6 +2679,8 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
 .cuota-item.pendiente{ background:#FBF0E3; border-color:#EFCB9E; }
 .cuota-item.vencida{ background:#FDECEC; border-color:#EFB4B4; }
 .cuota-item.abonada{ background:#EAF0FF; border-color:#A8C2FF; }
+/* Estas filas tienen fondo claro fijo también en modo oscuro: su texto usa siempre tonos oscuros. */
+.cuota-item.pendiente, .cuota-item.vencida, .cuota-item.abonada, .cuota-item.pagada{ --text:#18202F; --text-secondary:#5A6880; }
 
 /* NUEVO: mismo tratamiento que .cuota-item, aplicado ahora también a
    "Pagadas" — verde para un pago normal, rojo para un recargo por mora,
@@ -2758,7 +2760,18 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
   flex-shrink:0;
 }
 .cuota-accion svg{ width:17px; height:17px; stroke:currentColor; }
-.cuota-accion.compartir{ background:var(--primary-light); color:var(--primary); }
+/* CAMBIO: a pedido, con imagen de referencia — el botón de compartir es
+   ahora un cuadrado blanco de esquinas redondeadas, con borde fino,
+   sombra suave e ícono oscuro (antes un círculo azul claro). */
+.cuota-accion.compartir{
+  width:40px; height:40px;
+  background:#FFFFFF; color:#1B2330;
+  border:1px solid rgba(20,30,60,0.16);
+  border-radius:11px;
+  box-shadow:0 2px 5px rgba(20,30,60,0.16);
+}
+.cuota-accion.compartir svg{ width:19px; height:19px; stroke-width:2.1; }
+.cuota-accion.compartir:active{ transform:scale(0.94); box-shadow:0 1px 2px rgba(20,30,60,0.18); }
 .cuota-accion.pagar{ background:var(--success); }
 .cuota-accion.mas{ background:var(--background); color:var(--text-secondary); }
 
