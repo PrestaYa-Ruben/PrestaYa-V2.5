@@ -17661,7 +17661,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
   function abrirTicketPrestamo(prestamo){
     const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId);
-    canvasTicketActual = generarCanvasTicketPrestamo(prestamo, cliente);
+    // CAMBIO: a pedido — al tocar la píldora de estado (Activo/Vencido/
+    // Finalizado) se muestra el MISMO "Resumen de crédito" que se comparte
+    // desde el ícono de compartir (generarCanvasResumenPrestamo). La
+    // función anterior generarCanvasTicketPrestamo() se conserva, sin uso.
+    canvasTicketActual = generarCanvasResumenPrestamo(prestamo, cliente);
     ticketPrestamoImg.src = canvasTicketActual.toDataURL('image/png');
     ticketPrestamoOverlay.style.display = 'flex';
   }
@@ -17678,11 +17682,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const blob = await new Promise(resolve => canvasTicketActual.toBlob(resolve, 'image/png', 1));
     if(!blob){ alert('No se pudo generar la imagen. Intenta de nuevo.'); return; }
 
-    const nombreArchivo = 'ticket-credito.png';
+    const nombreArchivo = 'resumen-credito.png';
     const archivo = new File([blob], nombreArchivo, { type: 'image/png' });
 
     if(navigator.share && navigator.canShare && navigator.canShare({ files: [archivo] })){
-      try{ await navigator.share({ files: [archivo], title: 'Ticket de crédito' }); return; }
+      try{ await navigator.share({ files: [archivo], title: 'Resumen de crédito' }); return; }
       catch(err){
         if(err && err.name === 'AbortError') return;
         console.warn('navigator.share no funcionó, se usa la descarga como respaldo:', err);
