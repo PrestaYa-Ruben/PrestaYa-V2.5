@@ -3962,6 +3962,46 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
   flex-shrink:0;
   transition:transform .15s ease;
 }
+/* ==========================================================
+   NUEVO — a pedido, con imagen de referencia: estilo con relieve suave
+   (neumórfico) SOLO en la pantalla Clientes, para el buscador, el botón
+   "+" y los chips de filtro por ruta. No cambia tamaños ni posiciones.
+   ========================================================== */
+#screen-clientes{ --neu-base:#E9EDF5; --neu-luz:rgba(255,255,255,0.95); --neu-sombra:rgba(140,152,178,0.45); }
+body.modo-oscuro #screen-clientes{ --neu-base:#1A1F29; --neu-luz:rgba(255,255,255,0.05); --neu-sombra:rgba(0,0,0,0.55); }
+/* Buscador: hundido en la superficie */
+#screen-clientes .search-box{
+  background:var(--neu-base);
+  border:1px solid transparent;
+  border-radius:16px;
+  box-shadow:inset 3px 3px 7px var(--neu-sombra), inset -3px -3px 7px var(--neu-luz);
+}
+#screen-clientes .search-box svg{ stroke:var(--text); }
+#screen-clientes .search-box input{ font-weight:500; }
+#screen-clientes .search-box .mic-search-btn{ color:var(--text); }
+/* Botón "+": levantado */
+#screen-clientes .add-client-btn{
+  border-radius:16px;
+  background:linear-gradient(145deg, #2B3F86 0%, var(--primary) 55%, #18244F 100%);
+  box-shadow:5px 6px 12px rgba(31,47,104,0.38), -3px -3px 8px var(--neu-luz), inset 0 1px 0 rgba(255,255,255,0.22);
+}
+#screen-clientes .add-client-btn:active{ transform:scale(0.95); box-shadow:2px 2px 5px rgba(31,47,104,0.40), inset 0 2px 5px rgba(0,0,0,0.30); }
+/* Chips de ruta: píldoras levantadas; la activa, en azul marino */
+#screen-clientes #chips-rutas-clientes{ padding-bottom:9px; padding-left:16px; }
+#screen-clientes #chips-rutas-clientes .tab-button{
+  background:var(--neu-base);
+  border:1px solid transparent;
+  color:var(--text);
+  font-weight:500;
+  box-shadow:3px 3px 6px var(--neu-sombra), -2px -2px 5px var(--neu-luz);
+}
+#screen-clientes #chips-rutas-clientes .tab-button.active{
+  background:linear-gradient(145deg, #2B3F86 0%, var(--primary) 60%, #18244F 100%);
+  color:#fff;
+  font-weight:600;
+  box-shadow:3px 4px 8px rgba(31,47,104,0.40), inset 0 1px 0 rgba(255,255,255,0.20);
+}
+
 .filtro-rutas-btn{
   width:52px;
   height:52px;
