@@ -4540,6 +4540,25 @@ body.modo-oscuro{ --resumen-pactado:#60A5FA; }
 .client-row.client-row-mora .avatar-circle.avatar-torta{ --torta-color:#E0465A; --torta-fondo:#F9D9DC; }
 @media (prefers-reduced-motion: reduce){ .avatar-circle.avatar-torta{ transition:none; } }
 .client-row.client-row-cliente .avatar-anillo-wrap{ margin:0 5px 0 4px; } /* aire para los globos, que sobresalen del anillo */
+.avatar-columna{ display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+/* NUEVO: a pedido — el contador de créditos de la esquina va dentro de una
+   pequeña píldora (tono del estado de la tarjeta). */
+.client-row.client-row-cliente .client-row-badge{
+  top:9px; right:12px;
+  min-width:26px; height:20px; padding:0 8px;
+  border-radius:10px;
+  font-size:12.5px; font-weight:700;
+  color:#1F2F68;
+  background:rgba(31,47,104,0.10);
+  border:1px solid rgba(31,47,104,0.22);
+}
+.client-row.client-row-al-dia .client-row-badge{ color:#157A40; background:rgba(47,174,95,0.16); border-color:rgba(47,174,95,0.45); }
+.client-row.client-row-mora .client-row-badge{ color:#B4212A; background:rgba(224,17,31,0.10); border-color:rgba(224,17,31,0.38); }
+.client-row.client-row-inhabilitado .client-row-badge{ color:#5A6880; background:rgba(90,104,128,0.12); border-color:rgba(90,104,128,0.35); }
+.avatar-leyenda{ margin-top:13px; display:flex; flex-direction:column; align-items:center; gap:1px; font-size:10.5px; font-weight:700; line-height:1.15; white-space:nowrap; letter-spacing:-0.1px; }
+.avatar-leyenda .avl-van{ color:#1E8E4E; }
+.client-row.client-row-mora .avatar-leyenda .avl-van{ color:#C4202B; }
+.avatar-leyenda .avl-faltan{ color:#B36B00; }
 @media (prefers-reduced-motion: reduce){ .avatar-globo-cuotas{ transition:none; } }
 .client-row-ruta{
   display:inline-flex; align-items:center; gap:5px;
@@ -4564,7 +4583,7 @@ body.modo-oscuro .client-row.client-row-sin-credito .client-row-ruta{ background
   width:112px;
   align-self:stretch;
   display:flex; flex-direction:column; align-items:flex-end; justify-content:flex-end;
-  padding-top:20px; /* deja libre el contador de créditos de la esquina */
+  padding-top:22px; /* deja libre el contador de créditos de la esquina */
   text-align:right;
 }
 .crl-cuotas{ font-size:12.5px; font-weight:600; color:var(--text); white-space:nowrap; }
@@ -14933,6 +14952,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       globoFaltan.textContent = cuotasFaltantesTotal;
       globoFaltan.setAttribute('aria-label', cuotasFaltantesTotal + ' cuota(s) por pagar');
       wrapAvatar.appendChild(globoFaltan);
+      // NUEVO: a pedido — leyenda fija debajo del círculo ("Van N" / "Faltan N"),
+      // con los mismos colores de los globos. No se mueve, así que nunca
+      // choca con el resto de la tarjeta.
+      const columnaAvatar = document.createElement('div');
+      columnaAvatar.className = 'avatar-columna';
+      const leyendaAvatar = document.createElement('div');
+      leyendaAvatar.className = 'avatar-leyenda';
+      leyendaAvatar.innerHTML = '<span class="avl-van">Van ' + cuotasPagadasTotal + '</span><span class="avl-faltan">Faltan ' + cuotasFaltantesTotal + '</span>';
+      columnaAvatar.appendChild(wrapAvatar);
+      columnaAvatar.appendChild(leyendaAvatar);
+      card._columnaAvatar = columnaAvatar;
       const anguloGlobo = cuotasTotalSum > 0 ? (cuotasPagadasTotal / cuotasTotalSum) * 360 : 0;
       const transformarGlobo = (angulo)=> 'rotate(' + angulo + 'deg) translateY(-27px) rotate(' + (-angulo) + 'deg)';
       const anguloPrevio = angulosGloboCliente.has(cliente.id) ? angulosGloboCliente.get(cliente.id) : 0;
@@ -14950,7 +14980,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         globoFaltan.style.transform = transformarGlobo(anguloGlobo + 180);
         avatar.style.setProperty('--torta-pct', (anguloGlobo / 3.6) + '%');
       }));
-      card.appendChild(wrapAvatar);
+      // (la columna avatar + leyenda se agrega a la tarjeta al final de este bloque)
+      card.appendChild(card._columnaAvatar);
     }else{
       card.appendChild(avatar);
     }
