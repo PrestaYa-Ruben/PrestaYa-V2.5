@@ -569,7 +569,7 @@ a{ text-decoration:none; color:inherit; }
 
 /* NUEVO: toast "Deshacer edición" — barra flotante abajo, con botón de
    deshacer, se retira sola después de un tiempo. */
-#deshacer-edicion-toast{
+#deshacer-edicion-toast, #deshacer-descuento-toast{
   position:fixed;
   left:16px;
   right:16px;
@@ -591,9 +591,9 @@ a{ text-decoration:none; color:inherit; }
   transition:opacity .2s ease, transform .2s ease;
   pointer-events:none;
 }
-#deshacer-edicion-toast.visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
-#deshacer-edicion-toast span{ font-size:14px; font-weight:500; }
-#deshacer-edicion-toast button{ color:#8CE0A8; font-weight:700; font-size:14px; flex-shrink:0; padding:4px 6px; }
+#deshacer-edicion-toast.visible, #deshacer-descuento-toast.visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
+#deshacer-edicion-toast span, #deshacer-descuento-toast span{ font-size:14px; font-weight:500; }
+#deshacer-edicion-toast button, #deshacer-descuento-toast button{ color:#8CE0A8; font-weight:700; font-size:14px; flex-shrink:0; padding:4px 6px; }
 
 /* ==========================================================
    6. DASHBOARD / TARJETAS ESTADÍSTICAS
@@ -2141,8 +2141,23 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
 .loan-card-full .loan-card-nombre-principal{ font-size:16.5px; font-weight:600; /* a pedido: menos peso (antes 800) */ letter-spacing:-0.2px; max-width:none; }
 .loan-card-full .loan-amount{ font-size:25px; font-weight:800; letter-spacing:-0.7px; margin:8px 0 0; }
 .loan-card-full .loan-num-credito{ margin-top:5px; }
-.loan-card-full .loan-badge{ display:inline-flex; align-items:center; gap:6px; font-weight:700; padding:5px 13px 5px 11px; }
-.loan-card-full .loan-badge::before{ content:''; width:8px; height:8px; border-radius:50%; background:#fff; flex-shrink:0; }
+/* CAMBIO: a pedido — píldora de estado más limpia y nítida: color sólido
+   más profundo (mejor contraste con el blanco), sin sombras, y la palabra
+   en mayúsculas, más gruesa y con aire entre letras para que resalte. */
+.loan-card-full .loan-badge{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 13px 6px 10px;
+  font-size:12px; font-weight:800; line-height:1;
+  letter-spacing:0.7px; text-transform:uppercase;
+  color:#fff;
+  border-radius:999px;
+  box-shadow:none;
+  -webkit-font-smoothing:antialiased;
+}
+.loan-card-full .loan-badge.activo{ background:#12A150; }
+.loan-card-full .loan-badge.vencido{ background:#DC2626; }
+.loan-card-full .loan-badge.finalizado{ background:#64748B; }
+.loan-card-full .loan-badge::before{ content:''; width:7px; height:7px; border-radius:50%; background:#fff; flex-shrink:0; }
 .loan-card-full .loan-card-top-derecha{ gap:6px; }
 .loan-card-full .loan-card-recordatorio-btn svg{ width:19px; height:19px; }
 .loan-card-full .loan-divider{ border-top-color:rgba(20,30,60,0.12); margin:4px 0; }
@@ -4541,6 +4556,30 @@ body.modo-oscuro{ --resumen-pactado:#60A5FA; }
 @media (prefers-reduced-motion: reduce){ .avatar-circle.avatar-torta{ transition:none; } }
 .client-row.client-row-cliente .avatar-anillo-wrap{ margin:0 5px 0 4px; } /* aire para los globos, que sobresalen del anillo */
 .avatar-columna{ display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+/* Menú de orden de Clientes (píldora A-Z) */
+.menu-orden-overlay{ position:fixed; inset:0; z-index:1200; background:rgba(15,20,35,0.18); }
+.menu-orden-lista{
+  position:absolute;
+  min-width:232px; max-width:calc(100vw - 20px);
+  padding:6px 0;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:0 12px 32px rgba(15,20,35,0.24);
+  animation:menuOrdenAparece .14s ease-out;
+}
+@keyframes menuOrdenAparece{ from{ opacity:0; transform:translateY(-6px) scale(0.98); } to{ opacity:1; transform:none; } }
+.menu-orden-opcion{
+  display:flex; align-items:center; gap:12px;
+  width:100%; padding:13px 18px 13px 14px;
+  background:none; border:none; text-align:left;
+  font-family:inherit; font-size:15px; font-weight:500; color:var(--text);
+  cursor:pointer;
+}
+.menu-orden-opcion svg{ width:19px; height:19px; flex-shrink:0; stroke:#3B82F6; visibility:hidden; }
+.menu-orden-opcion.seleccionada{ color:#3B82F6; font-weight:600; }
+.menu-orden-opcion.seleccionada svg{ visibility:visible; }
+.menu-orden-opcion:active{ background:rgba(59,130,246,0.10); }
 /* NUEVO: a pedido — el contador de créditos de la esquina va dentro de una
    pequeña píldora (tono del estado de la tarjeta). */
 .client-row.client-row-cliente .client-row-badge{
@@ -6932,7 +6971,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
          pestaña activa (mismo diseño que el resto de comprobantes). -->
     <div class="tabs" id="tabs-historial-creditos" style="padding:0 0 14px; align-items:center;">
       <button type="button" class="tab-button active" data-estado="activo">Activos (<span id="historial-count-activo">0</span>)</button>
-      <button type="button" class="tab-button" data-estado="finalizado">Finalizados (<span id="historial-count-finalizado">0</span>)</button>
+      <button type="button" class="tab-button" data-estado="finalizado">Historial (<span id="historial-count-finalizado">0</span>)</button>
       <!-- CAMBIO: a pedido — el ícono de compartir se retiró de esta fila (queda oculto, no se borra, para no romper su manejador). El mismo Resumen de crédito se abre tocando la píldora de estado de cada tarjeta. -->
       <button type="button" class="btn-compartir-historial-credito" id="btn-compartir-historial-credito" style="display:none;" aria-hidden="true" tabindex="-1" aria-label="Compartir resumen del crédito">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
@@ -9567,6 +9606,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
      el mismo patrón visual que las demás vistas previas de imagen del
      proyecto (imagen-comprobante-card sobre confirm-modal-overlay).
      ========================================================== -->
+<!-- NUEVO: menú de orden de la lista de Clientes (se abre desde la píldora A-Z) -->
+<div id="menu-orden-clientes-overlay" class="menu-orden-overlay" style="display:none;">
+  <div id="menu-orden-clientes-lista" class="menu-orden-lista" role="menu" aria-label="Ordenar clientes"></div>
+</div>
+
 <div id="ticket-prestamo-overlay" class="confirm-modal-overlay" style="display:none;">
   <div class="imagen-comprobante-card">
     <img id="ticket-prestamo-img" src="" alt="Ticket de crédito">
@@ -10493,6 +10537,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <div class="form-field" style="text-align:left;">
       <label class="field-label" for="input-descuento-valor">Valor del descuento</label>
       <input class="field-input" id="input-descuento-valor" type="text" inputmode="numeric" placeholder="Toca y escribe">
+      <div id="descuento-maximo-ayuda" style="font-size:12.5px; color:var(--text-secondary); font-weight:400; margin-top:6px;"></div>
     </div>
     <div class="form-field sin-margen" style="text-align:left; margin-bottom:16px;">
       <label class="field-label" for="input-descuento-motivo">Motivo (opcional)</label>
@@ -10547,6 +10592,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 <div id="deshacer-edicion-toast">
   <span>Préstamo actualizado</span>
   <button type="button" id="btn-deshacer-edicion-prestamo">Deshacer</button>
+</div>
+<!-- NUEVO: a pedido — mismo aviso, para deshacer un descuento recién aplicado -->
+<div id="deshacer-descuento-toast">
+  <span id="deshacer-descuento-texto">Descuento aplicado</span>
+  <button type="button" id="btn-deshacer-descuento">Deshacer</button>
 </div>
 
 <!-- ==========================================================
@@ -19322,9 +19372,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         </div>
         <div class="loan-card-top-derecha">
           <div class="loan-badge ${estadoVisual}">${etiquetaEstadoVisual(estadoVisual)}</div>
-          <button type="button" class="loan-card-recordatorio-btn" id="loan-card-recordatorio-${prestamo.id}" aria-label="Programar recordatorio">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"></circle><polyline points="12 9 12 13 14.5 14.5"></polyline><path d="M5 3 2 6"></path><path d="M22 6l-3-3"></path></svg>
-          </button>
+          <!-- CAMBIO: a pedido — se retiró el ícono del reloj (recordatorio) de esta tarjeta. -->
         </div>
       </div>
       <hr class="loan-divider">
@@ -19340,6 +19388,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <div class="loan-row">
         <span class="loan-row-label">Cuota:</span>
         <span class="loan-row-value">${formatearPesos(cuotaRealPrestamo(prestamo))} <span class="loan-freq">/ ${nombreFrecuencia}</span></span>
+      </div>
+      <div class="loan-row">
+        <span class="loan-row-label">Total a pagar:</span>
+        <span class="loan-row-value">${formatearPesos(prestamo.totalAPagar || 0)}</span>
       </div>
       <div class="loan-row">
         <span class="loan-row-label">Total abonado:</span>
@@ -19526,7 +19578,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(prestamosFiltrados.length === 0){
       const vacio = document.createElement('div');
       vacio.className = 'card empty-loans-card';
-      vacio.textContent = filtroEstadoHistorialCreditos === 'activo' ? 'No hay créditos activos' : 'No hay créditos finalizados';
+      vacio.textContent = filtroEstadoHistorialCreditos === 'activo' ? 'No hay créditos activos' : 'No hay créditos en el historial';
       listaContenedor.appendChild(vacio);
     }else{
       prestamosFiltrados.slice().reverse().forEach(prestamo=>{
@@ -23195,6 +23247,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(!prestamoEnDetalle) return;
     inputDescuentoValor.value = '';
     inputDescuentoMotivo.value = '';
+    // NUEVO: muestra hasta cuánto se puede descontar (el saldo pendiente).
+    document.getElementById('descuento-maximo-ayuda').textContent = 'Máximo: ' + formatearPesos(saldoPendientePrestamo(prestamoEnDetalle)) + ' (saldo pendiente del crédito)';
     descuentoOverlay.style.display = 'flex';
   });
 
@@ -23208,38 +23262,75 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const valor = numeroDesdeCampo(inputDescuentoValor.value);
     if(valor <= 0){ alert('Escribe el valor del descuento.'); inputDescuentoValor.focus(); return; }
 
-    // NUEVO: el descuento se resta de la ÚLTIMA cuota pendiente (o de la
-    // última del plan si el crédito ya está completamente pagado) — así
-    // la lista de Cuotas queda coherente con el saldo real, en vez de
-    // solo bajar un total general que no se reflejaba ahí.
+    // CAMBIO (a pedido): el descuento ya no se limita a UNA cuota — se puede
+    // descontar libremente hasta el saldo pendiente total del crédito. Se
+    // reparte desde la ÚLTIMA cuota pendiente hacia atrás; en cada cuota se
+    // usa la misma regla de siempre (primero interés, luego capital) y
+    // nunca se baja de lo que esa cuota ya tiene abonado. El registro del
+    // descuento sigue siendo uno solo, con el monto total.
     const plan = prestamoEnDetalle.plan || [];
-    let cuotaObjetivo = null;
-    for(let i = plan.length - 1; i >= 0; i--){
-      if(!estaCuotaPagada(prestamoEnDetalle, plan[i].numero)){ cuotaObjetivo = plan[i]; break; }
-    }
-    if(!cuotaObjetivo) cuotaObjetivo = plan[plan.length - 1];
-    if(!cuotaObjetivo){ alert('Este préstamo no tiene cuotas.'); return; }
-
-    if(valor > cuotaObjetivo.total){
-      alert('El descuento no puede ser mayor al valor de la cuota N.° ' + cuotaObjetivo.numero + ' (' + formatearPesos(cuotaObjetivo.total) + ').');
+    if(plan.length === 0){ alert('Este préstamo no tiene cuotas.'); return; }
+    const disponiblePorCuota = (cuota)=> Math.max(0, (cuota.total || 0) - sumaAbonadaCuota(prestamoEnDetalle, cuota.numero));
+    const pendientes = plan.filter(c => !estaCuotaPagada(prestamoEnDetalle, c.numero));
+    const maximoDescuento = Math.min(
+      saldoPendientePrestamo(prestamoEnDetalle),
+      pendientes.reduce((suma, c) => suma + disponiblePorCuota(c), 0)
+    );
+    if(maximoDescuento <= 0){ alert('Este crédito no tiene saldo pendiente para descontar.'); return; }
+    if(valor > maximoDescuento){
+      alert('El descuento no puede ser mayor al saldo pendiente del crédito (' + formatearPesos(maximoDescuento) + ').');
       return;
     }
 
-    // Se descuenta primero del interés de esa cuota y, si sobra, del capital
-    const descuentoInteres = Math.min(valor, cuotaObjetivo.interes);
-    cuotaObjetivo.interes -= descuentoInteres;
-    const descuentoCapital = valor - descuentoInteres;
-    cuotaObjetivo.capital -= descuentoCapital;
-    cuotaObjetivo.total = cuotaObjetivo.capital + cuotaObjetivo.interes;
+    // NUEVO: copia del crédito (y del cliente, por si cambia su nivel al
+    // finalizarse) ANTES de aplicar el descuento, para poder deshacerlo.
+    const clienteDelDescuento = clientesGuardados.find(c => c.id === prestamoEnDetalle.clienteId) || null;
+    const copiaAntesDelDescuento = {
+      prestamoId: prestamoEnDetalle.id,
+      prestamo: JSON.parse(JSON.stringify(prestamoEnDetalle)),
+      cliente: clienteDelDescuento ? JSON.parse(JSON.stringify(clienteDelDescuento)) : null
+    };
+
+    let restante = valor;
+    const cuotasAfectadas = [];
+    for(let i = pendientes.length - 1; i >= 0 && restante > 0; i--){
+      const cuotaObjetivo = pendientes[i];
+      const quitar = Math.min(restante, disponiblePorCuota(cuotaObjetivo));
+      if(quitar <= 0) continue;
+      // Se descuenta primero del interés de esa cuota y, si sobra, del capital
+      const descuentoInteres = Math.min(quitar, cuotaObjetivo.interes);
+      cuotaObjetivo.interes -= descuentoInteres;
+      const descuentoCapital = quitar - descuentoInteres;
+      cuotaObjetivo.capital -= descuentoCapital;
+      cuotaObjetivo.total = cuotaObjetivo.capital + cuotaObjetivo.interes;
+      cuotasAfectadas.push({ cuota: cuotaObjetivo.numero, monto: quitar });
+      restante -= quitar;
+    }
 
     if(!prestamoEnDetalle.descuentos) prestamoEnDetalle.descuentos = [];
     prestamoEnDetalle.descuentos.push({
       id: 'desc_' + Date.now(),
       monto: valor,
       motivo: inputDescuentoMotivo.value.trim(),
-      cuota: cuotaObjetivo.numero,
+      cuota: cuotasAfectadas.length ? cuotasAfectadas[0].cuota : plan[plan.length - 1].numero,
+      cuotas: cuotasAfectadas,
       fecha: new Date().toISOString()
     });
+
+    // Si con el descuento todas las cuotas quedan cubiertas, el crédito se
+    // marca Finalizado — misma regla que ya se aplica al registrar un abono.
+    const todasCubiertasTrasDescuento = plan.every(c => estaCuotaPagada(prestamoEnDetalle, c.numero));
+    if(todasCubiertasTrasDescuento){
+      prestamoEnDetalle.estado = 'finalizado';
+      if(!prestamoEnDetalle.fechaFinalizacion){
+        prestamoEnDetalle.fechaFinalizacion = new Date().toISOString();
+        const clienteDelNivel = clientesGuardados.find(c => c.id === prestamoEnDetalle.clienteId);
+        if(clienteDelNivel && typeof recalcularNivelCliente === 'function'){
+          recalcularNivelCliente(clienteDelNivel, prestamoEnDetalle);
+          guardarClientes(clientesGuardados);
+        }
+      }
+    }
 
     guardarPrestamos(prestamosGuardados);
     descuentoOverlay.style.display = 'none';
@@ -23249,10 +23340,63 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     renderizarTarjetaDetallePrestamo(prestamoEnDetalle);
     renderizarListaCuotas(prestamoEnDetalle);
     renderizarListaCuotasPendientes(prestamoEnDetalle);
+    actualizarTabsPrestamo(prestamoEnDetalle); // CORREGIDO: el contador de "Pendientes" no se refrescaba tras un descuento
     // El saldo del préstamo cambió: refresca también las listas que lo muestran
     if(typeof renderizarClientes === 'function') renderizarClientes(clientesFiltrados());
     if(typeof renderizarListaPrestamos === 'function') renderizarListaPrestamos();
     if(typeof actualizarReportes === 'function') actualizarReportes();
+
+    mostrarDeshacerDescuento(copiaAntesDelDescuento, valor);
+  });
+
+  // NUEVO: a pedido — durante unos segundos después de aplicar un descuento
+  // se ofrece "Deshacer". Restaura el crédito (y el cliente) exactamente
+  // como estaban antes: plan de cuotas, descuentos, estado y fecha de cierre.
+  const toastDeshacerDescuento = document.getElementById('deshacer-descuento-toast');
+  let copiaParaDeshacerDescuento = null;
+  let temporizadorDeshacerDescuento = null;
+  const SEGUNDOS_DESHACER_DESCUENTO = 8;
+  function ocultarDeshacerDescuento(){
+    toastDeshacerDescuento.classList.remove('visible');
+    clearTimeout(temporizadorDeshacerDescuento);
+    copiaParaDeshacerDescuento = null;
+  }
+  function mostrarDeshacerDescuento(copia, valor){
+    copiaParaDeshacerDescuento = copia;
+    document.getElementById('deshacer-descuento-texto').textContent = 'Descuento de ' + formatearPesos(valor) + ' aplicado';
+    toastDeshacerDescuento.classList.add('visible');
+    clearTimeout(temporizadorDeshacerDescuento);
+    temporizadorDeshacerDescuento = setTimeout(ocultarDeshacerDescuento, SEGUNDOS_DESHACER_DESCUENTO * 1000);
+  }
+  document.getElementById('btn-deshacer-descuento').addEventListener('click', ()=>{
+    const copia = copiaParaDeshacerDescuento;
+    if(!copia) return;
+    ocultarDeshacerDescuento();
+    const prestamo = prestamosGuardados.find(p => p.id === copia.prestamoId);
+    if(!prestamo) return;
+    // Se restaura sobre el MISMO objeto, para no romper referencias vivas
+    // (prestamoEnDetalle y demás).
+    Object.keys(prestamo).forEach(clave => delete prestamo[clave]);
+    Object.assign(prestamo, copia.prestamo);
+    guardarPrestamos(prestamosGuardados);
+    if(copia.cliente){
+      const cliente = clientesGuardados.find(c => c.id === copia.cliente.id);
+      if(cliente){
+        Object.keys(cliente).forEach(clave => delete cliente[clave]);
+        Object.assign(cliente, copia.cliente);
+        guardarClientes(clientesGuardados);
+      }
+    }
+    if(prestamoEnDetalle && prestamoEnDetalle.id === prestamo.id){
+      renderizarTarjetaDetallePrestamo(prestamoEnDetalle);
+      renderizarListaCuotas(prestamoEnDetalle);
+      renderizarListaCuotasPendientes(prestamoEnDetalle);
+      actualizarTabsPrestamo(prestamoEnDetalle);
+    }
+    if(typeof renderizarClientes === 'function') renderizarClientes(clientesFiltrados());
+    if(typeof renderizarListaPrestamos === 'function') renderizarListaPrestamos();
+    if(typeof actualizarReportes === 'function') actualizarReportes();
+    mostrarMensajeToast('Descuento deshecho');
   });
 
   // CORREGIDO: se quitó por completo "Recordar por WhatsApp" a nivel de
@@ -25462,7 +25606,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // lógica) con el filtro de ruta activo y el NUEVO filtro rápido de
   // pestañas (Todos / Pagaron hoy / Pagan hoy / Con crédito / Sin crédito).
   let filtroClienteActivo = 'todos'; // CAMBIO: "Todos" es la pestaña predeterminada (antes "Con crédito")
-  let ordenClientesAZ = true; // NUEVO: orden alfabético de la lista de Clientes
+  let ordenClientesAZ = true; // (se conserva por compatibilidad; refleja si el orden actual es A-Z)
+  let ordenClientes = 'az';   // 'az' | 'za' | 'recientes' | 'antiguos'
 
   function clientesFiltrados(){
     // NUEVO — Manejo de errores: si algo dentro de este filtrado falla (por
@@ -25529,10 +25674,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
             (p.plan || []).some(cuota => cuotaVencida(p, cuota)));
         }
         return true; // 'todos'
-      }).sort((a, b) => ordenClientesAZ
-        ? (a.nombre || '').localeCompare((b.nombre || ''), 'es')
-        : (b.nombre || '').localeCompare((a.nombre || ''), 'es')
-      );
+      }).sort((a, b) => {
+        // CAMBIO: a pedido — 4 formas de ordenar (ver menú de la píldora de
+        // orden). "Recientes/antiguos" usa la fecha de registro del cliente
+        // (su id es la marca de tiempo de creación, la misma que muestra
+        // "Cliente desde"); si coincide o falta, desempata por nombre.
+        const porNombre = (a.nombre || '').localeCompare((b.nombre || ''), 'es');
+        if(ordenClientes === 'za') return -porNombre;
+        if(ordenClientes === 'recientes' || ordenClientes === 'antiguos'){
+          const fa = Number(a.id) || 0, fb = Number(b.id) || 0;
+          if(fa !== fb) return ordenClientes === 'recientes' ? fb - fa : fa - fb;
+        }
+        return porNombre;
+      });
     }catch(err){
       console.error('[Clientes] Falló el filtrado de la lista — se muestra sin filtrar como respaldo. Error:', err);
       return Array.isArray(clientesGuardados) ? clientesGuardados : [];
@@ -25837,13 +25991,44 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
   // ==========================================================
   // NUEVO: orden alfabético de Clientes (A-Z / Z-A) — un toque alterna
-  document.getElementById('btn-orden-clientes').addEventListener('click', ()=>{
-    ordenClientesAZ = !ordenClientesAZ;
-    document.getElementById('texto-orden-clientes').textContent = ordenClientesAZ ? 'A-Z' : 'Z-A';
-    document.getElementById('icono-orden-clientes').style.transform = ordenClientesAZ ? 'rotate(0deg)' : 'rotate(180deg)';
-    document.getElementById('btn-orden-clientes').setAttribute('aria-label', ordenClientesAZ ? 'Ordenar A-Z' : 'Ordenar Z-A');
+  // CAMBIO: a pedido — la píldora ya no alterna A-Z/Z-A con cada toque:
+  // abre un pequeño menú con 4 opciones de orden.
+  const OPCIONES_ORDEN_CLIENTES = [
+    { clave:'az',        texto:'Nombre (A-Z)',          corto:'A-Z' },
+    { clave:'za',        texto:'Nombre (Z-A)',          corto:'Z-A' },
+    { clave:'recientes', texto:'Más recientes primero', corto:'Recientes' },
+    { clave:'antiguos',  texto:'Más antiguos primero',  corto:'Antiguos' }
+  ];
+  const menuOrdenClientesOverlay = document.getElementById('menu-orden-clientes-overlay');
+  const menuOrdenClientesLista = document.getElementById('menu-orden-clientes-lista');
+  function cerrarMenuOrdenClientes(){ menuOrdenClientesOverlay.style.display = 'none'; }
+  function aplicarOrdenClientes(clave){
+    ordenClientes = clave;
+    ordenClientesAZ = (clave === 'az');
+    const opcion = OPCIONES_ORDEN_CLIENTES.find(o => o.clave === clave) || OPCIONES_ORDEN_CLIENTES[0];
+    document.getElementById('texto-orden-clientes').textContent = opcion.corto;
+    document.getElementById('icono-orden-clientes').style.transform = (clave === 'za' || clave === 'recientes') ? 'rotate(180deg)' : 'rotate(0deg)';
+    document.getElementById('btn-orden-clientes').setAttribute('aria-label', 'Ordenar: ' + opcion.texto);
     renderizarClientes(clientesFiltrados());
+  }
+  document.getElementById('btn-orden-clientes').addEventListener('click', ()=>{
+    menuOrdenClientesLista.innerHTML = '';
+    OPCIONES_ORDEN_CLIENTES.forEach(opcion=>{
+      const fila = document.createElement('button');
+      fila.type = 'button';
+      fila.className = 'menu-orden-opcion' + (opcion.clave === ordenClientes ? ' seleccionada' : '');
+      fila.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span></span>';
+      fila.querySelector('span').textContent = opcion.texto;
+      fila.addEventListener('click', ()=>{ cerrarMenuOrdenClientes(); aplicarOrdenClientes(opcion.clave); });
+      menuOrdenClientesLista.appendChild(fila);
+    });
+    // El menú se ubica justo debajo de la píldora, alineado a su derecha.
+    const r = document.getElementById('btn-orden-clientes').getBoundingClientRect();
+    menuOrdenClientesLista.style.top = Math.round(r.bottom + 8) + 'px';
+    menuOrdenClientesLista.style.right = Math.max(10, Math.round(window.innerWidth - r.right - 44)) + 'px';
+    menuOrdenClientesOverlay.style.display = 'block';
   });
+  menuOrdenClientesOverlay.addEventListener('click', (e)=>{ if(e.target === menuOrdenClientesOverlay) cerrarMenuOrdenClientes(); });
 
   // ==========================================================
   // Caja (retiros y gastos)
