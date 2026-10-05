@@ -1963,89 +1963,159 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
 #screen-agregar-abono .field-textarea{ font-size:15.5px; font-weight:500; }
 
 /* ==========================================================
-   NUEVO — a pedido, con imagen de referencia: mejoras visuales de la
-   pantalla "Nuevo Préstamo" (también "Editar préstamo", que usa esta
-   misma pantalla). Solo presentación; ningún id ni cálculo cambia.
+   REMODELADO — a pedido, con imagen de referencia: pantalla "Nuevo
+   Préstamo" (también "Editar préstamo", que usa esta misma pantalla)
+   organizada por secciones con tarjetas blancas y campos con la
+   etiqueta sobre el borde. Solo presentación: se conservan todos los
+   id's, campos y cálculos.
    ========================================================== */
 #screen-nuevo-prestamo{
-  --np-fondo-1:#F2F6FC; --np-fondo-2:#E1EAF7;
-  --np-campo:#DCE5F3; --np-campo-borde:rgba(31,47,104,0.10);
-  --np-sombra:rgba(120,140,180,0.42); --np-luz:rgba(255,255,255,0.90);
-  --np-blanco:#FFFFFF; --np-borde-blanco:#C9D5E8; --np-azul:#1F4E8C;
+  --np-fondo-1:#F1F6F8; --np-fondo-2:#E3ECF0;
+  --np-card:#FFFFFF; --np-card-borde:rgba(15,60,80,0.07); --np-card-sombra:0 3px 10px rgba(40,70,90,0.16);
+  --np-campo:#EDF0F3; --np-campo-borde:#B4BEC8;
+  --np-teal:#0F7C95; --np-teal-2:#0A657B; --np-naranja:#F2702A;
+  --np-valor:#0A0F1A; --np-titulo:#151B22;
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='300' viewBox='0 0 260 300' fill='none' stroke='%239FB4D6' stroke-width='1.1' opacity='0.32'%3E%3Cpath d='M40 -10c20 90 70 170 150 250'/%3E%3Cpath d='M300 70 120 150c-12 6-12 20-2 28l150 90'/%3E%3Cpath d='M290 150 190 190l-40 70 130-30'/%3E%3C/svg%3E") no-repeat right top / 230px auto,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='300' viewBox='0 0 260 300' fill='none' stroke='%239DB9C4' stroke-width='1.1' opacity='0.30'%3E%3Cpath d='M40 -10c20 90 70 170 150 250'/%3E%3Cpath d='M300 70 120 150c-12 6-12 20-2 28l150 90'/%3E%3Cpath d='M290 150 190 190l-40 70 130-30'/%3E%3C/svg%3E") no-repeat right 210px / 230px auto,
     linear-gradient(170deg, var(--np-fondo-1) 0%, var(--np-fondo-2) 100%);
   min-height:100vh;
 }
 body.modo-oscuro #screen-nuevo-prestamo{
   --np-fondo-1:#141922; --np-fondo-2:#10141C;
-  --np-campo:#1B212C; --np-campo-borde:rgba(255,255,255,0.06);
-  --np-sombra:rgba(0,0,0,0.55); --np-luz:rgba(255,255,255,0.04);
-  --np-blanco:#222936; --np-borde-blanco:#34405A; --np-azul:#8FB4F2;
+  --np-card:#1E2530; --np-card-borde:rgba(255,255,255,0.06); --np-card-sombra:0 3px 10px rgba(0,0,0,0.45);
+  --np-campo:#161C25; --np-campo-borde:#3A4656;
+  --np-teal:#4FC3DC; --np-teal-2:#0A657B;
+  --np-valor:#FFFFFF; --np-titulo:#F1F5F9;
   background:linear-gradient(170deg, var(--np-fondo-1) 0%, var(--np-fondo-2) 100%);
 }
 #screen-nuevo-prestamo .header{ background:transparent; border-bottom-color:transparent; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+#screen-nuevo-prestamo .header h1{ color:var(--np-teal); font-weight:800; }
+#screen-nuevo-prestamo .form-section{ gap:16px; padding-top:14px; }
+
+/* Tarjetas y títulos de sección */
+#screen-nuevo-prestamo .np-seccion{ display:flex; flex-direction:column; gap:9px; }
+#screen-nuevo-prestamo .np-titulo{ font-size:16px; font-weight:600; color:var(--np-titulo); padding-left:6px; }
+#screen-nuevo-prestamo .np-card{
+  background:var(--np-card); border:1px solid var(--np-card-borde); border-radius:10px;
+  box-shadow:var(--np-card-sombra); padding:16px 12px 12px;
+  display:flex; flex-direction:column; gap:18px;
+}
+#screen-nuevo-prestamo .np-fila-2{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; }
+
+/* Cliente */
+#screen-nuevo-prestamo .np-cliente{
+  display:flex; align-items:center; gap:14px;
+  background:var(--np-card); border:1px solid var(--np-card-borde); border-radius:10px;
+  box-shadow:var(--np-card-sombra); padding:12px 14px;
+}
+#screen-nuevo-prestamo .np-cliente-avatar{
+  width:52px; height:52px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:#E3E7EB; color:#6B7480; font-size:20px; font-weight:500; letter-spacing:.5px;
+}
+body.modo-oscuro #screen-nuevo-prestamo .np-cliente-avatar{ background:#2B3442; color:#B6C0CC; }
+#screen-nuevo-prestamo .np-cliente-texto{ min-width:0; }
+#screen-nuevo-prestamo .np-cliente-nombre{ font-size:21px; font-weight:700; color:var(--np-titulo); line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#screen-nuevo-prestamo .np-cliente-sub{ font-size:13.5px; color:var(--text); opacity:.85; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* Campos con la etiqueta sobre el borde */
+#screen-nuevo-prestamo .np-campo{ position:relative; gap:0; }
+#screen-nuevo-prestamo .np-campo > .field-label{
+  position:absolute; top:-9px; left:10px; z-index:1;
+  padding:0 6px; font-size:12.5px; font-weight:500; line-height:18px; color:var(--text);
+  background:linear-gradient(to bottom, var(--np-card) 0, var(--np-card) 9px, var(--np-campo) 9px);
+  border-radius:4px; pointer-events:none;
+}
 #screen-nuevo-prestamo .field-label{ font-weight:500; }
-/* Cliente: píldora azul clara con avatar */
-#screen-nuevo-prestamo .loan-client-tag{
-  display:inline-flex; align-items:center; gap:8px;
-  padding:5px 16px 5px 6px;
-  font-size:13.5px; font-weight:500; color:var(--text);
-  background:linear-gradient(180deg, #D3E6FB 0%, #BBD8F7 100%);
-  box-shadow:0 2px 6px rgba(90,140,210,0.28);
+#screen-nuevo-prestamo .field-input{
+  background-color:var(--np-campo); border:1.5px solid var(--np-campo-borde); border-radius:10px;
+  color:var(--np-valor); -webkit-text-fill-color:var(--np-valor);
+  font-size:18px; font-weight:600; padding:15px 14px 12px;
 }
-body.modo-oscuro #screen-nuevo-prestamo .loan-client-tag{ background:linear-gradient(180deg, #243A5C 0%, #1D304D 100%); box-shadow:none; }
-#screen-nuevo-prestamo .loan-client-tag::before{
-  content:''; width:26px; height:26px; border-radius:50%; flex-shrink:0;
-  background:#EAF2FC url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239AAAC2'%3E%3Ccircle cx='12' cy='9' r='4.2'/%3E%3Cpath d='M3.5 22a8.5 8.5 0 0 1 17 0z'/%3E%3C/svg%3E") no-repeat center 3px / 20px;
-}
-/* Campos de texto: hundidos */
-#screen-nuevo-prestamo .field-input:not(.field-select-trigger):not(.field-select){
-  background:var(--np-campo);
-  border:1px solid var(--np-campo-borde);
-  border-radius:12px;
-  box-shadow:inset 2px 2px 5px var(--np-sombra), inset -2px -2px 5px var(--np-luz);
-}
-#screen-nuevo-prestamo .field-input:not(.field-select-trigger):focus{ border-color:var(--np-azul); }
-/* CAMBIO: a pedido — los valores que se escriben/eligen van más negros,
-   más grandes y un poco más gruesos (el texto de ayuda sigue gris). */
-#screen-nuevo-prestamo{ --np-valor:#0A0F1A; }
-body.modo-oscuro #screen-nuevo-prestamo{ --np-valor:#FFFFFF; }
-#screen-nuevo-prestamo .field-input{ color:var(--np-valor); font-size:17px; font-weight:600; -webkit-text-fill-color:var(--np-valor); }
+#screen-nuevo-prestamo .field-input:focus{ border-color:var(--np-teal); box-shadow:0 0 0 3px rgba(15,124,149,0.14); }
 #screen-nuevo-prestamo .field-input::placeholder{ font-size:15px; font-weight:400; color:var(--text-secondary); -webkit-text-fill-color:var(--text-secondary); }
 #screen-nuevo-prestamo .field-input:disabled, #screen-nuevo-prestamo .field-input[readonly]{ opacity:1; -webkit-text-fill-color:var(--np-valor); }
+#screen-nuevo-prestamo .field-with-icon .field-input{ padding-right:44px; }
+#screen-nuevo-prestamo .field-with-icon svg{ stroke:var(--text-secondary); opacity:1; }
+#screen-nuevo-prestamo .field-suffix{ color:var(--np-valor); font-weight:600; font-size:17px; }
+#screen-nuevo-prestamo .field-select-trigger .chevron-select{ stroke:var(--text-secondary); }
 #screen-nuevo-prestamo .field-textarea{ font-size:15.5px; font-weight:500; }
-#screen-nuevo-prestamo .field-suffix{ color:var(--np-valor); font-weight:600; }
-#screen-nuevo-prestamo .field-with-icon svg{ stroke:var(--text); opacity:0.75; }
-/* Selector y fecha: blancos, levantados */
-#screen-nuevo-prestamo .field-select-trigger,
-#screen-nuevo-prestamo .field-select{
-  background-color:var(--np-blanco);
-  border:1px solid var(--np-borde-blanco);
-  border-radius:12px;
-  box-shadow:0 1px 3px rgba(60,80,130,0.10);
+
+/* Monto solicitado: valor grande con $ */
+#screen-nuevo-prestamo .np-campo-monto .field-input{ font-size:27px; font-weight:700; padding:17px 56px 12px 44px; }
+#screen-nuevo-prestamo .np-campo-monto .field-input::placeholder{ font-size:16px; }
+#screen-nuevo-prestamo .np-prefijo{ position:absolute; left:15px; top:50%; transform:translateY(-46%); font-size:27px; font-weight:700; color:var(--np-teal); pointer-events:none; }
+#screen-nuevo-prestamo .np-campo-monto .field-with-icon svg.np-icono-monto{ width:32px; height:32px; right:12px; stroke:none; }
+
+/* Condiciones de pago: dos mini tarjetas + botón de intercambio */
+#screen-nuevo-prestamo .interes-swap-row{ align-items:stretch; gap:6px; }
+#screen-nuevo-prestamo .np-mini{
+  flex:1; min-width:0; background:var(--np-card); border:1px solid var(--np-card-borde);
+  border-radius:10px; box-shadow:var(--np-card-sombra); padding:9px;
 }
+#screen-nuevo-prestamo .np-caja{
+  background:var(--np-campo); border:1.5px solid transparent; border-radius:10px; padding:9px 10px 8px; gap:2px;
+  transition:border-color .15s ease;
+}
+#screen-nuevo-prestamo .np-caja:focus-within{ border-color:var(--np-teal); }
+#screen-nuevo-prestamo .np-caja .field-label{ display:flex; align-items:center; gap:6px; font-size:12.5px; white-space:nowrap; }
+#screen-nuevo-prestamo .np-caja .field-label svg{ width:17px; height:17px; flex-shrink:0; stroke:var(--np-teal); }
+#screen-nuevo-prestamo .np-caja .field-label svg.np-naranja{ stroke:var(--np-naranja); }
+#screen-nuevo-prestamo .np-caja .field-input{
+  background:transparent; border:none; border-radius:0; box-shadow:none;
+  padding:3px 0; font-size:20px; font-weight:600; width:100%; min-width:0;
+}
+#screen-nuevo-prestamo .np-caja .field-with-icon .field-input{ padding-right:22px; }
+#screen-nuevo-prestamo .np-caja .field-suffix{ right:2px; font-size:19px; }
+/* el dato que se calcula solo (no editable) lleva borde punteado */
+#screen-nuevo-prestamo .np-caja.np-calculado{ border:1.5px dashed var(--np-campo-borde); }
 #screen-nuevo-prestamo .swap-btn{
-  background:var(--np-campo); color:var(--np-azul);
-  border-radius:12px;
-  box-shadow:inset 1px 1px 3px var(--np-sombra), inset -1px -1px 3px var(--np-luz);
+  align-self:center; width:34px; height:34px; min-width:34px; margin:0; border-radius:50%;
+  background:var(--np-card); color:var(--np-teal); border:1.5px solid var(--np-teal);
+  box-shadow:0 2px 5px rgba(40,70,90,0.18);
 }
+#screen-nuevo-prestamo .swap-btn svg{ width:16px; height:16px; }
+
+/* Calendario y notas */
+#screen-nuevo-prestamo .np-card-fecha{ padding:10px 12px 12px; gap:10px; }
+#screen-nuevo-prestamo .np-fecha{ display:flex; align-items:center; gap:16px; background:var(--np-campo); border-radius:10px; padding:12px 16px; position:relative; }
+#screen-nuevo-prestamo .np-fecha-icono{ width:46px; height:46px; flex-shrink:0; }
+#screen-nuevo-prestamo .np-fecha .form-field{ flex:1; min-width:0; gap:0; }
+#screen-nuevo-prestamo .np-fecha .field-with-icon{ position:static; }
+#screen-nuevo-prestamo .np-fecha .field-label{ font-size:13.5px; }
+#screen-nuevo-prestamo .np-fecha .field-with-icon > svg,
+#screen-nuevo-prestamo .np-fecha .chevron-select{ display:none; }
+#screen-nuevo-prestamo .np-fecha .field-input{
+  background:transparent; border:none; box-shadow:none; border-radius:0;
+  padding:0; font-size:25px; font-weight:800; line-height:1.25; width:100%;
+}
+/* toda la caja abre el calendario */
+#screen-nuevo-prestamo .np-fecha .field-select-trigger::after{ content:''; position:absolute; inset:0; }
 #screen-nuevo-prestamo .add-note-btn{
-  background:var(--np-blanco);
-  border:1.5px solid var(--np-azul);
-  border-radius:12px;
-  color:var(--np-azul);
+  width:100%; justify-content:center; margin:0;
+  background:var(--np-card); border:1.5px solid var(--np-titulo); border-radius:10px;
+  color:var(--np-titulo); font-size:16px; font-weight:600; padding:11px 14px;
 }
-#screen-nuevo-prestamo .toggle-switch.on{ background:linear-gradient(180deg, #2A5A9E 0%, #1B3F78 100%); }
-#screen-nuevo-prestamo .ver-simulacion-btn{ color:var(--text); font-weight:500; opacity:0.85; }
+#screen-nuevo-prestamo .add-note-btn svg{ width:21px; height:21px; }
+#screen-nuevo-prestamo .add-note-btn.active{ color:var(--np-teal); border-color:var(--np-teal); }
+#screen-nuevo-prestamo #campo-nota-prestamo{ margin-top:8px; }
+
+/* Opciones adicionales */
+#screen-nuevo-prestamo .np-card-mora{ padding:12px 14px; }
+#screen-nuevo-prestamo .mora-toggle-row{ padding:0; }
+#screen-nuevo-prestamo .mora-toggle-title{ font-size:16px; color:var(--np-titulo); }
+#screen-nuevo-prestamo .mora-toggle-subtitle{ color:var(--text); opacity:.85; }
+#screen-nuevo-prestamo .toggle-switch.on{ background:#2196F3; }
+#screen-nuevo-prestamo .toggle-switch.on::after{ background:var(--np-naranja); }
+
+#screen-nuevo-prestamo .ver-simulacion-btn{ color:var(--np-titulo); font-weight:500; font-size:14.5px; text-decoration:underline; text-underline-offset:3px; padding:2px 8px; }
 #screen-nuevo-prestamo .btn-guardar-prestamo{
-  border-radius:12px;
-  padding-top:16px; padding-bottom:16px;
-  background:linear-gradient(180deg, #24468A 0%, #142B63 100%);
-  box-shadow:0 8px 16px rgba(20,43,99,0.35), inset 0 1px 0 rgba(255,255,255,0.22);
-  border:1px solid #10224F;
+  border-radius:10px; padding-top:16px; padding-bottom:16px; font-size:17px;
+  background:linear-gradient(180deg, #12859F 0%, #0A657B 100%);
+  box-shadow:0 8px 16px rgba(10,101,123,0.32), inset 0 1px 0 rgba(255,255,255,0.22);
+  border:1px solid #085466;
 }
-#screen-nuevo-prestamo .btn-guardar-prestamo:active{ transform:translateY(1px); box-shadow:0 3px 8px rgba(20,43,99,0.35); }
+#screen-nuevo-prestamo .btn-guardar-prestamo:active{ transform:translateY(1px); box-shadow:0 3px 8px rgba(10,101,123,0.32); }
 
 .share-fab{
   position:fixed;
@@ -7269,7 +7339,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
   <form class="form-section" id="form-nuevo-prestamo">
 
-    <div class="loan-client-tag" id="loan-cliente-nombre">Cliente</div>
+    <!-- REMODELADO: a pedido, con imagen de referencia — el formulario se
+         agrupa en secciones con tarjetas. Todos los id's de los campos se
+         conservan tal cual (ningún cálculo ni validación cambia). -->
+    <div class="np-cliente">
+      <div class="np-cliente-avatar" id="np-cliente-avatar" aria-hidden="true"></div>
+      <div class="np-cliente-texto">
+        <div class="np-cliente-nombre" id="loan-cliente-nombre">Cliente</div>
+        <div class="np-cliente-sub" id="np-cliente-sub">Prestatario</div>
+      </div>
+    </div>
 
     <!-- NUEVO: oculto a pedido — hoy en día solo existe UNA opción real
          ("Interés al capital inicial", ya seleccionada por defecto), así
@@ -7285,84 +7364,102 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       </select>
     </div>
 
-    <div class="form-field">
-      <label class="field-label" for="input-valor-prestamo">Valor</label>
-      <div class="field-with-icon">
-        <input class="field-input" id="input-valor-prestamo" type="text" inputmode="numeric" placeholder="Toca y escribe" required>
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="3"></circle></svg>
-      </div>
-    </div>
-
-    <div class="form-field">
-      <label class="field-label" for="input-cuotas-prestamo">Cuotas</label>
-      <div class="field-with-icon">
-        <input class="field-input" id="input-cuotas-prestamo" type="text" inputmode="numeric" placeholder="Toca y escribe" required>
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="6" rx="6" ry="2.6"></ellipse><path d="M3 6v4.2c0 1.4 2.7 2.6 6 2.6"></path><path d="M3 10.2v4.2c0 1.3 2.3 2.4 5.2 2.6"></path><path d="M15 6v2.4"></path><circle cx="17" cy="13.2" r="2.4"></circle><path d="M12.6 21v-.6a3.6 3.6 0 0 1 3.6-3.6h1.6a3.6 3.6 0 0 1 3.6 3.6v.6"></path></svg>
-      </div>
-    </div>
-
-    <!-- CORREGIDO: a pedido — "Frecuencia de pago" se movió para quedar
-         justo debajo de "Cuotas" (antes iba después de Interés/Cuota
-         deseada). Solo se reordenó el bloque HTML; conserva exactamente
-         los mismos id's, así que ningún cálculo ni validación se vio
-         afectado. -->
-    <div class="form-field">
-      <label class="field-label" for="select-frecuencia">Frecuencia de pago*</label>
-      <select class="field-input field-select" id="select-frecuencia" required>
-        <option value="diario">Diario</option>
-        <option value="semanal">Semanal</option>
-        <option value="quincenal" selected>Quincenal</option>
-        <option value="mensual">Mensual</option>
-      </select>
-    </div>
-
-    <div class="interes-swap-row">
-      <div class="form-field">
-        <label class="field-label" for="input-tasa-interes">Interés</label>
-        <div class="field-with-icon">
-          <input class="field-input" id="input-tasa-interes" type="text" inputmode="decimal" placeholder="0.00">
-          <span class="field-suffix">%</span>
+    <div class="np-seccion">
+      <div class="np-titulo">Detalles del Préstamo</div>
+      <div class="np-card">
+        <div class="form-field np-campo np-campo-monto">
+          <label class="field-label" for="input-valor-prestamo">Monto Solicitado</label>
+          <div class="field-with-icon">
+            <span class="np-prefijo" aria-hidden="true">$</span>
+            <input class="field-input" id="input-valor-prestamo" type="text" inputmode="numeric" placeholder="Toca y escribe" required>
+            <svg class="np-icono-monto" viewBox="0 0 32 32" aria-hidden="true"><rect x="17" y="7" width="13" height="3.4" rx="1" fill="#0F7C95"/><rect x="19" y="12" width="11" height="3.4" rx="1" fill="#0F7C95"/><rect x="19" y="17" width="11" height="3.4" rx="1" fill="#0F7C95"/><rect x="17" y="22" width="13" height="3.4" rx="1" fill="#0F7C95"/><circle cx="12" cy="16" r="11" fill="#0F7C95"/><path d="M15.2 12.6c-.6-1-1.7-1.5-3.1-1.5-1.8 0-3 .9-3 2.3 0 3.2 6.2 1.5 6.2 4.8 0 1.5-1.3 2.4-3.2 2.4-1.6 0-2.8-.6-3.4-1.8M12 8.8v14.4" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <div class="np-fila-2">
+          <div class="form-field np-campo">
+            <label class="field-label" for="input-cuotas-prestamo">Número de Cuotas</label>
+            <div class="field-with-icon">
+              <input class="field-input" id="input-cuotas-prestamo" type="text" inputmode="numeric" placeholder="Escribe" required>
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15.5 14"></polyline></svg>
+            </div>
+          </div>
+          <div class="form-field np-campo">
+            <label class="field-label" for="select-frecuencia">Frecuencia</label>
+            <select class="field-input field-select" id="select-frecuencia" required>
+              <option value="diario">Diario</option>
+              <option value="semanal">Semanal</option>
+              <option value="quincenal" selected>Quincenal</option>
+              <option value="mensual">Mensual</option>
+            </select>
+          </div>
         </div>
       </div>
-      <button type="button" class="swap-btn" id="btn-swap-interes" aria-label="Cambiar entre % y cuota deseada">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
-      </button>
-      <div class="form-field">
-        <label class="field-label" for="input-cuota-deseada">Cuota deseada</label>
-        <input class="field-input" id="input-cuota-deseada" type="text" inputmode="numeric" placeholder="Toca y escribe">
-      </div>
     </div>
 
-    <div class="fecha-nota-row">
-      <div class="form-field" style="flex:1;">
-        <label class="field-label" for="input-fecha-credito">Fecha del Crédito</label>
-        <div class="field-with-icon">
-          <input class="field-input" id="input-fecha-credito" type="date" required>
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+    <div class="np-seccion">
+      <div class="np-titulo">Condiciones de Pago</div>
+      <div class="interes-swap-row">
+        <div class="np-mini">
+          <div class="form-field np-caja" id="np-caja-interes">
+            <label class="field-label" for="input-tasa-interes"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="15"></line><line x1="10" y1="20" x2="10" y2="12"></line><line x1="15" y1="20" x2="15" y2="14"></line><line x1="20" y1="20" x2="20" y2="10"></line><polyline points="4 10 10 5 14 8 20 3"></polyline></svg>Tasa de Interés</label>
+            <div class="field-with-icon">
+              <input class="field-input" id="input-tasa-interes" type="text" inputmode="decimal" placeholder="0.00">
+              <span class="field-suffix">%</span>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="swap-btn" id="btn-swap-interes" aria-label="Cambiar entre % y cuota deseada">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+        </button>
+        <div class="np-mini">
+          <div class="form-field np-caja" id="np-caja-cuota">
+            <label class="field-label" for="input-cuota-deseada"><svg class="np-naranja" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2.5"></rect><line x1="2" y1="10" x2="22" y2="10"></line><line x1="6" y1="15" x2="10" y2="15"></line></svg>Cuota Deseada</label>
+            <input class="field-input" id="input-cuota-deseada" type="text" inputmode="numeric" placeholder="Escribe">
+          </div>
         </div>
       </div>
-      <button type="button" class="add-note-btn" id="btn-agregar-nota-prestamo">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>
-        <span id="texto-btn-nota">Agregar Nota</span>
-      </button>
     </div>
 
-    <div class="form-field" id="campo-nota-prestamo" style="display:none;">
-      <label class="field-label" for="input-nota-prestamo">Nota</label>
-      <textarea class="field-input field-textarea" id="input-nota-prestamo" rows="2"></textarea>
-    </div>
-
-    <div class="mora-toggle-row">
-      <div class="mora-toggle-text">
-        <div class="mora-toggle-title">Habilitar Interés por Mora</div>
-        <div class="mora-toggle-subtitle">Cobrar intereses sobre montos vencidos después del período de gracia</div>
+    <div class="np-seccion">
+      <div class="np-titulo">Calendario y Notas</div>
+      <div class="np-card np-card-fecha">
+        <div class="np-fecha">
+          <svg class="np-fecha-icono" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="5" y="9" width="32" height="30" rx="4" stroke="#0F7C95" stroke-width="3"/><path d="M5 17h32" stroke="#0F7C95" stroke-width="3"/><path d="M13 5v8M29 5v8" stroke="#0F7C95" stroke-width="3" stroke-linecap="round"/><rect x="11" y="22" width="5" height="4.5" rx="1" fill="#0F7C95"/><rect x="19" y="22" width="5" height="4.5" rx="1" fill="#0F7C95"/><rect x="11" y="30" width="5" height="4.5" rx="1" fill="#0F7C95"/><path d="M27 41l2-7 12-12 5 5-12 12z" fill="#F2702A" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <div class="form-field">
+            <label class="field-label" for="input-fecha-credito">Fecha de Desembolso</label>
+            <div class="field-with-icon">
+              <input class="field-input" id="input-fecha-credito" type="date" required>
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="add-note-btn" id="btn-agregar-nota-prestamo">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"></path><line x1="8.5" y1="8" x2="13" y2="8"></line><line x1="8.5" y1="12" x2="11.5" y2="12"></line><path d="M14 20.5l.8-3.4 6-6 2.6 2.6-6 6z"></path></svg>
+          <span id="texto-btn-nota">Agregar Nota</span>
+        </button>
+        <div class="form-field np-campo" id="campo-nota-prestamo" style="display:none;">
+          <label class="field-label" for="input-nota-prestamo">Nota</label>
+          <textarea class="field-input field-textarea" id="input-nota-prestamo" rows="2"></textarea>
+        </div>
       </div>
-      <button type="button" class="toggle-switch" id="toggle-mora" role="switch" aria-checked="false" aria-label="Habilitar interés por mora"></button>
+    </div>
+
+    <div class="np-seccion">
+      <div class="np-titulo">Opciones Adicionales</div>
+      <div class="np-card np-card-mora">
+        <div class="mora-toggle-row">
+          <div class="mora-toggle-text">
+            <div class="mora-toggle-title">Habilitar Interés por Mora</div>
+            <div class="mora-toggle-subtitle">Cobrar intereses sobre montos vencidos después del período de gracia</div>
+          </div>
+          <button type="button" class="toggle-switch" id="toggle-mora" role="switch" aria-checked="false" aria-label="Habilitar interés por mora"></button>
+        </div>
+      </div>
     </div>
 
     <button type="button" class="ver-simulacion-btn" id="btn-ver-simulacion">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-      Ver simulación
+      Ver Simulación Detallada (Plan de Pagos)
     </button>
 
     <!-- SIMULACIÓN / PLAN DE PAGOS (oculto hasta calcular) -->
@@ -16193,6 +16290,24 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   const btnCerrarNuevoPrestamo = document.getElementById('btn-cerrar-nuevo-prestamo');
   const btnAbrirNuevoPrestamo = document.getElementById('btn-nuevo-prestamo-cliente');
   const loanClienteNombre = document.getElementById('loan-cliente-nombre');
+  // NUEVO (solo presentación): la tarjeta del cliente en Nuevo Préstamo
+  // muestra las iniciales y el documento; se actualiza sola cada vez que
+  // cambia el nombre mostrado (no interviene en ningún cálculo).
+  (function(){
+    const avatarEl = document.getElementById('np-cliente-avatar');
+    const subEl = document.getElementById('np-cliente-sub');
+    if(!avatarEl || !subEl) return;
+    function refrescar(){
+      const nombre = (loanClienteNombre.textContent || '').trim();
+      const partes = nombre.split(/\s+/).filter(Boolean);
+      avatarEl.textContent = partes.length ? (partes[0][0] + (partes.length > 1 ? partes[1][0] : '')).toUpperCase() : '?';
+      let doc = '';
+      try{ doc = (typeof clienteEnDetalle !== 'undefined' && clienteEnDetalle && clienteEnDetalle.documento) ? String(clienteEnDetalle.documento).trim() : ''; }catch(e){}
+      subEl.textContent = doc ? 'Prestatario · CC ' + doc : 'Prestatario';
+    }
+    new MutationObserver(refrescar).observe(loanClienteNombre, { childList:true, characterData:true, subtree:true });
+    refrescar();
+  })();
   const formNuevoPrestamo = document.getElementById('form-nuevo-prestamo');
 
   let moraHabilitada = false;
@@ -16247,6 +16362,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   function aplicarModoInteresCuota(){
     inputTasaInteres.disabled = !modoInteresActivo;
     inputCuotaDeseada.disabled = modoInteresActivo;
+    // NUEVO (solo presentación): marca cuál de los dos es el dato calculado
+    const cajaInt = document.getElementById('np-caja-interes'), cajaCuo = document.getElementById('np-caja-cuota');
+    if(cajaInt) cajaInt.classList.toggle('np-calculado', !modoInteresActivo);
+    if(cajaCuo) cajaCuo.classList.toggle('np-calculado', modoInteresActivo);
     btnSwapInteres.setAttribute('aria-label', modoInteresActivo ? 'Usar cuota deseada como dato de entrada' : 'Usar interés como dato de entrada');
   }
 
