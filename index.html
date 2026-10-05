@@ -4822,6 +4822,9 @@ body.modo-oscuro .client-row.client-row-sin-credito .client-row-ruta{ background
 .client-row.client-row-mora .avatar-globo-cuotas{ background:#D32F3A; box-shadow:0 0 0 2px #FDECEC; }
 .client-row.client-row-inhabilitado .avatar-globo-cuotas{ box-shadow:0 0 0 2px #F1F2F5; }
 .client-row.client-row-mora .avatar-globo-cuotas.avatar-globo-faltan{ background:#F5A623; }
+/* CAMBIO (a pedido): se quita el globo amarillo de cuotas que faltan
+   (queda oculto, no borrado; el texto "Faltan N" de abajo se conserva). */
+.client-row .avatar-globo-cuotas.avatar-globo-faltan{ display:none; }
 .client-row.client-row-con-lateral .info .name,
 .client-row.client-row-con-lateral .info .nota-cliente-tarjeta{ padding-right:0; }
 .client-row.client-row-cliente .info .name{ font-weight:700; margin-bottom:3px; }
@@ -5476,7 +5479,7 @@ body.modo-oscuro .profile-card .profile-card-name{ color:var(--text); }
   display:flex;
   justify-content:space-around;
   align-items:center;
-  padding:10px 6px calc(10px + env(safe-area-inset-bottom));
+  padding:5px 6px calc(5px + env(safe-area-inset-bottom)); /* CAMBIO (a pedido): barra más baja — antes 10px arriba y abajo */
   box-shadow:0 -6px 20px rgba(20,30,60,0.06);
   z-index:30;
 }
@@ -5484,8 +5487,8 @@ body.modo-oscuro .profile-card .profile-card-name{ color:var(--text); }
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:4px;
-  padding:8px 12px;
+  gap:2px;
+  padding:3px 12px;
   border-radius:14px;
   color:var(--text-secondary);
   min-width:56px;
@@ -5495,7 +5498,7 @@ body.modo-oscuro .profile-card .profile-card-name{ color:var(--text); }
   width:22px;
   height:22px;
   stroke:currentColor;
-  padding:6px;
+  padding:5px;
   border-radius:50%;
   box-sizing:content-box;
   transition:background .2s ease, color .2s ease, box-shadow .2s ease;
@@ -10111,7 +10114,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <span class="pagan-hoy-badge" id="pagan-hoy-badge" style="display:none; top:2px; right:6px;">0</span>
     <span>Pagan Hoy</span>
   </a>
-  <a class="nav-item" id="nav-item-recordatorios" style="position:relative;">
+  <!-- CAMBIO (a pedido): en el lugar de Recordatorios ahora va "Cuotas
+       vencidas" (la misma pantalla de Ajustes → Cuotas vencidas). El
+       acceso de Recordatorios no se borra: queda oculto aquí (su globo
+       contador sigue existiendo para el JS) y Recordatorios se sigue
+       abriendo desde la campana de los encabezados. -->
+  <a class="nav-item" id="nav-item-cuotas-vencidas" style="position:relative;">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+    <span>Vencidas</span>
+  </a>
+  <a class="nav-item" id="nav-item-recordatorios" style="position:relative; display:none;">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
     <span class="pagan-hoy-badge" id="badge-cobros-inicio-header" style="display:none; top:2px; right:6px;">0</span>
     <span>Recordatorios</span>
@@ -10337,6 +10349,24 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         </div>
         <span style="flex:1;">Bloquear por mora</span>
         <button type="button" class="toggle-switch" id="toggle-bloqueo-mora-cliente" role="switch" aria-checked="false" aria-label="Bloquear cliente por mora"></button>
+      </div>
+
+      <!-- NUEVO: a pedido — dos bloqueos manuales más por cliente. Con
+           cualquiera activo, "Nuevo crédito" no abre el formulario y
+           muestra su aviso (mismo patrón que "Bloquear por mora"). -->
+      <div class="action-sheet-item-toggle-row" id="fila-bloqueo-monto-menu">
+        <div class="icon-container red">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+        </div>
+        <span style="flex:1;">Bloquear por monto máximo alcanzado</span>
+        <button type="button" class="toggle-switch" id="toggle-bloqueo-monto-cliente" role="switch" aria-checked="false" aria-label="Bloquear cliente por monto máximo alcanzado"></button>
+      </div>
+      <div class="action-sheet-item-toggle-row" id="fila-bloqueo-creditos-menu">
+        <div class="icon-container red">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+        </div>
+        <span style="flex:1;">Bloquear por número de créditos alcanzado</span>
+        <button type="button" class="toggle-switch" id="toggle-bloqueo-creditos-cliente" role="switch" aria-checked="false" aria-label="Bloquear cliente por número de créditos alcanzado"></button>
       </div>
 
       <!-- NUEVO: a pedido — "Monto máximo a prestar" por cliente. Al
@@ -11667,6 +11697,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // lógica de apertura, solo que ahora vive en una función con nombre
   // para poder llamarla también desde el menú lateral.
   function abrirAjustes(){
+    // CORREGIDO: antes solo ocultaba Inicio — si Ajustes se abría desde el
+    // menú (tres rayas) estando en Clientes u otra pantalla, esa pantalla
+    // quedaba visible y Ajustes aparecía debajo de ella, fuera de vista
+    // (parecía que "llevaba a Clientes"). Ahora oculta la que esté activa.
+    document.querySelectorAll('.app').forEach(el => { if(el !== screenAjustes) el.style.display = 'none'; });
     screenInicio.style.display = 'none';
     screenAjustes.style.display = 'block';
     bottomNav.style.display = 'none';
@@ -14344,14 +14379,39 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   });
 
   document.getElementById('item-cuotas-vencidas').addEventListener('click', ()=>{
+    pantallaDebajoDeCuotasVencidas = null; // abierto desde Ajustes: al cerrar vuelve a Ajustes
     renderizarCuotasVencidas();
     screenAjustes.style.display = 'none';
     screenCuotasVencidas.style.display = 'block';
     window.scrollTo(0, 0);
   });
 
+  // NUEVO (a pedido): "Cuotas vencidas" también se abre desde la barra
+  // inferior. Mismo patrón que Pagan Hoy: oculta la pantalla que esté
+  // activa, la recuerda, y al cerrar vuelve a esa misma (no a Ajustes).
+  let pantallaDebajoDeCuotasVencidas = null;
+  document.getElementById('nav-item-cuotas-vencidas').addEventListener('click', ()=>{
+    renderizarCuotasVencidas();
+    pantallaDebajoDeCuotasVencidas = Array.from(document.querySelectorAll('.app')).find(el => el !== screenCuotasVencidas && getComputedStyle(el).display !== 'none') || null;
+    document.querySelectorAll('.app').forEach(el => el.style.display = 'none');
+    screenCuotasVencidas.style.display = 'block';
+    document.querySelector('.bottom-nav').style.display = 'none';
+    window.scrollTo(0, 0);
+  });
+
   document.getElementById('btn-cerrar-cuotas-vencidas').addEventListener('click', ()=>{
     screenCuotasVencidas.style.display = 'none';
+    if(pantallaDebajoDeCuotasVencidas){
+      const pantallaDestino = pantallaDebajoDeCuotasVencidas;
+      pantallaDebajoDeCuotasVencidas = null;
+      pantallaDestino.style.display = 'block';
+      document.querySelector('.bottom-nav').style.display = 'flex';
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+      const navDestino = document.querySelector('.nav-item[data-nav="' + pantallaDestino.id.replace('screen-', '') + '"]');
+      if(navDestino) navDestino.classList.add('active');
+      window.scrollTo(0, 0);
+      return;
+    }
     screenAjustes.style.display = 'block';
     window.scrollTo(0, 0);
   });
@@ -14964,9 +15024,28 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       toggle.classList.toggle('on', bloqueado);
       toggle.setAttribute('aria-checked', String(bloqueado));
     }
+    // NUEVO: los otros dos bloqueos manuales (monto máximo / número de créditos)
+    const bloqueoMonto = !!cliente.bloqueadoPorMontoMaximo;
+    const bloqueoCreditos = !!cliente.bloqueadoPorNumeroCreditos;
+    const toggleMonto = document.getElementById('toggle-bloqueo-monto-cliente');
+    if(toggleMonto){ toggleMonto.classList.toggle('on', bloqueoMonto); toggleMonto.setAttribute('aria-checked', String(bloqueoMonto)); }
+    const toggleCreditos = document.getElementById('toggle-bloqueo-creditos-cliente');
+    if(toggleCreditos){ toggleCreditos.classList.toggle('on', bloqueoCreditos); toggleCreditos.setAttribute('aria-checked', String(bloqueoCreditos)); }
     const btnNuevo = document.getElementById('btn-nuevo-prestamo-cliente');
-    if(btnNuevo) btnNuevo.classList.toggle('bloqueado', bloqueado);
+    if(btnNuevo) btnNuevo.classList.toggle('bloqueado', bloqueado || bloqueoMonto || bloqueoCreditos);
   }
+  document.getElementById('toggle-bloqueo-monto-cliente').addEventListener('click', ()=>{
+    if(!clienteEnDetalle) return;
+    clienteEnDetalle.bloqueadoPorMontoMaximo = !clienteEnDetalle.bloqueadoPorMontoMaximo;
+    guardarClientes(clientesGuardados);
+    actualizarBloqueoMoraCliente(clienteEnDetalle);
+  });
+  document.getElementById('toggle-bloqueo-creditos-cliente').addEventListener('click', ()=>{
+    if(!clienteEnDetalle) return;
+    clienteEnDetalle.bloqueadoPorNumeroCreditos = !clienteEnDetalle.bloqueadoPorNumeroCreditos;
+    guardarClientes(clientesGuardados);
+    actualizarBloqueoMoraCliente(clienteEnDetalle);
+  });
 
   document.getElementById('toggle-bloqueo-mora-cliente').addEventListener('click', ()=>{
     if(!clienteEnDetalle) return;
@@ -16760,6 +16839,15 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // préstamo mientras el interruptor esté activo.
     if(clienteEnDetalle.bloqueadoPorMora){
       mostrarMensajeToast('Cliente Bloqueado por mora', btnAbrirNuevoPrestamo);
+      return;
+    }
+    // NUEVO: a pedido — bloqueos manuales por monto máximo y por número de créditos
+    if(clienteEnDetalle.bloqueadoPorMontoMaximo){
+      mostrarMensajeToast('Bloqueado por monto máximo alcanzado', btnAbrirNuevoPrestamo);
+      return;
+    }
+    if(clienteEnDetalle.bloqueadoPorNumeroCreditos){
+      mostrarMensajeToast('Número de créditos alcanzado', btnAbrirNuevoPrestamo);
       return;
     }
     // NUEVO: no se pueden crear préstamos nuevos para un cliente inhabilitado
@@ -21569,6 +21657,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // de su fila salvo el interruptor mismo.
   document.getElementById('toggle-bloqueo-mora-cliente').addEventListener('click', (e)=> e.stopPropagation());
   document.getElementById('toggle-monto-maximo-cliente').addEventListener('click', (e)=> e.stopPropagation());
+  document.getElementById('toggle-bloqueo-monto-cliente').addEventListener('click', (e)=> e.stopPropagation());
+  document.getElementById('toggle-bloqueo-creditos-cliente').addEventListener('click', (e)=> e.stopPropagation());
   document.getElementById('monto-maximo-input-wrap').addEventListener('click', (e)=> e.stopPropagation());
 
   document.getElementById('accion-ver-resumen-historico').addEventListener('click', ()=>{
