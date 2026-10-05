@@ -1956,6 +1956,97 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
 }
 .btn-guardar-prestamo svg{ width:19px; height:19px; stroke:currentColor; }
 
+/* NUEVO: a pedido — en "Agregar Abono", los datos que se escriben o eligen
+   van más grandes y con más peso (el texto de ayuda sigue gris y normal). */
+#screen-agregar-abono .field-input{ font-size:17px; font-weight:700; }
+#screen-agregar-abono .field-input::placeholder{ font-size:15px; font-weight:400; }
+#screen-agregar-abono .field-textarea{ font-size:15.5px; font-weight:500; }
+
+/* ==========================================================
+   NUEVO — a pedido, con imagen de referencia: mejoras visuales de la
+   pantalla "Nuevo Préstamo" (también "Editar préstamo", que usa esta
+   misma pantalla). Solo presentación; ningún id ni cálculo cambia.
+   ========================================================== */
+#screen-nuevo-prestamo{
+  --np-fondo-1:#F2F6FC; --np-fondo-2:#E1EAF7;
+  --np-campo:#DCE5F3; --np-campo-borde:rgba(31,47,104,0.10);
+  --np-sombra:rgba(120,140,180,0.42); --np-luz:rgba(255,255,255,0.90);
+  --np-blanco:#FFFFFF; --np-borde-blanco:#C9D5E8; --np-azul:#1F4E8C;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='300' viewBox='0 0 260 300' fill='none' stroke='%239FB4D6' stroke-width='1.1' opacity='0.32'%3E%3Cpath d='M40 -10c20 90 70 170 150 250'/%3E%3Cpath d='M300 70 120 150c-12 6-12 20-2 28l150 90'/%3E%3Cpath d='M290 150 190 190l-40 70 130-30'/%3E%3C/svg%3E") no-repeat right top / 230px auto,
+    linear-gradient(170deg, var(--np-fondo-1) 0%, var(--np-fondo-2) 100%);
+  min-height:100vh;
+}
+body.modo-oscuro #screen-nuevo-prestamo{
+  --np-fondo-1:#141922; --np-fondo-2:#10141C;
+  --np-campo:#1B212C; --np-campo-borde:rgba(255,255,255,0.06);
+  --np-sombra:rgba(0,0,0,0.55); --np-luz:rgba(255,255,255,0.04);
+  --np-blanco:#222936; --np-borde-blanco:#34405A; --np-azul:#8FB4F2;
+  background:linear-gradient(170deg, var(--np-fondo-1) 0%, var(--np-fondo-2) 100%);
+}
+#screen-nuevo-prestamo .header{ background:transparent; border-bottom-color:transparent; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+#screen-nuevo-prestamo .field-label{ font-weight:500; }
+/* Cliente: píldora azul clara con avatar */
+#screen-nuevo-prestamo .loan-client-tag{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:5px 16px 5px 6px;
+  font-size:13.5px; font-weight:500; color:var(--text);
+  background:linear-gradient(180deg, #D3E6FB 0%, #BBD8F7 100%);
+  box-shadow:0 2px 6px rgba(90,140,210,0.28);
+}
+body.modo-oscuro #screen-nuevo-prestamo .loan-client-tag{ background:linear-gradient(180deg, #243A5C 0%, #1D304D 100%); box-shadow:none; }
+#screen-nuevo-prestamo .loan-client-tag::before{
+  content:''; width:26px; height:26px; border-radius:50%; flex-shrink:0;
+  background:#EAF2FC url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239AAAC2'%3E%3Ccircle cx='12' cy='9' r='4.2'/%3E%3Cpath d='M3.5 22a8.5 8.5 0 0 1 17 0z'/%3E%3C/svg%3E") no-repeat center 3px / 20px;
+}
+/* Campos de texto: hundidos */
+#screen-nuevo-prestamo .field-input:not(.field-select-trigger):not(.field-select){
+  background:var(--np-campo);
+  border:1px solid var(--np-campo-borde);
+  border-radius:12px;
+  box-shadow:inset 2px 2px 5px var(--np-sombra), inset -2px -2px 5px var(--np-luz);
+}
+#screen-nuevo-prestamo .field-input:not(.field-select-trigger):focus{ border-color:var(--np-azul); }
+/* CAMBIO: a pedido — los valores que se escriben/eligen van más negros,
+   más grandes y un poco más gruesos (el texto de ayuda sigue gris). */
+#screen-nuevo-prestamo{ --np-valor:#0A0F1A; }
+body.modo-oscuro #screen-nuevo-prestamo{ --np-valor:#FFFFFF; }
+#screen-nuevo-prestamo .field-input{ color:var(--np-valor); font-size:17px; font-weight:600; -webkit-text-fill-color:var(--np-valor); }
+#screen-nuevo-prestamo .field-input::placeholder{ font-size:15px; font-weight:400; color:var(--text-secondary); -webkit-text-fill-color:var(--text-secondary); }
+#screen-nuevo-prestamo .field-input:disabled, #screen-nuevo-prestamo .field-input[readonly]{ opacity:1; -webkit-text-fill-color:var(--np-valor); }
+#screen-nuevo-prestamo .field-textarea{ font-size:15.5px; font-weight:500; }
+#screen-nuevo-prestamo .field-suffix{ color:var(--np-valor); font-weight:600; }
+#screen-nuevo-prestamo .field-with-icon svg{ stroke:var(--text); opacity:0.75; }
+/* Selector y fecha: blancos, levantados */
+#screen-nuevo-prestamo .field-select-trigger,
+#screen-nuevo-prestamo .field-select{
+  background-color:var(--np-blanco);
+  border:1px solid var(--np-borde-blanco);
+  border-radius:12px;
+  box-shadow:0 1px 3px rgba(60,80,130,0.10);
+}
+#screen-nuevo-prestamo .swap-btn{
+  background:var(--np-campo); color:var(--np-azul);
+  border-radius:12px;
+  box-shadow:inset 1px 1px 3px var(--np-sombra), inset -1px -1px 3px var(--np-luz);
+}
+#screen-nuevo-prestamo .add-note-btn{
+  background:var(--np-blanco);
+  border:1.5px solid var(--np-azul);
+  border-radius:12px;
+  color:var(--np-azul);
+}
+#screen-nuevo-prestamo .toggle-switch.on{ background:linear-gradient(180deg, #2A5A9E 0%, #1B3F78 100%); }
+#screen-nuevo-prestamo .ver-simulacion-btn{ color:var(--text); font-weight:500; opacity:0.85; }
+#screen-nuevo-prestamo .btn-guardar-prestamo{
+  border-radius:12px;
+  padding-top:16px; padding-bottom:16px;
+  background:linear-gradient(180deg, #24468A 0%, #142B63 100%);
+  box-shadow:0 8px 16px rgba(20,43,99,0.35), inset 0 1px 0 rgba(255,255,255,0.22);
+  border:1px solid #10224F;
+}
+#screen-nuevo-prestamo .btn-guardar-prestamo:active{ transform:translateY(1px); box-shadow:0 3px 8px rgba(20,43,99,0.35); }
+
 .share-fab{
   position:fixed;
   bottom:26px;
@@ -2140,7 +2231,16 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
 .loan-card-full .loan-card-top > div:first-child{ min-width:0; flex:1; }
 .loan-card-full .loan-card-nombre-principal{ font-size:16.5px; font-weight:600; /* a pedido: menos peso (antes 800) */ letter-spacing:-0.2px; max-width:none; }
 .loan-card-full .loan-amount{ font-size:25px; font-weight:800; letter-spacing:-0.7px; margin:8px 0 0; }
-.loan-card-full .loan-num-credito{ margin-top:5px; }
+/* CAMBIO: a pedido — la píldora "Crédito N" queda en la misma línea del
+   valor del crédito (a la derecha, centrada con él). El encabezado pasa a
+   una cuadrícula de 2 columnas: nombre | estado, y valor | "Crédito N". */
+.loan-card-full .loan-card-top{ display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:10px; row-gap:0; align-items:center; }
+.loan-card-full .loan-card-top > div{ display:contents; }
+.loan-card-full .loan-card-nombre-principal{ grid-column:1; grid-row:1; min-width:0; }
+.loan-card-full .loan-badge{ grid-column:2; grid-row:1; justify-self:end; }
+.loan-card-full .loan-code{ grid-column:1 / 3; grid-row:2; }
+.loan-card-full .loan-amount{ grid-column:1; grid-row:3; min-width:0; }
+.loan-card-full .loan-num-credito{ grid-column:2; grid-row:3; justify-self:end; margin:8px 0 0; }
 /* CAMBIO: a pedido — píldora de estado más limpia y nítida: color sólido
    más profundo (mejor contraste con el blanco), sin sombras, y la palabra
    en mayúsculas, más gruesa y con aire entre letras para que resalte. */
@@ -2168,6 +2268,12 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
 .loan-card-full .loan-row .loan-row-value.loan-abonado{ color:#2F5FD0; }
 .loan-card-full .loan-progress-header{ font-size:13.5px; font-weight:500; padding-top:3px; margin-bottom:5px; }
 .loan-card-full .loan-progress-track{ height:9px; }
+/* CAMBIO: a pedido — la barra de progreso y su porcentaje usan el mismo
+   verde de la píldora ACTIVO (#12A150). En créditos finalizados la barra
+   sigue en gris, como antes. */
+.loan-card-full .loan-progress-fill{ background:#12A150; }
+.loan-card-full .loan-progress-porcentaje{ color:#12A150; }
+.loan-card-full.loan-card-finalizado .loan-progress-fill{ background:var(--text-secondary); }
 .loan-card-full .loan-note{
   margin-top:12px;
   padding:11px 13px;
@@ -2662,8 +2768,14 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
 /* Badge rojo "R" con el número de recargos por mora pagados, sobre la pestaña Pagos */
 .tab-recargo-badge{
   position:absolute;
-  top:4px;
-  right:6px;
+  /* CAMBIO: a pedido — antes iba DENTRO de la pestaña (top:4px; right:6px)
+     y tapaba el número de cuotas pagadas. Ahora se asoma por fuera, en la
+     esquina superior derecha, con un borde claro que la separa. */
+  top:-9px;
+  right:-5px;
+  box-shadow:0 0 0 2px var(--background);
+  white-space:nowrap;
+  z-index:1;
   background:var(--danger);
   color:#fff;
   font-size:11px;
@@ -2867,20 +2979,23 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
   position:fixed;
   bottom:26px;
   right:20px;
-  background:var(--success);
+  background:#04883D;
   color:#fff;
-  font-weight:600;
-  font-size:15px;
-  padding:14px 24px;
+  font-weight:800;
+  font-size:16.5px;
+  letter-spacing:.3px;
+  padding:13px 24px 13px 20px;
+  border:2px solid #025F2A;
   border-radius:var(--radius-full);
   display:flex;
   align-items:center;
-  gap:8px;
-  box-shadow:0 10px 22px rgba(34,165,89,0.35);
+  gap:9px;
+  box-shadow:0 10px 22px rgba(4,136,61,0.38), inset 0 1px 0 rgba(255,255,255,0.28);
+  text-shadow:0 1px 1px rgba(0,0,0,0.18);
   z-index:40;
   transition:transform .15s ease;
 }
-.pagar-fab svg{ width:19px; height:19px; stroke:currentColor; }
+.pagar-fab svg{ width:23px; height:23px; stroke:currentColor; stroke-width:2.4; filter:drop-shadow(0 1px 1px rgba(0,0,0,0.18)); }
 .pagar-fab:active{ transform:scale(0.94); }
 
 /* NUEVO: FAB "Agregar cliente" (pantalla Clientes) — mismo patrón que
@@ -7182,7 +7297,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <label class="field-label" for="input-cuotas-prestamo">Cuotas</label>
       <div class="field-with-icon">
         <input class="field-input" id="input-cuotas-prestamo" type="text" inputmode="numeric" placeholder="Toca y escribe" required>
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="6" rx="6" ry="2.6"></ellipse><path d="M3 6v4.2c0 1.4 2.7 2.6 6 2.6"></path><path d="M3 10.2v4.2c0 1.3 2.3 2.4 5.2 2.6"></path><path d="M15 6v2.4"></path><circle cx="17" cy="13.2" r="2.4"></circle><path d="M12.6 21v-.6a3.6 3.6 0 0 1 3.6-3.6h1.6a3.6 3.6 0 0 1 3.6 3.6v.6"></path></svg>
       </div>
     </div>
 
@@ -7316,7 +7431,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
          del comprobante (mismo id y mismo manejador de siempre), a la
          izquierda de "Más opciones", justo encima de las cuotas. -->
     <div style="display:flex; flex-direction:row-reverse; align-items:center; justify-content:space-between; gap:10px; margin:0 0 14px;"><!-- CAMBIO: a pedido — "Más opciones" a la izquierda y "Saldo pendiente" a la derecha (row-reverse) -->
-      <div class="acceso-saldo-comprobante" id="acceso-saldo-comprobante">
+      <!-- CAMBIO: a pedido — este acceso rápido queda oculto (no se borra, para no romper sus manejadores): "Saldo pendiente" se decide ahora en cada abono, desde Agregar Abono. -->
+      <div class="acceso-saldo-comprobante" id="acceso-saldo-comprobante" style="display:none;">
         <div class="acceso-saldo-texto">
           <div class="acceso-saldo-titulo">Saldo pendiente</div>
           <div class="acceso-saldo-sub">Mostrar en el comprobante</div>
@@ -7536,6 +7652,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <div class="form-field sin-margen" id="campo-nota-abono" style="display:none;">
         <label class="field-label" for="input-nota-abono">Nota</label>
         <textarea class="field-input field-textarea" id="input-nota-abono" rows="2"></textarea>
+      </div>
+
+      <hr class="loan-divider">
+
+      <!-- NUEVO: a pedido — "Saldo pendiente" en el comprobante de ESTE abono.
+           Arranca apagado cada vez que se abre esta pantalla (ver
+           abrirAgregarAbono) y solo se incluye si se activa aquí. -->
+      <div class="mora-toggle-row sin-margen">
+        <div class="mora-toggle-text">
+          <div class="mora-toggle-title">Saldo pendiente</div>
+          <div class="mora-toggle-subtitle">Incluirlo en el comprobante de este abono</div>
+        </div>
+        <button type="button" class="toggle-switch" id="toggle-saldo-abono" role="switch" aria-checked="false" aria-label="Incluir el saldo pendiente en el comprobante de este abono"></button>
       </div>
 
       <hr class="loan-divider">
@@ -19367,11 +19496,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <div>
           <div class="loan-card-nombre-principal">${clienteTarjeta ? escaparHtml(clienteTarjeta.nombre) : 'Cliente eliminado'}</div>
           <div class="loan-code">${prestamo.codigo || ''}</div>
-          ${etiquetaNumeroCredito ? `<span class="loan-num-credito">${etiquetaNumeroCredito}</span>` : ''}
           <div class="loan-amount">${formatearPesos(prestamo.valor)}</div>
         </div>
         <div class="loan-card-top-derecha">
           <div class="loan-badge ${estadoVisual}">${etiquetaEstadoVisual(estadoVisual)}</div>
+          <!-- CAMBIO: a pedido — la píldora "Crédito N" va ahora justo debajo de la píldora de estado (antes bajo el nombre). -->
+          ${etiquetaNumeroCredito ? `<span class="loan-num-credito">${etiquetaNumeroCredito}</span>` : ''}
           <!-- CAMBIO: a pedido — se retiró el ícono del reloj (recordatorio) de esta tarjeta. -->
         </div>
       </div>
@@ -20535,6 +20665,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       alert('Este préstamo ya no tiene cuotas pendientes.');
       return;
     }
+
+    // NUEVO: a pedido — "Saldo pendiente" arranca SIEMPRE apagado en cada
+    // abono; solo sale en el comprobante si se activa en esta pantalla.
+    guardarReciboSaldo(false);
+    sincronizarTogglesSaldoComprobante();
 
     indiceCuotaAbono = numeroCuotaPreseleccionada
       ? Math.max(cuotasPendientesAbono.findIndex(c => c.numero === numeroCuotaPreseleccionada), 0)
@@ -22173,6 +22308,24 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     try{ localStorage.setItem(RECIBO_SALDO_KEY, activo ? '1' : '0'); }
     catch(err){ reciboSaldoEnMemoria = activo; }
   }
+  // NUEVO: deja todos los interruptores de "Saldo pendiente" mostrando el
+  // mismo estado (Agregar Abono, Detalle del Pago y el de Detalle del
+  // Préstamo, que quedó oculto).
+  function sincronizarTogglesSaldoComprobante(){
+    const activo = mostrarReciboSaldo();
+    const toggleAbono = document.getElementById('toggle-saldo-abono');
+    if(toggleAbono){
+      toggleAbono.classList.toggle('on', activo);
+      toggleAbono.classList.toggle('toggle-verde', activo);
+      toggleAbono.setAttribute('aria-checked', String(activo));
+    }
+    if(typeof aplicarTogglesRecibo === 'function'){ try{ aplicarTogglesRecibo(); }catch(err){} }
+    if(typeof aplicarTogglesComprobanteDesdePrestamo === 'function'){ try{ aplicarTogglesComprobanteDesdePrestamo(); }catch(err){} }
+  }
+  document.getElementById('toggle-saldo-abono').addEventListener('click', ()=>{
+    guardarReciboSaldo(!mostrarReciboSaldo());
+    sincronizarTogglesSaldoComprobante();
+  });
   function guardarReciboProximo(activo){
     try{ localStorage.setItem(RECIBO_PROXIMO_KEY, activo ? '1' : '0'); }
     catch(err){ reciboProximoEnMemoria = activo; }
