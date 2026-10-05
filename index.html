@@ -1757,6 +1757,18 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
   transition:transform .12s ease;
 }
 .cuota-vencida-card:active{ transform:scale(0.98); }
+/* NUEVO: a pedido, con imagen de referencia — tinte rojo claro, borde
+   rosado y pestaña roja a la izquierda, igual que las tarjetas de los
+   clientes en mora. El tinte es fijo también en modo oscuro, por eso se
+   fijan aquí los colores de texto. */
+.card.cuota-vencida-card{
+  background:#FDECEC;
+  border:1.5px solid #EFB4B4;
+  border-left:6px solid #E0111F;
+  --text:#18202F; --text-secondary:#5A6880;
+}
+.cuota-vencida-card .cuota-vencida-dato:last-child{ color:#C62828; font-weight:700; }
+.cuota-vencida-card .trailing.chevron svg{ stroke:#B8474F; }
 .cuota-vencida-avatar{
   width:48px;
   height:48px;
@@ -16936,22 +16948,77 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const selloAncho = anchoTexto + padX * 2;
     const selloAlto = altoTextoTotal + padY * 2;
 
-    ctx.strokeStyle = '#E0111F';
-    ctx.lineWidth = 3.4;
-    trazarRectRedondeado(ctx, -selloAncho / 2, -selloAlto / 2, selloAncho, selloAlto, 6);
-    ctx.stroke();
-    // marco doble, como un timbre de verdad
-    trazarRectRedondeado(ctx, -selloAncho / 2 + 5, -selloAlto / 2 + 5, selloAncho - 10, selloAlto - 10, 3.5);
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
+    // CAMBIO (a pedido): tinta ligeramente desgastada, muy sutil, para que
+    // parezca un sello real. El timbre se dibuja primero en un lienzo
+    // aparte, ahí se le "quita" un poco de tinta (motas diminutas, un par
+    // de roces y zonas con menos carga) y luego se estampa sobre el
+    // comprobante. El desgaste usa una semilla fija: siempre sale igual.
+    const ESCALA_SELLO = 3, MARGEN_SELLO = 8;
+    const anchoLienzo = selloAncho + MARGEN_SELLO * 2, altoLienzo = selloAlto + MARGEN_SELLO * 2;
+    const lienzoSello = document.createElement('canvas');
+    lienzoSello.width = Math.ceil(anchoLienzo * ESCALA_SELLO);
+    lienzoSello.height = Math.ceil(altoLienzo * ESCALA_SELLO);
+    const cs = lienzoSello.getContext('2d');
+    cs.scale(ESCALA_SELLO, ESCALA_SELLO);
+    cs.translate(anchoLienzo / 2, altoLienzo / 2);
+    cs.lineJoin = 'round';
+    cs.font = ctx.font;
 
-    ctx.fillStyle = '#E0111F';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(lineaUno, 0, -(altoLinea + espacioEntreLineas) / 2 + 1);
-    ctx.fillText(lineaDos, 0, (altoLinea + espacioEntreLineas) / 2 + 1);
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
+    cs.strokeStyle = '#E0111F';
+    cs.lineWidth = 3.4;
+    trazarRectRedondeado(cs, -selloAncho / 2, -selloAlto / 2, selloAncho, selloAlto, 6);
+    cs.stroke();
+    // marco doble, como un timbre de verdad
+    trazarRectRedondeado(cs, -selloAncho / 2 + 5, -selloAlto / 2 + 5, selloAncho - 10, selloAlto - 10, 3.5);
+    cs.lineWidth = 1.5;
+    cs.stroke();
+
+    cs.fillStyle = '#E0111F';
+    cs.textAlign = 'center';
+    cs.textBaseline = 'middle';
+    cs.fillText(lineaUno, 0, -(altoLinea + espacioEntreLineas) / 2 + 1);
+    cs.fillText(lineaDos, 0, (altoLinea + espacioEntreLineas) / 2 + 1);
+
+    // --- desgaste de la tinta ---
+    let semilla = 20261005;
+    const azar = ()=>{ semilla = (semilla + 0x6D2B79F5) | 0; let t = Math.imul(semilla ^ (semilla >>> 15), 1 | semilla); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    cs.globalCompositeOperation = 'destination-out';
+    // zonas con un poco menos de tinta (presión despareja del timbre)
+    [[-0.30, 0.28, 0.42, 0.20], [0.34, -0.26, 0.36, 0.16], [0.05, 0.05, 0.30, 0.08]].forEach(z=>{
+      const zx = z[0] * selloAncho, zy = z[1] * selloAlto, zr = z[2] * selloAncho;
+      const g = cs.createRadialGradient(zx, zy, 0, zx, zy, zr);
+      g.addColorStop(0, 'rgba(0,0,0,' + z[3] + ')');
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      cs.fillStyle = g;
+      cs.fillRect(-anchoLienzo / 2, -altoLienzo / 2, anchoLienzo, altoLienzo);
+    });
+    // motas diminutas donde la tinta no agarró
+    for(let n = 0; n < 420; n++){
+      const mx = (azar() - 0.5) * anchoLienzo, my = (azar() - 0.5) * altoLienzo;
+      const mr = 0.25 + azar() * azar() * 1.15;
+      cs.globalAlpha = 0.45 + azar() * 0.55;
+      cs.fillStyle = '#000';
+      cs.beginPath();
+      cs.arc(mx, my, mr, 0, Math.PI * 2);
+      cs.fill();
+    }
+    // un par de roces muy finos
+    cs.lineCap = 'round';
+    for(let n = 0; n < 5; n++){
+      const rx = (azar() - 0.5) * selloAncho, ry = (azar() - 0.5) * selloAlto;
+      const largo = 10 + azar() * 22, ang = -0.5 + azar() * 0.35;
+      cs.globalAlpha = 0.30 + azar() * 0.25;
+      cs.strokeStyle = '#000';
+      cs.lineWidth = 0.5 + azar() * 0.5;
+      cs.beginPath();
+      cs.moveTo(rx, ry);
+      cs.lineTo(rx + Math.cos(ang) * largo, ry + Math.sin(ang) * largo);
+      cs.stroke();
+    }
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(lienzoSello, -anchoLienzo / 2, -altoLienzo / 2, anchoLienzo, altoLienzo);
     ctx.restore();
   }
 
@@ -19882,7 +19949,14 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       vacio.textContent = filtroEstadoHistorialCreditos === 'activo' ? 'No hay créditos activos' : 'No hay créditos en el historial';
       listaContenedor.appendChild(vacio);
     }else{
-      prestamosFiltrados.slice().reverse().forEach(prestamo=>{
+      // CAMBIO (a pedido): los créditos ACTIVOS se listan del más antiguo
+      // al más reciente (Crédito 1 arriba, luego Crédito 2, Crédito 3…),
+      // con el mismo orden que usa numeroCreditoCliente para numerarlos.
+      // El Historial conserva su orden: el más reciente primero.
+      const prestamosOrdenados = filtroEstadoHistorialCreditos === 'activo'
+        ? prestamosFiltrados.slice().sort((a, b)=> (a.fecha || '').localeCompare(b.fecha || '') || (a.id - b.id))
+        : prestamosFiltrados.slice().reverse();
+      prestamosOrdenados.forEach(prestamo=>{
         const card = crearTarjetaPrestamo(prestamo);
         card.classList.add('loan-card-clickable');
         card.addEventListener('click', ()=> abrirDetallePrestamo(prestamo));
@@ -21841,7 +21915,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // CORREGIDO: a pedido — "Cuota" ya no comparte ícono con "Concepto" ni
     // con "Monto del préstamo" (los 3 usaban 'documento'). Ver 'numero' y
     // 'billete', arriba en dibujarIconoComprobante().
-    if(etiqueta === 'Cuota' || etiqueta === 'N.° de cuotas') return 'numero';
+    if(etiqueta === 'Cuota' || etiqueta === 'N.° de cuotas' || etiqueta === 'Crédito') return 'numero';
     if(etiqueta === 'Monto del préstamo') return 'billete';
     if(etiqueta === 'Referente a' || etiqueta === 'Recargo por la' || etiqueta === 'Concepto') return 'documento';
     if(etiqueta === 'Valor de la cuota' || etiqueta === 'Valor del préstamo' || etiqueta === 'Saldo pendiente') return 'valor';
@@ -21963,6 +22037,27 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // que "Fecha próximo pago": si está activo, se agrega al final,
     // emparejándose con "Modalidad de pago" (que hasta ahora quedaba
     // sola en su propia fila).
+    // NUEVO: a pedido — cuando el cliente tiene más de un crédito, el
+    // comprobante dice a cuál pertenece el pago ("3 de 6 · Crédito #2"),
+    // con el mismo número de la píldora "Crédito N" de la tarjeta. Si la
+    // fila Cuota está oculta, va junto al Concepto o en su propia fila.
+    const numeroCreditoRecibo = (function(){
+      const n = numeroCreditoCliente(prestamo);
+      if(n) return n;
+      // crédito que ya no está activo (ej. se finalizó con este mismo
+      // pago): se ubica por fecha entre los activos del cliente
+      const grupo = prestamosGuardados
+        .filter(p => p.clienteId === prestamo.clienteId && (p.estado === 'activo' || p.id === prestamo.id))
+        .sort((a, b)=> (a.fecha || '').localeCompare(b.fecha || '') || (a.id - b.id));
+      if(grupo.length < 2) return null;
+      return grupo.findIndex(p => p.id === prestamo.id) + 1;
+    })();
+    if(numeroCreditoRecibo){
+      const textoCredito = 'Crédito #' + numeroCreditoRecibo;
+      const filaDestino = filas.find(f => f && f[0] === 'Cuota') || filas.find(f => f && f[0] === 'Concepto');
+      if(filaDestino) filaDestino[1] = filaDestino[1] + ' · ' + textoCredito;
+      else filas.splice(1, 0, ['Crédito', '#' + numeroCreditoRecibo]);
+    }
     // NUEVO: a pedido — fila "Descuento aplicado": lo descontado a las
     // cuotas que cubre este pago; si con este pago el crédito quedó
     // finalizado, el total descontado del crédito. Solo se muestra.
