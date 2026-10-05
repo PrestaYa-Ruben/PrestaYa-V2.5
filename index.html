@@ -2896,6 +2896,17 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
 .pago-item:last-child{ margin-bottom:0; }
 .pago-item.recargo{ background:#FDECEC; border-color:#EFB4B4; }
 .pago-item.abono{ background:#EAF0FF; border-color:#A8C2FF; }
+/* NUEVO: a pedido — los descuentos se ven en Pagadas y en cada cuota */
+.pago-item.descuento{ background:#F3EEFD; border-color:#CDBBF3; --text:#18202F; --text-secondary:#5A6880; }
+.cuota-numero.descuento{ border-color:#7C4DDB; color:#7C4DDB; }
+.pago-meta .descuento-label{ color:#7C4DDB; font-weight:600; }
+.cuota-descuento-tag{
+  display:inline-flex; align-items:center; gap:4px; margin-top:4px; white-space:nowrap;
+  font-size:11.5px; font-weight:700; color:#6A3FCB;
+  background:#EFE8FC; border:1px solid #CDBBF3; border-radius:999px; padding:2px 8px;
+}
+.cuota-descuento-tag svg{ width:11px; height:11px; stroke:currentColor; }
+.loan-row-value.loan-descuento{ color:#7C4DDB; }
 .pago-item-clickable{ cursor:pointer; transition:opacity .12s ease; }
 .pago-item-clickable:active{ opacity:0.7; }
 
@@ -7608,6 +7619,15 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <button type="button" class="toggle-switch" id="toggle-comprobante-metodo" role="switch" aria-checked="false" aria-label="Mostrar método de pago en el comprobante"></button>
       </div>
       <hr class="loan-divider" style="margin:14px 0;">
+      <!-- NUEVO: a pedido — interruptor "Descuento aplicado" -->
+      <div class="mora-toggle-row" style="padding:0;">
+        <div class="mora-toggle-text">
+          <div class="mora-toggle-title">Descuento aplicado</div>
+          <div class="mora-toggle-subtitle">Muestra el descuento cuando la cuota pagada lo tuvo</div>
+        </div>
+        <button type="button" class="toggle-switch" id="toggle-comprobante-descuento" role="switch" aria-checked="false" aria-label="Mostrar descuento aplicado en el comprobante"></button>
+      </div>
+      <hr class="loan-divider" style="margin:14px 0;">
       <div class="mora-toggle-row" style="padding:0;">
         <div class="mora-toggle-text">
           <div class="mora-toggle-title">Puntualidad del pago</div>
@@ -12150,6 +12170,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     'prestapp_tamano_texto',
     'prestapp_recibo_color_encabezado',
     'prestapp_recibo_mostrar_metodo',
+    'prestapp_recibo_mostrar_descuento',
     'prestapp_recibo_mostrar_cuota',
     'prestapp_mostrar_codigo_credito',
     'prestapp_ocultar_codigo_recibo',
@@ -18353,6 +18374,32 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   function totalDescontadoPrestamo(prestamo){
     return descuentosDe(prestamo).reduce((s, d) => s + (d.monto || 0), 0);
   }
+  // NUEVO (solo lectura, para mostrar): cuánto se le descontó a UNA cuota.
+  // Los descuentos nuevos guardan el reparto en d.cuotas [{cuota,monto}];
+  // los antiguos solo tenían d.cuota con el monto completo.
+  function descuentoDeCuota(prestamo, numeroCuota){
+    return descuentosDe(prestamo).reduce((suma, d)=>{
+      if(Array.isArray(d.cuotas) && d.cuotas.length){
+        return suma + d.cuotas.filter(x => x.cuota === numeroCuota).reduce((s2, x) => s2 + (x.monto || 0), 0);
+      }
+      return suma + (d.cuota === numeroCuota ? (d.monto || 0) : 0);
+    }, 0);
+  }
+  function cuotasDeDescuento(d){
+    if(Array.isArray(d.cuotas) && d.cuotas.length) return d.cuotas.map(x => x.cuota).sort((a, b) => a - b);
+    return d.cuota != null ? [d.cuota] : [];
+  }
+  // Interruptor "Descuento aplicado" del comprobante (activo por defecto)
+  const RECIBO_MOSTRAR_DESCUENTO_KEY = 'prestapp_recibo_mostrar_descuento';
+  let reciboMostrarDescuentoEnMemoria = true;
+  function mostrarReciboDescuento(){
+    try{ return localStorage.getItem(RECIBO_MOSTRAR_DESCUENTO_KEY) !== '0'; }
+    catch(err){ return reciboMostrarDescuentoEnMemoria; }
+  }
+  function guardarReciboDescuento(activo){
+    try{ localStorage.setItem(RECIBO_MOSTRAR_DESCUENTO_KEY, activo ? '1' : '0'); }
+    catch(err){ reciboMostrarDescuentoEnMemoria = activo; }
+  }
 
   // NUEVO — mini-gráfico de tendencia del "Valor total del negocio": misma
   // fórmula que calcularCentroFinanciero (caja + cartera), pero reconstruida
@@ -19646,6 +19693,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <span class="loan-row-label">Total abonado:</span>
         <span class="loan-row-value loan-abonado">${formatearPesos(totalAbonado)}</span>
       </div>
+      ${totalDescontadoPrestamo(prestamo) > 0 ? `
+      <div class="loan-row">
+        <span class="loan-row-label">Descuentos aplicados:</span>
+        <span class="loan-row-value loan-descuento">−${formatearPesos(totalDescontadoPrestamo(prestamo))}</span>
+      </div>` : ''}
       <div class="loan-row">
         <span class="loan-row-label">Saldo pendiente:</span>
         <span class="loan-row-value loan-saldo">${formatearPesos(saldo)}</span>
@@ -20205,6 +20257,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <div class="cuota-fecha">Vence: ${formatearFechaCorta(new Date(cuota.fechaISO))}</div>
         ${fechaDePago ? `<div class="cuota-fecha cuota-fecha-pago">Pago: ${formatearFechaCorta(new Date(fechaDePago))}</div>` : ''}
         ${puntualidadHtml}
+        ${descuentoDeCuota(prestamo, cuota.numero) > 0 ? `<div class="cuota-descuento-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>Descuento −${formatearPesos(descuentoDeCuota(prestamo, cuota.numero))}</div>` : ''}
         ${esAbonada ? `<div class="cuota-dias-atraso abonada">Abonado ${formatearPesos(abonadoParcial)} de ${formatearPesos(cuota.total)}</div><div class="cuota-saldo-parcial">Saldo: ${formatearPesos(cuota.total - abonadoParcial)}</div>` : ''}
       </div>
       <div class="cuota-estado-col">
@@ -20269,12 +20322,35 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // se ordena por la fecha real en que se pagó cada uno.
     const pagos = pagosDe(prestamo).slice().sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
 
-    if(pagos.length === 0){
+    // NUEVO: a pedido — los descuentos aplicados también se listan aquí,
+    // mezclados por fecha con los pagos (solo se muestran; no son pagos ni
+    // cuentan en el contador de la pestaña).
+    const descuentosLista = descuentosDe(prestamo).map(d => Object.assign({ esDescuento:true }, d));
+    const movimientos = pagos.concat(descuentosLista).sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+
+    if(movimientos.length === 0){
       pagosLista.innerHTML = '<div class="lista-vacia-mensaje">Aún no hay pagos registrados</div>';
       return;
     }
 
-    pagos.forEach(pago=>{
+    movimientos.forEach(pago=>{
+      if(pago.esDescuento){
+        const nums = cuotasDeDescuento(pago);
+        const textoCuotas = nums.length === 0 ? '' : (nums.length === 1 ? 'Cuota ' + nums[0] : (nums.length === 2 ? 'Cuotas ' + nums[0] + ' y ' + nums[1] : 'Cuotas ' + nums[0] + ' a ' + nums[nums.length - 1]));
+        const itemD = document.createElement('div');
+        itemD.className = 'pago-item descuento';
+        itemD.innerHTML = `
+          <div class="cuota-numero descuento">D</div>
+          <div class="cuota-info">
+            <div class="pago-monto">−${formatearPesos(pago.monto || 0)}</div>
+            <div class="pago-meta"><span class="descuento-label">Descuento</span> · Aplicado el ${formatearFechaCorta(new Date(pago.fecha))}</div>
+            ${textoCuotas ? `<div class="pago-desglose">${textoCuotas} · No entra a caja</div>` : ''}
+            ${pago.motivo ? `<div class="pago-nota"></div>` : ''}
+          </div>`;
+        if(pago.motivo) itemD.querySelector('.pago-nota').textContent = pago.motivo;
+        pagosLista.appendChild(itemD);
+        return;
+      }
       const cuotaPlan = (prestamo.plan || []).find(c => c.numero === pago.cuota);
       const esRecargoMora = pago.aplicarA === 'mora';
       const esAbono = pago.aplicarA === 'abono';
@@ -21771,6 +21847,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(etiqueta === 'Valor de la cuota' || etiqueta === 'Valor del préstamo' || etiqueta === 'Saldo pendiente') return 'valor';
     if(etiqueta === 'Abono realizado' || etiqueta === 'Valor abonado') return 'billetera';
     if(etiqueta === 'Método de pago') return 'tarjeta';
+    if(etiqueta === 'Descuento aplicado') return 'valor';
     if(etiqueta === 'Modalidad de pago') return 'repetir'; // CORREGIDO: antes 'modalidad', dibujaba lo mismo que 'calendario'
     if(etiqueta === 'Estado') return 'estado';
     return 'documento';
@@ -21886,6 +21963,15 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // que "Fecha próximo pago": si está activo, se agrega al final,
     // emparejándose con "Modalidad de pago" (que hasta ahora quedaba
     // sola en su propia fila).
+    // NUEVO: a pedido — fila "Descuento aplicado": lo descontado a las
+    // cuotas que cubre este pago; si con este pago el crédito quedó
+    // finalizado, el total descontado del crédito. Solo se muestra.
+    if(mostrarReciboDescuento() && !esRecargoMora){
+      const cuotasDelPago = Array.from(new Set(pagosCuota.map(p => p.cuota)));
+      let descuentoRecibo = cuotasDelPago.reduce((suma, n) => suma + descuentoDeCuota(prestamo, n), 0);
+      if(prestamo.estado === 'finalizado') descuentoRecibo = totalDescontadoPrestamo(prestamo);
+      if(descuentoRecibo > 0) filas.push(['Descuento aplicado', '− ' + formatearPesos(descuentoRecibo)]);
+    }
     const ocultarSaldoYProximo = !!(opciones && opciones.ocultarSaldoYProximo);
     if(mostrarReciboSaldo() && !ocultarSaldoYProximo){
       filas.push(['Saldo pendiente', formatearPesos(saldoPendientePrestamo(prestamo))]);
@@ -23265,6 +23351,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     toggleMetodo.classList.toggle('on', metodo);
     toggleMetodo.classList.toggle('toggle-verde', metodo);
     toggleMetodo.setAttribute('aria-checked', String(metodo));
+    const descuento = mostrarReciboDescuento();
+    const toggleDescuento = document.getElementById('toggle-comprobante-descuento');
+    toggleDescuento.classList.toggle('on', descuento);
+    toggleDescuento.classList.toggle('toggle-verde', descuento);
+    toggleDescuento.setAttribute('aria-checked', String(descuento));
   }
   // NUEVO: píldora "Más opciones" — abre/cierra la tarjeta de
   // interruptores del comprobante, mismo patrón fluido ya usado y
@@ -23309,6 +23400,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     aplicarTogglesComprobanteDesdePrestamo();
     if(typeof marcarTogglesCamposRecibo === 'function') marcarTogglesCamposRecibo();
     if(typeof aplicarTogglesRecibo === 'function') aplicarTogglesRecibo();
+  });
+  document.getElementById('toggle-comprobante-descuento').addEventListener('click', ()=>{
+    guardarReciboDescuento(!mostrarReciboDescuento());
+    aplicarTogglesComprobanteDesdePrestamo();
   });
   document.getElementById('toggle-comprobante-puntualidad').addEventListener('click', ()=>{
     guardarReciboPuntualidad(!mostrarReciboPuntualidad());
