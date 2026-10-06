@@ -2135,6 +2135,33 @@ body.modo-oscuro #screen-nuevo-prestamo .np-cliente-avatar{ background:#2B3442; 
    ========================================================== */
 #screen-comparativas-ganancias{ --cg-azul:#2563EB; --cg-azul-suave:#A9C1F7; --cg-verde:#12A150; --cg-rojo:#DC2626; }
 body.modo-oscuro #screen-comparativas-ganancias{ --cg-azul:#5B8DF7; --cg-azul-suave:#34507F; }
+/* CAMBIO (a pedido): textos secundarios más visibles — gris más oscuro
+   (más claro en modo oscuro), un punto más grandes y con algo más de peso. */
+#screen-comparativas-ganancias{ --text-secondary:#3A4557; }
+body.modo-oscuro #screen-comparativas-ganancias{ --text-secondary:#C9D2DF; }
+#screen-comparativas-ganancias .cg-intro-sub{ font-size:13px; font-weight:500; }
+#screen-comparativas-ganancias .cg-kpi-sub{ font-size:12.5px; font-weight:500; }
+#screen-comparativas-ganancias .cg-kpi-pie{ font-size:12.5px; font-weight:500; }
+#screen-comparativas-ganancias .cg-ejes span{ font-size:10.5px; font-weight:600; }
+#screen-comparativas-ganancias .cg-leyenda{ font-size:12px; font-weight:500; }
+#screen-comparativas-ganancias .cg-desliza{ font-size:11.5px; font-weight:500; }
+#screen-comparativas-ganancias .cg-fila-nombre small{ font-size:12px; font-weight:500; color:var(--text-secondary); }
+#screen-comparativas-ganancias .cg-fila-vs{ font-size:12.5px; font-weight:500; }
+#screen-comparativas-ganancias .cg-tendencia-texto{ font-size:13px; font-weight:500; }
+#screen-comparativas-ganancias .cg-nota{ font-size:11.5px; font-weight:500; }
+#screen-comparativas-ganancias .cg-var.neutro{ color:var(--text-secondary); }
+/* CAMBIO (a pedido): las 3 tarjetas (ganancia, anterior, diferencia) van
+   en una sola fila; se compactan textos y el valor se ajusta al ancho. */
+#screen-comparativas-ganancias .cg-tarjetas{ grid-template-columns:repeat(3, minmax(0,1fr)); gap:6px; }
+#screen-comparativas-ganancias .cg-kpi{ padding:9px 8px; display:flex; flex-direction:column; }
+#screen-comparativas-ganancias .cg-kpi.actual{ grid-column:auto; }
+#screen-comparativas-ganancias .cg-kpi-titulo{ font-size:11.5px; line-height:1.2; min-height:28px; }
+#screen-comparativas-ganancias .cg-kpi-sub{ font-size:11px; }
+#screen-comparativas-ganancias .cg-kpi-valor,
+#screen-comparativas-ganancias .cg-kpi.actual .cg-kpi-valor{ font-size:16px; margin-top:5px; letter-spacing:-0.2px; }
+#screen-comparativas-ganancias .cg-kpi-pie{ margin-top:5px; gap:4px; }
+#screen-comparativas-ganancias .cg-kpi-pie .cg-var{ font-size:11.5px; padding:2px 6px; }
+#screen-comparativas-ganancias #cg-actual-vs{ display:none; }
 .cg-cuerpo{ padding:14px 14px 30px; display:flex; flex-direction:column; gap:14px; }
 .cg-card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; box-shadow:0 2px 8px rgba(20,30,60,0.05); }
 .cg-intro{ display:flex; gap:12px; align-items:flex-start; }
@@ -2884,7 +2911,7 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
   transition:transform .15s ease;
 }
 .btn-accion-prestamo:active{ transform:scale(0.96); }
-.btn-accion-prestamo.editar{ background:#D9534F; color:#fff; }
+.btn-accion-prestamo.editar{ background:#FFD102; color:#1F1A00; border:2px solid #C79A00; } /* CAMBIO (a pedido): antes rojo #D9534F con texto blanco — ahora amarillo con borde remarcado; el texto pasa a oscuro porque el blanco no se lee sobre amarillo */
 .btn-accion-prestamo.cronograma{ background:#4CA564; color:#fff; }
 /* CAMBIO: a pedido — borde gris suave (antes azul intenso) */
 .btn-accion-prestamo.historial{ background:var(--surface); color:var(--text); border:1.5px solid #C9CED6; }
@@ -3091,6 +3118,11 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
 #screen-detalle-prestamo .pago-item .pago-meta{ font-size:14px; font-weight:500; line-height:1.35; }
 #screen-detalle-prestamo .pago-item .pago-desglose{ font-size:13px; font-weight:500; opacity:1; margin-top:3px; line-height:1.35; }
 #screen-detalle-prestamo .pago-item .pago-nota{ font-size:13.5px; margin-top:4px; }
+/* CAMBIO (a pedido): Capital en azul e Interés en ámbar — los mismos
+   colores de las tarjetas "Capital Cobrado" e "Interés Cobrado" de Inicio. */
+.pago-desglose-capital{ color:#1D4ED8; font-weight:700; white-space:nowrap; }
+.pago-desglose:has(.pago-desglose-capital){ display:flex; flex-wrap:wrap; column-gap:12px; row-gap:1px; }
+.pago-desglose-interes{ color:#B45309; font-weight:700; white-space:nowrap; }
 #screen-detalle-prestamo .pago-item .cuota-numero{ font-weight:700; }
 /* CAMBIO (a pedido): los 3 puntitos de las tarjetas Pagadas con un
    aspecto más moderno — cuadrado blanco de esquinas redondeadas, borde
@@ -4562,13 +4594,20 @@ body.modo-oscuro{ --resumen-pactado:#60A5FA; }
    Todo va con el prefijo del modal, así no cambia Corte de Caja ni
    ningún otro lugar que use .cc-resumen-fila. */
 #resumen-activos-cliente-overlay .confirm-modal-card{ max-width:320px; padding:18px 18px 16px; }
-#resumen-activos-cliente-overlay .confirm-modal-title{ font-size:15.5px; font-weight:600; }
-#resumen-activos-cliente-sub{ font-size:12px !important; margin-bottom:8px !important; }
-#resumen-activos-cliente-overlay .cc-resumen-fila{ padding:6px 0; }
-#resumen-activos-cliente-overlay .cc-resumen-label{ font-size:12.5px; font-weight:400; }
-#resumen-activos-cliente-overlay .cc-resumen-valor{ font-size:13px; font-weight:500; }
+/* CAMBIO (a pedido): texto del modal más visible — etiquetas en el
+   color principal (antes gris claro y delgadas), valores más grandes y
+   en negrita, título y subtítulo con más peso. */
+#resumen-activos-cliente-overlay .confirm-modal-title{ font-size:17px; font-weight:700; color:var(--text); }
+#resumen-activos-cliente-sub{ font-size:13px !important; margin-bottom:10px !important; color:var(--text) !important; font-weight:500; opacity:.85; }
+#resumen-activos-cliente-overlay .cc-resumen-fila{ padding:7px 0; }
+#resumen-activos-cliente-overlay .cc-resumen-label{ font-size:13.5px; font-weight:500; color:var(--text); }
+#resumen-activos-cliente-overlay .cc-resumen-valor{ font-size:14.5px; font-weight:700; }
+#resumen-activos-cliente-filas > div:last-child > div:last-child{ font-size:12.5px !important; color:var(--text) !important; font-weight:600; }
+#resumen-activos-cliente-nota{ color:var(--text) !important; font-size:13px !important; }
+/* verdes, naranjas y azules más intensos sobre el fondo blanco del modal */
+body:not(.modo-oscuro) #resumen-activos-cliente-overlay{ --success:#0B8F45; --warning:#C76A00; --resumen-pactado:#1D4ED8; }
 #resumen-activos-cliente-overlay .loan-progress-track{ height:6px; }
-#btn-cerrar-resumen-activos-cliente{ margin-top:12px !important; padding:10px; font-size:13.5px; font-weight:500; }
+#btn-cerrar-resumen-activos-cliente{ margin-top:12px !important; padding:10px; font-size:14px; font-weight:600; }
 .gs-admin-cat-fila{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-top:1px solid var(--border); }
 .gs-admin-cat-fila:first-child{ border-top:none; }
 .gs-admin-cat-nombre{ font-size:14px; font-weight:600; color:var(--text); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -9678,7 +9717,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         </div>
         <div class="cg-kpi diferencia">
           <div class="cg-kpi-titulo">Diferencia</div>
-          <div class="cg-kpi-sub">Actual − anterior</div>
+          <div class="cg-kpi-sub">vs. anterior</div>
           <div class="cg-kpi-valor" id="cg-diferencia-valor">$0</div>
         </div>
       </div>
@@ -19467,6 +19506,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const elDif = document.getElementById('cg-diferencia-valor');
     elDif.textContent = (diferencia > 0 ? '+' : (diferencia < 0 ? '−' : '')) + formatearPesos(Math.abs(diferencia));
     elDif.style.color = diferencia > 0 ? 'var(--cg-verde)' : (diferencia < 0 ? 'var(--cg-rojo)' : '');
+    // Las 3 tarjetas van en fila: el tamaño del valor baja si el número es largo
+    ['cg-actual-valor', 'cg-anterior-valor', 'cg-diferencia-valor'].forEach(id=>{
+      const el = document.getElementById(id), largo = el.textContent.length;
+      el.style.fontSize = largo <= 8 ? '' : (largo <= 10 ? '14px' : (largo <= 11 ? '12.5px' : '11.5px'));
+    });
 
     // ----- Gráfico: los 6 periodos que terminan en el elegido -----
     // `serie` (6 periodos que terminan en el elegido) se sigue usando para la Tendencia.
@@ -20919,7 +20963,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <div class="cuota-info">
           <div class="pago-monto">${formatearPesos(pago.monto)}</div>
           <div class="pago-meta">${esRecargoMora ? '<span class="recargo-label">Recargo</span>' : (esAbono ? '<span class="abono-label">Abono</span>' : 'Cuota ' + pago.cuota)} · Pagada el ${formatearFechaCorta(new Date(pago.fecha))}</div>
-          ${(!esRecargoMora && !esAbono) ? `<div class="pago-desglose">Capital: ${formatearPesos(pago.capitalPagado || 0)} · Interés: ${formatearPesos(pago.interesPagado || 0)}</div>` : ''}
+          ${(!esRecargoMora && !esAbono) ? `<div class="pago-desglose"><span class="pago-desglose-capital">Capital: ${formatearPesos(pago.capitalPagado || 0)}</span><span class="pago-desglose-interes">Interés: ${formatearPesos(pago.interesPagado || 0)}</span></div>` : ''}
           ${pago.nota ? `<div class="pago-nota"></div>` : ''}
         </div>
         <div class="cuota-accion mas" role="button" aria-label="Más opciones">
