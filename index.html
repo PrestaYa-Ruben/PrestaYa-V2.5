@@ -3066,6 +3066,16 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
 /* NUEVO: a pedido — "Saldo: $X" debajo de "Abonado $X de $Y", en cuotas
    con pago parcial (Opción B: el monto grande de arriba sigue siendo
    siempre el valor total de la cuota, sin excepciones). */
+/* CAMBIO (a pedido): una cuota con abono parcial ahora muestra SIEMPRE
+   cuánto se abonó y cuánto falta — antes solo salía si la cuota no
+   estaba vencida, así que una cuota vencida con abono parecía intacta. */
+.cuota-parcial{ margin-top:6px; max-width:210px; }
+.cuota-parcial-fila{ display:flex; justify-content:space-between; gap:10px; font-size:13px; font-weight:500; color:var(--text-secondary); white-space:nowrap; }
+.cuota-parcial-fila b{ font-weight:800; }
+.cuota-parcial-fila.abonado b{ color:#00803A; }
+.cuota-parcial-fila.saldo b{ color:#C62828; }
+.cuota-parcial-barra{ height:5px; border-radius:99px; background:rgba(20,30,60,0.14); margin:4px 0; overflow:hidden; }
+.cuota-parcial-barra i{ display:block; height:100%; border-radius:99px; background:#12A150; }
 .cuota-saldo-parcial{ font-size:11.5px; font-weight:700; color:var(--primary); margin-top:2px; }
 
 .cuota-accion{
@@ -20860,7 +20870,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         ${fechaDePago ? `<div class="cuota-fecha cuota-fecha-pago">Pago: ${formatearFechaCorta(new Date(fechaDePago))}</div>` : ''}
         ${puntualidadHtml}
         ${descuentoDeCuota(prestamo, cuota.numero) > 0 ? `<div class="cuota-descuento-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>Descuento −${formatearPesos(descuentoDeCuota(prestamo, cuota.numero))}</div>` : ''}
-        ${esAbonada ? `<div class="cuota-dias-atraso abonada">Abonado ${formatearPesos(abonadoParcial)} de ${formatearPesos(cuota.total)}</div><div class="cuota-saldo-parcial">Saldo: ${formatearPesos(cuota.total - abonadoParcial)}</div>` : ''}
+        ${(!pagada && abonadoParcial > 0) ? `
+        <div class="cuota-parcial">
+          <div class="cuota-parcial-fila abonado"><span>Abonado</span><b>${formatearPesos(abonadoParcial)}</b></div>
+          <div class="cuota-parcial-barra"><i style="width:${Math.min(100, Math.round((abonadoParcial / (cuota.total || 1)) * 100))}%"></i></div>
+          <div class="cuota-parcial-fila saldo"><span>Saldo</span><b>${formatearPesos(Math.max(cuota.total - abonadoParcial, 0))}</b></div>
+        </div>` : ''}
       </div>
       <div class="cuota-estado-col">
         <div class="cuota-badge ${estadoClase}">${estadoTexto}</div>
