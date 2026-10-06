@@ -2479,6 +2479,21 @@ body.modo-oscuro #screen-comparativas-ganancias{ --text-secondary:#C9D2DF; }
   padding-left:12px;
   border-left:1.5px solid #AFC4EF;
 }
+/* CAMBIO (a pedido): la nota va sobre fondo blanco, con el borde
+   marcado en azul y el ícono realzado (más grande, degradado, aro y sombra). */
+.loan-card-full .loan-note{
+  background:#FFFFFF;
+  border:1.5px solid #9DB4E8; /* CAMBIO (a pedido): borde más suave — antes 2px #2F5FD0 */
+  border-left:1.5px solid #9DB4E8;
+  box-shadow:0 2px 6px rgba(47,95,208,0.10);
+}
+.loan-card-full .loan-note-icono{
+  width:26px; height:26px; /* CAMBIO (a pedido): ícono más pequeño — antes 42px, luego 32px */
+  background:linear-gradient(145deg, #4B7DF0 0%, #1E47B8 100%);
+  box-shadow:0 0 0 2px rgba(47,95,208,0.18), 0 2px 5px rgba(30,71,184,0.32);
+}
+.loan-card-full .loan-note-icono svg{ width:13px; height:13px; stroke-width:2.5; }
+.loan-card-full .loan-note-contenido{ border-left-color:#C9D6F3; }
 .loan-card-full .loan-note-titulo{ font-size:13.5px; font-weight:700; color:#2F5FD0; line-height:1.2; margin-bottom:2px; }
 .loan-card-full .loan-note-contenido span{ display:block; font-size:13.5px; font-weight:500; line-height:1.38; color:#18202F; overflow-wrap:anywhere; }
 
