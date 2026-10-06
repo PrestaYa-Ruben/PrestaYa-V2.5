@@ -2170,6 +2170,11 @@ body.modo-oscuro #screen-comparativas-ganancias{ --cg-azul:#5B8DF7; --cg-azul-su
 .cg-seccion-titulo svg{ width:19px; height:19px; stroke:var(--cg-azul); flex-shrink:0; }
 .cg-grafico{ position:relative; height:190px; margin-top:26px; display:grid; grid-template-columns:repeat(6, minmax(0,1fr)); gap:6px; align-items:end; border-bottom:1.5px solid var(--border); }
 .cg-grafico::before{ content:''; position:absolute; inset:0; background:repeating-linear-gradient(to top, transparent 0, transparent calc(25% - 1px), var(--border) calc(25% - 1px), var(--border) 25%); opacity:.55; pointer-events:none; }
+.cg-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; margin:0 -4px; padding:0 4px; }
+.cg-scroll::-webkit-scrollbar{ display:none; }
+.cg-scroll-interior{ min-width:100%; }
+.cg-desliza{ font-size:10.5px; color:var(--text-secondary); text-align:center; margin-top:8px; }
+.cg-col{ cursor:pointer; }
 .cg-col{ position:relative; height:100%; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; min-width:0; }
 .cg-col-valor{ font-size:9.5px; font-weight:700; color:var(--text); white-space:nowrap; margin-bottom:3px; }
 .cg-barra{ width:72%; max-width:38px; min-height:2px; border-radius:5px 5px 0 0; background:var(--cg-azul-suave); transition:height .45s ease; }
@@ -3013,7 +3018,7 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
 .cuota-monto{ font-size:16px; font-weight:600; color:var(--text); margin-bottom:3px; letter-spacing:-0.2px; }
 .cuota-fecha{ font-size:13px; color:var(--text-secondary); font-weight:400; }
 .cuota-puntualidad{ font-size:13px; font-weight:700; margin-top:1px; } /* NUEVO: color se define en línea (azul o rojo) según calcularPuntualidadPago */
-.cuota-fecha.cuota-fecha-pago{ color:#00C853; font-weight:700; margin-top:1px; } /* CORREGIDO: antes var(--success) en peso normal — a pedido, verde más vibrante y en negrita para que resalte más */
+.cuota-fecha.cuota-fecha-pago{ color:#00803A; font-size:14px; font-weight:800; margin-top:2px; letter-spacing:.1px; } /* CAMBIO (a pedido): el verde claro #00C853 se perdía sobre el fondo verde de la tarjeta — ahora un verde intenso y más oscuro, un poco más grande y grueso */
 
 .cuota-badge{
   font-size:12px;
@@ -3076,6 +3081,30 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
   margin-top:3px;
   line-height:1.4;
 }
+
+/* CAMBIO (a pedido): texto más visible y limpio en las tarjetas de la
+   pestaña "Pagadas" del Detalle del Préstamo — más grande, más oscuro y
+   sin transparencia. Los colores quedan fijos porque el fondo de estas
+   tarjetas es claro también en modo oscuro. */
+#screen-detalle-prestamo .pago-item{ --text:#101828; --text-secondary:#3F4A5C; }
+#screen-detalle-prestamo .pago-item .pago-monto{ font-size:18px; font-weight:700; letter-spacing:-0.1px; margin-bottom:4px; }
+#screen-detalle-prestamo .pago-item .pago-meta{ font-size:14px; font-weight:500; line-height:1.35; }
+#screen-detalle-prestamo .pago-item .pago-desglose{ font-size:13px; font-weight:500; opacity:1; margin-top:3px; line-height:1.35; }
+#screen-detalle-prestamo .pago-item .pago-nota{ font-size:13.5px; margin-top:4px; }
+#screen-detalle-prestamo .pago-item .cuota-numero{ font-weight:700; }
+/* CAMBIO (a pedido): los 3 puntitos de las tarjetas Pagadas con un
+   aspecto más moderno — cuadrado blanco de esquinas redondeadas, borde
+   fino y sombra suave, igual que el botón de compartir de las cuotas. */
+#screen-detalle-prestamo .pago-item .cuota-accion.mas{
+  width:36px; height:36px; min-width:36px;
+  background:#FFFFFF; color:#1B2330;
+  border:1px solid rgba(20,30,60,0.14);
+  border-radius:11px;
+  box-shadow:0 2px 5px rgba(20,30,60,0.14);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+#screen-detalle-prestamo .pago-item .cuota-accion.mas svg{ width:18px; height:18px; }
+#screen-detalle-prestamo .pago-item .cuota-accion.mas:active{ transform:scale(0.93); box-shadow:0 1px 2px rgba(20,30,60,0.16); }
 
 .lista-vacia-mensaje{ padding:30px 4px; text-align:center; color:var(--text-secondary); font-size:14px; font-weight:400; }
 
@@ -9657,8 +9686,15 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     <div class="cg-card">
       <div class="cg-seccion-titulo"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round"><line x1="6" y1="20" x2="6" y2="14"></line><line x1="12" y1="20" x2="12" y2="9"></line><line x1="18" y1="20" x2="18" y2="4"></line></svg>Evolución de ganancias</div>
-      <div class="cg-grafico" id="cg-grafico"></div>
-      <div class="cg-ejes" id="cg-ejes"></div>
+      <!-- CAMBIO (a pedido): el gráfico ahora muestra 12 periodos y se
+           desliza con el dedo; tocar una barra elige ese periodo. -->
+      <div class="cg-scroll" id="cg-scroll">
+        <div class="cg-scroll-interior" id="cg-scroll-interior">
+          <div class="cg-grafico" id="cg-grafico"></div>
+          <div class="cg-ejes" id="cg-ejes"></div>
+        </div>
+      </div>
+      <div class="cg-desliza">← Desliza para ver más · toca una barra para elegirla</div>
       <div class="cg-leyenda"><span><i style="background:var(--cg-azul);"></i>Periodo elegido</span><span><i style="background:var(--cg-azul-suave);"></i>Periodos anteriores</span></div>
     </div>
 
@@ -19349,7 +19385,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // no depende del filtro de ruta que esté puesto en otras).
   // ==========================================================
   const screenComparativas = document.getElementById('screen-comparativas-ganancias');
-  let cgTipo = 'mes', cgOffset = 0, pantallaDebajoDeComparativas = null;
+  let cgTipo = 'mes', cgOffset = 0, pantallaDebajoDeComparativas = null, cgMantenerScroll = false;
   const CG_MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
   function cgGananciasEntre(inicioMs, finMs){
@@ -19433,15 +19469,28 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     elDif.style.color = diferencia > 0 ? 'var(--cg-verde)' : (diferencia < 0 ? 'var(--cg-rojo)' : '');
 
     // ----- Gráfico: los 6 periodos que terminan en el elegido -----
+    // `serie` (6 periodos que terminan en el elegido) se sigue usando para la Tendencia.
     const serie = [];
     for(let i = 5; i >= 0; i--) serie.push(cgPeriodo(cgTipo, cgOffset - i));
-    const maximo = Math.max.apply(null, serie.map(x => x.total).concat([1]));
+    // CAMBIO (a pedido): el gráfico muestra 12 periodos hasta el actual (más
+    // si se navega más atrás), deslizables; el elegido va resaltado.
+    const cantidadBarras = Math.max(12, -cgOffset + 3);
+    const serieGrafico = [];
+    for(let i = cantidadBarras - 1; i >= 0; i--) serieGrafico.push({ offset: -i, datos: cgPeriodo(cgTipo, -i) });
+    const maximo = Math.max.apply(null, serieGrafico.map(x => x.datos.total).concat([1]));
     const grafico = document.getElementById('cg-grafico');
     const ejes = document.getElementById('cg-ejes');
     grafico.innerHTML = ''; ejes.innerHTML = '';
-    serie.forEach((x, i)=>{
+    const ANCHO_COLUMNA = 56;
+    document.getElementById('cg-scroll-interior').style.width = (cantidadBarras * ANCHO_COLUMNA) + 'px';
+    grafico.style.gridTemplateColumns = ejes.style.gridTemplateColumns = 'repeat(' + cantidadBarras + ', minmax(0,1fr))';
+    let columnaElegida = null;
+    serieGrafico.forEach((item)=>{
+      const x = item.datos, i = (item.offset === cgOffset ? 5 : 0);
       const col = document.createElement('div');
       col.className = 'cg-col' + (i === 5 ? ' actual' : '');
+      if(i === 5) columnaElegida = col;
+      col.addEventListener('click', ()=>{ if(item.offset !== cgOffset){ cgOffset = item.offset; cgMantenerScroll = true; renderizarComparativasGanancias(); } });
       const valorCorto = x.total >= 10000000 ? '$' + (x.total / 1000000).toFixed(1).replace('.', ',') + 'M' : formatearPesos(x.total);
       col.innerHTML = '<div class="cg-col-valor">' + valorCorto + '</div><div class="cg-barra" style="height:0%"></div>';
       col.title = x.etiqueta + ': ' + formatearPesos(x.total);
@@ -19453,6 +19502,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       if(i === 5) eje.className = 'actual';
       ejes.appendChild(eje);
     });
+    // Deja a la vista la barra elegida (al abrir: el periodo actual, al
+    // final). Si se eligió tocando una barra, no mueve el gráfico.
+    const cajaScroll = document.getElementById('cg-scroll');
+    if(cgMantenerScroll){ cgMantenerScroll = false; }
+    else if(columnaElegida){
+      requestAnimationFrame(()=>{ cajaScroll.scrollLeft = columnaElegida.offsetLeft - cajaScroll.clientWidth + ANCHO_COLUMNA * 1.5; });
+    }
 
     // ----- Tabla: siempre respecto a HOY -----
     const filas = [
