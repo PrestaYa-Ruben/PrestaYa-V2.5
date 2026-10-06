@@ -2129,6 +2129,74 @@ body.modo-oscuro #screen-nuevo-prestamo .np-cliente-avatar{ background:#2B3442; 
 }
 #screen-nuevo-prestamo .btn-guardar-prestamo:active{ transform:translateY(1px); box-shadow:0 3px 8px rgba(10,101,123,0.32); }
 
+/* ==========================================================
+   NUEVO — pantalla "Comparativas de Ganancias" (menú lateral).
+   Solo lectura: ganancias = interés cobrado + mora cobrada.
+   ========================================================== */
+#screen-comparativas-ganancias{ --cg-azul:#2563EB; --cg-azul-suave:#A9C1F7; --cg-verde:#12A150; --cg-rojo:#DC2626; }
+body.modo-oscuro #screen-comparativas-ganancias{ --cg-azul:#5B8DF7; --cg-azul-suave:#34507F; }
+.cg-cuerpo{ padding:14px 14px 30px; display:flex; flex-direction:column; gap:14px; }
+.cg-card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; box-shadow:0 2px 8px rgba(20,30,60,0.05); }
+.cg-intro{ display:flex; gap:12px; align-items:flex-start; }
+.cg-intro-icono{ width:42px; height:42px; border-radius:11px; background:var(--cg-verde); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.cg-intro-icono svg{ width:22px; height:22px; stroke:#fff; }
+.cg-intro-titulo{ font-size:16.5px; font-weight:700; color:var(--text); }
+.cg-intro-sub{ font-size:12.5px; color:var(--text-secondary); line-height:1.4; margin-top:2px; }
+.cg-etiqueta{ font-size:13px; font-weight:600; color:var(--text); margin:14px 0 8px; }
+.cg-chips{ display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:6px; }
+.cg-chip{ padding:9px 2px; border-radius:10px; border:1px solid var(--border); background:var(--background); color:var(--text); font-size:12px; white-space:nowrap; overflow:hidden; font-weight:600; text-align:center; }
+.cg-chip.active{ background:var(--cg-azul); border-color:var(--cg-azul); color:#fff; box-shadow:0 3px 8px rgba(37,99,235,0.3); }
+.cg-navegador{ display:flex; align-items:center; gap:8px; margin-top:10px; border:1px solid var(--border); border-radius:10px; padding:4px; }
+.cg-navegador button{ width:38px; height:38px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--text); flex-shrink:0; }
+.cg-navegador button:disabled{ opacity:.3; }
+.cg-navegador button svg{ width:18px; height:18px; stroke:currentColor; }
+.cg-navegador-texto{ flex:1; text-align:center; font-size:14px; font-weight:600; color:var(--text); display:flex; align-items:center; justify-content:center; gap:8px; min-width:0; }
+.cg-navegador-texto svg{ width:17px; height:17px; stroke:var(--text-secondary); flex-shrink:0; }
+.cg-tarjetas{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+.cg-kpi{ border-radius:12px; padding:11px 12px; border:1px solid var(--border); background:var(--background); min-width:0; }
+.cg-kpi.actual{ grid-column:1 / -1; background:rgba(18,161,80,0.08); border-color:rgba(18,161,80,0.30); }
+.cg-kpi.diferencia{ background:rgba(124,77,219,0.07); border-color:rgba(124,77,219,0.25); }
+.cg-kpi-titulo{ font-size:12.5px; font-weight:600; color:var(--text); }
+.cg-kpi-sub{ font-size:11.5px; color:var(--text-secondary); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.cg-kpi-valor{ font-size:19px; font-weight:800; color:var(--text); margin-top:6px; white-space:nowrap; }
+.cg-kpi.actual .cg-kpi-valor{ font-size:27px; }
+.cg-kpi-pie{ display:flex; align-items:center; gap:8px; margin-top:6px; font-size:11.5px; color:var(--text-secondary); flex-wrap:wrap; }
+.cg-var{ display:inline-flex; align-items:center; gap:3px; font-size:12.5px; font-weight:700; padding:2px 8px; border-radius:999px; white-space:nowrap; }
+.cg-var svg{ width:12px; height:12px; stroke:currentColor; }
+.cg-var.sube{ color:var(--cg-verde); background:rgba(18,161,80,0.12); }
+.cg-var.baja{ color:var(--cg-rojo); background:rgba(220,38,38,0.10); }
+.cg-var.neutro{ color:var(--text-secondary); background:rgba(120,130,150,0.14); }
+.cg-seccion-titulo{ display:flex; align-items:center; gap:8px; font-size:14.5px; font-weight:700; color:var(--text); }
+.cg-seccion-titulo svg{ width:19px; height:19px; stroke:var(--cg-azul); flex-shrink:0; }
+.cg-grafico{ position:relative; height:190px; margin-top:26px; display:grid; grid-template-columns:repeat(6, minmax(0,1fr)); gap:6px; align-items:end; border-bottom:1.5px solid var(--border); }
+.cg-grafico::before{ content:''; position:absolute; inset:0; background:repeating-linear-gradient(to top, transparent 0, transparent calc(25% - 1px), var(--border) calc(25% - 1px), var(--border) 25%); opacity:.55; pointer-events:none; }
+.cg-col{ position:relative; height:100%; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; min-width:0; }
+.cg-col-valor{ font-size:9.5px; font-weight:700; color:var(--text); white-space:nowrap; margin-bottom:3px; }
+.cg-barra{ width:72%; max-width:38px; min-height:2px; border-radius:5px 5px 0 0; background:var(--cg-azul-suave); transition:height .45s ease; }
+.cg-col.actual .cg-barra{ background:var(--cg-azul); }
+.cg-ejes{ display:grid; grid-template-columns:repeat(6, minmax(0,1fr)); gap:6px; margin-top:6px; }
+.cg-ejes span{ font-size:10px; color:var(--text-secondary); text-align:center; line-height:1.2; }
+.cg-ejes span.actual{ color:var(--text); font-weight:700; }
+.cg-leyenda{ display:flex; gap:14px; justify-content:flex-end; margin-top:10px; font-size:11px; color:var(--text-secondary); }
+.cg-leyenda i{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:5px; vertical-align:middle; }
+.cg-fila{ display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:10px; row-gap:2px; align-items:center; padding:11px 0; border-top:1px solid var(--border); }
+.cg-fila:first-of-type{ border-top:none; }
+.cg-fila-nombre{ font-size:13.5px; font-weight:600; color:var(--text); }
+.cg-fila-nombre small{ font-size:11px; font-weight:400; color:var(--text-secondary); margin-left:4px; }
+.cg-fila-valor{ font-size:14.5px; font-weight:700; color:var(--text); text-align:right; white-space:nowrap; }
+.cg-fila-vs{ font-size:11.5px; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.cg-fila-var{ text-align:right; }
+.cg-tendencia{ display:flex; gap:12px; align-items:center; background:rgba(18,161,80,0.08); border:1px solid rgba(18,161,80,0.30); border-radius:14px; padding:13px 14px; }
+.cg-tendencia.baja{ background:rgba(220,38,38,0.07); border-color:rgba(220,38,38,0.28); }
+.cg-tendencia.neutra{ background:var(--surface); border-color:var(--border); }
+.cg-tendencia-icono{ width:40px; height:40px; border-radius:50%; background:var(--cg-verde); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.cg-tendencia.baja .cg-tendencia-icono{ background:var(--cg-rojo); }
+.cg-tendencia.neutra .cg-tendencia-icono{ background:#64748B; }
+.cg-tendencia-icono svg{ width:20px; height:20px; stroke:#fff; }
+.cg-tendencia-titulo{ font-size:14.5px; font-weight:700; color:var(--text); }
+.cg-tendencia-texto{ font-size:12.5px; color:var(--text-secondary); line-height:1.4; margin-top:1px; }
+.cg-nota{ font-size:11px; color:var(--text-secondary); text-align:center; line-height:1.4; }
+
 .share-fab{
   position:fixed;
   bottom:26px;
@@ -6107,6 +6175,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg></div>
       <span>Estadísticas</span>
     </div>
+    <!-- NUEVO: a pedido — Comparativas de Ganancias -->
+    <div class="menu-lateral-item" id="menu-lateral-comparativas">
+      <div class="icon-container green"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>
+      <span>Comparativas de Ganancias</span>
+    </div>
     <div class="menu-lateral-item" id="menu-lateral-ranking">
       <div class="icon-container orange"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v6a5 5 0 0 1-10 0V4Z"></path><path d="M17 5h3a2 2 0 0 1 0 4h-1"></path><path d="M7 5H4a2 2 0 0 0 0 4h1"></path></svg></div>
       <span>Ranking de Clientes</span>
@@ -9524,6 +9597,88 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
      salen de calcularEstadisticasGenerales(), que a su vez reutiliza
      las funciones de cálculo que el sistema ya tenía.
      ========================================================== -->
+<!-- ==========================================================
+     NUEVO: PANTALLA "COMPARATIVAS DE GANANCIAS" (menú lateral).
+     Solo lectura. Ganancia = interés cobrado + mora cobrada, por la
+     fecha de cada pago (ver renderizarComparativasGanancias en JS).
+     ========================================================== -->
+<div class="app" id="screen-comparativas-ganancias" style="display:none;">
+  <header class="header">
+    <button class="back-btn" id="btn-cerrar-comparativas" aria-label="Volver">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </button>
+    <h1>Ganancias</h1>
+    <span class="header-spacer"></span>
+  </header>
+
+  <div class="cg-cuerpo">
+    <div class="cg-card">
+      <div class="cg-intro">
+        <div class="cg-intro-icono"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>
+        <div>
+          <div class="cg-intro-titulo">Comparativas de Ganancias</div>
+          <div class="cg-intro-sub">Compara tus ganancias en diferentes periodos y visualiza el crecimiento de tu negocio.</div>
+        </div>
+      </div>
+
+      <div class="cg-etiqueta">Periodo de comparación</div>
+      <div class="cg-chips" id="cg-chips">
+        <button type="button" class="cg-chip" data-tipo="dia">Día</button>
+        <button type="button" class="cg-chip" data-tipo="semana">Semana</button>
+        <button type="button" class="cg-chip active" data-tipo="mes">Mes</button>
+        <button type="button" class="cg-chip" data-tipo="trimestre">Trimestre</button>
+        <button type="button" class="cg-chip" data-tipo="anio">Año</button>
+      </div>
+      <div class="cg-navegador">
+        <button type="button" id="cg-anterior" aria-label="Periodo anterior"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+        <div class="cg-navegador-texto"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span id="cg-rango-texto"></span></div>
+        <button type="button" id="cg-siguiente" aria-label="Periodo siguiente"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+      </div>
+
+      <div class="cg-tarjetas">
+        <div class="cg-kpi actual">
+          <div class="cg-kpi-titulo">Ganancia del periodo</div>
+          <div class="cg-kpi-sub" id="cg-actual-sub"></div>
+          <div class="cg-kpi-valor" id="cg-actual-valor">$0</div>
+          <div class="cg-kpi-pie"><span id="cg-actual-var"></span><span id="cg-actual-vs"></span></div>
+        </div>
+        <div class="cg-kpi">
+          <div class="cg-kpi-titulo">Periodo anterior</div>
+          <div class="cg-kpi-sub" id="cg-anterior-sub"></div>
+          <div class="cg-kpi-valor" id="cg-anterior-valor">$0</div>
+        </div>
+        <div class="cg-kpi diferencia">
+          <div class="cg-kpi-titulo">Diferencia</div>
+          <div class="cg-kpi-sub">Actual − anterior</div>
+          <div class="cg-kpi-valor" id="cg-diferencia-valor">$0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cg-card">
+      <div class="cg-seccion-titulo"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round"><line x1="6" y1="20" x2="6" y2="14"></line><line x1="12" y1="20" x2="12" y2="9"></line><line x1="18" y1="20" x2="18" y2="4"></line></svg>Evolución de ganancias</div>
+      <div class="cg-grafico" id="cg-grafico"></div>
+      <div class="cg-ejes" id="cg-ejes"></div>
+      <div class="cg-leyenda"><span><i style="background:var(--cg-azul);"></i>Periodo elegido</span><span><i style="background:var(--cg-azul-suave);"></i>Periodos anteriores</span></div>
+    </div>
+
+    <div class="cg-card">
+      <div class="cg-seccion-titulo" style="margin-bottom:4px;"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>Comparativa por periodos</div>
+      <div id="cg-tabla"></div>
+    </div>
+
+    <div class="cg-tendencia" id="cg-tendencia">
+      <div class="cg-tendencia-icono"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.800 1-2.300A7 7 0 0 0 12 2z"></path></svg></div>
+      <div>
+        <div class="cg-tendencia-titulo">Tendencia</div>
+        <div class="cg-tendencia-texto" id="cg-tendencia-texto"></div>
+      </div>
+    </div>
+
+    <div class="cg-nota">Ganancias = interés cobrado + mora cobrada, según la fecha de cada pago. Incluye todas las rutas. El periodo en curso se compara contra el periodo anterior completo.</div>
+  </div>
+</div>
+
 <div class="app" id="screen-estadisticas" style="display:none;">
 
   <header class="header">
@@ -19186,6 +19341,191 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     });
     return total;
   }
+
+  // ==========================================================
+  // NUEVO — "Comparativas de Ganancias" (menú lateral). Solo lectura.
+  // Ganancia = interés cobrado + mora cobrada (mismo criterio que
+  // gananciasEnRangoFechas, pero sumando TODAS las rutas: esta pantalla
+  // no depende del filtro de ruta que esté puesto en otras).
+  // ==========================================================
+  const screenComparativas = document.getElementById('screen-comparativas-ganancias');
+  let cgTipo = 'mes', cgOffset = 0, pantallaDebajoDeComparativas = null;
+  const CG_MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+  function cgGananciasEntre(inicioMs, finMs){
+    let total = 0;
+    prestamosGuardados.forEach(prestamo=>{
+      pagosDe(prestamo).forEach(pago=>{
+        const t = new Date(pago.fecha).getTime();
+        if(isNaN(t) || t < inicioMs || t > finMs) return;
+        total += (pago.interesPagado || 0);
+        if(pago.aplicarA === 'mora') total += (pago.monto || 0);
+      });
+    });
+    return total;
+  }
+
+  // Devuelve el periodo `tipo` desplazado `offset` periodos desde hoy (0 = el actual)
+  function cgPeriodo(tipo, offset){
+    const h = new Date();
+    let ini, fin, etiqueta, corta;
+    if(tipo === 'dia'){
+      ini = new Date(h.getFullYear(), h.getMonth(), h.getDate() + offset);
+      fin = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate(), 23, 59, 59, 999);
+      etiqueta = ini.getDate() + ' ' + CG_MESES[ini.getMonth()] + ' ' + ini.getFullYear();
+      corta = ini.getDate() + ' ' + CG_MESES[ini.getMonth()];
+    }else if(tipo === 'semana'){
+      const diaSemana = (h.getDay() + 6) % 7; // lunes = 0
+      ini = new Date(h.getFullYear(), h.getMonth(), h.getDate() - diaSemana + offset * 7);
+      const ult = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate() + 6);
+      fin = new Date(ult.getFullYear(), ult.getMonth(), ult.getDate(), 23, 59, 59, 999);
+      etiqueta = ini.getDate() + ' ' + CG_MESES[ini.getMonth()] + ' – ' + ult.getDate() + ' ' + CG_MESES[ult.getMonth()] + ' ' + ult.getFullYear();
+      corta = ini.getDate() + ' ' + CG_MESES[ini.getMonth()];
+    }else if(tipo === 'mes'){
+      ini = new Date(h.getFullYear(), h.getMonth() + offset, 1);
+      fin = new Date(ini.getFullYear(), ini.getMonth() + 1, 0, 23, 59, 59, 999);
+      etiqueta = CG_MESES[ini.getMonth()] + ' ' + ini.getFullYear();
+      corta = CG_MESES[ini.getMonth()] + ' ' + String(ini.getFullYear()).slice(2);
+    }else if(tipo === 'trimestre'){
+      ini = new Date(h.getFullYear(), Math.floor(h.getMonth() / 3) * 3 + offset * 3, 1);
+      fin = new Date(ini.getFullYear(), ini.getMonth() + 3, 0, 23, 59, 59, 999);
+      etiqueta = CG_MESES[ini.getMonth()] + ' – ' + CG_MESES[ini.getMonth() + 2] + ' ' + ini.getFullYear();
+      corta = 'T' + (Math.floor(ini.getMonth() / 3) + 1) + ' ' + String(ini.getFullYear()).slice(2);
+    }else{
+      ini = new Date(h.getFullYear() + offset, 0, 1);
+      fin = new Date(ini.getFullYear(), 11, 31, 23, 59, 59, 999);
+      etiqueta = String(ini.getFullYear());
+      corta = String(ini.getFullYear());
+    }
+    return { etiqueta, corta, total: cgGananciasEntre(ini.getTime(), fin.getTime()) };
+  }
+
+  const CG_FLECHA_ARRIBA = '<svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>';
+  const CG_FLECHA_ABAJO = '<svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>';
+  // Píldora de variación; cubre los casos sin base de comparación
+  function cgVariacionHtml(actual, anterior){
+    if(anterior <= 0 && actual <= 0) return '<span class="cg-var neutro">Sin datos</span>';
+    if(anterior <= 0) return '<span class="cg-var sube">' + CG_FLECHA_ARRIBA + 'Nuevo</span>';
+    const pct = ((actual - anterior) / anterior) * 100;
+    const texto = Math.abs(pct).toFixed(1).replace('.', ',') + '%';
+    if(Math.abs(pct) < 0.05) return '<span class="cg-var neutro">0,0%</span>';
+    return pct > 0
+      ? '<span class="cg-var sube">' + CG_FLECHA_ARRIBA + texto + '</span>'
+      : '<span class="cg-var baja">' + CG_FLECHA_ABAJO + texto + '</span>';
+  }
+
+  function renderizarComparativasGanancias(){
+    document.querySelectorAll('#cg-chips .cg-chip').forEach(b => b.classList.toggle('active', b.dataset.tipo === cgTipo));
+    const actual = cgPeriodo(cgTipo, cgOffset);
+    const anterior = cgPeriodo(cgTipo, cgOffset - 1);
+    const diferencia = actual.total - anterior.total;
+
+    document.getElementById('cg-rango-texto').textContent = actual.etiqueta + (cgOffset === 0 ? ' (en curso)' : '');
+    document.getElementById('cg-siguiente').disabled = cgOffset >= 0;
+    document.getElementById('cg-actual-sub').textContent = actual.etiqueta;
+    document.getElementById('cg-actual-valor').textContent = formatearPesos(actual.total);
+    document.getElementById('cg-actual-var').innerHTML = cgVariacionHtml(actual.total, anterior.total);
+    document.getElementById('cg-actual-vs').textContent = 'vs. ' + anterior.etiqueta;
+    document.getElementById('cg-anterior-sub').textContent = anterior.etiqueta;
+    document.getElementById('cg-anterior-valor').textContent = formatearPesos(anterior.total);
+    const elDif = document.getElementById('cg-diferencia-valor');
+    elDif.textContent = (diferencia > 0 ? '+' : (diferencia < 0 ? '−' : '')) + formatearPesos(Math.abs(diferencia));
+    elDif.style.color = diferencia > 0 ? 'var(--cg-verde)' : (diferencia < 0 ? 'var(--cg-rojo)' : '');
+
+    // ----- Gráfico: los 6 periodos que terminan en el elegido -----
+    const serie = [];
+    for(let i = 5; i >= 0; i--) serie.push(cgPeriodo(cgTipo, cgOffset - i));
+    const maximo = Math.max.apply(null, serie.map(x => x.total).concat([1]));
+    const grafico = document.getElementById('cg-grafico');
+    const ejes = document.getElementById('cg-ejes');
+    grafico.innerHTML = ''; ejes.innerHTML = '';
+    serie.forEach((x, i)=>{
+      const col = document.createElement('div');
+      col.className = 'cg-col' + (i === 5 ? ' actual' : '');
+      const valorCorto = x.total >= 10000000 ? '$' + (x.total / 1000000).toFixed(1).replace('.', ',') + 'M' : formatearPesos(x.total);
+      col.innerHTML = '<div class="cg-col-valor">' + valorCorto + '</div><div class="cg-barra" style="height:0%"></div>';
+      col.title = x.etiqueta + ': ' + formatearPesos(x.total);
+      grafico.appendChild(col);
+      const barra = col.querySelector('.cg-barra');
+      requestAnimationFrame(()=>{ barra.style.height = ((x.total / maximo) * 86) + '%'; });
+      const eje = document.createElement('span');
+      eje.textContent = x.corta;
+      if(i === 5) eje.className = 'actual';
+      ejes.appendChild(eje);
+    });
+
+    // ----- Tabla: siempre respecto a HOY -----
+    const filas = [
+      ['Hoy', 'dia', 'vs. Ayer'],
+      ['Esta semana', 'semana', 'vs. Semana anterior'],
+      ['Este mes', 'mes', null],
+      ['Trimestre', 'trimestre', null],
+      ['Año', 'anio', null]
+    ];
+    const tabla = document.getElementById('cg-tabla');
+    tabla.innerHTML = '';
+    filas.forEach(f=>{
+      const a = cgPeriodo(f[1], 0), b = cgPeriodo(f[1], -1);
+      const fila = document.createElement('div');
+      fila.className = 'cg-fila';
+      fila.innerHTML = '<div class="cg-fila-nombre">' + f[0] + '<small>(' + a.etiqueta + ')</small></div>'
+        + '<div class="cg-fila-valor">' + formatearPesos(a.total) + '</div>'
+        + '<div class="cg-fila-vs">' + (f[2] || ('vs. ' + b.etiqueta)) + ' · ' + formatearPesos(b.total) + '</div>'
+        + '<div class="cg-fila-var">' + cgVariacionHtml(a.total, b.total) + '</div>';
+      tabla.appendChild(fila);
+    });
+
+    // ----- Tendencia: periodos ya cerrados de la serie (el que está en curso no cuenta) -----
+    const cerrados = (cgOffset === 0 ? serie.slice(0, 5) : serie).slice(-4).map(x => x.total);
+    const caja = document.getElementById('cg-tendencia');
+    const textoTendencia = document.getElementById('cg-tendencia-texto');
+    const nombrePlural = { dia:'días', semana:'semanas', mes:'meses', trimestre:'trimestres', anio:'años' }[cgTipo];
+    caja.classList.remove('baja', 'neutra');
+    if(cerrados.filter(v => v > 0).length < 2){
+      caja.classList.add('neutra');
+      textoTendencia.textContent = 'Aún no hay suficiente historial para calcular una tendencia en ' + nombrePlural + '.';
+    }else{
+      const sube = cerrados.every((v, i) => i === 0 || v >= cerrados[i - 1]) && cerrados[cerrados.length - 1] > cerrados[0];
+      const baja = cerrados.every((v, i) => i === 0 || v <= cerrados[i - 1]) && cerrados[cerrados.length - 1] < cerrados[0];
+      if(sube){
+        textoTendencia.textContent = 'Tus ganancias han mostrado un crecimiento constante en los últimos ' + nombrePlural + '. ¡Sigue así!';
+      }else if(baja){
+        caja.classList.add('baja');
+        textoTendencia.textContent = 'Tus ganancias vienen bajando en los últimos ' + nombrePlural + '. Revisa la cartera y los cobros pendientes.';
+      }else{
+        caja.classList.add('neutra');
+        textoTendencia.textContent = 'Tus ganancias han sido variables en los últimos ' + nombrePlural + ', sin una tendencia clara.';
+      }
+    }
+  }
+
+  document.querySelectorAll('#cg-chips .cg-chip').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ cgTipo = btn.dataset.tipo; cgOffset = 0; renderizarComparativasGanancias(); });
+  });
+  document.getElementById('cg-anterior').addEventListener('click', ()=>{ cgOffset -= 1; renderizarComparativasGanancias(); });
+  document.getElementById('cg-siguiente').addEventListener('click', ()=>{ if(cgOffset < 0){ cgOffset += 1; renderizarComparativasGanancias(); } });
+
+  document.getElementById('menu-lateral-comparativas').addEventListener('click', ()=>{
+    cerrarMenuLateral();
+    cgTipo = 'mes'; cgOffset = 0;
+    pantallaDebajoDeComparativas = Array.from(document.querySelectorAll('.app')).find(el => el !== screenComparativas && getComputedStyle(el).display !== 'none') || null;
+    document.querySelectorAll('.app').forEach(el => el.style.display = 'none');
+    screenComparativas.style.display = 'block';
+    document.querySelector('.bottom-nav').style.display = 'none';
+    renderizarComparativasGanancias();
+    window.scrollTo(0, 0);
+  });
+  document.getElementById('btn-cerrar-comparativas').addEventListener('click', ()=>{
+    screenComparativas.style.display = 'none';
+    const pantallaDestino = pantallaDebajoDeComparativas || document.getElementById('screen-inicio');
+    pantallaDebajoDeComparativas = null;
+    pantallaDestino.style.display = 'block';
+    document.querySelector('.bottom-nav').style.display = 'flex';
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    const navDestino = document.querySelector('.nav-item[data-nav="' + pantallaDestino.id.replace('screen-', '') + '"]');
+    if(navDestino) navDestino.classList.add('active');
+    window.scrollTo(0, 0);
+  });
 
   function renderizarComparativoGananciasMensual(){
     const elEsteMes = document.getElementById('comparativo-ganancias-este-mes');
