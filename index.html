@@ -3210,6 +3210,8 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
   transition:transform .12s ease, box-shadow .12s ease;
 }
 #screen-detalle-prestamo .pago-item .cuota-accion.mas svg{ width:18px; height:18px; }
+#screen-detalle-prestamo .pago-item.descuento .cuota-accion.mas{ color:#C62828; }
+#screen-detalle-prestamo .pago-item.descuento .cuota-accion.mas svg{ width:17px; height:17px; }
 #screen-detalle-prestamo .pago-item .cuota-accion.mas:active{ transform:scale(0.93); box-shadow:0 1px 2px rgba(20,30,60,0.16); }
 
 .lista-vacia-mensaje{ padding:30px 4px; text-align:center; color:var(--text-secondary); font-size:14px; font-weight:400; }
@@ -21069,6 +21071,78 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     return seguidas ? 'Cuotas ' + nums[0] + ' a ' + nums[nums.length - 1] : 'Cuotas ' + nums.slice(0, -1).join(', ') + ' y ' + nums[nums.length - 1];
   }
 
+  // ==========================================================
+  // NUEVO (a pedido): eliminar un descuento ya aplicado, desde su tarjeta
+  // en "Pagadas". Devuelve a cada cuota el valor que el descuento le había
+  // quitado, con la MISMA regla con la que se aplicó (el descuento sale
+  // primero del interés y luego del capital): se reconstruye el valor
+  // original de la cuota y se le vuelve a aplicar solo lo que quede de
+  // otros descuentos. No toca ningún pago registrado.
+  // ==========================================================
+  function partesDeDescuentoEnCuota(d, numeroCuota){
+    if(Array.isArray(d.cuotas) && d.cuotas.length) return d.cuotas.filter(x => x.cuota === numeroCuota);
+    return d.cuota === numeroCuota ? [{ cuota: numeroCuota, monto: d.monto || 0 }] : [];
+  }
+  function eliminarDescuentoDePrestamo(prestamoId, descuentoId){
+    const indice = prestamosGuardados.findIndex(p => p.id === prestamoId);
+    if(indice === -1) return false;
+    const prestamo = prestamosGuardados[indice];
+    const descuentos = prestamo.descuentos || [];
+    const descuento = descuentos.find(d => d.id === descuentoId);
+    if(!descuento) return false;
+    const restantes = descuentos.filter(d => d.id !== descuentoId);
+
+    const numerosAfectados = Array.from(new Set(
+      (Array.isArray(descuento.cuotas) && descuento.cuotas.length ? descuento.cuotas.map(x => x.cuota) : [descuento.cuota]).filter(n => n != null)
+    ));
+    numerosAfectados.forEach(numero=>{
+      const cuota = (prestamo.plan || []).find(c => c.numero === numero);
+      if(!cuota) return;
+      const partesTodas = [];
+      descuentos.forEach(d => partesDeDescuentoEnCuota(d, numero).forEach(x => partesTodas.push(x)));
+      const totalDescontado = partesTodas.reduce((t, x)=> t + (x.monto || 0), 0);
+      const totalOriginal = (cuota.total || 0) + totalDescontado;
+
+      // Interés y capital ORIGINALES de la cuota (antes de cualquier descuento)
+      let interesOriginal, capitalOriginal;
+      const todasConReparto = partesTodas.every(x => typeof x.interes === 'number' && typeof x.capital === 'number');
+      if(todasConReparto){
+        interesOriginal = (cuota.interes || 0) + partesTodas.reduce((t, x)=> t + x.interes, 0);
+        capitalOriginal = (cuota.capital || 0) + partesTodas.reduce((t, x)=> t + x.capital, 0);
+      }else if((cuota.interes || 0) > 0.005){
+        // Aún queda interés: el descuento nunca llegó a tocar el capital
+        capitalOriginal = cuota.capital || 0;
+        interesOriginal = totalOriginal - capitalOriginal;
+      }else{
+        // Descuentos antiguos (sin reparto guardado): se toma como guía otra
+        // cuota del mismo crédito que no tenga descuentos; si no hay, el
+        // capital por cuota del crédito (valor / número de cuotas).
+        const referencia = (prestamo.plan || []).find(c =>
+          c.numero !== numero && descuentoDeCuota(prestamo, c.numero) === 0 && Math.abs((c.total || 0) - totalOriginal) < 1);
+        capitalOriginal = referencia ? (referencia.capital || 0) : ((prestamo.valor || 0) / (prestamo.cuotas || 1));
+        capitalOriginal = Math.min(Math.max(capitalOriginal, cuota.capital || 0), totalOriginal);
+        interesOriginal = totalOriginal - capitalOriginal;
+      }
+
+      // Se vuelve a aplicar solo lo que quede de los demás descuentos
+      const totalRestante = restantes.reduce((t, d)=> t + partesDeDescuentoEnCuota(d, numero).reduce((t2, x)=> t2 + (x.monto || 0), 0), 0);
+      cuota.interes = Math.max(interesOriginal - totalRestante, 0);
+      cuota.capital = Math.max(capitalOriginal - Math.max(totalRestante - interesOriginal, 0), 0);
+      cuota.total = cuota.capital + cuota.interes;
+    });
+
+    prestamo.descuentos = restantes;
+    // Si con el descuento el crédito había quedado finalizado y ahora vuelve
+    // a tener saldo, regresa a Activo (misma regla que al eliminar un pago).
+    const todasCubiertas = (prestamo.plan || []).every(c => estaCuotaPagada(prestamo, c.numero));
+    if(!todasCubiertas){
+      prestamo.estado = 'activo';
+      delete prestamo.fechaFinalizacion;
+    }
+    guardarPrestamos(prestamosGuardados);
+    return true;
+  }
+
   function renderizarListaPagos(prestamo){
     pagosLista.innerHTML = '';
     // CORREGIDO: ordenaba por número de cuota, no por fecha — así, un
@@ -21134,8 +21208,27 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
             <div class="pago-meta"><span class="descuento-label">Descuento</span> · Aplicado el ${formatearFechaCorta(new Date(pago.fecha))}</div>
             ${textoCuotas ? `<div class="pago-desglose">${textoCuotas} · No entra a caja</div>` : ''}
             ${pago.motivo ? `<div class="pago-nota"></div>` : ''}
+          </div>
+          <div class="cuota-accion mas" role="button" aria-label="Eliminar descuento">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
           </div>`;
         if(pago.motivo) itemD.querySelector('.pago-nota').textContent = pago.motivo;
+        // NUEVO (a pedido): eliminar el descuento desde su tarjeta
+        itemD.querySelector('.cuota-accion.mas').addEventListener('click', ()=>{
+          mostrarConfirmacion(
+            'Eliminar descuento',
+            'Se eliminará el descuento de ' + formatearPesos(pago.monto || 0) + (textoCuotas ? ' (' + textoCuotas.toLowerCase() + ')' : '') + ' y ese valor volverá al saldo pendiente del crédito. ¿Continuar?',
+            'Eliminar',
+            ()=>{
+              if(!eliminarDescuentoDePrestamo(prestamo.id, pago.id)) return;
+              refrescarDetallePrestamo();
+              if(typeof renderizarClientes === 'function') renderizarClientes(clientesFiltrados());
+              if(typeof renderizarListaPrestamos === 'function') renderizarListaPrestamos();
+              if(typeof actualizarReportes === 'function') actualizarReportes();
+              mostrarMensajeToast('Descuento eliminado');
+            }
+          );
+        });
         pagosLista.appendChild(itemD);
         return;
       }
@@ -24530,7 +24623,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       const descuentoCapital = quitar - descuentoInteres;
       cuotaObjetivo.capital -= descuentoCapital;
       cuotaObjetivo.total = cuotaObjetivo.capital + cuotaObjetivo.interes;
-      cuotasAfectadas.push({ cuota: cuotaObjetivo.numero, monto: quitar });
+      // NUEVO: se guarda también cuánto salió del interés y cuánto del capital,
+      // para poder revertir el descuento con exactitud si se elimina.
+      cuotasAfectadas.push({ cuota: cuotaObjetivo.numero, monto: quitar, interes: descuentoInteres, capital: descuentoCapital });
       restante -= quitar;
     }
 
@@ -24567,6 +24662,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     renderizarTarjetaDetallePrestamo(prestamoEnDetalle);
     renderizarListaCuotas(prestamoEnDetalle);
     renderizarListaCuotasPendientes(prestamoEnDetalle);
+    renderizarListaPagos(prestamoEnDetalle); // CORREGIDO: la tarjeta del descuento no aparecía en "Pagadas" hasta volver a abrir el crédito
     actualizarTabsPrestamo(prestamoEnDetalle); // CORREGIDO: el contador de "Pendientes" no se refrescaba tras un descuento
     // El saldo del préstamo cambió: refresca también las listas que lo muestran
     if(typeof renderizarClientes === 'function') renderizarClientes(clientesFiltrados());
@@ -24618,6 +24714,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       renderizarTarjetaDetallePrestamo(prestamoEnDetalle);
       renderizarListaCuotas(prestamoEnDetalle);
       renderizarListaCuotasPendientes(prestamoEnDetalle);
+      renderizarListaPagos(prestamoEnDetalle); // CORREGIDO: al deshacer, la tarjeta del descuento también se quita de "Pagadas"
       actualizarTabsPrestamo(prestamoEnDetalle);
     }
     if(typeof renderizarClientes === 'function') renderizarClientes(clientesFiltrados());
