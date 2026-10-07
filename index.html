@@ -2506,6 +2506,39 @@ body.modo-oscuro #screen-comparativas-ganancias{ --text-secondary:#C9D2DF; }
 .loan-card-full .loan-note-contenido{ border-left-color:#C9D6F3; }
 .loan-card-full .loan-note-titulo{ font-size:13.5px; font-weight:700; color:#2F5FD0; line-height:1.2; margin-bottom:2px; }
 .loan-card-full .loan-note-contenido span{ display:block; font-size:13.5px; font-weight:500; line-height:1.38; color:#18202F; overflow-wrap:anywhere; }
+/* CAMBIO (a pedido): la nota deja de ser una cajita aparte y pasa a ser
+   el PIE de la misma tarjeta — una franja de borde a borde, separada solo
+   por una línea como las demás secciones, con el mismo color de fondo de
+   la tarjeta (apenas más marcado) y la misma tipografía de las filas. */
+.loan-card-full .loan-note{
+  /* CAMBIO (a pedido): separada de los bordes de la tarjeta — queda
+     dentro del margen interior, con sus cuatro esquinas redondeadas. */
+  margin:10px 0 0;
+  padding:9px 12px 10px;
+  background:rgba(20,30,60,0.05);
+  border:none;
+  border-top:none;
+  border-radius:11px;
+  box-shadow:none;
+  align-items:flex-start;
+  gap:9px;
+  color:var(--text);
+}
+/* CAMBIO (a pedido): fondo de la nota con más intensidad, en el mismo
+   color de la tarjeta (verde si está activa, rosado si está vencida). */
+.loan-card-full .loan-note{ background:rgba(20,30,60,0.10); }
+.loan-card-full.loan-card-activo .loan-note{ background:rgba(18,161,80,0.17); }
+.loan-card-full.loan-card-vencido .loan-note{ background:rgba(220,38,38,0.14); }
+body.modo-oscuro .loan-card-full.loan-card-finalizado .loan-note{ background:rgba(255,255,255,0.10); border-top-color:rgba(255,255,255,0.10); }
+.loan-card-full .loan-note-icono{
+  width:20px; height:20px; border-radius:0; margin-top:1px;
+  background:none; box-shadow:none;
+}
+.loan-card-full .loan-note-icono svg{ width:17px; height:17px; stroke:var(--text-secondary); stroke-width:2; }
+.loan-card-full .loan-note-contenido{ padding-left:0; border-left:none; }
+.loan-card-full .loan-note-titulo{ font-size:14.5px; font-weight:400; color:var(--text-secondary); line-height:1.3; margin-bottom:1px; }
+.loan-card-full .loan-note-contenido span{ font-size:14.5px; font-weight:600; line-height:1.4; color:var(--text); }
+.loan-card-full .loan-note-titulo::after{ content:':'; }
 
 /* ==========================================================
    DETALLE DE PRÉSTAMO — tarjeta ampliada, tabs, cuotas/pagos
@@ -18070,7 +18103,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // ---------- Filas de datos: ícono + etiqueta + valor, 2 columnas ----------
     const colIzqX = cardX + 25;
     const colDerX = cardX + anchoCard / 2 + 12;
-    const tamIcono = 42;
+    const tamIcono = 34; // CAMBIO (a pedido): recuadro del ícono más pequeño — antes 42
     let y = yInicioFilas;
 
     // NUEVO: mismo ajuste automático de texto que en el Comprobante de
@@ -18101,7 +18134,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     }
 
     function dibujarCeldaResumen(x, yFila, etiqueta, valor, anchoDisponible, etiquetaIcono){
-      dibujarIconoComprobante(ctx, x, yFila, tamIcono, iconoParaEtiquetaComprobante(etiquetaIcono || etiqueta), colorAcento, colorIconoFondo);
+      dibujarIconoComprobante(ctx, x, yFila + 4, tamIcono, iconoParaEtiquetaComprobante(etiquetaIcono || etiqueta), colorAcento, colorIconoFondo);
       const xTexto = x + tamIcono + 12;
       const etiquetaAjustada = ajustarTextoAAnchoResumen(etiqueta, 15, 12, false, anchoDisponible);
       const valorAjustado = ajustarTextoAAnchoResumen(String(valor), 20, 14, true, anchoDisponible);
@@ -23113,12 +23146,20 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       }
     }
 
+    // CAMBIO (a pedido): los recuadros con ícono van más pequeños (45px en
+    // vez de 60). Se dibujan igual que antes pero a escala, centrados en la
+    // altura de su fila; el texto se acerca para no dejar un hueco.
+    const ESCALA_ICONO_FILA = 0.75;
     const xIcono = xTarjeta + 24;
-    const xTextoFila = xIcono + tamIcono + 22;
+    const xTextoFila = xIcono + tamIcono * ESCALA_ICONO_FILA + 18;
     const anchoTextoFila = (xTarjeta + anchoTarjeta - 22) - xTextoFila;
     filas.forEach((fila, i)=>{
       const yIcono = yTarjeta + padTarjeta + i * altoFila;
-      dibujarIconoFila(iconoParaEtiquetaComprobante(fila[0]), xIcono, yIcono);
+      ctx.save();
+      ctx.translate(xIcono, yIcono + tamIcono * (1 - ESCALA_ICONO_FILA) / 2);
+      ctx.scale(ESCALA_ICONO_FILA, ESCALA_ICONO_FILA);
+      dibujarIconoFila(iconoParaEtiquetaComprobante(fila[0]), 0, 0);
+      ctx.restore();
 
       const etiquetaAjustada = ajustarTextoAAncho(String(fila[0]), 19, 14, 400, anchoTextoFila);
       ctx.textAlign = 'left';
@@ -23594,7 +23635,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const colorOscuro = '#151A23';
     const colorVerde = '#22A559';
     const colorAzul = '#2F6BFF';
-    const tamIcono = 38;
+    const tamIcono = 31; // CAMBIO (a pedido): recuadro del ícono más pequeño — antes 38
 
     const esRecargoMora = pago.aplicarA === 'mora';
     const esAbono = pago.aplicarA === 'abono';
