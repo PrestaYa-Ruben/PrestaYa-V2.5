@@ -3044,6 +3044,7 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
 }
 .cuota-descuento-tag svg{ width:11px; height:11px; stroke:currentColor; }
 .loan-row-value.loan-descuento{ color:#7C4DDB; }
+.cuota-numero.cuota-numero-grupo{ font-size:12.5px; letter-spacing:-0.3px; white-space:nowrap; }
 .pago-item-clickable{ cursor:pointer; transition:opacity .12s ease; }
 .pago-item-clickable:active{ opacity:0.7; }
 
@@ -3081,7 +3082,7 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
   flex-shrink:0;
   white-space:nowrap;
 }
-.cuota-badge.pagada{ background:var(--success); }
+.cuota-badge.pagada{ background:#04883D; } /* CAMBIO (a pedido): mismo verde del botón flotante Pagar — antes var(--success) */
 .cuota-badge.pendiente{ background:var(--warning); }
 .cuota-badge.vencida{ background:var(--danger); }
 .cuota-badge.abonada{ background:var(--primary); }
@@ -3159,6 +3160,11 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
 .pago-desglose:has(.pago-desglose-capital){ display:flex; flex-wrap:wrap; column-gap:12px; row-gap:1px; }
 .pago-desglose-interes{ color:#B45309; font-weight:700; white-space:nowrap; }
 #screen-detalle-prestamo .pago-item .cuota-numero{ font-weight:700; }
+/* CAMBIO (a pedido): el NÚMERO de cuota dentro del círculo va en negro
+   intenso y con poco peso, en Todas, Pendientes y Pagadas. El aro conserva
+   su color (verde, naranja, rojo…). Las letras R / A / D no cambian. */
+#screen-detalle-prestamo .cuota-item .cuota-numero,
+#screen-detalle-prestamo .pago-item .cuota-numero:not(.recargo):not(.abono):not(.descuento){ color:#0A0D14; font-weight:500; }
 /* CAMBIO (a pedido): los 3 puntitos de las tarjetas Pagadas con un
    aspecto más moderno — cuadrado blanco de esquinas redondeadas, borde
    fino y sombra suave, igual que el botón de compartir de las cuotas. */
@@ -20880,7 +20886,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const pagada = estaCuotaPagada(prestamo, cuota.numero);
     const vencida = !pagada && cuotaVencida(prestamo, cuota);
     const abonadoParcial = sumaAbonadaCuota(prestamo, cuota.numero); // NUEVO
-    const esAbonada = !pagada && !vencida && abonadoParcial > 0; // NUEVO: pago parcial, aún no vencida
+    const esAbonada = !pagada && !vencida && abonadoParcial >= 1; // NUEVO: pago parcial, aún no vencida (CORREGIDO: un residuo de menos de $1 no cuenta como abono)
     const dias = vencida ? diasDeAtraso(cuota) : 0;
     const estadoTexto = pagada ? 'Pagada' : (vencida ? 'Vencida' : (esAbonada ? 'Abonada' : 'Pendiente'));
     const estadoClase = pagada ? 'pagada' : (vencida ? 'vencida' : (esAbonada ? 'abonada' : 'pendiente'));
@@ -20911,7 +20917,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         ${fechaDePago ? `<div class="cuota-fecha cuota-fecha-pago">Pago: ${formatearFechaCorta(new Date(fechaDePago))}</div>` : ''}
         ${puntualidadHtml}
         ${descuentoDeCuota(prestamo, cuota.numero) > 0 ? `<div class="cuota-descuento-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>Descuento −${formatearPesos(descuentoDeCuota(prestamo, cuota.numero))}</div>` : ''}
-        ${(!pagada && abonadoParcial > 0) ? `
+        ${(!pagada && abonadoParcial >= 1) ? `
         <div class="cuota-parcial">
           <div class="cuota-parcial-fila abonado"><span>Abonado</span><b>${formatearPesos(abonadoParcial)}</b></div>
           <div class="cuota-parcial-barra"><i style="width:${Math.min(100, Math.round((abonadoParcial / (cuota.total || 1)) * 100))}%"></i></div>
@@ -20972,13 +20978,59 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }
 
   // Renderiza la lista de Pagos ya registrados (con botón de 3 puntos por pago)
+  // NUEVO (a pedido): detecta qué registros de pago salieron de UN mismo
+  // abono que cubrió varias cuotas, para mostrarlos como una sola tarjeta
+  // en "Pagadas". Solo es visual: los pagos siguen guardados por cuota.
+  // Se reconocen por la marca "lote"; los pagos antiguos (sin lote), por
+  // tener ids consecutivos (se crearon en el mismo instante) y la misma
+  // fecha, método y tipo. Recargos por mora y abonos sueltos no se agrupan.
+  // Devuelve un Map: id del pago -> arreglo con su grupo (solo grupos de 2+).
+  // NUEVO: registros "fantasma" de menos de $1 que dejó el error de
+  // decimales ya corregido en repartirAbonoEntreCuotas. Siguen guardados
+  // (no se toca la información), pero no se muestran ni se cuentan.
+  function esPagoResiduo(p){ return p.aplicarA !== 'mora' && (p.monto || 0) < 0.5; }
+
+  function agruparPagosDelMismoAbono(prestamo){
+    const normales = pagosDe(prestamo)
+      .filter(p => p.aplicarA !== 'mora' && p.aplicarA !== 'abono' && !esPagoResiduo(p))
+      .slice()
+      .sort((a, b)=> (Number(a.id) || 0) - (Number(b.id) || 0));
+    const grupos = [];
+    normales.forEach(p=>{
+      const grupo = grupos[grupos.length - 1];
+      const previo = grupo ? grupo[grupo.length - 1] : null;
+      let mismoAbono = false;
+      if(previo && previo.cuota !== p.cuota){
+        if(previo.lote != null || p.lote != null){
+          mismoAbono = previo.lote != null && previo.lote === p.lote;
+        }else{
+          mismoAbono = typeof previo.id === 'number' && typeof p.id === 'number'
+            && p.id - previo.id === 1
+            && previo.fecha === p.fecha
+            && (previo.metodoPago || '') === (p.metodoPago || '')
+            && (previo.aplicarA || '') === (p.aplicarA || '');
+        }
+      }
+      if(mismoAbono) grupo.push(p); else grupos.push([p]);
+    });
+    const mapa = new Map();
+    grupos.filter(g => g.length > 1).forEach(g => g.forEach(p => mapa.set(p.id, g)));
+    return mapa;
+  }
+  function textoCuotasDeGrupo(grupo){
+    const nums = grupo.map(p => p.cuota).sort((a, b)=> a - b);
+    if(nums.length === 2) return 'Cuotas ' + nums[0] + ' y ' + nums[1];
+    const seguidas = nums.every((n, i)=> i === 0 || n === nums[i - 1] + 1);
+    return seguidas ? 'Cuotas ' + nums[0] + ' a ' + nums[nums.length - 1] : 'Cuotas ' + nums.slice(0, -1).join(', ') + ' y ' + nums[nums.length - 1];
+  }
+
   function renderizarListaPagos(prestamo){
     pagosLista.innerHTML = '';
     // CORREGIDO: ordenaba por número de cuota, no por fecha — así, un
     // recargo pagado el 30 Jun podía aparecer DESPUÉS de uno pagado el 31
     // Jul, solo porque pertenecía a una cuota con número más alto. Ahora
     // se ordena por la fecha real en que se pagó cada uno.
-    const pagos = pagosDe(prestamo).slice().sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+    const pagos = pagosDe(prestamo).filter(p => !esPagoResiduo(p)).sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
 
     // NUEVO: a pedido — los descuentos aplicados también se listan aquí,
     // mezclados por fecha con los pagos (solo se muestran; no son pagos ni
@@ -20991,7 +21043,40 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       return;
     }
 
+    const gruposDeAbono = agruparPagosDelMismoAbono(prestamo);
+
     movimientos.forEach(pago=>{
+      // NUEVO: un abono que cubrió varias cuotas se muestra como UNA tarjeta
+      // con el total (se dibuja al llegar a su primer registro; los demás
+      // registros del mismo abono se saltan).
+      const grupo = !pago.esDescuento ? gruposDeAbono.get(pago.id) : null;
+      if(grupo){
+        if(grupo[0].id !== pago.id) return;
+        const totalGrupo = grupo.reduce((t, p)=> t + (p.monto || 0), 0);
+        const capitalGrupo = grupo.reduce((t, p)=> t + (p.capitalPagado || 0), 0);
+        const interesGrupo = grupo.reduce((t, p)=> t + (p.interesPagado || 0), 0);
+        const notaGrupo = (grupo.find(p => p.nota) || {}).nota || '';
+        const cuotaPlanGrupo = (prestamo.plan || []).find(c => c.numero === grupo[0].cuota) || { numero: grupo[0].cuota };
+        const itemG = document.createElement('div');
+        itemG.className = 'pago-item pago-item-clickable pago-item-grupo';
+        itemG.innerHTML = `
+          <div class="cuota-numero cuota-numero-grupo">${Math.min.apply(null, grupo.map(p => p.cuota))}-${Math.max.apply(null, grupo.map(p => p.cuota))}</div>
+          <div class="cuota-info">
+            <div class="pago-monto">${formatearPesos(totalGrupo)}</div>
+            <div class="pago-meta">${textoCuotasDeGrupo(grupo)} · Pagadas el ${formatearFechaCorta(new Date(grupo[0].fecha))}</div>
+            <div class="pago-desglose"><span class="pago-desglose-capital">Capital: ${formatearPesos(capitalGrupo)}</span><span class="pago-desglose-interes">Interés: ${formatearPesos(interesGrupo)}</span></div>
+            ${notaGrupo ? `<div class="pago-nota"></div>` : ''}
+          </div>
+          <div class="cuota-accion mas" role="button" aria-label="Más opciones">
+            ${iconoMasVerticalMini()}
+          </div>`;
+        if(notaGrupo) itemG.querySelector('.pago-nota').textContent = notaGrupo;
+        // Toda la tarjeta abre el menú (ver / compartir comprobante del abono
+        // completo, o eliminarlo): "Detalle del Pago" es de un solo registro.
+        itemG.addEventListener('click', ()=> abrirMenuCuota(prestamo, cuotaPlanGrupo, grupo));
+        pagosLista.appendChild(itemG);
+        return;
+      }
       if(pago.esDescuento){
         const nums = cuotasDeDescuento(pago);
         const textoCuotas = nums.length === 0 ? '' : (nums.length === 1 ? 'Cuota ' + nums[0] : (nums.length === 2 ? 'Cuotas ' + nums[0] + ' y ' + nums[1] : 'Cuotas ' + nums[0] + ' a ' + nums[nums.length - 1]));
@@ -21048,7 +21133,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const cantidadPendientes = (prestamo.plan || []).filter(c => !estaCuotaPagada(prestamo, c.numero)).length;
     document.getElementById('tab-pendientes-count').textContent = cantidadPendientes;
     // Los recargos por mora no cuentan como "pagos" en este contador (son un cobro aparte)
-    const pagosSinMora = pagosDe(prestamo).filter(p => p.aplicarA !== 'mora');
+    const pagosSinMora = pagosDe(prestamo).filter(p => p.aplicarA !== 'mora' && !esPagoResiduo(p)); // CORREGIDO: no cuenta los pagos fantasma de menos de $1
     const pagosMora = pagosDe(prestamo).filter(p => p.aplicarA === 'mora');
     document.getElementById('tab-pagos-count').textContent = pagosSinMora.length;
 
@@ -21303,7 +21388,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // pendientes, el sistema las saltaba y le aplicaba todo el dinero
     // directo a la 3). Ahora nunca es posible saltarse una cuota más
     // antigua sin cubrir primero — el orden de pago es siempre 1, 2, 3...
-    for(let i = 0; i < cuotasPendientesAbono.length && restante > 0; i++){
+    // CORREGIDO: al repartir un abono entre varias cuotas, los decimales de
+    // las cuotas (ej. $86.999,9999…) dejaban un sobrante de una fracción
+    // mínima de peso, que pasaba a la cuota SIGUIENTE y creaba ahí un pago
+    // "fantasma" de $0 (por eso un pago de 2 cuotas aparecía como 3). Ahora
+    // un sobrante menor a medio centavo se considera cero.
+    const RESIDUO_MINIMO = 0.005;
+    for(let i = 0; i < cuotasPendientesAbono.length && restante > RESIDUO_MINIMO; i++){
       const cuota = cuotasPendientesAbono[i];
 
       const yaAbonado = sumaAbonadaCuota(prestamo, cuota.numero);
@@ -21326,10 +21417,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       }
 
       const monto = interesPagado + capitalPagado;
-      if(monto > 0){
+      if(monto > RESIDUO_MINIMO){
         resultado.push({ cuota, interesPagado, capitalPagado, monto });
       }
     }
+    if(restante <= RESIDUO_MINIMO) restante = 0;
 
     // Si sobra dinero después de cubrir todas las cuotas pendientes del
     // préstamo (ej. el usuario escribió un valor mayor a la deuda total),
@@ -21609,8 +21701,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       // selector (+/-), en vez de uno solo atado siempre a la primera cuota.
       // Así cada cuota pagada queda correctamente marcada, no solo la primera.
       const reparto = repartirAbonoEntreCuotas(prestamosGuardados[indice], valorIngresado, modo);
+      // NUEVO: todos los registros de UN mismo abono llevan la misma marca
+      // "lote" — solo sirve para mostrarlos juntos en la pestaña Pagadas
+      // (ver agruparPagosDelMismoAbono); no interviene en ningún cálculo.
+      const loteAbono = Date.now();
       reparto.forEach((parte, i)=>{
         const nuevoPago = {
+          lote: loteAbono,
           id: Date.now() + i, // ids únicos aunque se creen en el mismo milisegundo
           cuota: parte.cuota.numero,
           fecha: fechaISO,
@@ -22032,7 +22129,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // NUEVO: "Editar cuota" solo tiene sentido si ya existe un pago
     // registrado sobre el que corregir algo — una cuota todavía pendiente
     // no tiene nada que editar.
-    document.getElementById('accion-editar-pago').style.display = pago ? 'flex' : 'none';
+    // CAMBIO: tampoco aplica a un abono agrupado (varias cuotas a la vez).
+    document.getElementById('accion-editar-pago').style.display = (pago && !Array.isArray(pago)) ? 'flex' : 'none';
   }
   function cerrarMenuCuota(){
     menuCuotaOverlay.style.display = 'none';
@@ -22225,7 +22323,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   }
 
   document.getElementById('accion-editar-pago').addEventListener('click', ()=>{
-    if(!cuotaMenuActiva || !cuotaMenuActiva.pago) return;
+    if(!cuotaMenuActiva || !cuotaMenuActiva.pago || Array.isArray(cuotaMenuActiva.pago)) return;
     abrirEditarPago(cuotaMenuActiva.prestamo, cuotaMenuActiva.cuota, cuotaMenuActiva.pago);
   });
 
@@ -23135,16 +23233,24 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const { prestamo, cuota, pago } = cuotaMenuActiva;
     cerrarMenuCuota();
 
+    // NUEVO: un abono agrupado (varias cuotas) se elimina completo, avisando
+    // qué cuotas cubre y por cuánto.
+    const esGrupo = Array.isArray(pago);
+    const idsGrupo = esGrupo ? new Set(pago.map(p => p.id)) : null;
     mostrarConfirmacion(
-      'Eliminar pago',
-      '¿Eliminar este registro de pago de la cuota ' + cuota.numero + '?',
+      esGrupo ? 'Eliminar abono' : 'Eliminar pago',
+      esGrupo
+        ? 'Este abono de ' + formatearPesos(pago.reduce((t, p)=> t + (p.monto || 0), 0)) + ' cubre las ' + textoCuotasDeGrupo(pago).toLowerCase() + '. ¿Eliminar el abono completo?'
+        : '¿Eliminar este registro de pago de la cuota ' + cuota.numero + '?',
       'Eliminar',
       ()=>{
         const indice = prestamosGuardados.findIndex(p => p.id === prestamo.id);
         if(indice === -1) return;
 
         const listaPagos = prestamosGuardados[indice].pagos || [];
-        prestamosGuardados[indice].pagos = pago
+        prestamosGuardados[indice].pagos = esGrupo
+          ? listaPagos.filter(p => !idsGrupo.has(p.id))
+          : pago
           ? listaPagos.filter(p => p.id !== pago.id)
           : listaPagos.filter(p => p.cuota !== cuota.numero);
         prestamosGuardados[indice].estado = 'activo';
