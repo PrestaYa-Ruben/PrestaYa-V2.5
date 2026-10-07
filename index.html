@@ -2229,6 +2229,16 @@ body.modo-oscuro #screen-comparativas-ganancias{ --text-secondary:#C9D2DF; }
 .cg-tendencia-texto{ font-size:12.5px; color:var(--text-secondary); line-height:1.4; margin-top:1px; }
 .cg-nota{ font-size:11px; color:var(--text-secondary); text-align:center; line-height:1.4; }
 
+/* NUEVO (a pedido): fuente condensada y gruesa para el VALOR del
+   comprobante de pago (Roboto Condensed ExtraBold, licencia Apache 2.0).
+   Va incrustada — solo los números, "$", "." y "," — para que funcione
+   sin internet y el comprobante salga siempre igual. */
+@font-face{
+  font-family:'PrestaYaMonto';
+  font-weight:800; font-style:normal; font-display:block;
+  src:url(data:font/woff;base64,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) format('woff');
+}
+
 .share-fab{
   position:fixed;
   bottom:26px;
@@ -7774,14 +7784,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <!-- CAMBIO: a pedido — el interruptor "Saldo pendiente" salió de aquí
            y ahora vive arriba, junto a la píldora "Más opciones" (ver
            .acceso-saldo-comprobante), porque se usa a diario. -->
-      <div class="mora-toggle-row" style="padding:0;">
+      <!-- CAMBIO: a pedido — "Fecha de próximo pago" se movió a Agregar
+           Abono (toggle-proximo-abono). Esta fila queda oculta, no borrada,
+           porque el JS todavía sincroniza este interruptor. -->
+      <div class="mora-toggle-row" style="padding:0; display:none;">
         <div class="mora-toggle-text">
           <div class="mora-toggle-title">Fecha de próximo pago</div>
           <div class="mora-toggle-subtitle">Incluye la fecha de la próxima cuota pendiente</div>
         </div>
         <button type="button" class="toggle-switch" id="toggle-comprobante-proximo" role="switch" aria-checked="false" aria-label="Mostrar fecha de próximo pago en el comprobante"></button>
       </div>
-      <hr class="loan-divider" style="margin:14px 0;">
+      <hr class="loan-divider" style="margin:14px 0; display:none;">
       <div class="mora-toggle-row" style="padding:0;">
         <div class="mora-toggle-text">
           <div class="mora-toggle-title">Número de cuotas</div>
@@ -7963,6 +7976,19 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           <div class="mora-toggle-subtitle">Incluirlo en el comprobante de este abono</div>
         </div>
         <button type="button" class="toggle-switch" id="toggle-saldo-abono" role="switch" aria-checked="false" aria-label="Incluir el saldo pendiente en el comprobante de este abono"></button>
+      </div>
+
+      <hr class="loan-divider">
+
+      <!-- NUEVO: a pedido — "Fecha de próximo pago" ahora se activa aquí
+           (salió de Detalle del Préstamo → Más opciones). Es el mismo
+           ajuste de siempre; conserva el estado en que se deje. -->
+      <div class="mora-toggle-row sin-margen">
+        <div class="mora-toggle-text">
+          <div class="mora-toggle-title">Fecha de próximo pago</div>
+          <div class="mora-toggle-subtitle">Incluirla en el comprobante de este abono</div>
+        </div>
+        <button type="button" class="toggle-switch" id="toggle-proximo-abono" role="switch" aria-checked="false" aria-label="Incluir la fecha de próximo pago en el comprobante de este abono"></button>
       </div>
 
       <hr class="loan-divider">
@@ -17922,8 +17948,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       ['Fecha del crédito', formatearFechaCorta(new Date(prestamo.fecha + 'T00:00:00'))],
       ['N.° de cuotas', String(prestamo.cuotas)],
       ['Valor por cuota', formatearPesos(cuotaRealPrestamo(prestamo)), 'Valor de la cuota'],
-      ['Frecuencia de pago', NOMBRES_FRECUENCIA[prestamo.frecuencia] || prestamo.frecuencia, 'Modalidad de pago'],
-      ['Estado', prestamo.estado === 'finalizado' ? 'Finalizado' : 'Activo']
+      ['Frecuencia de pago', NOMBRES_FRECUENCIA[prestamo.frecuencia] || prestamo.frecuencia, 'Modalidad de pago']
+      // CAMBIO (a pedido): se quitó la fila "Estado" (Activo/Finalizado) de este recibo.
     ];
     // NUEVO: a pedido — documento del cliente (bajo su nombre) y número de
     // solicitud (encima de "CRÉDITO OTORGADO"). Solo se dibujan si existen.
@@ -22487,6 +22513,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     return 'documento';
   }
 
+  // Precarga la fuente del valor del comprobante: el canvas solo puede
+  // usar una fuente que ya esté cargada cuando se dibuja.
+  try{ if(document.fonts && document.fonts.load) document.fonts.load("800 68px PrestaYaMonto", "$0123456789."); }catch(err){}
+
   function generarCanvasComprobante(prestamo, cuota, pagoEspecifico, opciones){
     // CORREGIDO: cuando un solo abono se reparte en cascada entre VARIAS
     // cuotas (ej. el cliente paga 2 cuotas juntas en un solo pago), se
@@ -22823,13 +22853,17 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const textoMontoCompleto = String(formatearPesos(montoAbonado));
     const llevaSignoPesos = /^\s*\$/.test(textoMontoCompleto);
     const textoMontoAbono = textoMontoCompleto.replace(/^\s*\$\s*/, '');
-    const PROPORCION_SIGNO = 0.72;
-    let tamMonto = 60;   // A pedido: monto más pequeño (antes 78) y con menos peso (600, antes 800)
+    // CAMBIO (a pedido, con imagen de referencia): el valor usa una fuente
+    // condensada extra gruesa (PrestaYaMonto), con el "$" del mismo tamaño
+    // que el número y más separado.
+    const fuenteMonto = (tam)=> "800 " + tam + "px PrestaYaMonto, 'Roboto Condensed', 'Arial Narrow', Inter, Arial, sans-serif";
+    const PROPORCION_SIGNO = 1;
+    let tamMonto = 68;   // A pedido: monto más pequeño (antes 78) y con menos peso (600, antes 800) — CAMBIO: a pedido, ahora 700, un poco más de peso
     function medirMontoAbono(){
-      ctx.font = fuente(600, tamMonto * PROPORCION_SIGNO);
+      ctx.font = fuenteMonto(tamMonto * PROPORCION_SIGNO);
       const anchoSigno = llevaSignoPesos ? ctx.measureText('$').width : 0;
-      const espacioSigno = llevaSignoPesos ? tamMonto * 0.24 : 0;
-      ctx.font = fuente(600, tamMonto);
+      const espacioSigno = llevaSignoPesos ? tamMonto * 0.22 : 0;
+      ctx.font = fuenteMonto(tamMonto);
       const anchoNumero = ctx.measureText(textoMontoAbono).width;
       return { anchoSigno, espacioSigno, anchoNumero, total: anchoSigno + espacioSigno + anchoNumero };
     }
@@ -22839,12 +22873,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
     const xMonto = centroX - medidaMonto.total / 2;
-    const yBaseMonto = yCajaMonto + altoCajaMonto / 2 + tamMonto * 0.36;
+    const yBaseMonto = yCajaMonto + altoCajaMonto / 2 + tamMonto * 0.355;
     if(llevaSignoPesos){
-      ctx.font = fuente(600, tamMonto * PROPORCION_SIGNO);
-      ctx.fillText('$', xMonto, yBaseMonto - tamMonto * 0.09);
+      ctx.font = fuenteMonto(tamMonto * PROPORCION_SIGNO);
+      ctx.fillText('$', xMonto, yBaseMonto);
     }
-    ctx.font = fuente(600, tamMonto);
+    ctx.font = fuenteMonto(tamMonto);
     ctx.fillText(textoMontoAbono, xMonto + medidaMonto.anchoSigno + medidaMonto.espacioSigno, yBaseMonto);
     ctx.textAlign = 'center';
     // A pedido: se quitó el contorno que le daba peso extra al monto.
@@ -23179,6 +23213,14 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       toggleAbono.classList.toggle('toggle-verde', activo);
       toggleAbono.setAttribute('aria-checked', String(activo));
     }
+    // NUEVO: mismo tratamiento para "Fecha de próximo pago" de Agregar Abono
+    const toggleProximoAbono = document.getElementById('toggle-proximo-abono');
+    if(toggleProximoAbono){
+      const proximoActivo = mostrarReciboProximo();
+      toggleProximoAbono.classList.toggle('on', proximoActivo);
+      toggleProximoAbono.classList.toggle('toggle-verde', proximoActivo);
+      toggleProximoAbono.setAttribute('aria-checked', String(proximoActivo));
+    }
     if(typeof aplicarTogglesRecibo === 'function'){ try{ aplicarTogglesRecibo(); }catch(err){} }
     if(typeof aplicarTogglesComprobanteDesdePrestamo === 'function'){ try{ aplicarTogglesComprobanteDesdePrestamo(); }catch(err){} }
   }
@@ -23190,6 +23232,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     try{ localStorage.setItem(RECIBO_PROXIMO_KEY, activo ? '1' : '0'); }
     catch(err){ reciboProximoEnMemoria = activo; }
   }
+  document.getElementById('toggle-proximo-abono').addEventListener('click', ()=>{
+    guardarReciboProximo(!mostrarReciboProximo());
+    sincronizarTogglesSaldoComprobante();
+  });
   function guardarReciboPuntualidad(activo){
     try{ localStorage.setItem(RECIBO_PUNTUALIDAD_KEY, activo ? '1' : '0'); }
     catch(err){ reciboPuntualidadEnMemoria = activo; }
