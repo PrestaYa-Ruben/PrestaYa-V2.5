@@ -8976,6 +8976,18 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           <input class="field-input" id="input-bd-empresa" type="text" placeholder="Toca y escribe">
         </div>
 
+        <!-- NUEVO: a pedido — quién recomendó o refirió a este cliente -->
+        <div class="form-field">
+          <label class="field-label" for="input-bd-recomendado">Recomendado por</label>
+          <input class="field-input" id="input-bd-recomendado" type="text" placeholder="Toca y escribe">
+        </div>
+
+        <!-- NUEVO: a pedido — espacio libre para notas del cliente -->
+        <div class="form-field">
+          <label class="field-label" for="input-bd-notas">Notas</label>
+          <textarea class="field-input field-textarea" id="input-bd-notas" rows="3" placeholder="Toca y escribe"></textarea>
+        </div>
+
         <div class="card" style="padding:14px 16px;">
           <div class="mora-toggle-row" style="padding:0;">
             <div class="mora-toggle-text">
@@ -28109,7 +28121,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       direccion: /^(direcci[oó]n|dir\.?|domicilio)\s*[:\-]\s*(.*)$/i,
       barrio: /^(barrio)\s*[:\-]\s*(.*)$/i,
       ciudad: /^(ciudad|municipio)\s*[:\-]\s*(.*)$/i,
-      empresa: /^(empresa|compa[ñn][ií]a|negocio|lugar\s+de\s+(trabajo|empleo)|sitio\s+de\s+trabajo|ocupaci[oó]n|oficio|profesi[oó]n|empleador|trabajo)\s*[:\-]\s*(.*)$/i
+      empresa: /^(empresa|compa[ñn][ií]a|negocio|lugar\s+de\s+(trabajo|empleo)|sitio\s+de\s+trabajo|ocupaci[oó]n|oficio|profesi[oó]n|empleador|trabajo)\s*[:\-]\s*(.*)$/i,
+      // NUEVO: "Recomendado por: …" / "Referido por: …" / "Referencia: …"
+      recomendadoPor: /^(recomendad[oa](\s+por)?|referid[oa](\s+por)?|recomienda|quien\s+(lo|la)\s+recomienda|referencia)\s*[:\-]\s*(.*)$/i
     };
     lineas.forEach((linea, i)=>{
       if(usadas.has(i)) return;
@@ -28226,6 +28240,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(detectado.barrio) document.getElementById('input-bd-barrio').value = detectado.barrio;
     if(detectado.ciudad) document.getElementById('input-bd-ciudad').value = detectado.ciudad;
     if(detectado.empresa) document.getElementById('input-bd-empresa').value = detectado.empresa;
+    if(detectado.recomendadoPor) document.getElementById('input-bd-recomendado').value = detectado.recomendadoPor;
   });
   document.getElementById('btn-limpiar-pegar-datos-bd').addEventListener('click', ()=>{
     inputPegarDatosBd.value = '';
@@ -28289,7 +28304,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       (e.whatsapp || '').toLowerCase().includes(q) ||
       (e.ciudad || '').toLowerCase().includes(q) ||
       (e.barrio || '').toLowerCase().includes(q) ||
-      (e.empresa || '').toLowerCase().includes(q)
+      (e.empresa || '').toLowerCase().includes(q) ||
+      (e.recomendadoPor || '').toLowerCase().includes(q) ||
+      (e.notas || '').toLowerCase().includes(q)
     );
   }
 
@@ -28314,7 +28331,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // ---------- Guardar (formulario) ----------
   const formBaseDatos = document.getElementById('form-base-datos');
   function limpiarFormularioBaseDatos(){
-    ['input-bd-nombre','input-bd-cedula','input-bd-telefono','input-bd-whatsapp','input-bd-direccion','input-bd-barrio','input-bd-ciudad','input-bd-empresa'].forEach(id=>{
+    ['input-bd-nombre','input-bd-cedula','input-bd-telefono','input-bd-whatsapp','input-bd-direccion','input-bd-barrio','input-bd-ciudad','input-bd-empresa','input-bd-recomendado','input-bd-notas'].forEach(id=>{
       document.getElementById(id).value = '';
     });
     toggleBdRecordatorio.classList.add('on');
@@ -28340,6 +28357,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       barrio: document.getElementById('input-bd-barrio').value.trim(),
       ciudad: document.getElementById('input-bd-ciudad').value.trim(),
       empresa: document.getElementById('input-bd-empresa').value.trim(),
+      recomendadoPor: document.getElementById('input-bd-recomendado').value.trim(),
+      notas: document.getElementById('input-bd-notas').value.trim(),
       aceptaRecordatorio: toggleBdRecordatorio.classList.contains('on'),
       fechaCreacion: new Date().toISOString()
     };
@@ -28368,6 +28387,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       ['Barrio', entrada.barrio],
       ['Ciudad', entrada.ciudad],
       ['Empresa o lugar de trabajo', entrada.empresa],
+      ['Recomendado por', entrada.recomendadoPor],
+      ['Notas', entrada.notas],
       ['Acepta recordatorio de pago', entrada.aceptaRecordatorio ? 'Sí' : 'No']
     ];
     const cont = document.getElementById('bd-detalle-filas');
@@ -28383,6 +28404,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       spanValor.className = 'cc-resumen-valor';
       spanValor.style.textAlign = 'right';
       spanValor.textContent = valor;
+      // NUEVO: las notas pueden ser largas — van debajo de su etiqueta, a
+      // todo el ancho y respetando los saltos de línea.
+      if(label === 'Notas'){
+        fila.style.cssText = 'flex-direction:column; align-items:flex-start; gap:4px;';
+        spanValor.style.cssText = 'text-align:left; white-space:pre-wrap; overflow-wrap:anywhere; font-weight:500; line-height:1.4;';
+      }
       fila.appendChild(spanLabel);
       fila.appendChild(spanValor);
       cont.appendChild(fila);
