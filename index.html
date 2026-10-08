@@ -4489,10 +4489,10 @@ body.modo-oscuro #screen-clientes{ --neu-base:#1A1F29; --neu-luz:rgba(255,255,25
   height:28px; box-sizing:border-box;
   padding:0 15px;
   display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
-  background:#868C96;
-  border:none;
+  background:#FFFFFF; /* CAMBIO (a pedido): fondo blanco, texto negro y borde remarcado */
+  border:1.5px solid #9AA1AC;
   border-radius:999px;
-  color:#FFFFFF;
+  color:#101114;
   font-size:12.5px;
   font-weight:500;
   box-shadow:none;
@@ -4503,6 +4503,7 @@ body.modo-oscuro #screen-clientes .search-box input,
 body.modo-oscuro #screen-clientes .search-box input::placeholder,
 body.modo-oscuro #screen-clientes .search-box .mic-search-btn{ color:var(--text); }
 #screen-clientes #chips-rutas-clientes .tab-button.active{
+  border-color:#21305F;
   background:#21305F;
   color:#FFFFFF;
   font-weight:500;
