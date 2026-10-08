@@ -2567,6 +2567,13 @@ body.ocultar-codigo-credito .loan-detail-code,
 body.ocultar-codigo-credito .mora-hoy-codigo{
   display:none;
 }
+.loan-detail-estado{ text-align:right; cursor:pointer; flex-shrink:0; }
+.loan-detail-estado-label{ font-size:12px; font-weight:500; color:var(--text-secondary); line-height:1.2; }
+.loan-detail-estado-valor{ display:inline-flex; align-items:center; gap:6px; font-size:15px; font-weight:700; margin-top:3px; }
+.loan-detail-estado-valor .punto{ width:8px; height:8px; border-radius:50%; background:currentColor; }
+.loan-detail-estado.activo .loan-detail-estado-valor{ color:#04883D; }
+.loan-detail-estado.vencido .loan-detail-estado-valor{ color:#DC2626; }
+.loan-detail-estado.finalizado .loan-detail-estado-valor{ color:var(--text-secondary); }
 .loan-detail-client{ font-size:14.5px; color:var(--text-secondary); font-weight:400; margin-top:2px; }
 .loan-detail-amount{
   font-size:32px;
@@ -4982,6 +4989,29 @@ body:not(.modo-oscuro) #resumen-activos-cliente-overlay{ --success:#0B8F45; --wa
 @media (prefers-reduced-motion: reduce){ .avatar-circle.avatar-torta{ transition:none; } }
 .client-row.client-row-cliente .avatar-anillo-wrap{ margin:0 5px 0 4px; } /* aire para los globos, que sobresalen del anillo */
 .avatar-columna{ display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+/* NUEVO (a pedido): torta por cuotas — sin anillo ni globito, más grande */
+.client-row-cliente .avatar-anillo-wrap.con-torta-cuotas{ width:58px; height:58px; margin:0 3px 0 2px; }
+.client-row-cliente .con-torta-cuotas .avatar-anillo-progreso,
+.client-row-cliente .con-torta-cuotas .avatar-globo-cuotas{ display:none !important; }
+.client-row-cliente .avatar-circle.avatar-torta-cuotas{ width:58px; height:58px; background:none !important; border:none; box-shadow:none; border-radius:50%; overflow:visible; }
+.client-row-cliente .avatar-circle.avatar-torta-cuotas svg.torta-cuotas-svg{ width:58px; height:58px; stroke:none; }
+.client-row-cliente .avatar-columna:has(.con-torta-cuotas) .avatar-leyenda{ margin-top:6px; }
+.client-row-cliente .avatar-circle.avatar-torta-cuotas{ cursor:pointer; }
+/* NUEVO: modal "Fechas de pago" (al tocar la torta) */
+#torta-fechas-overlay{ background:rgba(10,13,20,0.55); padding:16px; }
+.torta-fechas-card{ background:#FFFFFF; border-radius:18px; width:100%; max-width:380px; max-height:calc(100vh - 32px); display:flex; flex-direction:column; padding:18px 16px 16px; box-shadow:0 24px 60px rgba(0,0,0,0.35); }
+.torta-fechas-nombre{ font-size:18px; font-weight:800; color:#0A0D14; text-align:center; line-height:1.25; }
+.torta-fechas-sub{ font-size:14px; font-weight:600; color:#4A5363; text-align:center; margin:2px 0 12px; }
+.torta-fechas-cuerpo{ overflow-y:auto; -webkit-overflow-scrolling:touch; flex:1 1 auto; min-height:0; }
+.torta-fechas-credito{ font-size:12.5px; font-weight:700; color:#1D4ED8; margin:12px 0 6px; text-transform:uppercase; letter-spacing:0.3px; }
+.torta-fechas-credito:first-child{ margin-top:0; }
+.torta-fechas-tabla{ width:100%; border-collapse:collapse; font-size:14px; color:#0A0D14; }
+.torta-fechas-tabla td{ border:1px solid #D5D9E0; padding:9px 6px; white-space:nowrap; }
+.torta-fechas-tabla td.num{ font-weight:600; }
+.torta-fechas-tabla td.valor{ text-align:right; font-variant-numeric:tabular-nums; }
+.torta-fechas-tabla td.estado{ text-align:center; font-weight:800; font-size:12.5px; min-width:74px; }
+.torta-fechas-tabla td.estado.pagada{ color:#04883D; }
+.torta-fechas-tabla td.estado.vencida{ color:#D21F30; }
 /* Menú de orden de Clientes (píldora A-Z) */
 .menu-orden-overlay{ position:fixed; inset:0; z-index:1200; background:rgba(15,20,35,0.18); }
 .menu-orden-lista{
@@ -10893,6 +10923,22 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   </div>
 </div>
 
+<!-- NUEVO (a pedido): "Fechas de pago" — se abre al tocar la torta de cuotas
+     en la tarjeta del cliente (área Clientes). Tabla por cuota con su fecha,
+     valor y estado (PAGADA / VENCIDA), con opción de compartir como imagen. -->
+<div id="torta-fechas-overlay" class="confirm-modal-overlay" style="display:none;">
+  <div class="torta-fechas-card">
+    <div class="torta-fechas-nombre" id="torta-fechas-nombre"></div>
+    <div class="torta-fechas-sub">Fechas de pago</div>
+    <div class="torta-fechas-cuerpo" id="torta-fechas-cuerpo"></div>
+    <button type="button" class="primary-button" id="btn-torta-fechas-compartir" style="width:100%; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:8px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+      Compartir
+    </button>
+    <button type="button" class="btn-outline-share" id="btn-torta-fechas-cerrar" style="width:100%; margin:10px 0 0;">Cerrar</button>
+  </div>
+</div>
+
 <!-- ==========================================================
      NUEVO: Vista previa "Cronograma de pagos" — botón "Compartir
      cronograma" de Detalle del Préstamo. Antes compartía solo texto
@@ -15535,6 +15581,194 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   const angulosGloboCliente = new Map();
 
   // ---------- Construir la tarjeta visual de un cliente ----------
+  // NUEVO (a pedido): torta plana dividida en tantas porciones como cuotas
+  // tengan los créditos activos del cliente. Gris = cuota pendiente,
+  // verde = cuota pagada, rojo = cuota vencida sin pagar. Con 1 cuota es un
+  // círculo entero; con más de 24, las porciones serían muy delgadas y se
+  // llena como torta continua, sin líneas divisorias.
+  // estados: arreglo de 'pagada' | 'vencida' | 'pendiente'.
+  function construirTortaCuotas(estados){
+    const total = estados.length;
+    if(!total) return '';
+    const orden = { pagada:0, vencida:1, pendiente:2 };
+    const lista = estados.slice().sort((a, b)=> orden[a] - orden[b]);
+    const COLOR = { pagada:'#1FA855', vencida:'#E0293A', pendiente:'#C3C8D1' };
+    const cx = 30, cy = 30, r = 29, inicio = -Math.PI / 2;
+    const conDivisiones = total > 1 && total <= 24;
+    function porcion(a0, a1, color){
+      if(a1 - a0 >= Math.PI * 2 - 1e-6) return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + color + '"/>';
+      const x0 = cx + r * Math.cos(a0), y0 = cy + r * Math.sin(a0);
+      const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+      return '<path d="M' + cx + ' ' + cy + ' L' + x0.toFixed(2) + ' ' + y0.toFixed(2) +
+        ' A' + r + ' ' + r + ' 0 ' + ((a1 - a0) > Math.PI ? 1 : 0) + ' 1 ' + x1.toFixed(2) + ' ' + y1.toFixed(2) +
+        ' Z" fill="' + color + '"' + (conDivisiones ? ' stroke="#FFFFFF" stroke-width="1.4" stroke-linejoin="round"' : '') + '/>';
+    }
+    let svg = '';
+    if(total <= 24){
+      const paso = (Math.PI * 2) / total;
+      lista.forEach((estado, i)=>{ svg += porcion(inicio + i * paso, inicio + (i + 1) * paso, COLOR[estado]); });
+      // NUEVO (a pedido): número de cada porción (1, 2, 3…), en el sentido
+      // de las manecillas desde arriba. Hasta 12 cuotas; con más, las
+      // porciones son demasiado delgadas para que el número se lea.
+      if(total <= 12){
+        const tam = total === 1 ? 20 : (total <= 4 ? 13 : (total <= 8 ? 10.5 : 8.5));
+        const radioTexto = total === 1 ? 0 : r * (total <= 4 ? 0.55 : 0.64);
+        lista.forEach((estado, i)=>{
+          const medio = inicio + (i + 0.5) * paso;
+          const x = cx + radioTexto * Math.cos(medio), y = cy + radioTexto * Math.sin(medio);
+          svg += '<text x="' + x.toFixed(2) + '" y="' + y.toFixed(2) + '" text-anchor="middle" dominant-baseline="central" font-size="' + tam +
+            '" font-weight="700" font-family="Inter, Arial, sans-serif" fill="' + (estado === 'pendiente' ? '#4A5363' : '#FFFFFF') + '"' +
+            // NUEVO (a pedido): número difuminado en cuotas NO pagadas
+            (estado === 'pagada' ? '' : ' fill-opacity="' + (estado === 'pendiente' ? '0.25' : '0.55') + '"') +
+            '>' + (i + 1) + '</text>';
+        });
+      }
+    }else{
+      let a = inicio;
+      ['pagada', 'vencida', 'pendiente'].forEach(estado=>{
+        const n = lista.filter(e => e === estado).length;
+        if(!n) return;
+        const a1 = a + (Math.PI * 2) * n / total;
+        svg += porcion(a, a1, COLOR[estado]);
+        a = a1;
+      });
+    }
+    return '<svg class="torta-cuotas-svg" viewBox="0 0 60 60" aria-hidden="true">' + svg + '</svg>';
+  }
+
+  // ---------- NUEVO (a pedido): modal "Fechas de pago" al tocar la torta ----------
+  // Solo lectura: usa el plan y los pagos ya guardados (no recalcula nada).
+  const MESES_CORTOS_TORTA = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  function fechaCortaTorta(iso){
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+    if(!m) return iso || '';
+    return m[3] + '-' + MESES_CORTOS_TORTA[parseInt(m[2], 10) - 1] + '-' + m[1].slice(2);
+  }
+  let datosFechasTorta = null; // { nombre, grupos:[{titulo, filas:[{numero, fecha, valor, estado}]}] }
+  function abrirFechasPagoTorta(cliente, prestamos){
+    const activos = (prestamos || []).slice().sort((a, b)=> (a.fecha || '').localeCompare(b.fecha || '') || (a.id - b.id));
+    const grupos = activos.map((p, i)=>({
+      titulo: activos.length > 1 ? ('Crédito ' + (i + 1) + (p.codigo ? ' · ' + p.codigo : '')) : '',
+      filas: (p.plan || []).map(c=>({
+        numero: c.numero,
+        fecha: fechaCortaTorta(c.fechaISO),
+        valor: formatearPesos(c.total),
+        estado: estaCuotaPagada(p, c.numero) ? 'pagada' : (cuotaVencida(p, c) ? 'vencida' : 'pendiente')
+      }))
+    }));
+    datosFechasTorta = { nombre: cliente.nombre || '', grupos };
+    document.getElementById('torta-fechas-nombre').textContent = datosFechasTorta.nombre;
+    const cuerpo = document.getElementById('torta-fechas-cuerpo');
+    cuerpo.innerHTML = '';
+    grupos.forEach(g=>{
+      if(g.titulo){
+        const t = document.createElement('div');
+        t.className = 'torta-fechas-credito';
+        t.textContent = g.titulo;
+        cuerpo.appendChild(t);
+      }
+      const tabla = document.createElement('table');
+      tabla.className = 'torta-fechas-tabla';
+      g.filas.forEach(f=>{
+        const tr = document.createElement('tr');
+        [['num', 'Cuota ' + f.numero], ['fecha', f.fecha], ['valor', f.valor],
+         ['estado ' + f.estado, f.estado === 'pagada' ? 'PAGADA' : (f.estado === 'vencida' ? 'VENCIDA' : '')]]
+          .forEach(([clase, texto])=>{
+            const td = document.createElement('td');
+            td.className = clase;
+            td.textContent = texto;
+            tr.appendChild(td);
+          });
+        tabla.appendChild(tr);
+      });
+      cuerpo.appendChild(tabla);
+    });
+    cuerpo.scrollTop = 0;
+    document.getElementById('torta-fechas-overlay').style.display = 'flex';
+  }
+  function cerrarFechasPagoTorta(){
+    document.getElementById('torta-fechas-overlay').style.display = 'none';
+  }
+  // Imagen PNG de la misma tabla (para compartir)
+  function generarCanvasFechasTorta(datos){
+    const ESC = 2, W = 400, PAD = 20, FILA = 38, ALTO_TITULO_CREDITO = 28;
+    const COLS = [PAD, PAD + 90, PAD + 190, PAD + 278, W - PAD]; // bordes de columna
+    let alto = PAD + 30 + 24 + 14;
+    datos.grupos.forEach(g=>{ alto += (g.titulo ? ALTO_TITULO_CREDITO : 0) + g.filas.length * FILA + 10; });
+    alto += 26 + PAD;
+    const canvas = document.createElement('canvas');
+    canvas.width = W * ESC; canvas.height = alto * ESC;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(ESC, ESC);
+    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, W, alto);
+    const FUENTE = 'Inter, Arial, sans-serif';
+    let y = PAD;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.fillStyle = '#0A0D14'; ctx.font = '800 21px ' + FUENTE;
+    ctx.fillText(datos.nombre, W / 2, y, W - PAD * 2);
+    y += 30;
+    ctx.fillStyle = '#4A5363'; ctx.font = '600 15px ' + FUENTE;
+    ctx.fillText('Fechas de pago', W / 2, y);
+    y += 24 + 14;
+    datos.grupos.forEach(g=>{
+      if(g.titulo){
+        ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+        ctx.fillStyle = '#1D4ED8'; ctx.font = '700 13px ' + FUENTE;
+        ctx.fillText(g.titulo.toUpperCase(), PAD, y + 4);
+        y += ALTO_TITULO_CREDITO;
+      }
+      g.filas.forEach(f=>{
+        ctx.strokeStyle = '#D5D9E0'; ctx.lineWidth = 1;
+        ctx.strokeRect(COLS[0] + 0.5, y + 0.5, COLS[4] - COLS[0] - 1, FILA);
+        for(let k = 1; k < 4; k++){ ctx.beginPath(); ctx.moveTo(COLS[k] + 0.5, y); ctx.lineTo(COLS[k] + 0.5, y + FILA); ctx.stroke(); }
+        const yc = y + FILA / 2;
+        ctx.textBaseline = 'middle'; ctx.fillStyle = '#0A0D14';
+        ctx.textAlign = 'left'; ctx.font = '600 14px ' + FUENTE;
+        ctx.fillText('Cuota ' + f.numero, COLS[0] + 8, yc);
+        ctx.font = '400 14px ' + FUENTE;
+        ctx.fillText(f.fecha, COLS[1] + 8, yc);
+        ctx.textAlign = 'right';
+        ctx.fillText(f.valor, COLS[3] - 8, yc);
+        if(f.estado !== 'pendiente'){
+          ctx.textAlign = 'center'; ctx.fillStyle = f.estado === 'pagada' ? '#04883D' : '#D21F30'; ctx.font = '800 13px ' + FUENTE;
+          ctx.fillText(f.estado === 'pagada' ? 'PAGADA' : 'VENCIDA', (COLS[3] + COLS[4]) / 2, yc);
+        }
+        y += FILA;
+      });
+      y += 10;
+    });
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.fillStyle = '#8A93A3'; ctx.font = '500 11.5px ' + FUENTE;
+    ctx.fillText('Generado el ' + fechaCortaTorta(claveFechaConOffset(0)), W / 2, y + 6);
+    return canvas;
+  }
+  document.getElementById('btn-torta-fechas-cerrar').addEventListener('click', cerrarFechasPagoTorta);
+  document.getElementById('torta-fechas-overlay').addEventListener('click', (e)=>{ if(e.target.id === 'torta-fechas-overlay') cerrarFechasPagoTorta(); });
+  document.getElementById('btn-torta-fechas-compartir').addEventListener('click', async ()=>{
+    if(!datosFechasTorta) return;
+    const canvas = generarCanvasFechasTorta(datosFechasTorta);
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1));
+    if(!blob){ alert('No se pudo generar la imagen. Intenta de nuevo.'); return; }
+    const nombreBase = (datosFechasTorta.nombre || 'cliente').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase();
+    const nombreArchivo = 'fechas-de-pago-' + nombreBase + '-' + claveFechaConOffset(0) + '.png';
+    const archivo = new File([blob], nombreArchivo, { type: 'image/png' });
+    if(navigator.share && navigator.canShare && navigator.canShare({ files: [archivo] })){
+      try{ await navigator.share({ files: [archivo], title: 'Fechas de pago' }); return; }
+      catch(err){
+        if(err && err.name === 'AbortError') return;
+        console.warn('navigator.share no funcionó, se usa la descarga como respaldo:', err);
+      }
+    }
+    const url = URL.createObjectURL(blob);
+    const enlace = document.createElement('a');
+    enlace.href = url;
+    enlace.download = nombreArchivo;
+    document.body.appendChild(enlace);
+    enlace.click();
+    document.body.removeChild(enlace);
+    setTimeout(()=> URL.revokeObjectURL(url), 60000);
+  });
+
   function crearTarjetaCliente(cliente){
     const card = document.createElement('div');
     card.className = 'card client-row client-row-cliente';
@@ -15741,6 +15975,25 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         globoFaltan.style.transform = transformarGlobo(anguloGlobo + 180);
         avatar.style.setProperty('--torta-pct', (anguloGlobo / 3.6) + '%');
       }));
+      // NUEVO (a pedido): torta por cuotas, más grande, en lugar del círculo;
+      // el anillo de progreso y el globito quedan ocultos (ver CSS).
+      const estadosCuotas = [];
+      prestamosActivosCliente.forEach(p=>{
+        (p.plan || []).forEach(c=>{
+          estadosCuotas.push(estaCuotaPagada(p, c.numero) ? 'pagada' : (cuotaVencida(p, c) ? 'vencida' : 'pendiente'));
+        });
+      });
+      if(estadosCuotas.length){
+        avatar.classList.remove('avatar-torta');
+        avatar.classList.add('avatar-torta-cuotas');
+        avatar.innerHTML = construirTortaCuotas(estadosCuotas);
+        wrapAvatar.classList.add('con-torta-cuotas');
+        // NUEVO (a pedido): al tocar la torta se abre "Fechas de pago" (no la ficha)
+        avatar.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          abrirFechasPagoTorta(cliente, prestamosActivosCliente);
+        });
+      }
       // (la columna avatar + leyenda se agrega a la tarjeta al final de este bloque)
       card.appendChild(card._columnaAvatar);
     }else{
@@ -20332,6 +20585,26 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     vence.setHours(0,0,0,0);
     return Math.round((hoy - vence) / (1000 * 60 * 60 * 24));
   }
+  // NUEVO (a pedido): días de mora acumulada y días pagados por anticipado
+  // de UN crédito. Cuota pagada: el pago con que se completó (mismo cálculo
+  // de "PAGO N DÍAS TARDE / ANTES"); cuota vencida sin pagar: días de atraso
+  // a hoy. Lo usan el modal "Préstamos activos" y Detalle del Préstamo.
+  function diasMoraYAnticipadoPrestamo(prestamo){
+    let mora = 0, anticipado = 0;
+    (prestamo.plan || []).forEach(cuota=>{
+      if(estaCuotaPagada(prestamo, cuota.numero)){
+        const pagosCuota = pagosDeCuota(prestamo, cuota.numero);
+        const r = calcularPuntualidadPago(cuota, pagosCuota[pagosCuota.length - 1]);
+        if(r && r.tipo === 'tarde') mora += r.dias;
+        if(r && r.tipo === 'anticipado') anticipado += r.dias;
+      }else if(cuotaVencida(prestamo, cuota)){
+        mora += diasDeAtraso(cuota);
+      }
+    });
+    return { mora, anticipado };
+  }
+  function textoDiasConteo(n){ return n === 0 ? '0' : n + (n === 1 ? ' día' : ' días'); }
+
   function cuotaVencida(prestamo, cuota){
     if(estaCuotaPagada(prestamo, cuota.numero)) return false;
     return diasDeAtraso(cuota) > 0;
@@ -20541,6 +20814,24 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         ['Progreso', progreso + '%', COLOR.cobrado]
       ]
     ];
+    // NUEVO (a pedido): "Mora acumulada" y "Días anticipado" de los créditos
+    // activos. Por cada cuota: si ya está pagada, se mira el pago con el que
+    // se completó (mismo cálculo de "PAGO N DÍAS TARDE / ANTES" de las
+    // cuotas); si no está pagada y ya venció, cuenta los días de atraso a hoy.
+    let diasMoraAcumulada = 0, diasAnticipados = 0;
+    activos.forEach(p=>{
+      const r = diasMoraYAnticipadoPrestamo(p);
+      diasMoraAcumulada += r.mora;
+      diasAnticipados += r.anticipado;
+    });
+    const textoDias = textoDiasConteo;
+    // CAMBIO (a pedido): van justo debajo de "Interés pendiente" (antes de "Progreso")
+    const indiceProgreso = grupos[1].findIndex(f => f[0] === 'Progreso');
+    grupos[1].splice(indiceProgreso === -1 ? grupos[1].length : indiceProgreso, 0,
+      ['Mora acumulada', textoDias(diasMoraAcumulada), diasMoraAcumulada > 0 ? 'var(--danger)' : COLOR.base],
+      ['Días anticipado', textoDias(diasAnticipados), diasAnticipados > 0 ? COLOR.cobrado : COLOR.base]
+    );
+
     const cont = document.getElementById('resumen-activos-cliente-filas');
     cont.innerHTML = '';
     grupos.forEach((filas, i)=>{
@@ -20847,7 +21138,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
             <div class="loan-detail-code">${prestamo.codigo || ''}</div>
             <div class="loan-detail-client">${nombreCliente}</div>
           </div>
-          <div class="loan-badge ${estadoVisual}">${etiquetaEstadoVisual(estadoVisual)}</div>
+          <!-- CAMBIO (a pedido): en vez de la píldora, "Estado del crédito"
+               con el estado debajo (sigue abriendo el Resumen al tocarlo). -->
+          <div class="loan-detail-estado ${estadoVisual}" role="button" aria-label="Ver resumen del crédito">
+            <div class="loan-detail-estado-label">Estado del crédito</div>
+            <div class="loan-detail-estado-valor"><span class="punto"></span>${etiquetaEstadoVisual(estadoVisual)}</div>
+          </div>
         </div>
 
         <div class="loan-detail-amount-toggle" id="loan-detail-amount-toggle">
@@ -20914,6 +21210,23 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           </div>
         </div>
 
+        ${(()=>{
+          // NUEVO (a pedido): Mora acumulada y Días anticipado, en fila,
+          // entre el interés y la barra de progreso.
+          const dias = diasMoraYAnticipadoPrestamo(prestamo);
+          return `
+        <div class="loan-detail-grid" style="margin-top:12px;">
+          <div class="loan-detail-item">
+            <div class="loan-detail-label">Mora acumulada</div>
+            <div class="loan-detail-value${dias.mora > 0 ? ' danger' : ''}">${textoDiasConteo(dias.mora)}</div>
+          </div>
+          <div class="loan-detail-item">
+            <div class="loan-detail-label">Días anticipado</div>
+            <div class="loan-detail-value${dias.anticipado > 0 ? ' success' : ''}">${textoDiasConteo(dias.anticipado)}</div>
+          </div>
+        </div>`;
+        })()}
+
         <div class="loan-detail-progress">
           <div class="loan-detail-progress-header">
             <span>Progreso</span>
@@ -20954,7 +21267,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // NUEVO: badge de estado (Activo/Vencido/Finalizado) — abre el
     // "Ticket de Crédito". stopPropagation() por si en el futuro se
     // agrega algún clic sobre el encabezado de la tarjeta.
-    const badgeEstadoDetalle = loanDetailCardContainer.querySelector('.loan-badge');
+    const badgeEstadoDetalle = loanDetailCardContainer.querySelector('.loan-detail-estado');
     if(badgeEstadoDetalle){
       badgeEstadoDetalle.addEventListener('click', (e)=>{
         e.stopPropagation();
