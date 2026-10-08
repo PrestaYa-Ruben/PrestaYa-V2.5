@@ -2545,6 +2545,19 @@ body.modo-oscuro .loan-card-full.loan-card-finalizado .loan-note{ background:rgb
 .loan-card-full .loan-note-titulo{ font-size:14.5px; font-weight:400; color:var(--text-secondary); line-height:1.3; margin-bottom:1px; }
 .loan-card-full .loan-note-contenido span{ font-size:14.5px; font-weight:600; line-height:1.4; color:var(--text); }
 .loan-card-full .loan-note-titulo::after{ content:':'; }
+/* NUEVO (a pedido): la nota respeta los cambios de renglón (punto aparte) y se ve completa */
+.loan-note span{ white-space:pre-wrap; }
+.loan-card-full .loan-note.loan-note-editable{ display:flex; cursor:pointer; }
+.loan-card-full .loan-note.loan-note-vacia{ background:transparent !important; border:1.5px dashed rgba(20,30,60,0.16); padding:7px 12px; align-items:center; }
+.loan-card-full .loan-note.loan-note-vacia .loan-note-icono svg{ stroke:#A3AAB8; }
+.loan-card-full .loan-note-agregar{ font-size:14px; font-weight:500; color:#9AA2B1; line-height:1.3; }
+.loan-card-full .loan-note.loan-note-editando{ cursor:default; }
+.loan-card-full .loan-note-textarea{ display:block; width:100%; box-sizing:border-box; margin-top:4px; padding:8px 10px; border:1.5px solid #9DB4E8; border-radius:10px; background:#FFFFFF; color:#0A0D14; font-size:14.5px; font-weight:600; line-height:1.4; font-family:inherit; resize:none; overflow:hidden; min-height:44px; outline:none; }
+.loan-card-full .loan-note-textarea:focus{ border-color:#2F5FD0; box-shadow:0 0 0 3px rgba(47,95,208,0.15); }
+.loan-card-full .loan-note-acciones{ display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
+.loan-card-full .loan-note-btn{ border:none; border-radius:9px; padding:7px 14px; font-size:13.5px; font-weight:700; font-family:inherit; cursor:pointer; }
+.loan-card-full .loan-note-btn.cancelar{ background:rgba(20,30,60,0.08); color:#18202F; }
+.loan-card-full .loan-note-btn.guardar{ background:#1E2A5A; color:#FFFFFF; }
 
 /* ==========================================================
    DETALLE DE PRÉSTAMO — tarjeta ampliada, tabs, cuotas/pagos
@@ -20880,6 +20893,71 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   document.getElementById('btn-cerrar-resumen-activos-cliente').addEventListener('click', cerrarResumenActivosCliente);
   resumenActivosClienteOverlay.addEventListener('click', (e)=>{ if(e.target === resumenActivosClienteOverlay) cerrarResumenActivosCliente(); });
 
+  // ---------- NUEVO (a pedido): nota del crédito editable desde la tarjeta ----------
+  // Al tocar el bloque "Notas" (área Cliente) se edita ahí mismo, sin abrir
+  // el detalle. Si el crédito no tiene nota, se muestra un renglón tenue
+  // "+ Agregar nota". Respeta los cambios de renglón (punto aparte).
+  // Solo cambia el campo "nota" del préstamo; no toca ningún cálculo.
+  const ICONO_NOTA_TARJETA = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>';
+  function habilitarNotaEditableTarjeta(card, prestamo){
+    let bloque = card.querySelector('.loan-note');
+    if(!bloque){
+      bloque = document.createElement('div');
+      bloque.className = 'loan-note';
+      card.appendChild(bloque);
+    }
+    bloque.classList.add('loan-note-editable');
+    let editando = false;
+    function pintar(){
+      editando = false;
+      const nota = prestamo.nota || '';
+      bloque.classList.toggle('loan-note-vacia', !nota);
+      bloque.classList.remove('loan-note-editando');
+      bloque.innerHTML = '<div class="loan-note-icono">' + ICONO_NOTA_TARJETA + '</div>' +
+        (nota
+          ? '<div class="loan-note-contenido"><div class="loan-note-titulo">Notas</div><span></span></div>'
+          : '<div class="loan-note-contenido"><div class="loan-note-agregar">+ Agregar nota</div></div>');
+      if(nota) bloque.querySelector('span').textContent = nota;
+    }
+    function editar(){
+      editando = true;
+      bloque.classList.remove('loan-note-vacia');
+      bloque.classList.add('loan-note-editando');
+      bloque.innerHTML = '<div class="loan-note-icono">' + ICONO_NOTA_TARJETA + '</div>' +
+        '<div class="loan-note-contenido"><div class="loan-note-titulo">Notas</div>' +
+        '<textarea class="loan-note-textarea" rows="2" placeholder="Escribe la nota…"></textarea>' +
+        '<div class="loan-note-acciones">' +
+          '<button type="button" class="loan-note-btn cancelar">Cancelar</button>' +
+          '<button type="button" class="loan-note-btn guardar">Guardar</button>' +
+        '</div></div>';
+      const area = bloque.querySelector('textarea');
+      area.value = prestamo.nota || '';
+      const ajustar = ()=>{ area.style.height = 'auto'; area.style.height = area.scrollHeight + 'px'; };
+      area.addEventListener('input', ajustar);
+      ajustar();
+      area.focus();
+      area.setSelectionRange(area.value.length, area.value.length);
+      bloque.querySelector('.cancelar').addEventListener('click', (e)=>{ e.stopPropagation(); pintar(); });
+      bloque.querySelector('.guardar').addEventListener('click', (e)=>{
+        e.stopPropagation();
+        // Se conservan los cambios de renglón; solo se quitan espacios sobrantes al inicio/fin
+        const nueva = area.value.replace(/\r\n?/g, '\n').trim();
+        const guardado = prestamosGuardados.find(p => p.id === prestamo.id);
+        if(guardado) guardado.nota = nueva;
+        prestamo.nota = nueva;
+        guardarPrestamos(prestamosGuardados);
+        pintar();
+        mostrarMensajeToast(nueva ? 'Nota guardada' : 'Nota eliminada');
+      });
+    }
+    // Todo toque dentro del bloque se queda aquí (no abre el detalle del crédito)
+    bloque.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      if(!editando) editar();
+    });
+    pintar();
+  }
+
   function renderizarPrestamosCliente(clienteId){
     const listaContenedor = document.getElementById('lista-prestamos-cliente');
     const prestamosCliente = prestamosGuardados.filter(p => p.clienteId === clienteId);
@@ -20920,6 +20998,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         : prestamosFiltrados.slice().reverse();
       prestamosOrdenados.forEach(prestamo=>{
         const card = crearTarjetaPrestamo(prestamo);
+        habilitarNotaEditableTarjeta(card, prestamo); // NUEVO: nota editable desde la tarjeta
         card.classList.add('loan-card-clickable');
         card.addEventListener('click', ()=> abrirDetallePrestamo(prestamo));
         listaContenedor.appendChild(card);
