@@ -2545,6 +2545,9 @@ body.modo-oscuro .loan-card-full.loan-card-finalizado .loan-note{ background:rgb
 .loan-card-full .loan-note-titulo{ font-size:14.5px; font-weight:400; color:var(--text-secondary); line-height:1.3; margin-bottom:1px; }
 .loan-card-full .loan-note-contenido span{ font-size:14.5px; font-weight:600; line-height:1.4; color:var(--text); }
 .loan-card-full .loan-note-titulo::after{ content:':'; }
+/* CAMBIO (a pedido): más espacio entre las tarjetas de crédito del cliente */
+#lista-prestamos-cliente{ display:flex; flex-direction:column; gap:22px; }
+#lista-prestamos-cliente > .card{ margin-top:0; margin-bottom:0; }
 /* NUEVO (a pedido): la nota respeta los cambios de renglón (punto aparte) y se ve completa */
 .loan-note span{ white-space:pre-wrap; }
 .loan-card-full .loan-note.loan-note-editable{ display:flex; cursor:pointer; }
@@ -3343,6 +3346,9 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
 }
 .agregar-cliente-fab svg{ width:19px; height:19px; stroke:currentColor; }
 .agregar-cliente-fab:active{ transform:scale(0.94); }
+/* CAMBIO (a pedido): botón más pequeño, solo con el ícono (sin texto) */
+.agregar-cliente-fab{ width:54px; height:54px; padding:0; gap:0; justify-content:center; border-radius:50%; }
+.agregar-cliente-fab svg{ width:23px; height:23px; }
 
 /* NUEVO: FAB circular del Simulador de Crédito (pantalla Inicio) —
    posicionado más arriba que los otros FAB porque en Inicio la barra
@@ -6938,7 +6944,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
        "Pagar" de Detalle del Préstamo, con degradado verde. -->
   <button type="button" class="agregar-cliente-fab" id="btn-agregar-cliente-fab" aria-label="Agregar cliente">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="17" y1="11" x2="23" y2="11"></line></svg>
-    Agregar cliente
+    <!-- CAMBIO (a pedido): solo el ícono, sin texto -->
   </button>
 
   <!-- NUEVO: pestañas de filtro rápido — "Con crédito" es la predeterminada -->
