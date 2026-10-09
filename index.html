@@ -3422,22 +3422,25 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
    resto de la app sigue en Inter, sin cambios.
    ========================================================== */
 #screen-simulador{
-  --sim-crema: #F5EFDF;
+  /* CAMBIO (a pedido): nueva paleta azul marino #002359 + verde #34AC27.
+     Los nombres "dorado" se conservan para no tocar el resto del código;
+     ahora contienen el verde de la paleta. */
+  --sim-crema: #EEF3F9;
   --sim-tarjeta: #FFFFFF;
-  --sim-navy: #1B2A45;
-  --sim-badge-bg: #E9D9AC;
-  --sim-ayuda-bg: #FBEDDC;
-  --sim-ayuda-borde: #DBA24C;
-  --sim-ayuda-texto: #9C7239;
-  --sim-gris: #9BA3AF;
-  --sim-divisor: #EFEBE2;
-  --sim-dorado: #C89A3C;
-  --sim-dorado-oscuro: #B78A30;
+  --sim-navy: #002359;
+  --sim-badge-bg: #DDF2D9;
+  --sim-ayuda-bg: #EBF0F8;
+  --sim-ayuda-borde: #34AC27;
+  --sim-ayuda-texto: #2C4470;
+  --sim-gris: #8A94A6;
+  --sim-divisor: #E6EBF2;
+  --sim-dorado: #34AC27;
+  --sim-dorado-oscuro: #2A8F1F;
   background:var(--sim-crema);
 }
 .sim-resultado-card,
 .sim-btn-dorado{
-  font-family:'Baloo 2', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif; /* CAMBIO (a pedido): Inter, misma fuente del resto de la app (antes Baloo 2) */
 }
 .sim-resultado-card{
   margin-top:14px;
@@ -3448,7 +3451,7 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
   background:var(--sim-tarjeta);
   border-radius:10px; /* CORREGIDO: antes 20px — a pedido, mismo radio que el resto del sistema */
   border:none;
-  box-shadow:0 1px 3px rgba(27,42,69,0.06);
+  box-shadow:0 1px 3px rgba(0,35,89,0.06);
 }
 .sim-badge-frecuencia{
   display:inline-block;
@@ -3476,9 +3479,9 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
   text-align:left;
 }
 .sim-texto-ayuda{
-  font-size:13px;
+  font-size:15px; /* CAMBIO (a pedido): texto de ayuda más grande (antes 13px) */
   font-weight:500;
-  font-style:italic;
+  font-style:normal; /* CAMBIO (a pedido): sin cursiva en el simulador */
   color:var(--sim-ayuda-texto);
   line-height:1.5;
   margin:0;
@@ -3536,14 +3539,14 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
   margin-left:-4px;
   margin-right:-4px;
   background:var(--sim-dorado);
-  color:var(--sim-navy);
+  color:#FFFFFF;
   font-weight:700;
   font-size:15.5px;
   padding:15px;
   border-radius:999px;
   border:none;
 }
-.sim-btn-dorado svg{ width:18px; height:18px; stroke:var(--sim-navy); }
+.sim-btn-dorado svg{ width:18px; height:18px; stroke:#FFFFFF; }
 .sim-btn-dorado:active{ background:var(--sim-dorado-oscuro); }
 
 .sim-grilla-cuotas{
@@ -3565,6 +3568,126 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
   border-color:var(--primary);
   color:#fff;
 }
+
+/* ==========================================================
+   REDISEÑADO (a pedido): tarjeta de controles del simulador —
+   limpia y moderna: rejilla 2x2, campos del mismo alto, etiquetas
+   pequeñas en mayúscula, acentos dorados de la paleta del simulador.
+   ========================================================== */
+#screen-simulador, #screen-simulador *{ font-style:normal; } /* CAMBIO (a pedido): nada en cursiva en el simulador */
+#screen-simulador .sim-controles{
+  padding:18px 16px 18px;
+  background:#FFFFFF;
+  border:1px solid #E1E7F0;
+  border-radius:18px;
+  box-shadow:0 1px 2px rgba(0,35,89,0.04), 0 8px 24px rgba(0,35,89,0.06);
+}
+#screen-simulador .sim-controles-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:16px 12px;
+}
+#screen-simulador .sim-campo{ min-width:0; display:flex; flex-direction:column; }
+#screen-simulador .sim-campo-label{
+  display:block;
+  margin:0 0 7px 2px;
+  font-size:11.5px;
+  font-weight:700;
+  letter-spacing:0.7px;
+  text-transform:uppercase;
+  color:#5E6E8A;
+}
+#screen-simulador .sim-campo-caja{
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  height:50px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:0 14px;
+  background:#F4F7FB;
+  border:1.5px solid #DCE3EE;
+  border-radius:14px;
+  font-family:inherit;
+  font-size:16px;
+  font-weight:700;
+  color:var(--sim-navy);
+  transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+#screen-simulador .sim-campo-caja:focus-within,
+#screen-simulador button.sim-campo-caja:focus-visible{
+  background:#FFFFFF;
+  border-color:var(--sim-dorado);
+  box-shadow:0 0 0 4px rgba(52,172,39,0.18);
+  outline:none;
+}
+#screen-simulador button.sim-campo-caja{ justify-content:space-between; cursor:pointer; text-align:left; }
+#screen-simulador button.sim-campo-caja:active{ background:#E9EFF7; }
+#screen-simulador .sim-campo-caja > span:first-child{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#screen-simulador .sim-campo-caja svg{
+  width:18px; height:18px; flex-shrink:0;
+  stroke:var(--sim-dorado);
+}
+#screen-simulador .sim-campo-caja input{
+  flex:1 1 auto;
+  width:100%;
+  min-width:0;
+  padding:0;
+  border:none;
+  outline:none;
+  background:transparent;
+  font-family:inherit;
+  font-size:16px;
+  font-weight:700;
+  color:var(--sim-navy);
+  font-variant-numeric:tabular-nums;
+}
+#screen-simulador .sim-pildora-porcentaje.sim-campo-caja input{ text-align:left; }
+#screen-simulador .sim-pildora-porcentaje.sim-campo-caja span{ font-size:15px; font-weight:700; color:var(--sim-dorado); flex-shrink:0; }
+#screen-simulador .sim-campo-prefijo{ font-size:16px; font-weight:700; color:var(--sim-dorado); flex-shrink:0; }
+/* CAMBIO (a pedido): valor a simular con más peso y tamaño */
+#screen-simulador .sim-campo-valor input{ font-size:19.5px; font-weight:800; letter-spacing:-0.2px; }
+#screen-simulador .sim-campo-valor .sim-campo-prefijo{ font-size:19.5px; font-weight:800; }
+#screen-simulador .sim-campo-valor input::placeholder{ color:#A9B4C5; font-weight:600; }
+#screen-simulador .sim-dropdown{ border-radius:14px; border-color:#DCE3EE; }
+#screen-simulador .sim-dropdown-cuotas{ left:auto; right:0; width:calc(200% + 12px); }
+/* NUEVO (a pedido): rueda / rodillo para "N.° de cuotas", DENTRO de la caja */
+#screen-simulador .sim-rueda-inline{ position:relative; padding:0 10px 0 14px; overflow:hidden; }
+#screen-simulador .sim-rueda-inline::before,
+#screen-simulador .sim-rueda-inline::after{
+  content:''; position:absolute; left:10px; right:34px; height:1px; pointer-events:none;
+  background:rgba(52,172,39,0.35);
+}
+#screen-simulador .sim-rueda-inline::before{ top:9px; }
+#screen-simulador .sim-rueda-inline::after{ bottom:9px; }
+#screen-simulador .sim-rueda-inline .sim-rueda-lista{
+  flex:1 1 auto; min-width:0; height:100%; overflow-y:auto; overflow-x:hidden;
+  scroll-snap-type:y mandatory; -webkit-overflow-scrolling:touch; overscroll-behavior:contain;
+  perspective:180px; scrollbar-width:none; touch-action:pan-y;
+  -webkit-mask-image:linear-gradient(rgba(0,0,0,0.25), #000 34%, #000 66%, rgba(0,0,0,0.25));
+          mask-image:linear-gradient(rgba(0,0,0,0.25), #000 34%, #000 66%, rgba(0,0,0,0.25));
+}
+#screen-simulador .sim-rueda-inline .sim-rueda-lista::-webkit-scrollbar{ display:none; }
+#screen-simulador .sim-rueda-inline .sim-rueda-relleno{ height:10px; }
+#screen-simulador .sim-rueda-inline .sim-rueda-item{
+  height:30px; display:flex; align-items:center; gap:6px;
+  scroll-snap-align:center; scroll-snap-stop:always; cursor:pointer;
+  user-select:none; -webkit-user-select:none;
+  transform-origin:center center; backface-visibility:hidden; will-change:transform, opacity;
+  color:var(--sim-navy);
+}
+#screen-simulador .sim-rueda-inline .sim-rueda-item b{ font-size:16px; font-weight:700; font-variant-numeric:tabular-nums; }
+#screen-simulador .sim-rueda-inline .sim-rueda-item span{ font-size:12.5px; font-weight:600; color:#6B7A93; }
+#screen-simulador .sim-rueda-inline .sim-rueda-item.activo b{ font-weight:800; }
+#screen-simulador .sim-rueda-inline .sim-rueda-item.activo span{ color:var(--sim-dorado); }
+#screen-simulador .sim-rueda-flechas{ width:18px !important; height:18px !important; flex-shrink:0; stroke:var(--sim-dorado); pointer-events:none; }
+#screen-simulador .sim-grilla-cuotas button.active{ background:var(--sim-navy); border-color:var(--sim-navy); }
+#screen-simulador .sim-dropdown-opcion.active{ color:var(--sim-navy); background:#F4F7FB; }
+body.modo-oscuro #screen-simulador .sim-controles{ background:var(--surface); border-color:rgba(255,255,255,0.08); }
+body.modo-oscuro #screen-simulador .sim-campo-caja{ background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.12); color:var(--text); }
+body.modo-oscuro #screen-simulador .sim-campo-caja input{ color:var(--text); }
 
 /* NUEVO: desplegable pequeño e inline (Frecuencia / N.° de cuotas del
    simulador) — reemplaza la ventana grande que antes cubría media
@@ -11398,49 +11521,46 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   <section style="padding:16px 16px 40px;">
 
     <!-- Controles de entrada -->
-    <div class="card" style="padding:16px;">
-      <div style="display:flex; gap:10px; margin-bottom:14px;">
-        <div style="flex:1;">
-          <label class="field-label">% base</label>
-          <div class="sim-pildora-porcentaje">
+    <!-- REDISEÑADO (a pedido): rejilla 2x2 de campos iguales (mismo alto,
+         mismo estilo); corrige el desborde de "Valor a simular" hacia la
+         derecha. Mismos ids — la lógica del simulador no cambia. -->
+    <div class="card sim-controles">
+      <div class="sim-controles-grid">
+        <div class="sim-campo">
+          <label class="sim-campo-label" for="sim-input-porcentaje">% base</label>
+          <div class="sim-pildora-porcentaje sim-campo-caja">
             <input type="text" inputmode="numeric" id="sim-input-porcentaje" value="10">
             <span>%</span>
           </div>
         </div>
-        <div style="flex:1; position:relative;">
-          <label class="field-label">N.° de cuotas</label>
-          <button type="button" class="sim-pildora-selector" id="sim-btn-cuotas">
+        <div class="sim-campo" style="position:relative;">
+          <label class="sim-campo-label">N.° de cuotas</label>
+          <button type="button" class="sim-pildora-selector sim-campo-caja" id="sim-btn-cuotas">
             <span id="sim-texto-cuotas">10</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </button>
-          <!-- NUEVO: desplegable pequeño e inline (antes era una ventana
-               grande que cubría toda la pantalla) -->
           <div class="sim-dropdown sim-dropdown-cuotas" id="sim-dropdown-cuotas" style="display:none;">
             <div class="sim-grilla-cuotas" id="sim-grilla-cuotas"></div>
           </div>
         </div>
-      </div>
-
-      <!-- NUEVO: "Valor a simular" ya no ocupa la fila superior completa —
-           se movió al costado derecho, emparejado con Frecuencia, para
-           liberar la parte de arriba de la tarjeta. -->
-      <div style="display:flex; gap:10px;">
-        <div style="flex:1; position:relative;">
-          <label class="field-label">Frecuencia</label>
-          <button type="button" class="sim-pildora-selector" id="sim-btn-frecuencia" style="width:100%;">
+        <div class="sim-campo" style="position:relative;">
+          <label class="sim-campo-label">Frecuencia</label>
+          <button type="button" class="sim-pildora-selector sim-campo-caja" id="sim-btn-frecuencia">
             <span id="sim-texto-frecuencia">Quincenal</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </button>
-          <!-- NUEVO: desplegable pequeño e inline -->
           <div class="sim-dropdown" id="sim-dropdown-frecuencia" style="display:none;">
             <div class="sim-dropdown-opcion sim-opcion-frecuencia" data-valor="semanal">Semanal</div>
             <div class="sim-dropdown-opcion sim-opcion-frecuencia" data-valor="quincenal">Quincenal</div>
             <div class="sim-dropdown-opcion sim-opcion-frecuencia" data-valor="mensual">Mensual</div>
           </div>
         </div>
-        <div class="form-field sin-margen" style="flex:1;">
-          <label class="field-label" for="sim-input-valor">Valor a simular</label>
-          <input class="field-input" id="sim-input-valor" type="text" inputmode="numeric" placeholder="Ej: 400.000" value="400.000">
+        <div class="sim-campo">
+          <label class="sim-campo-label" for="sim-input-valor">Valor a simular</label>
+          <div class="sim-campo-caja sim-campo-valor">
+            <span class="sim-campo-prefijo">$</span>
+            <input id="sim-input-valor" type="text" inputmode="numeric" placeholder="400.000" value="400.000">
+          </div>
         </div>
       </div>
     </div>
@@ -11468,6 +11588,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       Compartir tabla
     </button>
 
+    <!-- RETIRADO (a pedido): toda la parte de "Fechas de pago" del simulador
+         (fecha de inicio, tabla de fechas y su botón Compartir) queda oculta.
+         Se oculta en lugar de borrarse para no romper el código que la usa. -->
+    <div id="sim-seccion-fechas-pago" style="display:none;" aria-hidden="true">
     <!-- CAMBIO: selector de fecha de inicio movido al extremo lateral
          derecho (antes ocupaba todo el ancho) — desde qué fecha se
          cuentan los intervalos de la tarjeta "Fechas de pago" (por
@@ -11505,6 +11629,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
       Compartir
     </button>
+    </div><!-- /sim-seccion-fechas-pago -->
 
   </section>
 </div>
@@ -30079,14 +30204,14 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       const anchoLogico = anchoTarjeta + margen * 2;
       const radioTarjeta = 20;
 
-      const FUENTE = '"Baloo 2", Arial, sans-serif';
-      const NAVY = '#1B2A45';
-      const BADGE_BG = '#E9D9AC';
-      const AYUDA_BG = '#FBEDDC';
-      const AYUDA_BORDE = '#DBA24C';
-      const AYUDA_TEXTO = '#9C7239';
-      const GRIS = '#9BA3AF';
-      const DIVISOR = '#EFEBE2';
+      const FUENTE = '"Inter", Arial, sans-serif'; // CAMBIO (a pedido): antes Baloo 2
+      const NAVY = '#002359';      // CAMBIO (a pedido): paleta azul marino + verde
+      const BADGE_BG = '#DDF2D9';
+      const AYUDA_BG = '#EBF0F8';
+      const AYUDA_BORDE = '#34AC27';
+      const AYUDA_TEXTO = '#2C4470';
+      const GRIS = '#8A94A6';
+      const DIVISOR = '#E6EBF2';
 
       // NUEVO: medidas ajustadas comparando en píxeles la imagen de
       // referencia contra la generada — el encabezado y las filas eran
@@ -30099,7 +30224,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       const GAP_VALOR_AYUDA = 16;
       const AYUDA_PAD_V = 12;
       const AYUDA_PAD_IZQ = 18; // deja espacio al borde de color + separación al texto
-      const ALTO_LINEA_AYUDA = 19;
+      const ALTO_LINEA_AYUDA = 22; // CAMBIO: texto de ayuda más grande
       const GAP_AYUDA_TABLA = 14;
       const ALTO_HEADER = 32;
       const GAP_HEADER_FILAS = 6; // separa el encabezado (píldora) de la primera fila
@@ -30109,7 +30234,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       const textoAyuda = 'Por favor, seleccione el número de cuotas que mejor se ajuste a su presupuesto. El pago puntual nos permite seguir ofreciéndole nuestro servicio.';
       const medidor = document.createElement('canvas').getContext('2d');
       const anchoUtilAyuda = anchoUtil - AYUDA_PAD_IZQ - 14;
-      medidor.font = 'italic 500 13.5px ' + FUENTE;
+      medidor.font = '500 15px ' + FUENTE;
       const lineasAyuda = envolverTexto(medidor, textoAyuda, anchoUtilAyuda);
       const altoCajaAyuda = AYUDA_PAD_V * 2 + lineasAyuda.length * ALTO_LINEA_AYUDA;
 
@@ -30166,7 +30291,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       trazarRectRedondeado(ctx, margen + padInterno, y, 5, altoCajaAyuda, 2.5);
       ctx.fill();
 
-      ctx.font = 'italic 500 13.5px ' + FUENTE;
+      ctx.font = '500 15px ' + FUENTE;
       ctx.fillStyle = AYUDA_TEXTO;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'alphabetic';
@@ -30250,11 +30375,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       const anchoLogico = anchoTarjeta + margen * 2;
       const radioTarjeta = 20;
 
-      const FUENTE = '"Baloo 2", Arial, sans-serif';
-      const NAVY = '#1B2A45';
-      const GRIS = '#9BA3AF';
-      const DIVISOR = '#EFEBE2';
-      const DORADO_OSCURO = '#B78A30';
+      const FUENTE = '"Inter", Arial, sans-serif'; // CAMBIO (a pedido): antes Baloo 2
+      const NAVY = '#002359';      // CAMBIO (a pedido): paleta azul marino + verde
+      const GRIS = '#8A94A6';
+      const DIVISOR = '#E6EBF2';
+      const DORADO_OSCURO = '#2A8F1F';
 
       const PAD_TOP = 22;
       const ALTO_TITULO = 24;
@@ -30374,6 +30499,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       // usuario comparte muy rápido, apenas entrando a la pantalla) para
       // que la imagen nunca salga con una fuente de respaldo.
       if(document.fonts && document.fonts.ready) await document.fonts.ready;
+      try{ if(document.fonts && document.fonts.load) await Promise.all(['500 15px Inter','700 16px Inter','800 36px Inter'].map(f=>document.fonts.load(f))); }catch(e){}
       canvasSimuladorActual = generarCanvasTablaSimulador();
       simCompartirImg.src = canvasSimuladorActual.toDataURL('image/png');
       simCompartirOverlay.style.display = 'flex';
@@ -30386,6 +30512,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         return;
       }
       if(document.fonts && document.fonts.ready) await document.fonts.ready;
+      try{ if(document.fonts && document.fonts.load) await Promise.all(['500 15px Inter','700 16px Inter','800 36px Inter'].map(f=>document.fonts.load(f))); }catch(e){}
       canvasSimuladorActual = generarCanvasFechasPagoSimulador();
       simCompartirImg.src = canvasSimuladorActual.toDataURL('image/png');
       simCompartirOverlay.style.display = 'flex';
@@ -30492,6 +30619,76 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       grillaCuotas.querySelectorAll('button').forEach(b => b.classList.toggle('active', Number(b.textContent) === simCuotas));
       dropdownCuotas.style.display = dropdownCuotas.style.display === 'block' ? 'none' : 'block';
     });
+
+    // ---- NUEVO (a pedido): "N.° de cuotas" como RUEDA / RODILLO ----
+    // CAMBIO (a pedido): la rueda va DENTRO de la misma caja de cuotas (sin
+    // abrir ningún desplegable). Se gira deslizando el dedo arriba/abajo
+    // sobre la caja; el número del centro es el elegido y la simulación se
+    // actualiza al detenerse. Se ven asomando el número anterior y el
+    // siguiente. El botón y la grilla anteriores quedan ocultos (sin borrarse).
+    (function(){
+      const ALTO_ITEM = 30, MAX_CUOTAS = 12;
+      btnCuotas.style.display = 'none';
+      dropdownCuotas.style.display = 'none';
+      const caja = document.createElement('div');
+      caja.className = 'sim-campo-caja sim-rueda-inline';
+      caja.setAttribute('role', 'listbox');
+      caja.setAttribute('aria-label', 'Número de cuotas');
+      caja.innerHTML = '<div class="sim-rueda-lista"></div>' +
+        '<svg class="sim-rueda-flechas" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 9 12 4 17 9"></polyline><polyline points="7 15 12 20 17 15"></polyline></svg>';
+      btnCuotas.insertAdjacentElement('afterend', caja);
+      const lista = caja.querySelector('.sim-rueda-lista');
+      const items = [];
+      const relleno = ()=>{ const r = document.createElement('div'); r.className = 'sim-rueda-relleno'; return r; };
+      lista.appendChild(relleno());
+      for(let n = 1; n <= MAX_CUOTAS; n++){
+        const it = document.createElement('div');
+        it.className = 'sim-rueda-item';
+        it.setAttribute('role', 'option');
+        it.innerHTML = '<b>' + n + '</b><span>' + (n === 1 ? 'cuota' : 'cuotas') + '</span>';
+        it.addEventListener('click', ()=> lista.scrollTo({ top:(n - 1) * ALTO_ITEM, behavior:'smooth' }));
+        lista.appendChild(it);
+        items.push(it);
+      }
+      lista.appendChild(relleno());
+
+      function pintar(){
+        const centro = lista.scrollTop / ALTO_ITEM;
+        items.forEach((it, i)=>{
+          const d = i - centro;
+          const ad = Math.min(Math.abs(d), 2);
+          it.style.transform = 'translateY(' + (-Math.max(-1, Math.min(1, d)) * 9).toFixed(1) + 'px) rotateX(' + (-d * 40).toFixed(1) + 'deg) scale(' + (1 - ad * 0.22).toFixed(3) + ')';
+          it.style.opacity = Math.max(0, 1 - ad * 0.45).toFixed(2);
+          const activo = Math.abs(d) < 0.5;
+          it.classList.toggle('activo', activo);
+          it.setAttribute('aria-selected', activo ? 'true' : 'false');
+        });
+      }
+      let temporizador = null, listo = false;
+      function fijar(){
+        const n = Math.min(MAX_CUOTAS, Math.max(1, Math.round(lista.scrollTop / ALTO_ITEM) + 1));
+        if(n === simCuotas) return;
+        simCuotas = n;
+        textoCuotas.textContent = n;
+        grillaCuotas.querySelectorAll('button').forEach(b => b.classList.toggle('active', Number(b.textContent) === n));
+        renderizarSimulacion();
+        if(listo && navigator.vibrate){ try{ navigator.vibrate(6); }catch(e){} }
+      }
+      lista.addEventListener('scroll', ()=>{
+        requestAnimationFrame(pintar);
+        clearTimeout(temporizador);
+        temporizador = setTimeout(fijar, 110);
+      }, { passive:true });
+      caja.addEventListener('click', (e)=> e.stopPropagation());
+      // Posición inicial: la cuota actual al centro (cuando la caja ya es visible)
+      function sincronizar(){
+        lista.scrollTop = (simCuotas - 1) * ALTO_ITEM;
+        pintar();
+        listo = true;
+      }
+      document.getElementById('btn-abrir-simulador').addEventListener('click', ()=> requestAnimationFrame(sincronizar));
+      requestAnimationFrame(sincronizar);
+    })();
 
     // ---- Selector "Frecuencia" (desplegable pequeño) ----
     btnFrecuencia.addEventListener('click', (e)=>{
