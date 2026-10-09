@@ -1342,6 +1342,9 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
 
 /* Valor — degradado azul */
 .campo-valor-abono{ background:linear-gradient(135deg, #4A9DFF, #1D6FEE); }
+/* CAMBIO (a pedido): valor del abono más grande y con más peso */
+#input-valor-abono{ font-size:22px; font-weight:800; letter-spacing:-0.2px; }
+#input-valor-abono::placeholder{ font-size:15px; font-weight:500; letter-spacing:0; }
 
 /* Aplicar abono a — degradado verde/turquesa.
    CORREGIDO: "Aplicar abono a" y "Método de Pago" en realidad los ve el
@@ -3450,7 +3453,7 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
   text-align:center;
   background:var(--sim-tarjeta);
   border-radius:10px; /* CORREGIDO: antes 20px — a pedido, mismo radio que el resto del sistema */
-  border:none;
+  border:2.5px solid #CCD6E4; /* CAMBIO (a pedido): mismo canto grueso de la tarjeta superior */
   box-shadow:0 1px 3px rgba(0,35,89,0.06);
 }
 .sim-badge-frecuencia{
@@ -3548,6 +3551,16 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
 }
 .sim-btn-dorado svg{ width:18px; height:18px; stroke:#FFFFFF; }
 .sim-btn-dorado:active{ background:var(--sim-dorado-oscuro); }
+/* CAMBIO (a pedido): botón "Compartir tabla" al 75% de su tamaño y ubicado a la derecha */
+#sim-btn-compartir-tabla{
+  width:fit-content;
+  margin-left:auto;
+  margin-right:-4px;
+  padding:11px 20px;
+  font-size:13.5px;
+  gap:7px;
+}
+#sim-btn-compartir-tabla svg{ width:15px; height:15px; }
 
 .sim-grilla-cuotas{
   display:grid;
@@ -3578,8 +3591,8 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
 #screen-simulador .sim-controles{
   padding:18px 16px 18px;
   background:#FFFFFF;
-  border:1px solid #E1E7F0;
-  border-radius:18px;
+  border:2.5px solid #CCD6E4; /* CAMBIO (a pedido): canto más grueso (antes 1px) */
+  border-radius:10px; /* CAMBIO (a pedido): igual a la tarjeta inferior (antes 18px) */
   box-shadow:0 1px 2px rgba(0,35,89,0.04), 0 8px 24px rgba(0,35,89,0.06);
 }
 #screen-simulador .sim-controles-grid{
@@ -3647,9 +3660,15 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
 #screen-simulador .sim-pildora-porcentaje.sim-campo-caja input{ text-align:left; }
 #screen-simulador .sim-pildora-porcentaje.sim-campo-caja span{ font-size:15px; font-weight:700; color:var(--sim-dorado); flex-shrink:0; }
 #screen-simulador .sim-campo-prefijo{ font-size:16px; font-weight:700; color:var(--sim-dorado); flex-shrink:0; }
+/* CAMBIO (a pedido): valores de la tarjeta superior con más tamaño y peso */
+#screen-simulador .sim-campo-caja,
+#screen-simulador .sim-campo-caja input{ font-size:20px; font-weight:800; }
+#screen-simulador .sim-pildora-porcentaje.sim-campo-caja span{ font-size:18px; font-weight:800; }
+#screen-simulador .sim-rueda-inline .sim-rueda-item b{ font-size:20px; font-weight:800; }
+#screen-simulador .sim-rueda-inline .sim-rueda-item span{ font-size:13px; font-weight:700; }
 /* CAMBIO (a pedido): valor a simular con más peso y tamaño */
-#screen-simulador .sim-campo-valor input{ font-size:19.5px; font-weight:800; letter-spacing:-0.2px; }
-#screen-simulador .sim-campo-valor .sim-campo-prefijo{ font-size:19.5px; font-weight:800; }
+#screen-simulador .sim-campo-valor input{ font-size:20px; font-weight:800; letter-spacing:-0.2px; }
+#screen-simulador .sim-campo-valor .sim-campo-prefijo{ font-size:20px; font-weight:800; }
 #screen-simulador .sim-campo-valor input::placeholder{ color:#A9B4C5; font-weight:600; }
 #screen-simulador .sim-dropdown{ border-radius:14px; border-color:#DCE3EE; }
 #screen-simulador .sim-dropdown-cuotas{ left:auto; right:0; width:calc(200% + 12px); }
@@ -3678,8 +3697,8 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
   transform-origin:center center; backface-visibility:hidden; will-change:transform, opacity;
   color:var(--sim-navy);
 }
-#screen-simulador .sim-rueda-inline .sim-rueda-item b{ font-size:16px; font-weight:700; font-variant-numeric:tabular-nums; }
-#screen-simulador .sim-rueda-inline .sim-rueda-item span{ font-size:12.5px; font-weight:600; color:#6B7A93; }
+#screen-simulador .sim-rueda-inline .sim-rueda-item b{ font-size:20px; font-weight:800; font-variant-numeric:tabular-nums; }
+#screen-simulador .sim-rueda-inline .sim-rueda-item span{ font-size:13px; font-weight:700; color:#6B7A93; }
 #screen-simulador .sim-rueda-inline .sim-rueda-item.activo b{ font-weight:800; }
 #screen-simulador .sim-rueda-inline .sim-rueda-item.activo span{ color:var(--sim-dorado); }
 #screen-simulador .sim-rueda-flechas{ width:18px !important; height:18px !important; flex-shrink:0; stroke:var(--sim-dorado); pointer-events:none; }
