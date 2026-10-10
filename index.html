@@ -1347,8 +1347,10 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
 /* Valor — degradado azul */
 .campo-valor-abono{ background:linear-gradient(135deg, #4A9DFF, #1D6FEE); }
 /* CAMBIO (a pedido): valor del abono más grande y con más peso */
-#input-valor-abono{ font-size:22px; font-weight:800; letter-spacing:-0.2px; }
-#input-valor-abono::placeholder{ font-size:15px; font-weight:500; letter-spacing:0; }
+/* CAMBIO (a pedido): número del Valor más grande; la caja conserva su alto.
+   CORREGIDO: antes esta regla perdía contra '#screen-agregar-abono .field-input' (17px). */
+#screen-agregar-abono #input-valor-abono{ font-size:26px; font-weight:800; letter-spacing:-0.3px; height:50px; padding-top:0; padding-bottom:0; line-height:1; }
+#screen-agregar-abono #input-valor-abono::placeholder{ font-size:15px; font-weight:400; letter-spacing:0; }
 /* CAMBIO (a pedido): ícono del campo Valor en blanco, más visible sobre el azul */
 #screen-agregar-abono .field-with-icon:has(#input-valor-abono) svg{ stroke:#FFFFFF !important; opacity:1 !important; width:24px; height:24px; stroke-width:1.6; }
 
@@ -1380,6 +1382,24 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
    esta gane siempre, sin depender del orden. */
 .campo-resaltado-suave.campo-aplicar-abono .chevron-select,
 .campo-resaltado-suave.campo-metodo-pago .chevron-select{ stroke:#fff; }
+/* NUEVO (a pedido): color de "Aplicar abono a" según la opción elegida.
+   Recargo por mora → degradado #C70039 (texto blanco) · Abono → degradado #84D7FF (texto oscuro). */
+.campo-resaltado-suave.campo-aplicar-abono.field-select-trigger[data-valor="mora"]{
+  /* CAMBIO (a pedido): #C70039 con degradado (más claro hacia la izquierda); texto blanco */
+  background-image:linear-gradient(135deg, #EC4D73, #C70039); background-color:#C70039;
+  color:#FFFFFF; -webkit-text-fill-color:#FFFFFF;
+}
+.campo-resaltado-suave.campo-aplicar-abono.field-select-trigger[data-valor="abono"]{
+  /* CAMBIO (a pedido): #84D7FF con el mismo degradado (más claro hacia la izquierda) que los demás campos */
+  background-image:linear-gradient(135deg, #C2ECFF, #84D7FF); background-color:#84D7FF;
+  color:#0A0D14; -webkit-text-fill-color:#0A0D14;
+}
+.campo-resaltado-suave.campo-aplicar-abono.field-select-trigger[data-valor="abono"] .chevron-select{ stroke:#0A0D14; }
+/* NUEVO (a pedido): Método de Pago → "Efectivo" en #186634 con el mismo degradado (más claro a la izquierda) */
+.campo-resaltado-suave.campo-metodo-pago.field-select-trigger[data-valor="efectivo"]{
+  background-image:linear-gradient(135deg, #3E9E61, #186634); background-color:#186634;
+  color:#FFFFFF; -webkit-text-fill-color:#FFFFFF;
+}
 .field-textarea{
   resize:none;
   min-height:88px;
@@ -2468,6 +2488,8 @@ body.modo-oscuro #screen-comparativas-ganancias{ --text-secondary:#C9D2DF; }
 .loan-card-full .loan-code{ grid-column:1 / 3; grid-row:2; }
 .loan-card-full .loan-amount{ grid-column:1; grid-row:3; min-width:0; }
 .loan-card-full .loan-num-credito{ grid-column:2; grid-row:3; justify-self:end; margin:8px 0 0; }
+/* CAMBIO (a pedido): el símbolo "#" más liviano que el número */
+.loan-num-credito .loan-num-hash{ font-weight:400; opacity:.85; }
 /* CAMBIO: a pedido — píldora de estado más limpia y nítida: color sólido
    más profundo (mejor contraste con el blanco), sin sombras, y la palabra
    en mayúsculas, más gruesa y con aire entre letras para que resalte. */
@@ -5270,7 +5292,10 @@ body:not(.modo-oscuro) #resumen-activos-cliente-overlay{ --success:#0B8F45; --wa
 .client-row.client-row-mora .client-row-badge{ color:#B4212A; background:rgba(224,17,31,0.10); border-color:rgba(224,17,31,0.38); }
 .client-row.client-row-inhabilitado .client-row-badge{ color:#5A6880; background:rgba(90,104,128,0.12); border-color:rgba(90,104,128,0.35); }
 /* CAMBIO (a pedido): píldora contadora de créditos con fondo blanco (conserva el color del texto y del borde según el estado) */
-.client-row.client-row-cliente .client-row-badge{ background:#FFFFFF !important; }
+/* CAMBIO (a pedido): fondo amarillo #F8BD21 con texto negro */
+.client-row.client-row-cliente .client-row-badge{ background:#F8BD21 !important; color:#0A0D14 !important; border-color:#DDA510 !important; }
+/* CAMBIO (a pedido): número del contador más grande y con más peso */
+.client-row.client-row-cliente .client-row-badge{ font-size:15px; font-weight:800; height:23px; min-width:30px; padding:0 9px; border-radius:12px; }
 .avatar-leyenda{ margin-top:13px; display:flex; flex-direction:column; align-items:center; gap:1px; font-size:10.5px; font-weight:700; line-height:1.15; white-space:nowrap; letter-spacing:-0.1px; }
 .avatar-leyenda .avl-van{ color:#1E8E4E; }
 .client-row.client-row-mora .avatar-leyenda .avl-van{ color:#C4202B; }
@@ -8205,7 +8230,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <hr class="loan-divider">
 
       <div class="form-field sin-margen">
-        <label class="field-label" for="input-valor-abono">Valor</label>
+        <label class="field-label" for="input-valor-abono">Valor a pagar</label>
         <div class="field-with-icon">
           <input class="field-input campo-resaltado-suave campo-valor-abono" id="input-valor-abono" type="text" inputmode="numeric" placeholder="Toca y escribe" required>
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><!-- CAMBIO (a pedido): ícono más profesional (moneda con $) --><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>
@@ -12022,6 +12047,9 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     function refrescarTexto(){
       const opcionActual = selectEl.options[selectEl.selectedIndex];
       textoEl.textContent = opcionActual ? opcionActual.textContent : '';
+      // NUEVO: el botón guarda el valor elegido (data-valor) para poder
+      // colorearlo según la opción (ej. "Aplicar abono a").
+      trigger.dataset.valor = opcionActual ? opcionActual.value : '';
     }
     refrescarTexto();
 
@@ -16084,8 +16112,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(prestamosActivosCliente.length > 0){
       const badge = document.createElement('div');
       badge.className = 'client-row-badge';
-      // CAMBIO (a pedido): "Crédito 1" / "Créditos N" en vez de solo el número
-      badge.textContent = (prestamosActivosCliente.length === 1 ? 'Crédito ' : 'Créditos ') + prestamosActivosCliente.length;
+      // CAMBIO (a pedido): de nuevo solo el número (sin la palabra "Crédito")
+      badge.textContent = prestamosActivosCliente.length;
       badge.setAttribute('aria-label', prestamosActivosCliente.length + ' préstamo(s) activo(s)');
       card.appendChild(badge);
 
@@ -20900,7 +20928,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // (fecha de inicio) al más reciente, así el número de cada crédito
     // no cambia al crear uno nuevo.
     const numeroCreditoTarjeta = numeroCreditoCliente(prestamo);
-    const etiquetaNumeroCredito = numeroCreditoTarjeta ? 'Crédito ' + numeroCreditoTarjeta : '';
+    const etiquetaNumeroCredito = numeroCreditoTarjeta ? '<span class="loan-num-hash">#</span> ' + numeroCreditoTarjeta : ''; // CAMBIO (a pedido): "# 1" en vez de "Crédito 1"
 
     const card = document.createElement('div');
     card.className = 'card loan-card-full loan-card-' + estadoVisual;
