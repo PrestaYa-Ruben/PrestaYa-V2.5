@@ -2490,6 +2490,8 @@ body.modo-oscuro #screen-comparativas-ganancias{ --text-secondary:#C9D2DF; }
 .loan-card-full .loan-num-credito{ grid-column:2; grid-row:3; justify-self:end; margin:8px 0 0; }
 /* CAMBIO (a pedido): el símbolo "#" más liviano que el número */
 .loan-num-credito .loan-num-hash{ font-weight:400; opacity:.85; }
+/* CAMBIO (a pedido): solo el número de la píldora más grande */
+.loan-num-credito .loan-num-valor{ font-size:14.5px; font-weight:700; line-height:1; vertical-align:-1px; }
 /* CAMBIO: a pedido — píldora de estado más limpia y nítida: color sólido
    más profundo (mejor contraste con el blanco), sin sombras, y la palabra
    en mayúsculas, más gruesa y con aire entre letras para que resalte. */
@@ -3373,7 +3375,7 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
   z-index:40;
   transition:transform .15s ease;
 }
-.pagar-fab svg{ width:23px; height:23px; stroke:currentColor; stroke-width:2.4; filter:drop-shadow(0 1px 1px rgba(0,0,0,0.18)); }
+.pagar-fab svg{ width:22px; height:22px; stroke:currentColor; stroke-width:1.9; } /* CAMBIO (a pedido): trazo más fino y sin sombra, más limpio */
 .pagar-fab:active{ transform:scale(0.94); }
 
 /* NUEVO: FAB "Agregar cliente" (pantalla Clientes) — mismo patrón que
@@ -8162,7 +8164,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   </section>
 
   <button type="button" class="pagar-fab" id="btn-pagar-fab" aria-label="Registrar pago">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="3"></circle></svg>
+    <!-- CAMBIO (a pedido): ícono de billetera, más limpio y profesional -->
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"></path><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path></svg>
     Pagar
   </button>
 
@@ -20928,7 +20931,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // (fecha de inicio) al más reciente, así el número de cada crédito
     // no cambia al crear uno nuevo.
     const numeroCreditoTarjeta = numeroCreditoCliente(prestamo);
-    const etiquetaNumeroCredito = numeroCreditoTarjeta ? '<span class="loan-num-hash">#</span> ' + numeroCreditoTarjeta : ''; // CAMBIO (a pedido): "# 1" en vez de "Crédito 1"
+    const etiquetaNumeroCredito = numeroCreditoTarjeta ? '<span class="loan-num-hash">#</span> <span class="loan-num-valor">' + numeroCreditoTarjeta + '</span>' : ''; // CAMBIO (a pedido): "# 1" en vez de "Crédito 1"
 
     const card = document.createElement('div');
     card.className = 'card loan-card-full loan-card-' + estadoVisual;
