@@ -1285,6 +1285,8 @@ body.tinte-dashboard-activo .stat-card.tinte-rojo .icon-container{ background:no
    perfil del cliente (los avatares de la lista de Clientes conservan
    su color por ruta, sin tocar). */
 #detalle-avatar{ background:#FF6565; color:#fff; font-weight:700; }
+#detalle-avatar .icono-avatar-persona{ width:58%; height:58%; }
+#np-cliente-avatar .icono-avatar-persona{ width:64%; height:64%; }
 
 .form-field{
   display:flex;
@@ -5260,10 +5262,13 @@ body:not(.modo-oscuro) #resumen-activos-cliente-overlay{ --success:#0B8F45; --wa
   color:#1F2F68;
   background:rgba(31,47,104,0.10);
   border:1px solid rgba(31,47,104,0.22);
+  white-space:nowrap;
 }
 .client-row.client-row-al-dia .client-row-badge{ color:#157A40; background:rgba(47,174,95,0.16); border-color:rgba(47,174,95,0.45); }
 .client-row.client-row-mora .client-row-badge{ color:#B4212A; background:rgba(224,17,31,0.10); border-color:rgba(224,17,31,0.38); }
 .client-row.client-row-inhabilitado .client-row-badge{ color:#5A6880; background:rgba(90,104,128,0.12); border-color:rgba(90,104,128,0.35); }
+/* CAMBIO (a pedido): píldora contadora de créditos con fondo blanco (conserva el color del texto y del borde según el estado) */
+.client-row.client-row-cliente .client-row-badge{ background:#FFFFFF !important; }
 .avatar-leyenda{ margin-top:13px; display:flex; flex-direction:column; align-items:center; gap:1px; font-size:10.5px; font-weight:700; line-height:1.15; white-space:nowrap; letter-spacing:-0.1px; }
 .avatar-leyenda .avl-van{ color:#1E8E4E; }
 .client-row.client-row-mora .avatar-leyenda .avl-van{ color:#C4202B; }
@@ -15993,6 +15998,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     setTimeout(()=> URL.revokeObjectURL(url), 60000);
   });
 
+  // NUEVO (a pedido): ícono de persona para los círculos de avatar
+  // (Nuevo Préstamo y ficha del Cliente) en lugar de las iniciales.
+  const ICONO_AVATAR_PERSONA = '<svg class="icono-avatar-persona" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8.2" r="4.3"></circle><path d="M3.6 20.3c.7-4.1 4.1-6.8 8.4-6.8s7.7 2.7 8.4 6.8c.1.5-.3.9-.8.9H4.4c-.5 0-.9-.4-.8-.9z"></path></svg>';
+
   function crearTarjetaCliente(cliente){
     const card = document.createElement('div');
     card.className = 'card client-row client-row-cliente';
@@ -16073,7 +16082,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(prestamosActivosCliente.length > 0){
       const badge = document.createElement('div');
       badge.className = 'client-row-badge';
-      badge.textContent = prestamosActivosCliente.length;
+      // CAMBIO (a pedido): "Crédito 1" / "Créditos N" en vez de solo el número
+      badge.textContent = (prestamosActivosCliente.length === 1 ? 'Crédito ' : 'Créditos ') + prestamosActivosCliente.length;
       badge.setAttribute('aria-label', prestamosActivosCliente.length + ' préstamo(s) activo(s)');
       card.appendChild(badge);
 
@@ -16870,7 +16880,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     contenidoResumenHistorico.style.maxHeight = '0px';
     contenidoResumenHistorico.style.opacity = '';
 
-    detalleAvatar.textContent = iniciales(cliente.nombre);
+    detalleAvatar.innerHTML = ICONO_AVATAR_PERSONA; // CAMBIO (a pedido): ícono de persona en vez de iniciales
     detalleNombre.textContent = cliente.nombre;
     detalleTelefono.textContent = cliente.telefono && cliente.telefono.trim() ? cliente.telefono : 'Sin registrar';
     detalleDocumento.textContent = cliente.documento && cliente.documento.trim() ? cliente.documento : 'Sin registrar';
@@ -17262,7 +17272,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     function refrescar(){
       const nombre = (loanClienteNombre.textContent || '').trim();
       const partes = nombre.split(/\s+/).filter(Boolean);
-      avatarEl.textContent = partes.length ? (partes[0][0] + (partes.length > 1 ? partes[1][0] : '')).toUpperCase() : '?';
+      avatarEl.innerHTML = ICONO_AVATAR_PERSONA; // CAMBIO (a pedido): ícono de persona en vez de iniciales
       let doc = '';
       try{ doc = (typeof clienteEnDetalle !== 'undefined' && clienteEnDetalle && clienteEnDetalle.documento) ? String(clienteEnDetalle.documento).trim() : ''; }catch(e){}
       subEl.textContent = doc ? 'Prestatario · CC ' + doc : 'Prestatario';
