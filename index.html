@@ -3059,10 +3059,10 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
 /* NUEVO (a pedido): botón de flechas para invertir el orden de los créditos (Ficha del cliente) */
 .btn-orden-creditos{
   margin-left:0; flex-shrink:0; /* justo a la derecha de Activos / Historial */
-  width:38px; height:38px; border-radius:50%;
+  width:auto; height:auto; align-self:stretch; padding:0 16px; border-radius:999px; /* CAMBIO (a pedido): forma de píldora, mismo alto que Activos/Historial */
   display:inline-flex; align-items:center; justify-content:center;
   background:var(--surface); color:var(--text);
-  border:1.5px solid #C9CED6; cursor:pointer; padding:0;
+  border:1.5px solid #C9CED6; cursor:pointer; min-width:58px;
   transition:transform .15s ease, background .15s ease, color .15s ease;
 }
 .btn-orden-creditos svg{ width:19px; height:19px; stroke:currentColor; }
@@ -7719,7 +7719,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <button type="button" class="tab-button active" data-estado="activo">Activos (<span id="historial-count-activo">0</span>)</button>
       <button type="button" class="tab-button" data-estado="finalizado">Historial (<span id="historial-count-finalizado">0</span>)</button>
       <!-- NUEVO (a pedido): invierte el orden de los créditos (más reciente ↔ más antiguo) -->
-      <button type="button" class="btn-orden-creditos" id="btn-orden-creditos" aria-label="Invertir orden de los créditos" title="Cambiar orden">
+      <button type="button" class="btn-orden-creditos invertido" id="btn-orden-creditos" aria-label="Invertir orden de los créditos" title="Cambiar orden">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"></path><path d="M17 20V4"></path><path d="m3 8 4-4 4 4"></path><path d="M7 4v16"></path></svg>
       </button>
       <!-- CAMBIO: a pedido — el ícono de compartir se retiró de esta fila (queda oculto, no se borra, para no romper su manejador). El mismo Resumen de crédito se abre tocando la píldora de estado de cada tarjeta. -->
@@ -16999,8 +16999,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // Préstamos del cliente (estadísticas + lista)
     // NUEVO: siempre arranca en la pestaña "Activos" al entrar a la ficha
     filtroEstadoHistorialCreditos = 'activo';
-    ordenInvertidoHistorialCreditos = false; // cada ficha arranca con el orden normal
-    document.getElementById('btn-orden-creditos').classList.remove('invertido');
+    ordenInvertidoHistorialCreditos = true; // CAMBIO (a pedido): cada ficha arranca con el botón de orden ACTIVADO
+    document.getElementById('btn-orden-creditos').classList.add('invertido');
     document.getElementById('tabs-historial-creditos').querySelectorAll('.tab-button').forEach(b=>{
       b.classList.toggle('active', b.dataset.estado === 'activo');
     });
@@ -21084,7 +21084,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // NUEVO: qué pestaña de "Historial de Créditos" está activa — se
   // reinicia a "activo" cada vez que se abre la ficha de un cliente.
   let filtroEstadoHistorialCreditos = 'activo';
-  let ordenInvertidoHistorialCreditos = false; // NUEVO (a pedido): botón de flechas de orden
+  let ordenInvertidoHistorialCreditos = true; // CAMBIO (a pedido): el botón de orden arranca ACTIVADO
 
   // ==========================================================
   // NUEVO — a pedido: resumen de préstamos activos del cliente, al tocar
