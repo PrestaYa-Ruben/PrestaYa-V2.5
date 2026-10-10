@@ -3056,6 +3056,21 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 /* CAMBIO: a pedido — borde gris suave (antes azul intenso) */
 .btn-accion-prestamo.historial{ background:var(--surface); color:var(--text); border:1.5px solid #C9CED6; }
 body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
+/* NUEVO (a pedido): segunda fila — Eliminar (rojo), Renovar (azul), Descuento (morado, como su tarjeta en Pagadas) */
+/* el contenedor ya separa con gap:14px — se compensa para dejar 8px entre las dos filas */
+.fila-acciones-prestamo:has(+ .fila-acciones-prestamo-2){ margin-bottom:-6px; }
+.fila-acciones-prestamo.fila-acciones-prestamo-2{ margin-top:0; margin-bottom:0; }
+/* la fila de "Más opciones" quedó vacía (botón oculto): sin espacio extra */
+div:has(> #btn-mas-opciones-prestamo){ margin:0 0 -14px !important; }
+.btn-accion-prestamo.eliminar{ background:#DC2626; color:#fff; }
+.btn-accion-prestamo.renovar{ background:#2563EB; color:#fff; }
+.btn-accion-prestamo.descuento{ background:#7C3AED; color:#fff; }
+/* CAMBIO (a pedido): colores de los 6 botones con menos intensidad (tonos más suaves) */
+.btn-accion-prestamo.cronograma{ background:#6DB384; }
+.btn-accion-prestamo.editar{ background:#F7DE7A; border-color:#D9BC5A; color:#2A2410; }
+.btn-accion-prestamo.eliminar{ background:#E07070; }
+.btn-accion-prestamo.renovar{ background:#6B95EC; }
+.btn-accion-prestamo.descuento{ background:#A07FE6; }
 @media (max-width:380px){
   .fila-acciones-prestamo{ gap:6px; }
   .btn-accion-prestamo{ font-size:11px; letter-spacing:0.1px; }
@@ -8055,6 +8070,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <button type="button" class="btn-accion-prestamo cronograma" id="btn-compartir-cronograma">Cronograma</button>
       <button type="button" class="btn-accion-prestamo editar" id="btn-editar-prestamo-detalle">Editar</button>
     </div>
+    <!-- NUEVO (a pedido): Eliminar / Renovar / Descuento salen del menú
+         "Más opciones" y quedan como botones propios, debajo de los 3 de
+         arriba. Cada uno ejecuta exactamente la misma acción de antes
+         (reenvía el toque al elemento original del menú, que sigue
+         existiendo oculto con su manejador intacto). -->
+    <div class="fila-acciones-prestamo fila-acciones-prestamo-2">
+      <button type="button" class="btn-accion-prestamo eliminar" id="btn-fila-eliminar-prestamo">Eliminar</button>
+      <button type="button" class="btn-accion-prestamo renovar" id="btn-fila-renovar-credito">Renovar</button>
+      <button type="button" class="btn-accion-prestamo descuento" id="btn-fila-aplicar-descuento">Descuento</button>
+    </div>
     <!-- CAMBIO: a pedido — acceso rápido al interruptor "Saldo pendiente"
          del comprobante (mismo id y mismo manejador de siempre), a la
          izquierda de "Más opciones", justo encima de las cuotas. -->
@@ -8067,7 +8092,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         </div>
         <button type="button" class="toggle-switch" id="toggle-comprobante-saldo" role="switch" aria-checked="false" aria-label="Mostrar saldo pendiente en el comprobante"></button>
       </div>
-      <button type="button" class="btn-mas-opciones-prestamo btn-mas-opciones-pildora" id="btn-mas-opciones-prestamo" style="flex-shrink:0;">
+      <!-- RETIRADO (a pedido): "Más opciones" queda oculto — sus 3 acciones ahora son botones propios (ver arriba). -->
+      <button type="button" class="btn-mas-opciones-prestamo btn-mas-opciones-pildora" id="btn-mas-opciones-prestamo" style="flex-shrink:0; display:none;">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle><circle cx="5" cy="12" r="1.5"></circle></svg>
         <span>Más opciones</span>
       </button>
@@ -23088,6 +23114,14 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // el menú se cierre después.
   const menuMasOpcionesPrestamoOverlay = document.getElementById('menu-mas-opciones-prestamo-overlay');
   const menuMasOpcionesPrestamoWrap = menuMasOpcionesPrestamoOverlay.querySelector('.action-sheet-wrap');
+  // NUEVO (a pedido): botones propios Eliminar / Renovar / Descuento —
+  // reenvían el toque al elemento original (mismo manejador de siempre).
+  [['btn-fila-eliminar-prestamo','btn-eliminar-prestamo-detalle'],
+   ['btn-fila-renovar-credito','btn-renovar-credito'],
+   ['btn-fila-aplicar-descuento','btn-aplicar-descuento']].forEach(([nuevo, original])=>{
+    const bn = document.getElementById(nuevo), bo = document.getElementById(original);
+    if(bn && bo) bn.addEventListener('click', ()=> bo.click());
+  });
   document.getElementById('btn-mas-opciones-prestamo').addEventListener('click', ()=>{
     menuMasOpcionesPrestamoOverlay.style.display = 'flex';
     // CORREGIDO: a pedido — antes aparecía de golpe (sin ninguna
