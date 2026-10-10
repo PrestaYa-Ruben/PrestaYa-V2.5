@@ -8165,14 +8165,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <!-- CAMBIO: a pedido — "Fecha de próximo pago" se movió a Agregar
            Abono (toggle-proximo-abono). Esta fila queda oculta, no borrada,
            porque el JS todavía sincroniza este interruptor. -->
-      <div class="mora-toggle-row" style="padding:0; display:none;">
+      <!-- CAMBIO (a pedido): la fila vuelve a mostrarse aquí también; es el
+           MISMO ajuste que el de Agregar Abono (quedan sincronizados). -->
+      <div class="mora-toggle-row" style="padding:0;">
         <div class="mora-toggle-text">
           <div class="mora-toggle-title">Fecha de próximo pago</div>
           <div class="mora-toggle-subtitle">Incluye la fecha de la próxima cuota pendiente</div>
         </div>
         <button type="button" class="toggle-switch" id="toggle-comprobante-proximo" role="switch" aria-checked="false" aria-label="Mostrar fecha de próximo pago en el comprobante"></button>
       </div>
-      <hr class="loan-divider" style="margin:14px 0; display:none;">
+      <hr class="loan-divider" style="margin:14px 0;">
       <div class="mora-toggle-row" style="padding:0;">
         <div class="mora-toggle-text">
           <div class="mora-toggle-title">Número de cuotas</div>
@@ -25200,6 +25202,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   document.getElementById('toggle-comprobante-proximo').addEventListener('click', ()=>{
     guardarReciboProximo(!mostrarReciboProximo());
     aplicarTogglesComprobanteDesdePrestamo();
+    // NUEVO: mantiene sincronizado el interruptor de Agregar Abono
+    if(typeof sincronizarTogglesSaldoComprobante === 'function'){ try{ sincronizarTogglesSaldoComprobante(); }catch(err){} }
   });
   document.getElementById('toggle-comprobante-cuota').addEventListener('click', ()=>{
     guardarReciboMostrarCuota(!obtenerReciboMostrarCuota());
