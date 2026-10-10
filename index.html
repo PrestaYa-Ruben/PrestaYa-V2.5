@@ -3056,6 +3056,18 @@ body.ocultar-codigo-credito .mora-hoy-codigo{
 /* CAMBIO: a pedido — borde gris suave (antes azul intenso) */
 .btn-accion-prestamo.historial{ background:var(--surface); color:var(--text); border:1.5px solid #C9CED6; }
 body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
+/* NUEVO (a pedido): botón de flechas para invertir el orden de los créditos (Ficha del cliente) */
+.btn-orden-creditos{
+  margin-left:0; flex-shrink:0; /* justo a la derecha de Activos / Historial */
+  width:38px; height:38px; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:var(--surface); color:var(--text);
+  border:1.5px solid #C9CED6; cursor:pointer; padding:0;
+  transition:transform .15s ease, background .15s ease, color .15s ease;
+}
+.btn-orden-creditos svg{ width:19px; height:19px; stroke:currentColor; }
+.btn-orden-creditos:active{ transform:scale(0.92); }
+.btn-orden-creditos.invertido{ background:var(--primary); color:#fff; border-color:var(--primary); }
 /* NUEVO (a pedido): segunda fila — Eliminar (rojo), Renovar (azul), Descuento (morado, como su tarjeta en Pagadas) */
 /* el contenedor ya separa con gap:14px — se compensa para dejar 8px entre las dos filas */
 .fila-acciones-prestamo:has(+ .fila-acciones-prestamo-2){ margin-bottom:-6px; }
@@ -7706,6 +7718,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     <div class="tabs" id="tabs-historial-creditos" style="padding:0 0 14px; align-items:center;">
       <button type="button" class="tab-button active" data-estado="activo">Activos (<span id="historial-count-activo">0</span>)</button>
       <button type="button" class="tab-button" data-estado="finalizado">Historial (<span id="historial-count-finalizado">0</span>)</button>
+      <!-- NUEVO (a pedido): invierte el orden de los créditos (más reciente ↔ más antiguo) -->
+      <button type="button" class="btn-orden-creditos" id="btn-orden-creditos" aria-label="Invertir orden de los créditos" title="Cambiar orden">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"></path><path d="M17 20V4"></path><path d="m3 8 4-4 4 4"></path><path d="M7 4v16"></path></svg>
+      </button>
       <!-- CAMBIO: a pedido — el ícono de compartir se retiró de esta fila (queda oculto, no se borra, para no romper su manejador). El mismo Resumen de crédito se abre tocando la píldora de estado de cada tarjeta. -->
       <button type="button" class="btn-compartir-historial-credito" id="btn-compartir-historial-credito" style="display:none;" aria-hidden="true" tabindex="-1" aria-label="Compartir resumen del crédito">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
@@ -16983,6 +16999,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     // Préstamos del cliente (estadísticas + lista)
     // NUEVO: siempre arranca en la pestaña "Activos" al entrar a la ficha
     filtroEstadoHistorialCreditos = 'activo';
+    ordenInvertidoHistorialCreditos = false; // cada ficha arranca con el orden normal
+    document.getElementById('btn-orden-creditos').classList.remove('invertido');
     document.getElementById('tabs-historial-creditos').querySelectorAll('.tab-button').forEach(b=>{
       b.classList.toggle('active', b.dataset.estado === 'activo');
     });
@@ -21066,6 +21084,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // NUEVO: qué pestaña de "Historial de Créditos" está activa — se
   // reinicia a "activo" cada vez que se abre la ficha de un cliente.
   let filtroEstadoHistorialCreditos = 'activo';
+  let ordenInvertidoHistorialCreditos = false; // NUEVO (a pedido): botón de flechas de orden
 
   // ==========================================================
   // NUEVO — a pedido: resumen de préstamos activos del cliente, al tocar
@@ -21280,9 +21299,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       // al más reciente (Crédito 1 arriba, luego Crédito 2, Crédito 3…),
       // con el mismo orden que usa numeroCreditoCliente para numerarlos.
       // El Historial conserva su orden: el más reciente primero.
-      const prestamosOrdenados = filtroEstadoHistorialCreditos === 'activo'
+      let prestamosOrdenados = filtroEstadoHistorialCreditos === 'activo'
         ? prestamosFiltrados.slice().sort((a, b)=> (a.fecha || '').localeCompare(b.fecha || '') || (a.id - b.id))
         : prestamosFiltrados.slice().reverse();
+      // NUEVO (a pedido): botón de flechas — invierte el orden mostrado
+      if(ordenInvertidoHistorialCreditos) prestamosOrdenados = prestamosOrdenados.reverse();
       prestamosOrdenados.forEach(prestamo=>{
         const card = crearTarjetaPrestamo(prestamo);
         habilitarNotaEditableTarjeta(card, prestamo); // NUEVO: nota editable desde la tarjeta
@@ -21294,6 +21315,14 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
     actualizarResumenHistoricoCliente(clienteId); // NUEVO
   }
+
+  // NUEVO (a pedido): botón de flechas para invertir el orden de los créditos
+  document.getElementById('btn-orden-creditos').addEventListener('click', ()=>{
+    if(!clienteEnDetalle) return;
+    ordenInvertidoHistorialCreditos = !ordenInvertidoHistorialCreditos;
+    document.getElementById('btn-orden-creditos').classList.toggle('invertido', ordenInvertidoHistorialCreditos);
+    mantenerScrollAlFiltrar(()=> renderizarPrestamosCliente(clienteEnDetalle.id));
+  });
 
   document.getElementById('tabs-historial-creditos').querySelectorAll('.tab-button').forEach(btn=>{
     btn.addEventListener('click', ()=>{
