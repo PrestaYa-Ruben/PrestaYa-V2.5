@@ -3871,6 +3871,15 @@ body.modo-oscuro #screen-simulador .sim-campo-caja input{ color:var(--text); }
   z-index:200;
   padding:24px;
 }
+/* NUEVO (a pedido): al abrir cualquier modal, lo que queda detrás se
+   desenfoca (y se oscurece un poco) para que el modal resalte. */
+.confirm-modal-overlay,
+.action-sheet-overlay,
+.menu-lateral-overlay{
+  -webkit-backdrop-filter:blur(7px) saturate(115%);
+          backdrop-filter:blur(7px) saturate(115%);
+}
+.confirm-modal-overlay{ background:rgba(15,23,42,0.22); }
 .confirm-modal-card{
   background:var(--surface);
   border-radius:var(--radius-lg);
