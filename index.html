@@ -1345,6 +1345,8 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
 /* CAMBIO (a pedido): valor del abono más grande y con más peso */
 #input-valor-abono{ font-size:22px; font-weight:800; letter-spacing:-0.2px; }
 #input-valor-abono::placeholder{ font-size:15px; font-weight:500; letter-spacing:0; }
+/* CAMBIO (a pedido): ícono del campo Valor en blanco, más visible sobre el azul */
+#screen-agregar-abono .field-with-icon:has(#input-valor-abono) svg{ stroke:#FFFFFF !important; opacity:1 !important; width:24px; height:24px; stroke-width:1.6; }
 
 /* Aplicar abono a — degradado verde/turquesa.
    CORREGIDO: "Aplicar abono a" y "Método de Pago" en realidad los ve el
@@ -1985,13 +1987,14 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
    id's, campos y cálculos.
    ========================================================== */
 #screen-nuevo-prestamo{
-  --np-fondo-1:#F1F6F8; --np-fondo-2:#E3ECF0;
-  --np-card:#FFFFFF; --np-card-borde:rgba(15,60,80,0.07); --np-card-sombra:0 3px 10px rgba(40,70,90,0.16);
-  --np-campo:#EDF0F3; --np-campo-borde:#B4BEC8;
-  --np-teal:#0F7C95; --np-teal-2:#0A657B; --np-naranja:#F2702A;
+  /* CAMBIO (a pedido): paleta azul marino #002359 + verde #34AC27 (antes turquesa/naranja) */
+  --np-fondo-1:#F1F5FA; --np-fondo-2:#E2E9F3;
+  --np-card:#FFFFFF; --np-card-borde:rgba(0,35,89,0.08); --np-card-sombra:0 3px 10px rgba(0,35,89,0.14);
+  --np-campo:#EEF2F8; --np-campo-borde:#B7C2D3;
+  --np-teal:#002359; --np-teal-2:#001A44; --np-naranja:#34AC27;
   --np-valor:#0A0F1A; --np-titulo:#151B22;
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='300' viewBox='0 0 260 300' fill='none' stroke='%239DB9C4' stroke-width='1.1' opacity='0.30'%3E%3Cpath d='M40 -10c20 90 70 170 150 250'/%3E%3Cpath d='M300 70 120 150c-12 6-12 20-2 28l150 90'/%3E%3Cpath d='M290 150 190 190l-40 70 130-30'/%3E%3C/svg%3E") no-repeat right 210px / 230px auto,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='300' viewBox='0 0 260 300' fill='none' stroke='%23A7B6CF' stroke-width='1.1' opacity='0.30'%3E%3Cpath d='M40 -10c20 90 70 170 150 250'/%3E%3Cpath d='M300 70 120 150c-12 6-12 20-2 28l150 90'/%3E%3Cpath d='M290 150 190 190l-40 70 130-30'/%3E%3C/svg%3E") no-repeat right 210px / 230px auto,
     linear-gradient(170deg, var(--np-fondo-1) 0%, var(--np-fondo-2) 100%);
   min-height:100vh;
 }
@@ -1999,7 +2002,7 @@ body.modo-oscuro #screen-nuevo-prestamo{
   --np-fondo-1:#141922; --np-fondo-2:#10141C;
   --np-card:#1E2530; --np-card-borde:rgba(255,255,255,0.06); --np-card-sombra:0 3px 10px rgba(0,0,0,0.45);
   --np-campo:#161C25; --np-campo-borde:#3A4656;
-  --np-teal:#4FC3DC; --np-teal-2:#0A657B;
+  --np-teal:#8FB0EA; --np-teal-2:#002359; --np-naranja:#4CC93F;
   --np-valor:#FFFFFF; --np-titulo:#F1F5F9;
   background:linear-gradient(170deg, var(--np-fondo-1) 0%, var(--np-fondo-2) 100%);
 }
@@ -2026,7 +2029,7 @@ body.modo-oscuro #screen-nuevo-prestamo{
 #screen-nuevo-prestamo .np-cliente-avatar{
   width:52px; height:52px; border-radius:50%; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
-  background:#E3E7EB; color:#6B7480; font-size:20px; font-weight:500; letter-spacing:.5px;
+  background:#E3E9F3; color:#002359; font-size:20px; font-weight:500; letter-spacing:.5px;
 }
 body.modo-oscuro #screen-nuevo-prestamo .np-cliente-avatar{ background:#2B3442; color:#B6C0CC; }
 #screen-nuevo-prestamo .np-cliente-texto{ min-width:0; }
@@ -2047,7 +2050,7 @@ body.modo-oscuro #screen-nuevo-prestamo .np-cliente-avatar{ background:#2B3442; 
   color:var(--np-valor); -webkit-text-fill-color:var(--np-valor);
   font-size:18px; font-weight:600; padding:15px 14px 12px;
 }
-#screen-nuevo-prestamo .field-input:focus{ border-color:var(--np-teal); box-shadow:0 0 0 3px rgba(15,124,149,0.14); }
+#screen-nuevo-prestamo .field-input:focus{ border-color:var(--np-naranja); box-shadow:0 0 0 3px rgba(52,172,39,0.16); }
 #screen-nuevo-prestamo .field-input::placeholder{ font-size:15px; font-weight:400; color:var(--text-secondary); -webkit-text-fill-color:var(--text-secondary); }
 #screen-nuevo-prestamo .field-input:disabled, #screen-nuevo-prestamo .field-input[readonly]{ opacity:1; -webkit-text-fill-color:var(--np-valor); }
 #screen-nuevo-prestamo .field-with-icon .field-input{ padding-right:44px; }
@@ -2059,7 +2062,7 @@ body.modo-oscuro #screen-nuevo-prestamo .np-cliente-avatar{ background:#2B3442; 
 /* Monto solicitado: valor grande con $ */
 #screen-nuevo-prestamo .np-campo-monto .field-input{ font-size:27px; font-weight:700; padding:17px 56px 12px 44px; }
 #screen-nuevo-prestamo .np-campo-monto .field-input::placeholder{ font-size:16px; }
-#screen-nuevo-prestamo .np-prefijo{ position:absolute; left:15px; top:50%; transform:translateY(-46%); font-size:27px; font-weight:700; color:var(--np-teal); pointer-events:none; }
+#screen-nuevo-prestamo .np-prefijo{ position:absolute; left:15px; top:50%; transform:translateY(-46%); font-size:27px; font-weight:700; color:var(--np-naranja); pointer-events:none; }
 #screen-nuevo-prestamo .np-campo-monto .field-with-icon svg.np-icono-monto{ width:32px; height:32px; right:12px; stroke:none; }
 
 /* Condiciones de pago: dos mini tarjetas + botón de intercambio */
@@ -2072,7 +2075,7 @@ body.modo-oscuro #screen-nuevo-prestamo .np-cliente-avatar{ background:#2B3442; 
   background:var(--np-campo); border:1.5px solid transparent; border-radius:10px; padding:9px 10px 8px; gap:2px;
   transition:border-color .15s ease;
 }
-#screen-nuevo-prestamo .np-caja:focus-within{ border-color:var(--np-teal); }
+#screen-nuevo-prestamo .np-caja:focus-within{ border-color:var(--np-naranja); }
 #screen-nuevo-prestamo .np-caja .field-label{ display:flex; align-items:center; gap:6px; font-size:12.5px; white-space:nowrap; }
 #screen-nuevo-prestamo .np-caja .field-label svg{ width:17px; height:17px; flex-shrink:0; stroke:var(--np-teal); }
 #screen-nuevo-prestamo .np-caja .field-label svg.np-naranja{ stroke:var(--np-naranja); }
@@ -2087,7 +2090,7 @@ body.modo-oscuro #screen-nuevo-prestamo .np-cliente-avatar{ background:#2B3442; 
 #screen-nuevo-prestamo .swap-btn{
   align-self:center; width:34px; height:34px; min-width:34px; margin:0; border-radius:50%;
   background:var(--np-card); color:var(--np-teal); border:1.5px solid var(--np-teal);
-  box-shadow:0 2px 5px rgba(40,70,90,0.18);
+  box-shadow:0 2px 5px rgba(0,35,89,0.18);
 }
 #screen-nuevo-prestamo .swap-btn svg{ width:16px; height:16px; }
 
@@ -2120,17 +2123,36 @@ body.modo-oscuro #screen-nuevo-prestamo .np-cliente-avatar{ background:#2B3442; 
 #screen-nuevo-prestamo .mora-toggle-row{ padding:0; }
 #screen-nuevo-prestamo .mora-toggle-title{ font-size:16px; color:var(--np-titulo); }
 #screen-nuevo-prestamo .mora-toggle-subtitle{ color:var(--text); opacity:.85; }
-#screen-nuevo-prestamo .toggle-switch.on{ background:#2196F3; }
-#screen-nuevo-prestamo .toggle-switch.on::after{ background:var(--np-naranja); }
+#screen-nuevo-prestamo .toggle-switch.on{ background:var(--np-naranja); }
+#screen-nuevo-prestamo .toggle-switch.on::after{ background:#FFFFFF; }
 
 #screen-nuevo-prestamo .ver-simulacion-btn{ color:var(--np-titulo); font-weight:500; font-size:14.5px; text-decoration:underline; text-underline-offset:3px; padding:2px 8px; }
 #screen-nuevo-prestamo .btn-guardar-prestamo{
   border-radius:10px; padding-top:16px; padding-bottom:16px; font-size:17px;
-  background:linear-gradient(180deg, #12859F 0%, #0A657B 100%);
-  box-shadow:0 8px 16px rgba(10,101,123,0.32), inset 0 1px 0 rgba(255,255,255,0.22);
-  border:1px solid #085466;
+  background:linear-gradient(180deg, #0A3A80 0%, #002359 100%);
+  box-shadow:0 8px 16px rgba(0,35,89,0.30), inset 0 1px 0 rgba(255,255,255,0.18);
+  border:1px solid #001A44;
 }
-#screen-nuevo-prestamo .btn-guardar-prestamo:active{ transform:translateY(1px); box-shadow:0 3px 8px rgba(10,101,123,0.32); }
+#screen-nuevo-prestamo .btn-guardar-prestamo:active{ transform:translateY(1px); box-shadow:0 3px 8px rgba(0,35,89,0.30); }
+#screen-nuevo-prestamo .btn-guardar-prestamo svg{ stroke:#FFFFFF; }
+#screen-nuevo-prestamo .simulation-title{ color:var(--np-teal); }
+#screen-nuevo-prestamo .share-fab{ background:var(--np-naranja); box-shadow:0 10px 22px rgba(52,172,39,0.35); }
+
+/* CAMBIO (a pedido): Fecha de Desembolso y Agregar Nota juntas en una sola fila */
+#screen-nuevo-prestamo .np-card-fecha{
+  display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:stretch; gap:10px;
+}
+#screen-nuevo-prestamo .np-card-fecha .np-fecha{ gap:10px; padding:10px 12px; }
+#screen-nuevo-prestamo .np-card-fecha .np-fecha-icono{ width:34px; height:34px; }
+#screen-nuevo-prestamo .np-card-fecha .np-fecha .field-label{ font-size:12.5px; white-space:nowrap; }
+#screen-nuevo-prestamo .np-card-fecha .np-fecha .field-input{ font-size:19px; }
+#screen-nuevo-prestamo .np-card-fecha .add-note-btn{
+  width:auto; min-width:104px; height:auto; flex-direction:column; gap:4px;
+  font-size:13.5px; padding:8px 10px; line-height:1.15; border-color:var(--np-teal); color:var(--np-teal);
+}
+#screen-nuevo-prestamo .np-card-fecha .add-note-btn svg{ width:20px; height:20px; stroke:currentColor; }
+#screen-nuevo-prestamo .np-card-fecha .add-note-btn.active{ color:var(--np-naranja); border-color:var(--np-naranja); }
+#screen-nuevo-prestamo .np-card-fecha #campo-nota-prestamo{ grid-column:1 / -1; margin-top:2px; }
 
 /* ==========================================================
    NUEVO — pantalla "Comparativas de Ganancias" (menú lateral).
@@ -7843,7 +7865,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           <div class="field-with-icon">
             <span class="np-prefijo" aria-hidden="true">$</span>
             <input class="field-input" id="input-valor-prestamo" type="text" inputmode="numeric" placeholder="Toca y escribe" required>
-            <svg class="np-icono-monto" viewBox="0 0 32 32" aria-hidden="true"><rect x="17" y="7" width="13" height="3.4" rx="1" fill="#0F7C95"/><rect x="19" y="12" width="11" height="3.4" rx="1" fill="#0F7C95"/><rect x="19" y="17" width="11" height="3.4" rx="1" fill="#0F7C95"/><rect x="17" y="22" width="13" height="3.4" rx="1" fill="#0F7C95"/><circle cx="12" cy="16" r="11" fill="#0F7C95"/><path d="M15.2 12.6c-.6-1-1.7-1.5-3.1-1.5-1.8 0-3 .9-3 2.3 0 3.2 6.2 1.5 6.2 4.8 0 1.5-1.3 2.4-3.2 2.4-1.6 0-2.8-.6-3.4-1.8M12 8.8v14.4" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></svg>
+            <svg class="np-icono-monto" viewBox="0 0 32 32" aria-hidden="true"><rect x="17" y="7" width="13" height="3.4" rx="1" fill="#002359"/><rect x="19" y="12" width="11" height="3.4" rx="1" fill="#002359"/><rect x="19" y="17" width="11" height="3.4" rx="1" fill="#002359"/><rect x="17" y="22" width="13" height="3.4" rx="1" fill="#002359"/><circle cx="12" cy="16" r="11" fill="#002359"/><path d="M15.2 12.6c-.6-1-1.7-1.5-3.1-1.5-1.8 0-3 .9-3 2.3 0 3.2 6.2 1.5 6.2 4.8 0 1.5-1.3 2.4-3.2 2.4-1.6 0-2.8-.6-3.4-1.8M12 8.8v14.4" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></svg>
           </div>
         </div>
         <div class="np-fila-2">
@@ -7895,7 +7917,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <div class="np-titulo">Calendario y Notas</div>
       <div class="np-card np-card-fecha">
         <div class="np-fecha">
-          <svg class="np-fecha-icono" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="5" y="9" width="32" height="30" rx="4" stroke="#0F7C95" stroke-width="3"/><path d="M5 17h32" stroke="#0F7C95" stroke-width="3"/><path d="M13 5v8M29 5v8" stroke="#0F7C95" stroke-width="3" stroke-linecap="round"/><rect x="11" y="22" width="5" height="4.5" rx="1" fill="#0F7C95"/><rect x="19" y="22" width="5" height="4.5" rx="1" fill="#0F7C95"/><rect x="11" y="30" width="5" height="4.5" rx="1" fill="#0F7C95"/><path d="M27 41l2-7 12-12 5 5-12 12z" fill="#F2702A" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <svg class="np-fecha-icono" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="5" y="9" width="32" height="30" rx="4" stroke="#002359" stroke-width="3"/><path d="M5 17h32" stroke="#002359" stroke-width="3"/><path d="M13 5v8M29 5v8" stroke="#002359" stroke-width="3" stroke-linecap="round"/><rect x="11" y="22" width="5" height="4.5" rx="1" fill="#002359"/><rect x="19" y="22" width="5" height="4.5" rx="1" fill="#002359"/><rect x="11" y="30" width="5" height="4.5" rx="1" fill="#002359"/><path d="M27 41l2-7 12-12 5 5-12 12z" fill="#34AC27" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
           <div class="form-field">
             <label class="field-label" for="input-fecha-credito">Fecha de Desembolso</label>
             <div class="field-with-icon">
@@ -7915,7 +7937,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       </div>
     </div>
 
-    <div class="np-seccion">
+    <!-- RETIRADO (a pedido): "Opciones Adicionales / Habilitar Interés por
+         Mora" queda oculto. El interruptor sigue en el formulario (apagado
+         por defecto) para no romper el código; los créditos que ya tenían
+         mora activada la conservan al editarlos. -->
+    <div class="np-seccion" style="display:none;" aria-hidden="true">
       <div class="np-titulo">Opciones Adicionales</div>
       <div class="np-card np-card-mora">
         <div class="mora-toggle-row">
@@ -8175,7 +8201,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         <label class="field-label" for="input-valor-abono">Valor</label>
         <div class="field-with-icon">
           <input class="field-input campo-resaltado-suave campo-valor-abono" id="input-valor-abono" type="text" inputmode="numeric" placeholder="Toca y escribe" required>
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="3"></circle></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><!-- CAMBIO (a pedido): ícono más profesional (moneda con $) --><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>
         </div>
       </div>
 
