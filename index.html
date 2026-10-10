@@ -3071,6 +3071,13 @@ div:has(> #btn-mas-opciones-prestamo){ margin:0 0 -14px !important; }
 .btn-accion-prestamo.eliminar{ background:#E07070; }
 .btn-accion-prestamo.renovar{ background:#6B95EC; }
 .btn-accion-prestamo.descuento{ background:#A07FE6; }
+/* CAMBIO (a pedido): texto de los 6 botones con más intensidad — más grueso;
+   el blanco lleva una sombra sutil para resaltar sobre los tonos suaves */
+.btn-accion-prestamo{ font-weight:800; }
+.btn-accion-prestamo.cronograma, .btn-accion-prestamo.eliminar,
+.btn-accion-prestamo.renovar, .btn-accion-prestamo.descuento{ color:#FFFFFF; text-shadow:0 1px 2px rgba(0,0,0,0.28); }
+.btn-accion-prestamo.historial{ color:#0A0D14; }
+.btn-accion-prestamo.editar{ color:#1A1505; }
 @media (max-width:380px){
   .fila-acciones-prestamo{ gap:6px; }
   .btn-accion-prestamo{ font-size:11px; letter-spacing:0.1px; }
