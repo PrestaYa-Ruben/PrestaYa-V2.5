@@ -3664,44 +3664,12 @@ body.modo-oscuro .btn-accion-prestamo.historial{ border-color:#4B5563; }
 #screen-simulador .sim-campo-caja,
 #screen-simulador .sim-campo-caja input{ font-size:20px; font-weight:800; }
 #screen-simulador .sim-pildora-porcentaje.sim-campo-caja span{ font-size:18px; font-weight:800; }
-#screen-simulador .sim-rueda-inline .sim-rueda-item b{ font-size:20px; font-weight:800; }
-#screen-simulador .sim-rueda-inline .sim-rueda-item span{ font-size:13px; font-weight:700; }
 /* CAMBIO (a pedido): valor a simular con más peso y tamaño */
 #screen-simulador .sim-campo-valor input{ font-size:20px; font-weight:800; letter-spacing:-0.2px; }
 #screen-simulador .sim-campo-valor .sim-campo-prefijo{ font-size:20px; font-weight:800; }
 #screen-simulador .sim-campo-valor input::placeholder{ color:#A9B4C5; font-weight:600; }
 #screen-simulador .sim-dropdown{ border-radius:14px; border-color:#DCE3EE; }
 #screen-simulador .sim-dropdown-cuotas{ left:auto; right:0; width:calc(200% + 12px); }
-/* NUEVO (a pedido): rueda / rodillo para "N.° de cuotas", DENTRO de la caja */
-#screen-simulador .sim-rueda-inline{ position:relative; padding:0 10px 0 14px; overflow:hidden; }
-#screen-simulador .sim-rueda-inline::before,
-#screen-simulador .sim-rueda-inline::after{
-  content:''; position:absolute; left:10px; right:34px; height:1px; pointer-events:none;
-  background:rgba(52,172,39,0.35);
-}
-#screen-simulador .sim-rueda-inline::before{ top:9px; }
-#screen-simulador .sim-rueda-inline::after{ bottom:9px; }
-#screen-simulador .sim-rueda-inline .sim-rueda-lista{
-  flex:1 1 auto; min-width:0; height:100%; overflow-y:auto; overflow-x:hidden;
-  scroll-snap-type:y mandatory; -webkit-overflow-scrolling:touch; overscroll-behavior:contain;
-  perspective:180px; scrollbar-width:none; touch-action:pan-y;
-  -webkit-mask-image:linear-gradient(rgba(0,0,0,0.25), #000 34%, #000 66%, rgba(0,0,0,0.25));
-          mask-image:linear-gradient(rgba(0,0,0,0.25), #000 34%, #000 66%, rgba(0,0,0,0.25));
-}
-#screen-simulador .sim-rueda-inline .sim-rueda-lista::-webkit-scrollbar{ display:none; }
-#screen-simulador .sim-rueda-inline .sim-rueda-relleno{ height:10px; }
-#screen-simulador .sim-rueda-inline .sim-rueda-item{
-  height:30px; display:flex; align-items:center; gap:6px;
-  scroll-snap-align:center; scroll-snap-stop:always; cursor:pointer;
-  user-select:none; -webkit-user-select:none;
-  transform-origin:center center; backface-visibility:hidden; will-change:transform, opacity;
-  color:var(--sim-navy);
-}
-#screen-simulador .sim-rueda-inline .sim-rueda-item b{ font-size:20px; font-weight:800; font-variant-numeric:tabular-nums; }
-#screen-simulador .sim-rueda-inline .sim-rueda-item span{ font-size:13px; font-weight:700; color:#6B7A93; }
-#screen-simulador .sim-rueda-inline .sim-rueda-item.activo b{ font-weight:800; }
-#screen-simulador .sim-rueda-inline .sim-rueda-item.activo span{ color:var(--sim-dorado); }
-#screen-simulador .sim-rueda-flechas{ width:18px !important; height:18px !important; flex-shrink:0; stroke:var(--sim-dorado); pointer-events:none; }
 #screen-simulador .sim-grilla-cuotas button.active{ background:var(--sim-navy); border-color:var(--sim-navy); }
 #screen-simulador .sim-dropdown-opcion.active{ color:var(--sim-navy); background:#F4F7FB; }
 body.modo-oscuro #screen-simulador .sim-controles{ background:var(--surface); border-color:rgba(255,255,255,0.08); }
@@ -30648,75 +30616,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       dropdownCuotas.style.display = dropdownCuotas.style.display === 'block' ? 'none' : 'block';
     });
 
-    // ---- NUEVO (a pedido): "N.° de cuotas" como RUEDA / RODILLO ----
-    // CAMBIO (a pedido): la rueda va DENTRO de la misma caja de cuotas (sin
-    // abrir ningún desplegable). Se gira deslizando el dedo arriba/abajo
-    // sobre la caja; el número del centro es el elegido y la simulación se
-    // actualiza al detenerse. Se ven asomando el número anterior y el
-    // siguiente. El botón y la grilla anteriores quedan ocultos (sin borrarse).
-    (function(){
-      const ALTO_ITEM = 30, MAX_CUOTAS = 12;
-      btnCuotas.style.display = 'none';
-      dropdownCuotas.style.display = 'none';
-      const caja = document.createElement('div');
-      caja.className = 'sim-campo-caja sim-rueda-inline';
-      caja.setAttribute('role', 'listbox');
-      caja.setAttribute('aria-label', 'Número de cuotas');
-      caja.innerHTML = '<div class="sim-rueda-lista"></div>' +
-        '<svg class="sim-rueda-flechas" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 9 12 4 17 9"></polyline><polyline points="7 15 12 20 17 15"></polyline></svg>';
-      btnCuotas.insertAdjacentElement('afterend', caja);
-      const lista = caja.querySelector('.sim-rueda-lista');
-      const items = [];
-      const relleno = ()=>{ const r = document.createElement('div'); r.className = 'sim-rueda-relleno'; return r; };
-      lista.appendChild(relleno());
-      for(let n = 1; n <= MAX_CUOTAS; n++){
-        const it = document.createElement('div');
-        it.className = 'sim-rueda-item';
-        it.setAttribute('role', 'option');
-        it.innerHTML = '<b>' + n + '</b><span>' + (n === 1 ? 'cuota' : 'cuotas') + '</span>';
-        it.addEventListener('click', ()=> lista.scrollTo({ top:(n - 1) * ALTO_ITEM, behavior:'smooth' }));
-        lista.appendChild(it);
-        items.push(it);
-      }
-      lista.appendChild(relleno());
-
-      function pintar(){
-        const centro = lista.scrollTop / ALTO_ITEM;
-        items.forEach((it, i)=>{
-          const d = i - centro;
-          const ad = Math.min(Math.abs(d), 2);
-          it.style.transform = 'translateY(' + (-Math.max(-1, Math.min(1, d)) * 9).toFixed(1) + 'px) rotateX(' + (-d * 40).toFixed(1) + 'deg) scale(' + (1 - ad * 0.22).toFixed(3) + ')';
-          it.style.opacity = Math.max(0, 1 - ad * 0.45).toFixed(2);
-          const activo = Math.abs(d) < 0.5;
-          it.classList.toggle('activo', activo);
-          it.setAttribute('aria-selected', activo ? 'true' : 'false');
-        });
-      }
-      let temporizador = null, listo = false;
-      function fijar(){
-        const n = Math.min(MAX_CUOTAS, Math.max(1, Math.round(lista.scrollTop / ALTO_ITEM) + 1));
-        if(n === simCuotas) return;
-        simCuotas = n;
-        textoCuotas.textContent = n;
-        grillaCuotas.querySelectorAll('button').forEach(b => b.classList.toggle('active', Number(b.textContent) === n));
-        renderizarSimulacion();
-        if(listo && navigator.vibrate){ try{ navigator.vibrate(6); }catch(e){} }
-      }
-      lista.addEventListener('scroll', ()=>{
-        requestAnimationFrame(pintar);
-        clearTimeout(temporizador);
-        temporizador = setTimeout(fijar, 110);
-      }, { passive:true });
-      caja.addEventListener('click', (e)=> e.stopPropagation());
-      // Posición inicial: la cuota actual al centro (cuando la caja ya es visible)
-      function sincronizar(){
-        lista.scrollTop = (simCuotas - 1) * ALTO_ITEM;
-        pintar();
-        listo = true;
-      }
-      document.getElementById('btn-abrir-simulador').addEventListener('click', ()=> requestAnimationFrame(sincronizar));
-      requestAnimationFrame(sincronizar);
-    })();
+    // (RETIRADO a pedido: la rueda/rodillo de "N.° de cuotas" — se volvió
+    //  al selector anterior: botón + grilla 1-12 en un desplegable.)
 
     // ---- Selector "Frecuencia" (desplegable pequeño) ----
     btnFrecuencia.addEventListener('click', (e)=>{
