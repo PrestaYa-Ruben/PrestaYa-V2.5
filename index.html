@@ -2185,6 +2185,33 @@ body.modo-oscuro #screen-nuevo-prestamo .np-cliente-avatar{ background:#2B3442; 
 #screen-nuevo-prestamo .np-card-fecha .add-note-btn svg{ width:20px; height:20px; stroke:currentColor; }
 #screen-nuevo-prestamo .np-card-fecha .add-note-btn.active{ color:var(--np-naranja); border-color:var(--np-naranja); }
 #screen-nuevo-prestamo .np-card-fecha #campo-nota-prestamo{ grid-column:1 / -1; margin-top:2px; }
+/* NUEVO (a pedido): fechas manuales de Primera / Segunda cuota */
+#screen-nuevo-prestamo .np-cuotas-manual{ grid-column:1 / -1; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; }
+#screen-nuevo-prestamo .np-cuota-caja{
+  position:relative; min-width:0;
+  background:var(--np-campo); border-radius:10px; padding:11px 34px 11px 14px;
+  display:flex; flex-direction:column; gap:2px; transition:opacity .15s ease;
+}
+#screen-nuevo-prestamo .np-cuota-caja .field-label{ font-size:13px; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#screen-nuevo-prestamo .np-cuota-caja .field-input{
+  background:transparent; border:none; box-shadow:none; border-radius:0;
+  padding:0; font-size:clamp(15px, 4.4vw, 18.5px); font-weight:800; line-height:1.25; width:100%; min-width:0;
+  text-align:left; white-space:nowrap;
+}
+#screen-nuevo-prestamo .np-cuota-caja .field-select-trigger-texto{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; -webkit-text-fill-color:currentColor; } /* "Manual" en gris */
+#screen-nuevo-prestamo .np-cuota-caja .chevron-select{ display:none; }
+/* toda la caja abre el calendario */
+#screen-nuevo-prestamo .np-cuota-caja .field-select-trigger{ position:static; }
+#screen-nuevo-prestamo .np-cuota-caja .field-select-trigger::after{ content:''; position:absolute; inset:0; }
+#screen-nuevo-prestamo .np-cuota-quitar{
+  position:absolute; right:6px; top:50%; transform:translateY(-50%); z-index:2;
+  width:28px; height:28px; border:none; background:transparent; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; color:var(--text-secondary); cursor:pointer; padding:0;
+}
+#screen-nuevo-prestamo .np-cuota-quitar svg{ width:18px; height:18px; stroke:currentColor; }
+#screen-nuevo-prestamo .np-cuota-quitar:active{ background:rgba(0,0,0,0.06); }
+#screen-nuevo-prestamo .np-cuota-caja.deshabilitada{ opacity:.45; pointer-events:none; }
+#screen-nuevo-prestamo .np-cuotas-ayuda{ grid-column:1 / -1; font-size:13.5px; color:var(--text-secondary); padding:0 4px; margin-top:-2px; }
 
 /* ==========================================================
    NUEVO — pantalla "Comparativas de Ganancias" (menú lateral).
@@ -8015,6 +8042,25 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"></path><line x1="8.5" y1="8" x2="13" y2="8"></line><line x1="8.5" y1="12" x2="11.5" y2="12"></line><path d="M14 20.5l.8-3.4 6-6 2.6 2.6-6 6z"></path></svg>
           <span id="texto-btn-nota">Agregar Nota</span>
         </button>
+        <!-- NUEVO (a pedido): fechas manuales de cuota (opcionales). Vacías =
+             "Manual" (las fechas se calculan como siempre desde el desembolso). -->
+        <div class="np-cuotas-manual" id="np-cuotas-manual">
+          <div class="np-cuota-caja" id="np-caja-primera-cuota">
+            <label class="field-label" for="input-primera-cuota">Primera cuota</label>
+            <input class="field-input" id="input-primera-cuota" type="date" placeholder="Manual">
+            <button type="button" class="np-cuota-quitar" id="btn-quitar-primera-cuota" aria-label="Quitar fecha de la primera cuota" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+            </button>
+          </div>
+          <div class="np-cuota-caja deshabilitada" id="np-caja-segunda-cuota">
+            <label class="field-label" for="input-segunda-cuota">Segunda cuota</label>
+            <input class="field-input" id="input-segunda-cuota" type="date" placeholder="Manual">
+            <button type="button" class="np-cuota-quitar" id="btn-quitar-segunda-cuota" aria-label="Quitar fecha de la segunda cuota" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+            </button>
+          </div>
+        </div>
+        <div class="np-cuotas-ayuda" id="np-cuotas-ayuda" style="display:none;"></div>
         <div class="form-field np-campo" id="campo-nota-prestamo" style="display:none;">
           <label class="field-label" for="input-nota-prestamo">Nota</label>
           <textarea class="field-input field-textarea" id="input-nota-prestamo" rows="2"></textarea>
@@ -17591,6 +17637,143 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   // "Cuota deseada" — ver calcularCuotaDesdeInteres/calcularInteresDesdeCuota
   // más abajo, que ya usaban esta misma fórmula).
   // ---------------------------------------------------------------
+  // ==========================================================
+  // NUEVO (a pedido): FECHAS MANUALES DE CUOTA — capa aparte.
+  // NO toca calcularPlanPagos(): recibe el plan ya calculado y SOLO
+  // reemplaza fechaISO y fechaTexto de cada cuota. Capital, interés,
+  // total y número de cuota quedan exactamente iguales.
+  //  · Sin fechas → el plan no cambia.
+  //  · Solo "Primera cuota" → la cuota 1 cae ese día y las siguientes se
+  //    corren según la frecuencia (diario +1, semanal +7, quincenal +15,
+  //    mensual el mismo día de cada mes).
+  //  · "Primera" y "Segunda" → dos pagos al mes: cuotas impares el día de
+  //    la primera, pares el día de la segunda; avanza un mes cada dos
+  //    cuotas (la frecuencia no decide las fechas).
+  //  · Si el mes no tiene ese día (30, 31…), se usa el último día del mes.
+  // ==========================================================
+  function fechaConDiaDelMes(anio, mes, dia){
+    const base = new Date(anio, mes, 1); // normaliza meses fuera de rango
+    const a = base.getFullYear(), m = base.getMonth();
+    const ultimo = new Date(a, m + 1, 0).getDate();
+    return new Date(a, m, Math.min(dia, ultimo));
+  }
+  function aplicarFechasManualesCuotas(plan, frecuencia, primeraISO, segundaISO){
+    if(!plan || !plan.length || !primeraISO) return plan;
+    const p = new Date(primeraISO + 'T00:00:00');
+    if(isNaN(p)) return plan;
+    let s = segundaISO ? new Date(segundaISO + 'T00:00:00') : null;
+    if(s && isNaN(s)) s = null;
+    return plan.map((cuota, i)=>{
+      let f;
+      if(s){
+        const k = Math.floor(i / 2);
+        f = (i % 2 === 0)
+          ? fechaConDiaDelMes(p.getFullYear(), p.getMonth() + k, p.getDate())
+          : fechaConDiaDelMes(s.getFullYear(), s.getMonth() + k, s.getDate());
+      }else if(frecuencia === 'diario'){
+        f = new Date(p.getFullYear(), p.getMonth(), p.getDate() + i);
+      }else if(frecuencia === 'semanal'){
+        f = new Date(p.getFullYear(), p.getMonth(), p.getDate() + i * 7);
+      }else if(frecuencia === 'quincenal'){
+        f = new Date(p.getFullYear(), p.getMonth(), p.getDate() + i * 15);
+      }else{
+        f = fechaConDiaDelMes(p.getFullYear(), p.getMonth() + i, p.getDate());
+      }
+      return Object.assign({}, cuota, { fechaISO: f.toISOString(), fechaTexto: formatearFechaCorta(f) });
+    });
+  }
+  // Envoltorio del formulario: fórmula de siempre + ajuste de fechas.
+  function calcularPlanFormularioPrestamo(datos){
+    const plan = calcularPlanPagos(datos.valor, datos.cuotas, datos.frecuencia, datos.fecha, datos.tasa);
+    const primera = (document.getElementById('input-primera-cuota') || {}).value || '';
+    const segunda = (document.getElementById('input-segunda-cuota') || {}).value || '';
+    return aplicarFechasManualesCuotas(plan, datos.frecuencia, primera, segunda);
+  }
+
+  // --- Interfaz de las dos casillas (validación, ×, texto de ayuda) ---
+  function refrescarUIFechasManualesCuota(){
+    const inP = document.getElementById('input-primera-cuota');
+    const inS = document.getElementById('input-segunda-cuota');
+    if(!inP || !inS) return;
+    const p = inP.value, s = inS.value;
+    document.getElementById('btn-quitar-primera-cuota').style.display = p ? 'flex' : 'none';
+    document.getElementById('btn-quitar-segunda-cuota').style.display = s ? 'flex' : 'none';
+    const cajaS = document.getElementById('np-caja-segunda-cuota');
+    cajaS.classList.toggle('deshabilitada', !p);
+    const trigS = inS.nextElementSibling;
+    if(trigS && trigS.classList.contains('field-select-trigger')) trigS.disabled = !p;
+    const ayuda = document.getElementById('np-cuotas-ayuda');
+    if(p && s){
+      const d1 = new Date(p + 'T00:00:00').getDate(), d2 = new Date(s + 'T00:00:00').getDate();
+      ayuda.textContent = 'Pagará los días ' + d1 + ' y ' + d2 + ' de cada mes.';
+      ayuda.style.display = 'block';
+    }else{
+      ayuda.style.display = 'none';
+    }
+  }
+  // La segunda debe ser posterior a la primera y anterior a la fecha en
+  // que la primera se repite al mes siguiente (sirve cruzando de mes).
+  function segundaCuotaEsValida(primeraISO, segundaISO){
+    if(!primeraISO || !segundaISO) return true;
+    const p = new Date(primeraISO + 'T00:00:00'), s = new Date(segundaISO + 'T00:00:00');
+    const repetida = fechaConDiaDelMes(p.getFullYear(), p.getMonth() + 1, p.getDate());
+    return s > p && s < repetida;
+  }
+  function refrescarPlanSiAbierto(){
+    const seccion = document.getElementById('simulacion-section');
+    if(!seccion || seccion.style.display === 'none') return;
+    const datos = obtenerDatosFormularioPrestamo();
+    if(!validarDatosPrestamo(datos)) return;
+    renderizarPlanPagos(calcularPlanFormularioPrestamo(datos));
+  }
+  function avisoFechasCuota(texto){
+    if(typeof mostrarMensajeToast === 'function') mostrarMensajeToast(texto); else alert(texto);
+  }
+  function establecerFechasManualesCuota(primera, segunda){
+    const inP = document.getElementById('input-primera-cuota');
+    const inS = document.getElementById('input-segunda-cuota');
+    if(!inP || !inS) return;
+    inP.value = primera || '';
+    inS.value = (primera && segunda && segundaCuotaEsValida(primera, segunda)) ? segunda : '';
+    refrescarUIFechasManualesCuota();
+  }
+  function inicializarFechasManualesCuota(){
+    const inP = document.getElementById('input-primera-cuota');
+    const inS = document.getElementById('input-segunda-cuota');
+    if(!inP || !inS || inP.dataset.fechasManualesListas === '1') return;
+    inP.dataset.fechasManualesListas = '1';
+    inP.addEventListener('change', ()=>{
+      if(inS.value && !segundaCuotaEsValida(inP.value, inS.value)){
+        inS.value = '';
+        avisoFechasCuota('Se quitó la segunda cuota: ya no es válida con la nueva primera cuota.');
+      }
+      refrescarUIFechasManualesCuota();
+      refrescarPlanSiAbierto();
+    });
+    inS.addEventListener('change', ()=>{
+      if(!inP.value){ inS.value = ''; }
+      else if(inS.value && !segundaCuotaEsValida(inP.value, inS.value)){
+        inS.value = '';
+        avisoFechasCuota('La segunda cuota debe ser después de la primera y antes de que la primera se repita el mes siguiente.');
+      }
+      refrescarUIFechasManualesCuota();
+      refrescarPlanSiAbierto();
+    });
+    document.getElementById('btn-quitar-primera-cuota').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      inP.value = ''; inS.value = ''; // quitar la primera quita también la segunda
+      refrescarUIFechasManualesCuota();
+      refrescarPlanSiAbierto();
+    });
+    document.getElementById('btn-quitar-segunda-cuota').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      inS.value = '';
+      refrescarUIFechasManualesCuota();
+      refrescarPlanSiAbierto();
+    });
+    refrescarUIFechasManualesCuota();
+  }
+
   function calcularPlanPagos(valor, cuotas, frecuencia, fechaInicioStr, porcentaje){
     const capitalPorCuota = valor / cuotas;
 
@@ -17702,7 +17885,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     if(abrir){
       const datos = obtenerDatosFormularioPrestamo();
       if(!validarDatosPrestamo(datos)) return;
-      const plan = calcularPlanPagos(datos.valor, datos.cuotas, datos.frecuencia, datos.fecha, datos.tasa);
+      const plan = calcularPlanFormularioPrestamo(datos); // CAMBIO: incluye fechas manuales de cuota
       renderizarPlanPagos(plan);
 
       simulacionSection.style.display = 'flex';
@@ -17730,7 +17913,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const datos = obtenerDatosFormularioPrestamo();
     if(!validarDatosPrestamo(datos)) return;
 
-    const plan = calcularPlanPagos(datos.valor, datos.cuotas, datos.frecuencia, datos.fecha, datos.tasa);
+    const plan = calcularPlanFormularioPrestamo(datos); // CAMBIO: incluye fechas manuales de cuota
     canvasPlanActual = generarCanvasDetalleCredito(datos, plan);
     compartirPlanImg.src = canvasPlanActual.toDataURL('image/png');
     compartirPlanOverlay.style.display = 'flex';
@@ -17800,6 +17983,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     btnCompartirPlan.style.display = 'none';
     btnVerSimulacion.classList.remove('open');
     inputFechaCredito.value = claveFechaConOffset(0);
+    // NUEVO: préstamo nuevo → fechas manuales de cuota vacías ("Manual")
+    if(typeof establecerFechasManualesCuota === 'function') establecerFechasManualesCuota('', '');
   }
 
   // ---------- Abrir / cerrar la pantalla Nuevo Préstamo ----------
@@ -17857,6 +18042,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     inputCuotasPrestamo.value = String(prestamo.cuotas);
     selectFrecuencia.value = prestamo.frecuencia;
     inputFechaCredito.value = prestamo.fecha;
+    // NUEVO: carga las fechas manuales de cuota guardadas en este crédito
+    establecerFechasManualesCuota(prestamo.fechaPrimeraCuota || '', prestamo.fechaSegundaCuota || '');
     inputCuotaDeseada.value = formatearMiles(prestamo.cuotaMostrada || 0);
     cuotaDeseadaEditadaManualmente = true; // ya viene con un valor guardado, no se recalcula solo
     inputTasaInteres.value = (prestamo.tasa || 0).toFixed ? prestamo.tasa.toFixed(2) : prestamo.tasa;
@@ -18931,6 +19118,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         frecuencia: datos.frecuencia,
         fecha: datos.fecha,
         nota: inputNotaPrestamo.value.trim(),
+        fechaPrimeraCuota: document.getElementById('input-primera-cuota').value || '', // NUEVO: fechas manuales de cuota
+        fechaSegundaCuota: document.getElementById('input-segunda-cuota').value || '',
         moraHabilitada,
         estado: 'activo',
         plan,
@@ -18964,6 +19153,8 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
         frecuencia: datos.frecuencia,
         fecha: datos.fecha,
         nota: inputNotaPrestamo.value.trim(),
+        fechaPrimeraCuota: document.getElementById('input-primera-cuota').value || '', // NUEVO: fechas manuales de cuota
+        fechaSegundaCuota: document.getElementById('input-segunda-cuota').value || '',
         moraHabilitada,
         estado: 'activo',
         plan,
@@ -19060,7 +19251,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     const datos = obtenerDatosFormularioPrestamo();
     if(!validarDatosPrestamo(datos)) return;
 
-    const plan = calcularPlanPagos(datos.valor, datos.cuotas, datos.frecuencia, datos.fecha, datos.tasa);
+    const plan = calcularPlanFormularioPrestamo(datos); // CAMBIO: incluye fechas manuales de cuota
     const totalAPagar = plan.reduce((suma, c) => suma + c.total, 0);
 
     // Cuota "estándar" mostrada al usuario en el formulario (editable, o la calculada por la fórmula)
@@ -30034,6 +30225,10 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
   convertirInputFechaAPersonalizado(document.getElementById('input-pagos-hasta'), 'Hasta');
   convertirInputFechaAPersonalizado(document.getElementById('input-fecha-recordatorio'), 'Fecha del recordatorio');
   convertirInputFechaAPersonalizado(document.getElementById('input-fecha-credito'), 'Fecha del crédito');
+  // NUEVO (a pedido): fechas manuales de cuota (Nuevo / Editar Préstamo)
+  convertirInputFechaAPersonalizado(document.getElementById('input-primera-cuota'), 'Primera cuota');
+  convertirInputFechaAPersonalizado(document.getElementById('input-segunda-cuota'), 'Segunda cuota');
+  inicializarFechasManualesCuota();
   convertirInputFechaAPersonalizado(document.getElementById('input-fecha-abono'), 'Fecha del abono');
   convertirInputFechaAPersonalizado(document.getElementById('input-cf-desde'), 'Desde');
   convertirInputFechaAPersonalizado(document.getElementById('input-cf-hasta'), 'Hasta');
