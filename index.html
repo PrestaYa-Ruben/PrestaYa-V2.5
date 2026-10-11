@@ -1979,6 +1979,14 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
 .plan-col{ padding-left:10px; border-left:2px solid var(--border); }
 .plan-col .plan-label{ font-size:11px; color:var(--text-secondary); font-weight:500; margin-bottom:1px; }
 .plan-col .plan-val{ font-size:14px; font-weight:600; color:var(--text); }
+/* NUEVO (a pedido): color de los VALORES del plan de pagos según su contexto
+   (los títulos Capital / Total / Interés siguen igual) */
+.plan-val.plan-val-capital{ color:#1D4ED8; }
+.plan-val.plan-val-total{ color:#15803D; }
+.plan-val.plan-val-interes{ color:#B45309; }
+body.modo-oscuro .plan-val.plan-val-capital{ color:#7FA6FF; }
+body.modo-oscuro .plan-val.plan-val-total{ color:#4ADE80; }
+body.modo-oscuro .plan-val.plan-val-interes{ color:#FBBF24; }
 .plan-row-bottom{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
 .plan-total{ padding-left:10px; border-left:2px solid var(--border); }
 .plan-date{
@@ -17624,17 +17632,18 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
             <div class="plan-row-top">
               <div>
                 <div class="plan-label">Capital</div>
-                <div class="plan-val">${formatearPesos(cuota.capital)}</div>
+                <div class="plan-val plan-val-capital">${formatearPesos(cuota.capital)}</div>
               </div>
+              <!-- CAMBIO (a pedido): Total e Interés intercambian lugar -->
               <div class="plan-col">
-                <div class="plan-label">Interés</div>
-                <div class="plan-val">${formatearPesos(cuota.interes)}</div>
+                <div class="plan-label">Total</div>
+                <div class="plan-val plan-val-total">${formatearPesos(cuota.total)}</div>
               </div>
             </div>
             <div class="plan-row-bottom">
               <div>
-                <div class="plan-label">Total</div>
-                <div class="plan-val">${formatearPesos(cuota.total)}</div>
+                <div class="plan-label">Interés</div>
+                <div class="plan-val plan-val-interes">${formatearPesos(cuota.interes)}</div>
               </div>
               <div class="plan-date">${iconoCalendarioMini()}<span>${cuota.fechaTexto}</span></div>
             </div>
