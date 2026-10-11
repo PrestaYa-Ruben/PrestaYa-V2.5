@@ -3932,6 +3932,11 @@ body.modo-oscuro #screen-simulador .sim-campo-caja input{ color:var(--text); }
           backdrop-filter:blur(7px) saturate(115%);
 }
 .confirm-modal-overlay{ background:rgba(15,23,42,0.22); }
+/* NUEVO (a pedido): mientras haya un modal o el menú lateral abierto, lo de
+   atrás no se puede desplazar ni usar — solo se manipula el modal/menú. */
+html.bloqueo-fondo, html.bloqueo-fondo body{ overflow:hidden !important; overscroll-behavior:none; }
+.confirm-modal-overlay, .action-sheet-overlay, .menu-lateral-overlay, .menu-orden-overlay{ overscroll-behavior:contain; }
+.confirm-modal-overlay *, .action-sheet-overlay *, .menu-lateral-overlay *{ overscroll-behavior:contain; }
 .confirm-modal-card{
   background:var(--surface);
   border-radius:var(--radius-lg);
@@ -30815,6 +30820,39 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     });
   }
 
+
+  // ==========================================================
+  // NUEVO (a pedido): bloqueo del fondo. Cuando hay un modal (ventana
+  // centrada o menú de opciones) o el menú lateral abierto, lo que está
+  // detrás no se puede desplazar ni tocar: solo responde el modal/menú.
+  // Detecta solo cuándo se abren o cierran (sin tocar cada modal).
+  // ==========================================================
+  (function(){
+    const SELECTOR_MODALES = '.confirm-modal-overlay, .action-sheet-overlay, .menu-lateral-overlay, .menu-orden-overlay, #pin-bloqueo-overlay';
+    function modalesAbiertos(){
+      return Array.from(document.querySelectorAll(SELECTOR_MODALES)).filter(el => {
+        const cs = getComputedStyle(el);
+        return cs.display !== 'none' && cs.visibility !== 'hidden';
+      });
+    }
+    let pendiente = false;
+    function revisar(){
+      pendiente = false;
+      document.documentElement.classList.toggle('bloqueo-fondo', modalesAbiertos().length > 0);
+    }
+    function programar(){ if(!pendiente){ pendiente = true; requestAnimationFrame(revisar); } }
+    new MutationObserver(programar).observe(document.body, { subtree:true, childList:true, attributes:true, attributeFilter:['style','class'] });
+    revisar();
+    // Toques/arrastres fuera del modal abierto no hacen nada en el fondo
+    function bloquearSiFuera(e){
+      if(!document.documentElement.classList.contains('bloqueo-fondo')) return;
+      const abiertos = modalesAbiertos();
+      if(abiertos.some(m => m.contains(e.target))) return; // dentro del modal: permitido
+      if(e.cancelable) e.preventDefault();
+    }
+    document.addEventListener('touchmove', bloquearSiFuera, { passive:false });
+    document.addEventListener('wheel', bloquearSiFuera, { passive:false });
+  })();
 </script>
 
 </body>
