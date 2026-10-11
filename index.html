@@ -8178,6 +8178,16 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       <!-- CAMBIO: a pedido — "Fecha de próximo pago" se movió a Agregar
            Abono (toggle-proximo-abono). Esta fila queda oculta, no borrada,
            porque el JS todavía sincroniza este interruptor. -->
+      <!-- NUEVO (a pedido): "Saldo pendiente" — mismo ajuste que el de
+           Agregar Abono y Detalle del Pago (quedan sincronizados). -->
+      <div class="mora-toggle-row" style="padding:0;">
+        <div class="mora-toggle-text">
+          <div class="mora-toggle-title">Saldo pendiente</div>
+          <div class="mora-toggle-subtitle">Muestra lo que le falta por pagar al cliente</div>
+        </div>
+        <button type="button" class="toggle-switch" id="toggle-comprobante-saldo-opciones" role="switch" aria-checked="false" aria-label="Mostrar saldo pendiente en el comprobante"></button>
+      </div>
+      <hr class="loan-divider" style="margin:14px 0;">
       <!-- CAMBIO (a pedido): la fila vuelve a mostrarse aquí también; es el
            MISMO ajuste que el de Agregar Abono (quedan sincronizados). -->
       <div class="mora-toggle-row" style="padding:0;">
@@ -25165,6 +25175,13 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     toggleSaldo.classList.toggle('on', saldo);
     toggleSaldo.classList.toggle('toggle-verde', saldo);
     toggleSaldo.setAttribute('aria-checked', String(saldo));
+    // NUEVO: interruptor "Saldo pendiente" dentro de Más opciones
+    const toggleSaldoOpc = document.getElementById('toggle-comprobante-saldo-opciones');
+    if(toggleSaldoOpc){
+      toggleSaldoOpc.classList.toggle('on', saldo);
+      toggleSaldoOpc.classList.toggle('toggle-verde', saldo);
+      toggleSaldoOpc.setAttribute('aria-checked', String(saldo));
+    }
     toggleProximo.classList.toggle('on', proximo);
     toggleProximo.classList.toggle('toggle-verde', proximo);
     toggleProximo.setAttribute('aria-checked', String(proximo));
@@ -25204,6 +25221,12 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     }
   });
 
+  // NUEVO (a pedido): "Saldo pendiente" en Más opciones — mismo ajuste global
+  document.getElementById('toggle-comprobante-saldo-opciones').addEventListener('click', ()=>{
+    guardarReciboSaldo(!mostrarReciboSaldo());
+    aplicarTogglesComprobanteDesdePrestamo();
+    if(typeof sincronizarTogglesSaldoComprobante === 'function'){ try{ sincronizarTogglesSaldoComprobante(); }catch(err){} }
+  });
   document.getElementById('toggle-comprobante-saldo').addEventListener('click', ()=>{
     guardarReciboSaldo(!mostrarReciboSaldo());
     aplicarTogglesComprobanteDesdePrestamo();
