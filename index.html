@@ -6672,6 +6672,18 @@ body.modo-oscuro .client-row.client-row-cliente .client-row-ruta-saldo{ border-t
 .client-row.client-row-cliente .crs-chips .client-row-ruta{ margin-top:0; }
 .crs-frecuencia{ display:inline-flex; align-items:center; gap:5px; padding:3px 9px 3px 7px; border-radius:8px; border:1px solid rgba(31,47,104,0.25); background:rgba(255,255,255,0.6); color:#2A3B73; font-size:12.5px; font-weight:600; line-height:1.2; white-space:nowrap; }
 .crs-frecuencia svg{ width:13px; height:13px; stroke:currentColor; flex-shrink:0; }
+/* NUEVO (a pedido): selector de avatar en Nuevo / Editar Cliente */
+.selector-avatar-cliente{ margin:14px 0 6px; text-align:center; }
+.sac-titulo{ font-size:13px; font-weight:700; color:var(--text-secondary); margin-bottom:10px; }
+.sac-opciones{ display:flex; justify-content:center; gap:14px; }
+.sac-opcion{ flex:0 1 128px; display:flex; flex-direction:column; align-items:center; gap:7px; padding:12px 10px 10px; border-radius:14px; border:2px solid var(--border); background:var(--surface); color:var(--text); font:inherit; font-size:13.5px; font-weight:700; cursor:pointer; transition:border-color .15s, box-shadow .15s, transform .1s; -webkit-tap-highlight-color:transparent; }
+.sac-opcion:active{ transform:scale(.97); }
+.sac-img{ width:64px; height:64px; display:block; opacity:.55; filter:grayscale(.35); transition:opacity .15s, filter .15s; }
+.sac-img svg{ width:100%; height:100%; display:block; }
+.sac-opcion.activo{ border-color:#3E8A6A; box-shadow:0 0 0 3px rgba(62,138,106,0.18); color:#2E7556; }
+.sac-opcion.activo .sac-img{ opacity:1; filter:none; }
+body.modo-oscuro .sac-opcion.activo{ color:#6FD3A3; }
+.sac-ayuda{ margin-top:8px; font-size:12px; color:var(--text-secondary); }
 </style>
 
 </head>
@@ -7643,7 +7655,18 @@ body.modo-oscuro .client-row.client-row-cliente .client-row-ruta-saldo{ border-t
       </div>
     </div>
 
-    <div class="avatar-preview">
+    <!-- NUEVO (a pedido): elegir avatar masculino o femenino. Si no se elige
+         ninguno, se asigna solo según el nombre (como hasta ahora). -->
+    <div class="selector-avatar-cliente" id="selector-avatar-cliente">
+      <div class="sac-titulo">Avatar del cliente</div>
+      <div class="sac-opciones">
+        <button type="button" class="sac-opcion" data-avatar="masculino" aria-pressed="false"><span class="sac-img"></span><span class="sac-texto">Masculino</span></button>
+        <button type="button" class="sac-opcion" data-avatar="femenino" aria-pressed="false"><span class="sac-img"></span><span class="sac-texto">Femenino</span></button>
+      </div>
+      <div class="sac-ayuda" id="sac-ayuda">Si no eliges ninguno, se asigna según el nombre.</div>
+    </div>
+
+    <div class="avatar-preview" style="display:none"><!-- oculto (a pedido): reemplazado por el selector de avatar -->
       <div class="avatar-circle avatar-circle-lg">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
       </div>
@@ -16257,6 +16280,12 @@ body.modo-oscuro .client-row.client-row-cliente .client-row-ruta-saldo{ border-t
     const idUnico = 'avIlus' + (++contadorAvatarIlustrado);
     return (femenino ? ICONO_AVATAR_ILUSTRADO_FEMENINO : ICONO_AVATAR_ILUSTRADO).replace(/avIlusClipF?/g, idUnico);
   }
+  // NUEVO (a pedido): respeta el avatar elegido en el formulario; si no hay, usa el nombre.
+  function clienteAvatarFemenino(cliente){
+    if(cliente && cliente.avatar === 'femenino') return true;
+    if(cliente && cliente.avatar === 'masculino') return false;
+    return esNombreFemenino(cliente ? cliente.nombre : '');
+  }
   function esNombreFemenino(nombreCompleto){
     const primero = String(nombreCompleto || '').trim().split(/\s+/)[0] || '';
     const n = primero.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, '');
@@ -16576,7 +16605,7 @@ body.modo-oscuro .client-row.client-row-cliente .client-row-ruta-saldo{ border-t
     const avatarIlustrado = document.createElement('div');
     avatarIlustrado.className = 'client-row-avatar-ilustrado';
     // CAMBIO (a pedido): si el primer nombre es femenino, el avatar es femenino.
-    const avatarFemenino = esNombreFemenino(cliente.nombre);
+    const avatarFemenino = clienteAvatarFemenino(cliente);
     avatarIlustrado.innerHTML = svgAvatarIlustrado(avatarFemenino);
     avatarIlustrado.classList.toggle('avatar-femenino', avatarFemenino);
     card.appendChild(avatarIlustrado);
@@ -16850,8 +16879,30 @@ body.modo-oscuro .client-row.client-row-cliente .client-row-ruta-saldo{ border-t
   // Abre el formulario en blanco, listo para registrar un cliente nuevo.
   // origen (nuevo, opcional): 'clientes' (por defecto, igual que antes) o 'inicio'
   // cuando se abre desde el botón "Nuevo Cliente" de Acciones Rápidas.
+  // NUEVO (a pedido): selector de avatar (masculino / femenino) del formulario de cliente.
+  let avatarElegidoFormulario = '';
+  const selectorAvatarCliente = document.getElementById('selector-avatar-cliente');
+  function marcarAvatarFormulario(valor){
+    avatarElegidoFormulario = valor || '';
+    selectorAvatarCliente.querySelectorAll('.sac-opcion').forEach(b=>{
+      const activo = b.dataset.avatar === avatarElegidoFormulario;
+      b.classList.toggle('activo', activo);
+      b.setAttribute('aria-pressed', activo ? 'true' : 'false');
+    });
+    document.getElementById('sac-ayuda').textContent = avatarElegidoFormulario
+      ? 'Toca de nuevo para quitar la elección.'
+      : 'Si no eliges ninguno, se asigna según el nombre.';
+  }
+  selectorAvatarCliente.querySelectorAll('.sac-opcion').forEach(b=>{
+    b.querySelector('.sac-img').innerHTML = svgAvatarIlustrado(b.dataset.avatar === 'femenino');
+    b.addEventListener('click', ()=>{
+      marcarAvatarFormulario(avatarElegidoFormulario === b.dataset.avatar ? '' : b.dataset.avatar);
+    });
+  });
+
   function abrirFormularioNuevo(origen){
     clienteEditandoId = null;
+    marcarAvatarFormulario('');
     origenFormularioCliente = origen || 'clientes';
     formNuevoCliente.reset();
     tituloFormCliente.textContent = 'Nuevo Cliente';
@@ -16873,6 +16924,7 @@ body.modo-oscuro .client-row.client-row-cliente .client-row-ruta-saldo{ border-t
     origenFormularioCliente = 'detalle';
 
     document.getElementById('input-nombre').value = cliente.nombre || '';
+    marcarAvatarFormulario(cliente.avatar || ''); // NUEVO: avatar elegido
     document.getElementById('input-telefono').value = cliente.telefono || '';
     document.getElementById('input-telefono-whatsapp').value = cliente.telefonoWhatsapp || ''; // NUEVO
     document.getElementById('input-documento').value = cliente.documento || '';
@@ -17133,14 +17185,16 @@ body.modo-oscuro .client-row.client-row-cliente .client-row-ruta-saldo{ border-t
       if(indice !== -1){
         clientesGuardados[indice] = {
           ...clientesGuardados[indice],
-          nombre, telefono, telefonoWhatsapp, documento, ruta, direccion, notas, referencia
+          nombre, telefono, telefonoWhatsapp, documento, ruta, direccion, notas, referencia,
+          avatar: avatarElegidoFormulario // NUEVO
         };
       }
     }else{
       // ---- Modo creación: agrega un cliente nuevo al inicio ----
       clientesGuardados.unshift({
         id: Date.now(),
-        nombre, telefono, telefonoWhatsapp, documento, ruta, direccion, notas, referencia
+        nombre, telefono, telefonoWhatsapp, documento, ruta, direccion, notas, referencia,
+        avatar: avatarElegidoFormulario // NUEVO
       });
     }
 
@@ -17228,7 +17282,7 @@ body.modo-oscuro .client-row.client-row-cliente .client-row-ruta-saldo{ border-t
     contenidoResumenHistorico.style.opacity = '';
 
     // CAMBIO (a pedido): mismo avatar ilustrado de la lista de Clientes (femenino/masculino)
-    const detalleFemenino = esNombreFemenino(cliente.nombre);
+    const detalleFemenino = clienteAvatarFemenino(cliente);
     detalleAvatar.innerHTML = svgAvatarIlustrado(detalleFemenino);
     detalleAvatar.classList.add('avatar-ilustrado-detalle');
     detalleAvatar.classList.toggle('avatar-femenino', detalleFemenino);
