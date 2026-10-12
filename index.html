@@ -5410,6 +5410,34 @@ body.modo-oscuro .client-row.client-row-sin-credito .client-row-ruta{ background
 .crl-barra{ width:100%; height:5px; border-radius:3px; background:rgba(20,30,60,0.16); overflow:hidden; margin:4px 0 7px; }
 .crl-barra-relleno{ height:100%; border-radius:3px; background:#2FAE5F; }
 .client-row.client-row-mora .crl-barra-relleno{ background:#E0465A; }
+/* Barra por trozos (una cuota = un trozo, número encima) */
+/* CAMBIO (a pedido): avatar de persona (círculo azul + aro verde) en las tarjetas de Clientes */
+.client-row.client-row-cliente .avatar-circle.avatar-persona-pro{
+  width:58px; height:58px; flex-shrink:0; border-radius:50%; box-sizing:border-box;
+  padding:2.5px; border:2.5px solid transparent; box-shadow:none;
+  background:linear-gradient(#22356F,#22356F) content-box, linear-gradient(#fff,#fff) padding-box, linear-gradient(160deg,#BFE15A 0%,#7DCB5E 45%,#3FB866 100%) border-box !important;
+  color:#fff !important; display:flex; align-items:center; justify-content:center; overflow:hidden; cursor:pointer;
+}
+.client-row.client-row-cliente .avatar-circle.avatar-persona-pro svg{ width:27px; height:27px; stroke:none; fill:#fff; margin-top:1px; }
+.client-row-cliente .avatar-persona-pro-wrap{ width:58px; height:58px; margin:0 3px 0 2px; }
+.client-row-cliente .avatar-persona-pro-wrap .avatar-anillo-progreso,
+.client-row-cliente .avatar-persona-pro-wrap .avatar-globo-cuotas,
+.client-row-cliente .avatar-columna-persona .avatar-leyenda{ display:none !important; }
+.crl-segmentos{ width:100%; display:flex; flex-direction:column; gap:4px; margin:0 0 7px; }
+.crl-fila{ width:100%; display:flex; gap:5px; }
+.crl-fila-fija{ gap:2px; }
+.crl-fila-fija .crl-trozo{ flex:0 0 calc((100% - 18px) / 10); }
+.crl-fila-nuevo-credito{ margin-top:4px; }
+.crl-grupo{ display:flex; gap:2px; min-width:0; }
+.crl-trozo{ flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; gap:2px; }
+.crl-trozo-num{ font-size:10px; font-weight:700; line-height:1; height:10px; color:var(--text-secondary); white-space:nowrap; font-variant-numeric:tabular-nums; }
+.crl-segmentos-densa .crl-trozo-num{ font-size:9px; letter-spacing:-0.6px; }
+@media (max-width:370px){ .crl-segmentos-densa .crl-trozo-num{ font-size:8px; letter-spacing:-0.7px; } }
+.crl-trozo-barra{ display:block; width:100%; height:8px; border-radius:2px; background:rgba(20,30,60,0.16); }
+.crl-trozo-pagada .crl-trozo-barra{ background:#2FAE5F; }
+.crl-trozo-pagada .crl-trozo-num{ color:#1F8A47; }
+.crl-trozo-vencida .crl-trozo-barra{ background:#E0465A; }
+.crl-trozo-vencida .crl-trozo-num{ color:#C8303F; }
 .crl-saldo-etiqueta{ font-size:11px; font-weight:500; color:var(--text-secondary); line-height:1.1; white-space:nowrap; }
 .crl-saldo-valor{ font-size:15.5px; font-weight:800; color:#B4232A; letter-spacing:-0.3px; line-height:1.2; white-space:nowrap; }
 .client-row.client-row-cliente .info .phone span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
@@ -6581,6 +6609,69 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 /* Vista previa del documento generado — reutiliza .imagen-comprobante-card;
    solo se agrega el botón de descarga adicional. */
 .documento-preview-btn-descargar{ margin-top:10px; }
+/* CAMBIO (a pedido): se retira el avatar de las tarjetas de Clientes (queda oculto,
+   no borrado) y la información se reorganiza con el espacio liberado. */
+.client-row.client-row-cliente > .avatar-circle,
+.client-row.client-row-cliente > .avatar-columna{ display:none !important; }
+.client-row.client-row-cliente{ padding-left:16px; gap:14px; }
+.client-row.client-row-cliente .info{ min-width:0; flex:1 1 auto; }
+.client-row.client-row-cliente .client-row-lateral{ width:128px; }
+.client-row.client-row-cliente .crl-segmentos-densa .crl-trozo-num{ font-size:9.5px; letter-spacing:-0.3px; }
+@media (max-width:370px){
+  .client-row.client-row-cliente{ padding-left:13px; gap:10px; }
+  .client-row.client-row-cliente .crl-segmentos-densa .crl-trozo-num{ font-size:9px; letter-spacing:-0.5px; }
+  .client-row.client-row-cliente .client-row-lateral{ width:116px; }
+}
+/* CAMBIO (a pedido): globo contador de créditos un poco más pequeño y más pegado a la esquina */
+.client-row.client-row-cliente .client-row-badge{ top:5px; right:7px; font-size:12.5px; height:19px; min-width:24px; padding:0 7px; border-radius:10px; }
+.client-row.client-row-cliente .client-row-lateral{ padding-top:20px; }
+/* CAMBIO (a pedido): fila ruta + saldo pendiente a la izquierda; barras de cada crédito apiladas */
+.client-row-ruta-saldo{ display:flex; align-items:flex-end; flex-wrap:wrap; gap:6px 12px; margin-top:6px; min-width:0; }
+.client-row-ruta-saldo .client-row-ruta{ margin-top:0; flex-shrink:1; min-width:0; }
+.crs-saldo{ display:flex; flex-direction:column; line-height:1.1; white-space:nowrap; }
+.crs-saldo-etiqueta{ font-size:10.5px; font-weight:500; color:var(--text-secondary); }
+.crs-saldo-valor{ font-size:15.5px; font-weight:800; color:#B4232A; letter-spacing:-0.3px; }
+.client-row.client-row-cliente .client-row-lateral{ justify-content:center; padding-top:22px; padding-bottom:2px; }
+.client-row.client-row-cliente .crl-segmentos{ margin-bottom:0; }
+.crl-fila-nuevo-credito{ margin-top:7px; }
+/* CAMBIO (a pedido): se retiran las barras de progreso (columna derecha oculta,
+   no borrada) y la tarjeta se reorganiza: nombre + contador arriba, cuota debajo
+   y una fila inferior con la ruta a la izquierda y el saldo pendiente a la derecha. */
+.client-row.client-row-cliente .client-row-lateral{ display:none !important; }
+.client-row.client-row-cliente{ align-items:stretch; padding-top:12px; padding-bottom:12px; padding-right:14px; }
+.client-row.client-row-cliente .info{ display:flex; flex-direction:column; width:100%; }
+.client-row.client-row-con-lateral .info .name{ padding-right:34px !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.client-row.client-row-cliente .client-row-ruta-saldo{ width:100%; justify-content:space-between; align-items:flex-end; flex-wrap:nowrap; margin-top:8px; padding-top:8px; border-top:1px dashed rgba(20,30,60,0.14); gap:10px; }
+.client-row.client-row-cliente .client-row-ruta-saldo .client-row-ruta{ align-self:center; }
+.client-row.client-row-cliente .crs-saldo{ margin-left:auto; align-items:flex-end; text-align:right; }
+.client-row.client-row-cliente .crs-saldo-etiqueta{ font-size:11px; text-transform:none; }
+.client-row.client-row-cliente .crs-saldo-valor{ font-size:17px; }
+body.modo-oscuro .client-row.client-row-cliente .client-row-ruta-saldo{ border-top-color:rgba(255,255,255,0.12); }
+/* CAMBIO (a pedido): sin línea divisora + "X de Y cuotas" en la fila de la cuota */
+.client-row.client-row-cliente .client-row-ruta-saldo{ border-top:none !important; padding-top:0; margin-top:8px; }
+.client-row.client-row-cliente .info .phone .crs-cuotas{ margin-left:auto; flex-shrink:0; white-space:nowrap; font-size:12.5px; font-weight:600; color:#1F2F68; background:rgba(31,47,104,0.08); border-radius:8px; padding:2px 8px; line-height:1.3; }
+.client-row.client-row-cliente .info .phone .crs-cuotas b{ font-weight:800; }
+.client-row.client-row-mora .info .phone .crs-cuotas{ color:#B4212A; background:rgba(224,17,31,0.08); }
+.client-row.client-row-al-dia .info .phone .crs-cuotas{ color:#157A40; background:rgba(47,174,95,0.12); }
+/* CAMBIO (a pedido): contador de préstamos totalmente circular */
+.client-row.client-row-cliente .client-row-badge{ width:21px; height:21px; min-width:21px; padding:0; border-radius:50%; font-size:12px; line-height:1; box-sizing:border-box; }
+/* NUEVO (a pedido): avatar ilustrado al lado del nombre en las tarjetas de Clientes */
+.client-row.client-row-cliente{ align-items:center; }
+.client-row-avatar-ilustrado{ flex-shrink:0; width:50px; height:50px; border-radius:50%; align-self:center; filter:drop-shadow(0 1px 2px rgba(20,30,60,0.15)); }
+.client-row-avatar-ilustrado svg{ display:block; width:100%; height:100%; }
+.client-row.client-row-cliente{ gap:12px; padding-left:13px; }
+@media (max-width:370px){
+  .client-row-avatar-ilustrado{ width:44px; height:44px; }
+  .client-row.client-row-cliente{ gap:10px; padding-left:11px; }
+}
+/* CAMBIO (a pedido): avatar ilustrado en la ficha del cliente */
+#detalle-avatar.avatar-ilustrado-detalle{ background:transparent !important; padding:0; border:none; box-shadow:none; overflow:visible; filter:drop-shadow(0 2px 4px rgba(20,30,60,0.18)); }
+#detalle-avatar.avatar-ilustrado-detalle svg{ width:100% !important; height:100% !important; stroke:none; display:block; }
+/* NUEVO (a pedido): chip de frecuencia de pago en la tarjeta del cliente */
+.crs-chips{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; min-width:0; }
+.client-row.client-row-cliente .crs-chips .client-row-ruta{ margin-top:0; }
+.crs-frecuencia{ display:inline-flex; align-items:center; gap:5px; padding:3px 9px 3px 7px; border-radius:8px; border:1px solid rgba(31,47,104,0.25); background:rgba(255,255,255,0.6); color:#2A3B73; font-size:12.5px; font-weight:600; line-height:1.2; white-space:nowrap; }
+.crs-frecuencia svg{ width:13px; height:13px; stroke:currentColor; flex-shrink:0; }
 </style>
 
 </head>
@@ -16153,8 +16244,33 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
 
   // NUEVO (a pedido): ícono de persona para los círculos de avatar
   // (Nuevo Préstamo y ficha del Cliente) en lugar de las iniciales.
+  // Avatar ilustrado femenino (cabello largo) — mismo estilo que el masculino
+  const ICONO_AVATAR_ILUSTRADO_FEMENINO = '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><clipPath id="avIlusClipF"><circle cx="32" cy="32" r="30"/></clipPath></defs><circle cx="32" cy="32" r="30" fill="#E4F0EA"/><g clip-path="url(#avIlusClipF)"><path d="M17.5 27c0-9.6 6.2-15.5 14.5-15.5S46.5 17.4 46.5 27v15.5c0 3.2-1.6 5.6-4 6.8H21.5c-2.4-1.2-4-3.6-4-6.8z" fill="#2A1E1A"/><path d="M10 64c0-12 9.5-19 22-19s22 7 22 19z" fill="#B24A6E"/><path d="M26.5 40h11v7.5c0 2.6-2.5 4.5-5.5 4.5s-5.5-1.9-5.5-4.5z" fill="#E9B48F"/><path d="M24.5 46.8c2 3.3 4.6 4.9 7.5 4.9s5.5-1.6 7.5-4.9" fill="none" stroke="#8E3556" stroke-width="1.6" stroke-linecap="round"/><path d="M22 25.5c0-7.6 4.6-12 10-12s10 4.4 10 12v5.2c0 6.6-4.6 11.6-10 11.6s-10-5-10-11.6z" fill="#F2C29F"/><path d="M20.8 31.5c-.9-11 3.6-18.4 11.4-18.4 7.9 0 12.2 7.2 11.2 18.4-1.2-5.2-3-8.6-5.8-10.4-3.3 3-9.4 4.4-14.2 3.9-1.3 1.6-2.2 3.8-2.6 6.5z" fill="#2A1E1A"/></g><circle cx="32" cy="32" r="30" fill="none" stroke="#3E8A6A" stroke-width="2.6"/></svg>';
+  // Detecta si el primer nombre es femenino (lista de nombres comunes + terminación en "a",
+  // con excepciones masculinas). Solo afecta el dibujo del avatar.
+  const NOMBRES_FEMENINOS_EXTRA = new Set(['carmen','isabel','raquel','luz','beatriz','ines','mercedes','dolores','pilar','rocio','ruth','esther','consuelo','soledad','noemi','nohemi','marisol','maribel','mabel','gladys','doris','lucy','sol','abigail','edith','judith','miriam','nicole','ingrid','astrid','jazmin','yazmin','belen','socorro','rosario','amparo','milagros','lourdes','nieves','flor','ivonne','yaneth','janeth','yaneth','lisbeth','elizabeth','yuliet','juliet','yamile','leidy','lady','yeimy','sindy','cindy','nancy','shirley','heidy','kelly','mery','mary','ruby','esmeralda','raquel','nelly','betty','arely','yuly','yuli','ana','maria','marcela','luzmila','zulay','dayan','leydi','katherin','katherine','karen','evelyn','jennifer','yennifer','yenny','jenny','madeleine','nayibe','yasmin','zoraida','zoe','ximena','jimena','irene','alison','allison','sharon','yurany','yurani','diany','neydi','deisy','daisy','yudy','judy','yuri','sury','yohana','yesenia','monserrat','montserrat','denis','denisse','berenice','iris','eugenia','fe','merly','nidia','ligia','libia','olga','yalile']);
+  const NOMBRES_MASCULINOS_EN_A = new Set(['luca','lucca','joshua','nicola','bautista','borja','garcia','elias','matias','isaias','jeremias','tobias','zacarias','andrea_m','sasha','nikita','misael','josue','santa','juan','jose','akira','ezra','noa','mota','ochoa','acosta','batista','evangelista','jhosua','josua']);
+  // Devuelve el SVG del avatar con un id de recorte único (si dos SVG comparten id
+  // y el primero está en una pantalla oculta, el recorte deja de aplicarse).
+  let contadorAvatarIlustrado = 0;
+  function svgAvatarIlustrado(femenino){
+    const idUnico = 'avIlus' + (++contadorAvatarIlustrado);
+    return (femenino ? ICONO_AVATAR_ILUSTRADO_FEMENINO : ICONO_AVATAR_ILUSTRADO).replace(/avIlusClipF?/g, idUnico);
+  }
+  function esNombreFemenino(nombreCompleto){
+    const primero = String(nombreCompleto || '').trim().split(/\s+/)[0] || '';
+    const n = primero.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, '');
+    if(!n) return false;
+    if(NOMBRES_FEMENINOS_EXTRA.has(n)) return true;
+    if(NOMBRES_MASCULINOS_EN_A.has(n)) return false;
+    return n.endsWith('a');
+  }
+  // Avatar ilustrado (persona con cabello oscuro, rostro y camiseta) para las tarjetas de Clientes
+  const ICONO_AVATAR_ILUSTRADO = '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><clipPath id="avIlusClip"><circle cx="32" cy="32" r="30"/></clipPath></defs><circle cx="32" cy="32" r="30" fill="#E4F0EA"/><g clip-path="url(#avIlusClip)"><path d="M10 64c0-12 9.5-19 22-19s22 7 22 19z" fill="#24485A"/><path d="M26.5 40h11v7.5c0 2.6-2.5 4.5-5.5 4.5s-5.5-1.9-5.5-4.5z" fill="#E9B48F"/><path d="M24 46.5c2 3.6 4.8 5.3 8 5.3s6-1.7 8-5.3" fill="none" stroke="#1C3A4A" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="20.6" cy="29.5" rx="2.2" ry="3.2" fill="#E3AA84"/><ellipse cx="43.4" cy="29.5" rx="2.2" ry="3.2" fill="#E3AA84"/><path d="M21.5 25.5c0-7.6 4.7-12 10.5-12s10.5 4.4 10.5 12v5.2c0 6.6-4.8 11.6-10.5 11.6s-10.5-5-10.5-11.6z" fill="#F2C29F"/><path d="M20.6 28.5c-1-9.5 3.2-16.2 11.6-16.2 7.8 0 12.7 5 11.4 15.6-.8-3.6-2.5-6.4-5.3-7.6-3.9 2.1-10.2 2.5-14.4 1.3-1.7 1.6-2.8 4-3.3 6.9z" fill="#1E2A33"/></g><circle cx="32" cy="32" r="30" fill="none" stroke="#3E8A6A" stroke-width="2.6"/></svg>';
   const ICONO_AVATAR_PERSONA = '<svg class="icono-avatar-persona" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8.2" r="4.3"></circle><path d="M3.6 20.3c.7-4.1 4.1-6.8 8.4-6.8s7.7 2.7 8.4 6.8c.1.5-.3.9-.8.9H4.4c-.5 0-.9-.4-.8-.9z"></path></svg>';
 
+  // CAMBIO (a pedido): avatar de persona en lugar de la torta de cuotas (false = volver a la torta)
+  const AVATAR_PERSONA_TARJETA = true;
   function crearTarjetaCliente(cliente){
     const card = document.createElement('div');
     card.className = 'card client-row client-row-cliente';
@@ -16268,11 +16384,69 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
       const lateral = document.createElement('div');
       lateral.className = 'client-row-lateral';
       const pctLateral = cuotasTotalSum > 0 ? Math.min(100, (cuotasPagadasTotal / cuotasTotalSum) * 100) : 0;
+      // CAMBIO (a pedido): la barra se divide en un trozo por cuota, con el
+      // número de la cuota encima (se quita el texto "X / Y Cuotas", queda
+      // oculto en el HTML). Solo lectura de estado: estaCuotaPagada / cuotaVencida.
+      const totalTrozos = prestamosActivosCliente.reduce((s, p) => s + (p.plan || []).length, 0);
+      // CAMBIO (a pedido): TODOS los trozos llevan su número encima. Para que
+      // siempre se lean, se usan filas de máximo 10 trozos: si el cliente
+      // tiene más cuotas, la barra continúa en una segunda (o tercera) fila.
+      const MAX_TROZOS_FILA = 10;
+      const trozoHTML = (p, c) => {
+        const estado = estaCuotaPagada(p, c.numero) ? 'pagada' : (cuotaVencida(p, c) ? 'vencida' : 'pendiente');
+        return `<div class="crl-trozo crl-trozo-${estado}"><span class="crl-trozo-num">${c.numero}</span><span class="crl-trozo-barra"></span></div>`;
+      };
+      // CAMBIO (a pedido): cada crédito va en su propia barra, una sobre la
+      // otra. Créditos de hasta 10 cuotas usan una sola barra a todo lo ancho;
+      // si tienen más, continúan en filas de 10.
+      let filasTrozos = '';
+      let maxTrozosFila = 0;
+      prestamosActivosCliente.forEach((p, idxP) => {
+        const plan = p.plan || [];
+        const claseCredito = idxP > 0 ? ' crl-fila-nuevo-credito' : '';
+        if(plan.length <= MAX_TROZOS_FILA){
+          maxTrozosFila = Math.max(maxTrozosFila, plan.length);
+          filasTrozos += `<div class="crl-fila${claseCredito}">${plan.map(c => trozoHTML(p, c)).join('')}</div>`;
+        }else{
+          maxTrozosFila = MAX_TROZOS_FILA;
+          for(let i = 0; i < plan.length; i += MAX_TROZOS_FILA){
+            filasTrozos += `<div class="crl-fila crl-fila-fija${i === 0 ? claseCredito : ''}">${plan.slice(i, i + MAX_TROZOS_FILA).map(c => trozoHTML(p, c)).join('')}</div>`;
+          }
+        }
+      });
+      const densa = maxTrozosFila > 7;
       lateral.innerHTML = `
-        <div class="crl-cuotas">${cuotasPagadasTotal} / ${cuotasTotalSum} Cuotas</div>
-        <div class="crl-barra"><div class="crl-barra-relleno" style="width:${pctLateral}%"></div></div>
-        <div class="crl-saldo-etiqueta">Saldo pendiente</div>
-        <div class="crl-saldo-valor">${formatearPesos(saldoTotal)}</div>`;
+        <div class="crl-cuotas" style="display:none">${cuotasPagadasTotal} / ${cuotasTotalSum} Cuotas</div>
+        <div class="crl-segmentos${densa ? ' crl-segmentos-densa' : ''}" aria-label="${cuotasPagadasTotal} de ${cuotasTotalSum} cuotas pagadas">${filasTrozos}</div>
+        <div class="crl-saldo-etiqueta" style="display:none">Saldo pendiente</div>
+        <div class="crl-saldo-valor" style="display:none">${formatearPesos(saldoTotal)}</div>`;
+      // CAMBIO (a pedido): el saldo pendiente pasa a la izquierda, al lado de la ruta.
+      const filaRutaSaldo = document.createElement('div');
+      filaRutaSaldo.className = 'client-row-ruta-saldo';
+      const rutaEnInfo = info.querySelector('.client-row-ruta');
+      // NUEVO (a pedido): frecuencia de pago junto a la ruta (si hay varios créditos
+      // con frecuencias distintas, se muestran todas, ej. "Semanal · Diario").
+      const grupoChips = document.createElement('div');
+      grupoChips.className = 'crs-chips';
+      if(rutaEnInfo){ info.insertBefore(filaRutaSaldo, rutaEnInfo); grupoChips.appendChild(rutaEnInfo); }
+      else info.appendChild(filaRutaSaldo);
+      filaRutaSaldo.appendChild(grupoChips);
+      const NOMBRES_FREC_TARJETA = { diario:'Diario', semanal:'Semanal', quincenal:'Quincenal', mensual:'Mensual' };
+      const frecuenciasCliente = [...new Set(prestamosActivosCliente.map(p => p.frecuencia).filter(Boolean))];
+      if(frecuenciasCliente.length){
+        const chipFrecuencia = document.createElement('div');
+        chipFrecuencia.className = 'crs-frecuencia';
+        chipFrecuencia.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="2.5"></rect><path d="M16 2.5v4M8 2.5v4M3 10h18"></path></svg><span></span>';
+        chipFrecuencia.querySelector('span').textContent = frecuenciasCliente.map(f => NOMBRES_FREC_TARJETA[f] || f).join(' · ');
+        grupoChips.appendChild(chipFrecuencia);
+      }
+      // NUEVO (a pedido): cuotas pagadas de total (ej. "3 de 4"), en la fila de la cuota, a la derecha.
+      const cuotasTexto = document.createElement('span');
+      cuotasTexto.className = 'crs-cuotas';
+      cuotasTexto.innerHTML = `<b>${cuotasPagadasTotal}</b> de ${cuotasTotalSum} cuotas`;
+      cuotasTexto.setAttribute('aria-label', cuotasPagadasTotal + ' de ' + cuotasTotalSum + ' cuotas pagadas');
+      phone.appendChild(cuotasTexto);
+      filaRutaSaldo.insertAdjacentHTML('beforeend', `<div class="crs-saldo"><span class="crs-saldo-etiqueta">Saldo pendiente</span><span class="crs-saldo-valor">${formatearPesos(saldoTotal)}</span></div>`);
       card._lateralCliente = lateral;
       card.classList.add('client-row-con-lateral');
     }else{
@@ -16370,7 +16544,7 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           estadosCuotas.push(estaCuotaPagada(p, c.numero) ? 'pagada' : (cuotaVencida(p, c) ? 'vencida' : 'pendiente'));
         });
       });
-      if(estadosCuotas.length){
+      if(!AVATAR_PERSONA_TARJETA && estadosCuotas.length){
         avatar.classList.remove('avatar-torta');
         avatar.classList.add('avatar-torta-cuotas');
         avatar.innerHTML = construirTortaCuotas(estadosCuotas);
@@ -16381,11 +16555,31 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
           abrirFechasPagoTorta(cliente, prestamosActivosCliente);
         });
       }
+      // CAMBIO (a pedido): se retira la torta (y su toque que abría "Fechas de
+      // pago"), el anillo, los globos y el texto Van/Faltan. En su lugar va un
+      // círculo azul con ícono de persona y aro verde. La torta y la función
+      // abrirFechasPagoTorta() quedan en el código, solo desactivadas.
+      if(AVATAR_PERSONA_TARJETA){
+        avatar.className = 'avatar-circle avatar-persona-pro';
+        avatar.innerHTML = ICONO_AVATAR_PERSONA;
+        avatar.removeAttribute('aria-label');
+        wrapAvatar.classList.add('avatar-persona-pro-wrap');
+        columnaAvatar.classList.add('avatar-columna-persona');
+      }
       // (la columna avatar + leyenda se agrega a la tarjeta al final de este bloque)
       card.appendChild(card._columnaAvatar);
     }else{
+      if(AVATAR_PERSONA_TARJETA){ avatar.className = 'avatar-circle avatar-persona-pro'; avatar.innerHTML = ICONO_AVATAR_PERSONA; }
       card.appendChild(avatar);
     }
+    // NUEVO (a pedido, con imagen de referencia): avatar ilustrado al lado del nombre.
+    const avatarIlustrado = document.createElement('div');
+    avatarIlustrado.className = 'client-row-avatar-ilustrado';
+    // CAMBIO (a pedido): si el primer nombre es femenino, el avatar es femenino.
+    const avatarFemenino = esNombreFemenino(cliente.nombre);
+    avatarIlustrado.innerHTML = svgAvatarIlustrado(avatarFemenino);
+    avatarIlustrado.classList.toggle('avatar-femenino', avatarFemenino);
+    card.appendChild(avatarIlustrado);
     card.appendChild(info);
 
     // CAMBIO: a pedido — se retiró el ícono del reloj (recordatorio) de esta
@@ -17033,7 +17227,11 @@ button:focus-visible, .nav-item:focus-visible, .tab-button:focus-visible{
     contenidoResumenHistorico.style.maxHeight = '0px';
     contenidoResumenHistorico.style.opacity = '';
 
-    detalleAvatar.innerHTML = ICONO_AVATAR_PERSONA; // CAMBIO (a pedido): ícono de persona en vez de iniciales
+    // CAMBIO (a pedido): mismo avatar ilustrado de la lista de Clientes (femenino/masculino)
+    const detalleFemenino = esNombreFemenino(cliente.nombre);
+    detalleAvatar.innerHTML = svgAvatarIlustrado(detalleFemenino);
+    detalleAvatar.classList.add('avatar-ilustrado-detalle');
+    detalleAvatar.classList.toggle('avatar-femenino', detalleFemenino);
     detalleNombre.textContent = cliente.nombre;
     detalleTelefono.textContent = cliente.telefono && cliente.telefono.trim() ? cliente.telefono : 'Sin registrar';
     detalleDocumento.textContent = cliente.documento && cliente.documento.trim() ? cliente.documento : 'Sin registrar';
