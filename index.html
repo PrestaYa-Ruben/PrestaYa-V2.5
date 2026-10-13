@@ -6684,6 +6684,122 @@ body.modo-oscuro .client-row.client-row-cliente .client-row-ruta-saldo{ border-t
 .sac-opcion.activo .sac-img{ opacity:1; filter:none; }
 body.modo-oscuro .sac-opcion.activo{ color:#6FD3A3; }
 .sac-ayuda{ margin-top:8px; font-size:12px; color:var(--text-secondary); }
+/* CAMBIO (a pedido): tarjetas de la ficha del cliente en blanco puro con borde gris marcado */
+body:not(.modo-oscuro) #profile-card-cliente,
+body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF !important; border:1.5px solid #C9D0DB !important; box-shadow:0 2px 8px rgba(20,30,60,0.06) !important; }
+/* CAMBIO (a pedido, con imagen de referencia): cuotas pendientes en crema con borde dorado */
+.cuota-item.pendiente{ background:#FEFBEC !important; border-color:#E8D586 !important; }
+/* NUEVO (a pedido, con imagen de referencia): detalles de las casillas de cuotas pendientes (mismos colores de siempre) */
+.cuota-item.cuota-item-detallada{ position:relative; overflow:hidden; gap:12px; padding:14px 10px 14px 18px; box-shadow:0 2px 8px rgba(120,90,10,0.08); }
+.cuota-item.cuota-item-detallada::before{ content:''; position:absolute; left:0; top:0; bottom:0; width:6px; background:linear-gradient(180deg, #F2B44A, #D98A0B); }
+.cuota-item.cuota-item-detallada::after{ content:''; position:absolute; top:0; bottom:0; right:0; width:42%; background:linear-gradient(105deg, transparent 0 18%, rgba(232,213,134,0.22) 18% 100%); pointer-events:none; }
+.cuota-item.cuota-item-detallada > *{ position:relative; z-index:1; }
+#screen-detalle-prestamo .cuota-item.cuota-item-detallada .cuota-numero{ width:46px; height:46px; min-width:46px; border-width:3px; font-size:19px; font-weight:800; background:rgba(245,158,11,0.10); box-shadow:0 2px 6px rgba(217,138,11,0.25), inset 0 0 0 2px #fff; }
+.cuota-divisor{ align-self:stretch; width:1px; background:rgba(20,30,60,0.14); margin:2px 0; flex-shrink:0; }
+.cuota-item-detallada .cuota-monto{ display:flex; align-items:center; gap:7px; font-size:19px; font-weight:800; letter-spacing:-0.3px; }
+.cuota-item-detallada .cuota-fecha{ display:flex; align-items:center; gap:7px; }
+.cuota-item-detallada .cuota-ico{ width:18px; height:18px; stroke:#5A6880; flex-shrink:0; }
+.cuota-item-detallada .cuota-badge{ display:inline-flex; align-items:center; gap:6px; padding:6px 13px 6px 7px; font-size:13px; font-weight:700; box-shadow:0 3px 8px rgba(217,138,11,0.30); color:#fff; }
+.cuota-item-detallada .cuota-badge-ico{ width:18px; height:18px; color:var(--warning); flex-shrink:0; }
+.cuota-chevron{ width:18px; height:18px; stroke:#8A94A6; flex-shrink:0; margin-left:-4px; }
+@media (max-width:370px){
+  .cuota-item.cuota-item-detallada{ gap:9px; padding-left:15px; }
+  #screen-detalle-prestamo .cuota-item.cuota-item-detallada .cuota-numero{ width:40px; height:40px; min-width:40px; font-size:17px; }
+  .cuota-item-detallada .cuota-monto{ font-size:17px; }
+  .cuota-item-detallada .cuota-badge{ font-size:12px; padding:5px 10px 5px 6px; }
+}
+.cuota-item-detallada .cuota-fecha{ white-space:nowrap; font-size:12.5px; }
+.cuota-item-detallada .cuota-info{ min-width:0; }
+.cuota-item-detallada .cuota-badge{ padding:5px 11px 5px 6px; font-size:12.5px; }
+.cuota-item-detallada .cuota-badge-ico{ width:16px; height:16px; }
+@media (max-width:370px){
+  .cuota-item.cuota-item-detallada{ gap:7px; padding-right:7px; }
+  .cuota-item-detallada .cuota-ico{ width:15px; height:15px; }
+  .cuota-item-detallada .cuota-monto, .cuota-item-detallada .cuota-fecha{ gap:5px; }
+  .cuota-item-detallada .cuota-fecha{ font-size:11.5px; }
+  .cuota-item-detallada .cuota-badge{ font-size:11.5px; padding:4px 8px 4px 5px; gap:4px; }
+  .cuota-item-detallada .cuota-badge-ico{ width:14px; height:14px; }
+  .cuota-chevron{ width:15px; height:15px; margin-left:-3px; }
+}
+/* el título "Detalles del préstamo" no debe partirse en 2 líneas en pantallas pequeñas */
+#screen-detalle-prestamo .header h1{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+@media (max-width:370px){ #screen-detalle-prestamo .header h1{ font-size:21px; } }
+/* Cuadrícula para que la fecha pueda usar el ancho bajo la etiqueta "Pendiente" */
+.cuota-item.cuota-item-detallada{ display:grid; grid-template-columns:auto auto minmax(0,1fr) auto auto; grid-auto-rows:auto; column-gap:12px; row-gap:4px; align-items:center; }
+.cuota-item-detallada > .cuota-numero{ grid-column:1; grid-row:1 / span 2; }
+.cuota-item-detallada > .cuota-divisor{ grid-column:2; grid-row:1 / span 2; }
+.cuota-item-detallada > .cuota-info{ display:contents; }
+.cuota-item-detallada .cuota-info > *{ grid-column:3 / 5; }
+.cuota-item-detallada .cuota-info > .cuota-monto{ grid-column:3; grid-row:1; margin-bottom:0; align-self:end; }
+.cuota-item-detallada .cuota-info > .cuota-fecha{ grid-row:2; align-self:start; }
+.cuota-item-detallada > .cuota-estado-col{ grid-column:4; grid-row:1; align-self:end; }
+.cuota-item-detallada > .cuota-chevron{ grid-column:5; grid-row:1 / span 2; }
+@media (max-width:370px){ .cuota-item.cuota-item-detallada{ column-gap:8px; } }
+/* CORRECCIÓN (a pedido): mejor distribución de las casillas de cuotas pendientes —
+   círculo más pequeño, píldora sin chulo y centrada a la derecha, sin solaparse con el valor. */
+.cuota-item.cuota-item-detallada{ grid-template-columns:auto auto minmax(0,1fr) auto auto; column-gap:11px; row-gap:3px; padding:13px 10px 13px 17px; }
+#screen-detalle-prestamo .cuota-item.cuota-item-detallada .cuota-numero{ width:38px; height:38px; min-width:38px; border-width:2.5px; font-size:16px; font-weight:800; }
+.cuota-item-detallada .cuota-info > *{ grid-column:3; }
+.cuota-item-detallada .cuota-info > .cuota-monto{ font-size:17px; min-width:0; }
+.cuota-item-detallada .cuota-info > .cuota-fecha{ min-width:0; }
+.cuota-item-detallada .cuota-monto, .cuota-item-detallada .cuota-fecha{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.cuota-item-detallada .cuota-ico{ width:16px; height:16px; }
+.cuota-item-detallada > .cuota-estado-col{ grid-column:4; grid-row:1 / span 2; align-self:center; }
+.cuota-item-detallada .cuota-badge{ padding:6px 12px; gap:0; font-size:12.5px; }
+.cuota-chevron{ width:16px; height:16px; margin-left:-3px; }
+@media (max-width:370px){
+  .cuota-item.cuota-item-detallada{ column-gap:8px; padding-left:14px; padding-right:7px; }
+  #screen-detalle-prestamo .cuota-item.cuota-item-detallada .cuota-numero{ width:34px; height:34px; min-width:34px; font-size:15px; }
+  .cuota-item-detallada .cuota-info > .cuota-monto{ font-size:15.5px; }
+  .cuota-item-detallada .cuota-badge{ padding:5px 9px; font-size:11.5px; }
+}
+/* Ajuste: la fecha usa también el ancho bajo la píldora; la píldora queda alineada con el valor */
+.cuota-item-detallada .cuota-info > .cuota-fecha{ grid-column:3 / 5; }
+.cuota-item-detallada > .cuota-estado-col{ grid-row:1; align-self:center; }
+.cuota-item-detallada .cuota-info > .cuota-monto{ align-self:center; }
+.cuota-item-detallada .cuota-info > .cuota-monto.cuota-monto-largo{ font-size:15.5px; letter-spacing:-0.4px; }
+@media (max-width:370px){ .cuota-item-detallada .cuota-info > .cuota-monto.cuota-monto-largo{ font-size:14px; } }
+/* CAMBIO (a pedido): píldora "Pendiente" centrada verticalmente en la casilla;
+   barra lateral y círculo con color más suave. */
+.cuota-item-detallada > .cuota-estado-col{ grid-row:1 / span 2 !important; align-self:center !important; }
+.cuota-item-detallada .cuota-info > .cuota-fecha{ grid-column:3 !important; font-size:12px; }
+.cuota-item.cuota-item-detallada::before{ background:linear-gradient(180deg, #F6D08C, #EBB65A) !important; }
+#screen-detalle-prestamo .cuota-item.cuota-item-detallada .cuota-numero{ border-color:#F2C46E !important; background:rgba(245,158,11,0.06) !important; box-shadow:0 1px 4px rgba(217,138,11,0.15), inset 0 0 0 2px #fff !important; }
+@media (max-width:370px){ .cuota-item-detallada .cuota-info > .cuota-fecha{ font-size:11px; } }
+/* Más espacio para la fecha junto a la píldora centrada */
+.cuota-item.cuota-item-detallada{ column-gap:10px !important; padding-right:8px !important; }
+.cuota-item-detallada .cuota-badge{ padding:5px 10px !important; font-size:12px !important; }
+.cuota-chevron{ width:14px !important; height:14px !important; margin-left:-4px !important; }
+@media (max-width:370px){
+  .cuota-item.cuota-item-detallada{ column-gap:7px !important; padding-left:13px !important; padding-right:6px !important; }
+  .cuota-item-detallada .cuota-badge{ padding:4px 8px !important; font-size:11px !important; }
+  .cuota-item-detallada .cuota-ico{ width:14px; height:14px; }
+  .cuota-item-detallada .cuota-monto, .cuota-item-detallada .cuota-fecha{ gap:4px !important; }
+}
+/* CAMBIO (a pedido): casillas de cuotas pendientes limpias — valor con menos peso,
+   bordes finos (casilla, círculo y barra lateral) y sin sombras ni reflejos. */
+.cuota-item.cuota-item-detallada{ border-width:1px !important; box-shadow:none !important; }
+.cuota-item.cuota-item-detallada::after{ display:none !important; }
+.cuota-item.cuota-item-detallada::before{ width:3px !important; background:#EEC778 !important; }
+#screen-detalle-prestamo .cuota-item.cuota-item-detallada .cuota-numero{ border-width:1.5px !important; box-shadow:none !important; background:transparent !important; font-weight:600 !important; }
+.cuota-item-detallada .cuota-info > .cuota-monto{ font-weight:600 !important; }
+.cuota-item-detallada .cuota-badge{ box-shadow:none !important; font-weight:600 !important; }
+/* CAMBIO (a pedido): sin flechita, píldora más a la derecha, franja diagonal derecha
+   más notoria y barra lateral izquierda con más color. */
+.cuota-item-detallada > .cuota-chevron{ display:none !important; }
+.cuota-item.cuota-item-detallada{ grid-template-columns:auto auto minmax(0,1fr) auto !important; padding-right:14px !important; }
+.cuota-item.cuota-item-detallada::after{ display:block !important; background:linear-gradient(105deg, transparent 0 18%, rgba(226,190,90,0.30) 18% 100%) !important; }
+.cuota-item.cuota-item-detallada::before{ width:4px !important; background:#E2A43A !important; }
+@media (max-width:370px){ .cuota-item.cuota-item-detallada{ padding-right:10px !important; } }
+/* CAMBIO (a pedido): la franja derecha es ahora un bloque de color sólido, un poco más
+   intenso que el fondo (no una sombra), con corte diagonal limpio. */
+.cuota-item.cuota-item-detallada::after{ background:linear-gradient(105deg, transparent 0 18%, #FBF2D6 18% 100%) !important; }
+/* CAMBIO (a pedido): mismo diseño para las cuotas VENCIDAS, conservando el rojo */
+.cuota-item.vencida.cuota-item-detallada::before{ background:#E0565F !important; }
+.cuota-item.vencida.cuota-item-detallada::after{ background:linear-gradient(105deg, transparent 0 18%, #FADCDC 18% 100%) !important; }
+#screen-detalle-prestamo .cuota-item.vencida.cuota-item-detallada .cuota-numero{ border-color:#EE9097 !important; }
+.cuota-item.vencida.cuota-item-detallada .cuota-estado-col{ align-items:flex-end; }
+.cuota-item.vencida.cuota-item-detallada .cuota-dias-atraso{ font-size:11px; }
 </style>
 
 </head>
@@ -8233,7 +8349,7 @@ body.modo-oscuro .sac-opcion.activo{ color:#6FD3A3; }
     <button class="back-btn" id="btn-cerrar-detalle-prestamo" aria-label="Volver">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
     </button>
-    <h1>Detalle del Préstamo</h1>
+    <h1>Detalles del préstamo</h1>
     <!-- NUEVO: a pedido — acceso a "Cobros" desde Detalle del Préstamo,
          como capa superpuesta (ver abrirCobrosOverlay). Cerrar deja esta
          misma pantalla exactamente como estaba. -->
@@ -22199,6 +22315,24 @@ body.modo-oscuro .sac-opcion.activo{ color:#6FD3A3; }
         ${iconoCompartirMini()}
       </div>` : ''}
     `;
+    // NUEVO (a pedido, con imagen de referencia): detalles visuales en las
+    // casillas de cuotas PENDIENTES — barra lateral, divisor, íconos de
+    // monedas y calendario, chulo en la etiqueta y flecha a la derecha.
+    // Solo decoración: no cambia datos ni comportamiento.
+    if(estadoClase === 'pendiente' || estadoClase === 'vencida'){ // CAMBIO (a pedido): mismo diseño también para vencidas (en rojo)
+      item.classList.add('cuota-item-detallada');
+      const numeroEl = item.querySelector('.cuota-numero');
+      const divisor = document.createElement('span');
+      divisor.className = 'cuota-divisor';
+      numeroEl.after(divisor);
+      const montoEl = item.querySelector('.cuota-monto');
+      if(formatearPesos(cuota.total).length > 8) montoEl.classList.add('cuota-monto-largo'); // valores de millones: letra un poco menor para que quepan
+      montoEl.insertAdjacentHTML('afterbegin', '<svg class="cuota-ico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="14" cy="6" rx="6" ry="2.6"></ellipse><path d="M8 6v3.6c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6V6"></path><path d="M8 9.6v3.6c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6V9.6"></path><ellipse cx="10" cy="14.4" rx="6" ry="2.6"></ellipse><path d="M4 14.4V18c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6v-3.6"></path></svg>');
+      const fechaEl = item.querySelector('.cuota-fecha');
+      fechaEl.insertAdjacentHTML('afterbegin', '<svg class="cuota-ico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect><path d="M8 3v4M16 3v4M3.5 10h17M10 13.5v4M14 13.5v4"></path></svg>');
+      // (a pedido) se quitó el chulo dentro de la píldora "Pendiente"
+      item.insertAdjacentHTML('beforeend', '<svg class="cuota-chevron" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"></polyline></svg>');
+    }
     if(!pagada){
       // CORREGIDO: antes cada cuota pendiente tenía 2 iconos sueltos
       // (pagar / más opciones), además del botón flotante "Pagar" que
