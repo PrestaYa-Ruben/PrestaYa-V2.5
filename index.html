@@ -22772,7 +22772,13 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
 
     tabCuotas.classList.add('active');
     tabPagos.classList.remove('active');
+    // CORREGIDO: al abrir un préstamo no se reiniciaba la pestaña
+    // "Pendientes" — si se había dejado seleccionada, al volver a entrar
+    // quedaban "Todas" y "Pendientes" activas a la vez y se veían ambas
+    // listas juntas (cuotas pendientes repetidas). Ahora también se apaga.
+    tabPendientes.classList.remove('active');
     cuotasLista.style.display = 'block';
+    pendientesLista.style.display = 'none';
     pagosLista.style.display = 'none';
 
     if(origenDetallePrestamo === 'prestamos'){
