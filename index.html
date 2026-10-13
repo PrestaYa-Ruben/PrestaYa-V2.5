@@ -6822,6 +6822,21 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
 .loan-card-finalizado .loan-progress-trozo.pagado{ background:var(--text-secondary); }
 /* CAMBIO (a pedido): trozo de la barra en rojo si esa cuota está vencida */
 .loan-progress-trozo.vencido{ background:#DC2626; }
+/* CAMBIO (a pedido): colores de la barra por trozos un poco más suaves */
+.loan-progress-trozo{ background:#E1E5EC; }
+.loan-progress-trozo.pagado{ background:#4CBB7A; }
+.loan-progress-trozo.vencido{ background:#E86A6A; }
+/* NUEVO (a pedido): total a pagar y saldo pendiente bajo la barra de progreso */
+.loan-progress-pie{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-top:7px; }
+.lpp-item{ display:flex; flex-direction:column; line-height:1.15; min-width:0; }
+.lpp-item.lpp-der{ align-items:flex-end; text-align:right; }
+.lpp-label{ font-size:11px; font-weight:500; color:var(--text-secondary); }
+.lpp-valor{ font-size:14.5px; font-weight:700; white-space:nowrap; }
+.lpp-total{ color:#1F2F68; }
+.lpp-saldo{ color:#E5484D; }
+.lpp-saldo.lpp-saldo-cero{ color:#12A150; }
+/* CAMBIO (a pedido): "Total a pagar" y "Saldo pendiente" ya no se repiten arriba (se ven bajo la barra) */
+.loan-card-full .loan-row.loan-row-oculta-tarjeta{ display:none !important; }
 </style>
 
 </head>
@@ -21623,7 +21638,7 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
         <span class="loan-row-label">Cuota:</span>
         <span class="loan-row-value">${formatearPesos(cuotaRealPrestamo(prestamo))} <span class="loan-freq">/ ${nombreFrecuencia}</span></span>
       </div>
-      <div class="loan-row">
+      <div class="loan-row loan-row-oculta-tarjeta"><!-- oculta (a pedido): ahora va bajo la barra -->
         <span class="loan-row-label">Total a pagar:</span>
         <span class="loan-row-value">${formatearPesos(prestamo.totalAPagar || 0)}</span>
       </div>
@@ -21636,7 +21651,7 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
         <span class="loan-row-label">Descuentos aplicados:</span>
         <span class="loan-row-value loan-descuento">−${formatearPesos(totalDescontadoPrestamo(prestamo))}</span>
       </div>` : ''}
-      <div class="loan-row">
+      <div class="loan-row loan-row-oculta-tarjeta"><!-- oculta (a pedido): ahora va bajo la barra -->
         <span class="loan-row-label">Saldo pendiente:</span>
         <span class="loan-row-value loan-saldo">${formatearPesos(saldo)}</span>
       </div>
@@ -21648,6 +21663,10 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
       <div class="loan-progress-track loan-progress-segmentado${(prestamo.plan || []).length > 40 ? ' muchas' : ''}">
         <div class="loan-progress-fill" style="width:${porcentajeProgreso}%; display:none;"></div>
         ${(prestamo.plan || []).map(c => `<span class="loan-progress-trozo${estaCuotaPagada(prestamo, c.numero) ? ' pagado' : (cuotaVencida(prestamo, c) ? ' vencido' : '')}"></span>`).join('')}
+      </div>
+      <div class="loan-progress-pie"><!-- NUEVO (a pedido): total a pagar (izq.) y saldo pendiente (der.) bajo la barra -->
+        <div class="lpp-item"><span class="lpp-label">Total a pagar</span><span class="lpp-valor lpp-total">${formatearPesos(prestamo.totalAPagar || 0)}</span></div>
+        <div class="lpp-item lpp-der"><span class="lpp-label">Saldo pendiente</span><span class="lpp-valor lpp-saldo${saldo <= 0 ? ' lpp-saldo-cero' : ''}">${formatearPesos(saldo)}</span></div>
       </div>
       ${prestamo.nota ? `
       <div class="loan-note">
