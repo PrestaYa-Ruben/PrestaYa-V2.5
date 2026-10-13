@@ -6814,6 +6814,12 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
 #btn-nuevo-prestamo-cliente{ padding-top:5px !important; padding-bottom:5px !important; }
 /* CAMBIO (a pedido): borde de las tarjetas de crédito (en cliente) un poco más marcado — sigue sin sombras */
 .loan-card-full{ border-width:2px !important; }
+/* NUEVO (a pedido): efecto de presión en las tarjetas de Clientes */
+.client-row.client-row-cliente{ position:relative; overflow:hidden; transition:transform .14s ease, filter .14s ease; -webkit-tap-highlight-color:transparent; }
+.client-row.client-row-cliente.tarjeta-presionada{ transform:scale(0.965) translateY(1px); filter:brightness(0.96); }
+.client-row.client-row-cliente:active{ transform:scale(0.965) translateY(1px); }
+.tarjeta-onda{ position:absolute; border-radius:50%; background:rgba(20,40,90,0.13); transform:scale(0); pointer-events:none; animation:tarjetaOnda .55s ease-out forwards; z-index:0; }
+@keyframes tarjetaOnda{ to{ transform:scale(1); opacity:0; } }
 </style>
 
 </head>
@@ -16430,6 +16436,35 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
 
   // CAMBIO (a pedido): avatar de persona en lugar de la torta de cuotas (false = volver a la torta)
   const AVATAR_PERSONA_TARJETA = true;
+  // NUEVO (a pedido): efecto de hundimiento + onda al tocar una tarjeta.
+  function habilitarEfectoPresionTarjeta(el){
+    let soltarTimer = null;
+    const presionar = (e)=>{
+      clearTimeout(soltarTimer);
+      el.classList.add('tarjeta-presionada');
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX != null ? e.clientX : r.left + r.width/2) - r.left;
+      const y = (e.clientY != null ? e.clientY : r.top + r.height/2) - r.top;
+      const tam = Math.max(r.width, r.height) * 2.2;
+      const onda = document.createElement('span');
+      onda.className = 'tarjeta-onda';
+      onda.style.width = onda.style.height = tam + 'px';
+      onda.style.left = (x - tam/2) + 'px';
+      onda.style.top = (y - tam/2) + 'px';
+      el.appendChild(onda);
+      onda.addEventListener('animationend', ()=> onda.remove());
+      setTimeout(()=> onda.remove(), 900);
+    };
+    const soltar = ()=>{
+      clearTimeout(soltarTimer);
+      soltarTimer = setTimeout(()=> el.classList.remove('tarjeta-presionada'), 140);
+    };
+    el.addEventListener('pointerdown', presionar);
+    el.addEventListener('pointerup', soltar);
+    el.addEventListener('pointercancel', soltar);
+    el.addEventListener('pointerleave', soltar);
+  }
+
   function crearTarjetaCliente(cliente){
     const card = document.createElement('div');
     card.className = 'card client-row client-row-cliente';
@@ -16750,7 +16785,15 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
     if(card._lateralCliente) card.appendChild(card._lateralCliente);
 
     // Al tocar la tarjeta se abre el detalle completo del cliente
-    card.addEventListener('click', ()=> abrirDetalleCliente(cliente));
+    // CAMBIO (a pedido): efecto de presión — al tocar, la tarjeta se hunde un
+    // poco y sale una onda (ripple) desde el dedo; la ficha se abre un
+    // instante después (130 ms) para que el efecto alcance a verse.
+    habilitarEfectoPresionTarjeta(card);
+    card.addEventListener('click', ()=>{
+      if(card._abriendoDetalle) return;
+      card._abriendoDetalle = true;
+      setTimeout(()=>{ card._abriendoDetalle = false; abrirDetalleCliente(cliente); }, 130);
+    });
 
     // NUEVO: mantener presionada la tarjeta abre el menú flotante (ver más abajo)
     adjuntarLongPressCliente(card, cliente);
