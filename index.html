@@ -6814,6 +6814,14 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
 #btn-nuevo-prestamo-cliente{ padding-top:5px !important; padding-bottom:5px !important; }
 /* CAMBIO (a pedido): borde de las tarjetas de crédito (en cliente) un poco más marcado — sigue sin sombras */
 .loan-card-full{ border-width:2px !important; }
+/* CAMBIO (a pedido): barra de progreso de la tarjeta de crédito dividida en un trozo por cuota */
+.loan-progress-track.loan-progress-segmentado{ display:flex; gap:3px; background:transparent !important; border-radius:0; overflow:visible; }
+.loan-progress-track.loan-progress-segmentado.muchas{ gap:1px; }
+.loan-progress-trozo{ flex:1 1 0; min-width:0; height:100%; background:#D7DCE4; border-radius:3px; }
+.loan-progress-trozo.pagado{ background:#12A150; }
+.loan-card-finalizado .loan-progress-trozo.pagado{ background:var(--text-secondary); }
+/* CAMBIO (a pedido): trozo de la barra en rojo si esa cuota está vencida */
+.loan-progress-trozo.vencido{ background:#DC2626; }
 </style>
 
 </head>
@@ -21637,8 +21645,9 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
         <span>Progreso</span>
         <span>${cuotasPagadas} / ${prestamo.cuotas} cuotas <span class="loan-progress-porcentaje">· ${Math.round(porcentajeProgreso)}%</span></span>
       </div>
-      <div class="loan-progress-track">
-        <div class="loan-progress-fill" style="width:${porcentajeProgreso}%"></div>
+      <div class="loan-progress-track loan-progress-segmentado${(prestamo.plan || []).length > 40 ? ' muchas' : ''}">
+        <div class="loan-progress-fill" style="width:${porcentajeProgreso}%; display:none;"></div>
+        ${(prestamo.plan || []).map(c => `<span class="loan-progress-trozo${estaCuotaPagada(prestamo, c.numero) ? ' pagado' : (cuotaVencida(prestamo, c) ? ' vencido' : '')}"></span>`).join('')}
       </div>
       ${prestamo.nota ? `
       <div class="loan-note">
