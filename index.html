@@ -6800,6 +6800,18 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
 #screen-detalle-prestamo .cuota-item.vencida.cuota-item-detallada .cuota-numero{ border-color:#EE9097 !important; }
 .cuota-item.vencida.cuota-item-detallada .cuota-estado-col{ align-items:flex-end; }
 .cuota-item.vencida.cuota-item-detallada .cuota-dias-atraso{ font-size:11px; }
+/* CAMBIO (a pedido): tarjetas de crédito (dentro del cliente) con borde limpio —
+   borde fino de un solo color, sin sombras ni reflejos. */
+.loan-card-full{ box-shadow:none !important; border-width:1px !important; border-style:solid !important; }
+.loan-card-full::before, .loan-card-full::after{ box-shadow:none !important; }
+/* CAMBIO (a pedido): número del contador de créditos más grande (el círculo queda igual, 21px) */
+.client-row.client-row-cliente .client-row-badge{ font-size:14.5px !important; font-weight:800 !important; letter-spacing:-0.5px; }
+/* CAMBIO (a pedido): círculo del avatar limpio, sin sombras ni reflejos */
+.client-row-avatar-ilustrado, #detalle-avatar.avatar-ilustrado-detalle{ filter:none !important; box-shadow:none !important; }
+/* CAMBIO (a pedido): título "Créditos" de la ficha del cliente con más peso */
+.section-title.section-title-creditos{ font-weight:800; }
+/* CAMBIO (a pedido): píldora "Nuevo crédito" más baja (mismo texto) */
+#btn-nuevo-prestamo-cliente{ padding-top:5px !important; padding-bottom:5px !important; }
 </style>
 
 </head>
@@ -7975,7 +7987,7 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
 
     <!-- HISTORIAL DE CRÉDITOS -->
     <div class="section-header">
-      <div class="section-title">Historial de Créditos</div>
+      <div class="section-title section-title-creditos">Créditos</div><!-- CAMBIO (a pedido): antes "Historial de Créditos" -->
       <button class="btn-nuevo-pill" id="btn-nuevo-prestamo-cliente">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         Nuevo crédito
@@ -16384,7 +16396,7 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
   // NUEVO (a pedido): ícono de persona para los círculos de avatar
   // (Nuevo Préstamo y ficha del Cliente) en lugar de las iniciales.
   // Avatar ilustrado femenino (cabello largo) — mismo estilo que el masculino
-  const ICONO_AVATAR_ILUSTRADO_FEMENINO = '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><clipPath id="avIlusClipF"><circle cx="32" cy="32" r="30"/></clipPath></defs><circle cx="32" cy="32" r="30" fill="#E4F0EA"/><g clip-path="url(#avIlusClipF)"><path d="M17.5 27c0-9.6 6.2-15.5 14.5-15.5S46.5 17.4 46.5 27v15.5c0 3.2-1.6 5.6-4 6.8H21.5c-2.4-1.2-4-3.6-4-6.8z" fill="#2A1E1A"/><path d="M10 64c0-12 9.5-19 22-19s22 7 22 19z" fill="#B24A6E"/><path d="M26.5 40h11v7.5c0 2.6-2.5 4.5-5.5 4.5s-5.5-1.9-5.5-4.5z" fill="#E9B48F"/><path d="M24.5 46.8c2 3.3 4.6 4.9 7.5 4.9s5.5-1.6 7.5-4.9" fill="none" stroke="#8E3556" stroke-width="1.6" stroke-linecap="round"/><path d="M22 25.5c0-7.6 4.6-12 10-12s10 4.4 10 12v5.2c0 6.6-4.6 11.6-10 11.6s-10-5-10-11.6z" fill="#F2C29F"/><path d="M20.8 31.5c-.9-11 3.6-18.4 11.4-18.4 7.9 0 12.2 7.2 11.2 18.4-1.2-5.2-3-8.6-5.8-10.4-3.3 3-9.4 4.4-14.2 3.9-1.3 1.6-2.2 3.8-2.6 6.5z" fill="#2A1E1A"/></g><circle cx="32" cy="32" r="30" fill="none" stroke="#3E8A6A" stroke-width="2.6"/></svg>';
+  const ICONO_AVATAR_ILUSTRADO_FEMENINO = '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><clipPath id="avIlusClipF"><circle cx="32" cy="32" r="30"/></clipPath></defs><circle cx="32" cy="32" r="30" fill="#E4F0EA"/><g clip-path="url(#avIlusClipF)"><path d="M17.5 27c0-9.6 6.2-15.5 14.5-15.5S46.5 17.4 46.5 27v15.5c0 3.2-1.6 5.6-4 6.8H21.5c-2.4-1.2-4-3.6-4-6.8z" fill="#2A1E1A"/><path d="M10 64c0-12 9.5-19 22-19s22 7 22 19z" fill="#B24A6E"/><path d="M26.5 40h11v7.5c0 2.6-2.5 4.5-5.5 4.5s-5.5-1.9-5.5-4.5z" fill="#E9B48F"/><path d="M24.5 46.8c2 3.3 4.6 4.9 7.5 4.9s5.5-1.6 7.5-4.9" fill="none" stroke="#8E3556" stroke-width="1.6" stroke-linecap="round"/><path d="M22 25.5c0-7.6 4.6-12 10-12s10 4.4 10 12v5.2c0 6.6-4.6 11.6-10 11.6s-10-5-10-11.6z" fill="#F2C29F"/><path d="M20.8 31.5c-.9-11 3.6-18.4 11.4-18.4 7.9 0 12.2 7.2 11.2 18.4-1.2-5.2-3-8.6-5.8-10.4-3.3 3-9.4 4.4-14.2 3.9-1.3 1.6-2.2 3.8-2.6 6.5z" fill="#2A1E1A"/></g><circle cx="32" cy="32" r="30.4" fill="none" stroke="#3E8A6A" stroke-width="1.5"/></svg>';
   // Detecta si el primer nombre es femenino (lista de nombres comunes + terminación en "a",
   // con excepciones masculinas). Solo afecta el dibujo del avatar.
   const NOMBRES_FEMENINOS_EXTRA = new Set(['carmen','isabel','raquel','luz','beatriz','ines','mercedes','dolores','pilar','rocio','ruth','esther','consuelo','soledad','noemi','nohemi','marisol','maribel','mabel','gladys','doris','lucy','sol','abigail','edith','judith','miriam','nicole','ingrid','astrid','jazmin','yazmin','belen','socorro','rosario','amparo','milagros','lourdes','nieves','flor','ivonne','yaneth','janeth','yaneth','lisbeth','elizabeth','yuliet','juliet','yamile','leidy','lady','yeimy','sindy','cindy','nancy','shirley','heidy','kelly','mery','mary','ruby','esmeralda','raquel','nelly','betty','arely','yuly','yuli','ana','maria','marcela','luzmila','zulay','dayan','leydi','katherin','katherine','karen','evelyn','jennifer','yennifer','yenny','jenny','madeleine','nayibe','yasmin','zoraida','zoe','ximena','jimena','irene','alison','allison','sharon','yurany','yurani','diany','neydi','deisy','daisy','yudy','judy','yuri','sury','yohana','yesenia','monserrat','montserrat','denis','denisse','berenice','iris','eugenia','fe','merly','nidia','ligia','libia','olga','yalile']);
@@ -16411,7 +16423,7 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
     return n.endsWith('a');
   }
   // Avatar ilustrado (persona con cabello oscuro, rostro y camiseta) para las tarjetas de Clientes
-  const ICONO_AVATAR_ILUSTRADO = '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><clipPath id="avIlusClip"><circle cx="32" cy="32" r="30"/></clipPath></defs><circle cx="32" cy="32" r="30" fill="#E4F0EA"/><g clip-path="url(#avIlusClip)"><path d="M10 64c0-12 9.5-19 22-19s22 7 22 19z" fill="#24485A"/><path d="M26.5 40h11v7.5c0 2.6-2.5 4.5-5.5 4.5s-5.5-1.9-5.5-4.5z" fill="#E9B48F"/><path d="M24 46.5c2 3.6 4.8 5.3 8 5.3s6-1.7 8-5.3" fill="none" stroke="#1C3A4A" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="20.6" cy="29.5" rx="2.2" ry="3.2" fill="#E3AA84"/><ellipse cx="43.4" cy="29.5" rx="2.2" ry="3.2" fill="#E3AA84"/><path d="M21.5 25.5c0-7.6 4.7-12 10.5-12s10.5 4.4 10.5 12v5.2c0 6.6-4.8 11.6-10.5 11.6s-10.5-5-10.5-11.6z" fill="#F2C29F"/><path d="M20.6 28.5c-1-9.5 3.2-16.2 11.6-16.2 7.8 0 12.7 5 11.4 15.6-.8-3.6-2.5-6.4-5.3-7.6-3.9 2.1-10.2 2.5-14.4 1.3-1.7 1.6-2.8 4-3.3 6.9z" fill="#1E2A33"/></g><circle cx="32" cy="32" r="30" fill="none" stroke="#3E8A6A" stroke-width="2.6"/></svg>';
+  const ICONO_AVATAR_ILUSTRADO = '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><clipPath id="avIlusClip"><circle cx="32" cy="32" r="30"/></clipPath></defs><circle cx="32" cy="32" r="30" fill="#E4F0EA"/><g clip-path="url(#avIlusClip)"><path d="M10 64c0-12 9.5-19 22-19s22 7 22 19z" fill="#24485A"/><path d="M26.5 40h11v7.5c0 2.6-2.5 4.5-5.5 4.5s-5.5-1.9-5.5-4.5z" fill="#E9B48F"/><path d="M24 46.5c2 3.6 4.8 5.3 8 5.3s6-1.7 8-5.3" fill="none" stroke="#1C3A4A" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="20.6" cy="29.5" rx="2.2" ry="3.2" fill="#E3AA84"/><ellipse cx="43.4" cy="29.5" rx="2.2" ry="3.2" fill="#E3AA84"/><path d="M21.5 25.5c0-7.6 4.7-12 10.5-12s10.5 4.4 10.5 12v5.2c0 6.6-4.8 11.6-10.5 11.6s-10.5-5-10.5-11.6z" fill="#F2C29F"/><path d="M20.6 28.5c-1-9.5 3.2-16.2 11.6-16.2 7.8 0 12.7 5 11.4 15.6-.8-3.6-2.5-6.4-5.3-7.6-3.9 2.1-10.2 2.5-14.4 1.3-1.7 1.6-2.8 4-3.3 6.9z" fill="#1E2A33"/></g><circle cx="32" cy="32" r="30.4" fill="none" stroke="#3E8A6A" stroke-width="1.5"/></svg>';
   const ICONO_AVATAR_PERSONA = '<svg class="icono-avatar-persona" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8.2" r="4.3"></circle><path d="M3.6 20.3c.7-4.1 4.1-6.8 8.4-6.8s7.7 2.7 8.4 6.8c.1.5-.3.9-.8.9H4.4c-.5 0-.9-.4-.8-.9z"></path></svg>';
 
   // CAMBIO (a pedido): avatar de persona en lugar de la torta de cuotas (false = volver a la torta)
@@ -21873,6 +21885,10 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
 
     // NUEVO: la lista de abajo sí se filtra por la pestaña Activos/Finalizados
     const prestamosFiltrados = prestamosCliente.filter(p => p.estado === filtroEstadoHistorialCreditos);
+
+    // CAMBIO (a pedido): la píldora de ordenar solo aparece si hay más de un
+    // crédito en la lista que se está viendo (Activos o Historial).
+    document.getElementById('btn-orden-creditos').style.display = prestamosFiltrados.length > 1 ? '' : 'none';
 
     listaContenedor.innerHTML = '';
 
