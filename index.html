@@ -11476,6 +11476,16 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn.swap-activo{ background:
         <span id="texto-btn-toggle-estado-cliente">Inhabilitar</span>
       </div>
 
+      <!-- NUEVO (a pedido): interruptor general "Bloqueado". Activo = el botón
+           "Nuevo crédito" no abre el formulario y muestra "Cliente Bloqueado". -->
+      <div class="action-sheet-item-toggle-row" id="fila-bloqueo-general-menu">
+        <div class="icon-container red">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+        </div>
+        <span style="flex:1;">Bloqueado</span>
+        <button type="button" class="toggle-switch" id="toggle-bloqueo-general-cliente" role="switch" aria-checked="false" aria-label="Bloquear cliente"></button>
+      </div>
+
       <div class="action-sheet-item-toggle-row" id="fila-bloqueo-mora-menu">
         <div class="icon-container red">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"></line></svg>
@@ -16205,9 +16215,19 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn.swap-activo{ background:
     if(toggleMonto){ toggleMonto.classList.toggle('on', bloqueoMonto); toggleMonto.setAttribute('aria-checked', String(bloqueoMonto)); }
     const toggleCreditos = document.getElementById('toggle-bloqueo-creditos-cliente');
     if(toggleCreditos){ toggleCreditos.classList.toggle('on', bloqueoCreditos); toggleCreditos.setAttribute('aria-checked', String(bloqueoCreditos)); }
+    // NUEVO (a pedido): bloqueo general "Bloqueado"
+    const bloqueoGeneral = !!cliente.bloqueadoGeneral;
+    const toggleGeneral = document.getElementById('toggle-bloqueo-general-cliente');
+    if(toggleGeneral){ toggleGeneral.classList.toggle('on', bloqueoGeneral); toggleGeneral.setAttribute('aria-checked', String(bloqueoGeneral)); }
     const btnNuevo = document.getElementById('btn-nuevo-prestamo-cliente');
-    if(btnNuevo) btnNuevo.classList.toggle('bloqueado', bloqueado || bloqueoMonto || bloqueoCreditos);
+    if(btnNuevo) btnNuevo.classList.toggle('bloqueado', bloqueado || bloqueoMonto || bloqueoCreditos || bloqueoGeneral);
   }
+  document.getElementById('toggle-bloqueo-general-cliente').addEventListener('click', ()=>{
+    if(!clienteEnDetalle) return;
+    clienteEnDetalle.bloqueadoGeneral = !clienteEnDetalle.bloqueadoGeneral;
+    guardarClientes(clientesGuardados);
+    actualizarBloqueoMoraCliente(clienteEnDetalle);
+  });
   document.getElementById('toggle-bloqueo-monto-cliente').addEventListener('click', ()=>{
     if(!clienteEnDetalle) return;
     clienteEnDetalle.bloqueadoPorMontoMaximo = !clienteEnDetalle.bloqueadoPorMontoMaximo;
@@ -18512,6 +18532,11 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn.swap-activo{ background:
   // ---------- Abrir / cerrar la pantalla Nuevo Préstamo ----------
   btnAbrirNuevoPrestamo.addEventListener('click', ()=>{
     if(!clienteEnDetalle) return;
+    // NUEVO (a pedido): bloqueo general — "Nuevo crédito" no abre el formulario
+    if(clienteEnDetalle.bloqueadoGeneral){
+      mostrarMensajeToast('Cliente Bloqueado', btnAbrirNuevoPrestamo);
+      return;
+    }
     // NUEVO: "Bloquear por mora" — a pedido, impide registrar un nuevo
     // préstamo mientras el interruptor esté activo.
     if(clienteEnDetalle.bloqueadoPorMora){
@@ -24051,6 +24076,7 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn.swap-activo{ background:
   // cambio antes de que se cierre) — se cierra con los demás elementos
   // de su fila salvo el interruptor mismo.
   document.getElementById('toggle-bloqueo-mora-cliente').addEventListener('click', (e)=> e.stopPropagation());
+  document.getElementById('toggle-bloqueo-general-cliente').addEventListener('click', (e)=> e.stopPropagation());
   document.getElementById('toggle-monto-maximo-cliente').addEventListener('click', (e)=> e.stopPropagation());
   document.getElementById('toggle-bloqueo-monto-cliente').addEventListener('click', (e)=> e.stopPropagation());
   document.getElementById('toggle-bloqueo-creditos-cliente').addEventListener('click', (e)=> e.stopPropagation());
