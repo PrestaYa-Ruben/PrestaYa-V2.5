@@ -6837,6 +6837,20 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
 .lpp-saldo.lpp-saldo-cero{ color:#12A150; }
 /* CAMBIO (a pedido): "Total a pagar" y "Saldo pendiente" ya no se repiten arriba (se ven bajo la barra) */
 .loan-card-full .loan-row.loan-row-oculta-tarjeta{ display:none !important; }
+/* NUEVO (a pedido): modal "Resumen del crédito" */
+#resumen-credito-overlay{ background:rgba(10,13,20,0.45); padding:18px; }
+.resumen-credito-card{ background:var(--surface); border-radius:16px; padding:20px 18px 18px; width:100%; max-width:360px; box-shadow:0 24px 60px rgba(0,0,0,0.30); }
+.resumen-credito-titulo{ font-size:20px; font-weight:800; color:var(--text); margin:0 0 12px 2px; letter-spacing:-0.3px; }
+.resumen-credito-caja{ border:1.5px solid #C9D0DB; border-radius:12px; padding:8px 14px 10px; }
+.rc-fila{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:11px 0 9px; border-bottom:1px solid #E1E5EC; font-size:15.5px; color:var(--text); }
+.rc-fila span{ font-weight:500; }
+.rc-fila b{ font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.rc-separador{ height:18px; }
+.rc-azul{ color:#1F2F68; } .rc-verde{ color:#12A150; } .rc-azul2{ color:#2F5FD0; } .rc-rojo{ color:#E5484D; }
+body.modo-oscuro .rc-azul{ color:#AFC0F2; }
+body.modo-oscuro .resumen-credito-caja{ border-color:#3A4253; }
+body.modo-oscuro .rc-fila{ border-bottom-color:#2A3040; }
+.loan-amount.loan-amount-tocable{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
 </style>
 
 </head>
@@ -11566,6 +11580,22 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
 <!-- NUEVO (a pedido): "Fechas de pago" — se abre al tocar la torta de cuotas
      en la tarjeta del cliente (área Clientes). Tabla por cuota con su fecha,
      valor y estado (PAGADA / VENCIDA), con opción de compartir como imagen. -->
+<!-- NUEVO (a pedido): "Resumen del crédito" — se abre al tocar el valor del crédito en su tarjeta -->
+<div id="resumen-credito-overlay" class="confirm-modal-overlay" style="display:none;">
+  <div class="resumen-credito-card" role="dialog" aria-modal="true" aria-labelledby="resumen-credito-titulo">
+    <div class="resumen-credito-titulo" id="resumen-credito-titulo">Resumen del crédito</div>
+    <div class="resumen-credito-caja">
+      <div class="rc-fila"><span>Total prestado</span><b id="rc-prestado" class="rc-azul"></b></div>
+      <div class="rc-fila"><span>Total a cobrar</span><b id="rc-cobrar"></b></div>
+      <div class="rc-fila"><span>Interés</span><b id="rc-interes"></b></div>
+      <div class="rc-fila"><span>Total ganancias</span><b id="rc-ganancias" class="rc-verde"></b></div>
+      <div class="rc-separador"></div>
+      <div class="rc-fila"><span>Total abonado</span><b id="rc-abonado" class="rc-azul2"></b></div>
+      <div class="rc-fila"><span>Total pendiente</span><b id="rc-pendiente" class="rc-rojo"></b></div>
+    </div>
+    <button type="button" class="btn-outline-share" id="btn-cerrar-resumen-credito" style="width:100%; margin:14px 0 0;">Cerrar</button>
+  </div>
+</div>
 <div id="torta-fechas-overlay" class="confirm-modal-overlay" style="display:none;">
   <div class="torta-fechas-card">
     <div class="torta-fechas-nombre" id="torta-fechas-nombre"></div>
@@ -21585,6 +21615,26 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
     return activosCliente.findIndex(p => p.id === prestamo.id) + 1;
   }
 
+  // NUEVO (a pedido): modal "Resumen del crédito". Solo muestra datos que
+  // ya existen: valor, total a pagar, tasa, abonado y saldo pendiente
+  // (las ganancias son total a cobrar − total prestado).
+  function abrirResumenCredito(prestamo){
+    const totalCobrar = Number(prestamo.totalAPagar) || 0;
+    const prestado = Number(prestamo.valor) || 0;
+    document.getElementById('rc-prestado').textContent = formatearPesos(prestado);
+    document.getElementById('rc-cobrar').textContent = formatearPesos(totalCobrar);
+    document.getElementById('rc-interes').textContent = (prestamo.tasa != null && prestamo.tasa !== '' ? prestamo.tasa : 0) + '%';
+    document.getElementById('rc-ganancias').textContent = formatearPesos(totalCobrar - prestado);
+    document.getElementById('rc-abonado').textContent = formatearPesos(totalAbonadoPrestamo(prestamo));
+    document.getElementById('rc-pendiente').textContent = formatearPesos(saldoPendientePrestamo(prestamo));
+    document.getElementById('resumen-credito-overlay').style.display = 'flex';
+  }
+  function cerrarResumenCredito(){
+    document.getElementById('resumen-credito-overlay').style.display = 'none';
+  }
+  document.getElementById('btn-cerrar-resumen-credito').addEventListener('click', cerrarResumenCredito);
+  document.getElementById('resumen-credito-overlay').addEventListener('click', (e)=>{ if(e.target.id === 'resumen-credito-overlay') cerrarResumenCredito(); });
+
   function crearTarjetaPrestamo(prestamo, mostrarCliente){
     // Cuotas realmente completas (no cuenta registros de pago sueltos: un
     // recargo por mora o un abono parcial no deben inflar el progreso)
@@ -21687,6 +21737,17 @@ body:not(.modo-oscuro) #screen-detalle-cliente .stat-card-sm{ background:#FFFFFF
     // Recordatorio" para el cliente de este préstamo, sin abrir el
     // detalle del crédito. stopPropagation() para que el clic no dispare
     // también el clic de la tarjeta completa (que abre el detalle).
+
+    // NUEVO (a pedido): tocar el valor del crédito abre "Resumen del crédito"
+    // (sin abrir el detalle del préstamo).
+    const valorCreditoTarjeta = card.querySelector('.loan-amount');
+    if(valorCreditoTarjeta){
+      valorCreditoTarjeta.classList.add('loan-amount-tocable');
+      valorCreditoTarjeta.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        abrirResumenCredito(prestamo);
+      });
+    }
     const btnRecordatorioTarjeta = card.querySelector('.loan-card-recordatorio-btn');
     if(btnRecordatorioTarjeta){
       btnRecordatorioTarjeta.addEventListener('click', (e)=>{
