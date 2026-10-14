@@ -6864,6 +6864,62 @@ body.modo-oscuro .rc-fila{ border-bottom-color:#2A3040; }
 .loan-progress-segmentado.sin-nums .loan-progress-trozo{ font-size:0; }
 .loan-progress-track.loan-progress-segmentado.nums-chicos{ gap:2px; }
 .loan-progress-segmentado.nums-chicos .loan-progress-trozo{ letter-spacing:-0.5px; }
+/* CAMBIO (a pedido, con imagen de referencia): paleta de la tarjeta de crédito ACTIVO
+   (verde menta + verde #12A150 + azul marino #1F2F68) en Nuevo Préstamo. Solo colores. */
+body:not(.modo-oscuro) #screen-nuevo-prestamo{
+  --np-fondo-1:#FBFDFC; --np-fondo-2:#F3FAF5;
+  --np-card:#EEFAF2; --np-card-borde:#A9DDBC; --np-card-sombra:0 2px 6px rgba(18,90,50,0.08);
+  --np-campo:#FFFFFF; --np-campo-borde:#B5DEC2;
+  --np-teal:#1F2F68; --np-teal-2:#16224D; --np-naranja:#12A150;
+  --np-valor:#18202F; --np-titulo:#18202F;
+  background:linear-gradient(170deg, var(--np-fondo-1) 0%, var(--np-fondo-2) 100%);
+}
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-card,
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cliente,
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-mini{ border-width:1.5px; }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .field-input:focus{ box-shadow:0 0 0 3px rgba(18,161,80,0.16); }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cliente-avatar{ background:#D2EBDA; color:#1F7A45; }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-caja,
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-fecha,
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cuota-caja{ background:#FFFFFF; border:1.5px solid #CDEBD7; }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-caja:focus-within{ border-color:#12A150; }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-caja.np-calculado{ border:1.5px dashed #9ED6AE; }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn{ box-shadow:none; }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .btn-guardar-prestamo{
+  background:#12A150; border:1px solid #0E8A44; box-shadow:none; color:#FFFFFF;
+}
+body:not(.modo-oscuro) #screen-nuevo-prestamo .btn-guardar-prestamo:active{ background:#0F9147; box-shadow:none; }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .share-fab{ box-shadow:0 8px 18px rgba(18,161,80,0.30); }
+/* CAMBIO (a pedido, con imagen de referencia): diseño de Nuevo Préstamo según la imagen
+   (avatar sin cambios). Solo presentación. */
+body:not(.modo-oscuro) #screen-nuevo-prestamo{
+  --np-fondo-1:#F7FBFA; --np-fondo-2:#F4F9F6;
+  --np-card:#E5F7EB; --np-card-borde:#B5C6BC; --np-card-sombra:0 4px 10px rgba(30,60,45,0.18);
+  --np-campo:#FFFFFF; --np-campo-borde:#C3D2C8;
+}
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-titulo{
+  font-family:Georgia, 'Times New Roman', serif; font-size:19px; font-weight:700; color:#121417; letter-spacing:-0.2px;
+}
+body:not(.modo-oscuro) #screen-nuevo-prestamo .header h1{ color:#273363; }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .field-input{ border:1px solid #C3D2C8; box-shadow:0 1px 3px rgba(30,60,45,0.10); }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .field-input::placeholder{ color:#2E333A; -webkit-text-fill-color:#2E333A; }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-caja{ background:#FFFFFF; border:1px solid #C3D2C8; box-shadow:0 1px 3px rgba(30,60,45,0.10); }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-caja .field-input{ box-shadow:none; border:none; }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-caja.np-calculado{ border:1.5px dashed #B7C2BC; box-shadow:none; }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn{ background:#EEF6F1; color:#273363; border:1.5px solid #768292; box-shadow:none; }
+/* Fecha de desembolso: recuadro con borde dorado y fecha en dorado oscuro */
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-fecha{ background:#FFFFFF; border:1px solid #C3D2C8; box-shadow:0 1px 3px rgba(30,60,45,0.10); }
+/* Agregar Nota: botón menta suave, sin borde oscuro */
+/* CAMBIO (a pedido): Agregar Nota con el borde dorado y el texto dorado oscuro */
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-card-fecha .add-note-btn{
+  background:#FFFEF9; border:1.5px solid #9C7A35; color:#8F6B1F; font-weight:600; box-shadow:none;
+}
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-card-fecha .add-note-btn.active{ color:#8F6B1F; border-color:#9C7A35; }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cuota-caja{ background:#FFFFFF; border:1px solid #C3D2C8; box-shadow:0 1px 3px rgba(30,60,45,0.10); }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .btn-guardar-prestamo{ background:#25723A; border:1px solid #1E5F30; box-shadow:0 4px 10px rgba(30,60,45,0.20); }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .btn-guardar-prestamo:active{ background:#1F6432; }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-fecha .field-input,
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cuota-caja .field-input{ border:none !important; box-shadow:none !important; background:transparent !important; }
 </style>
 
 </head>
@@ -8271,7 +8327,7 @@ body.modo-oscuro .rc-fila{ border-bottom-color:#2A3040; }
           <div class="field-with-icon">
             <span class="np-prefijo" aria-hidden="true">$</span>
             <input class="field-input" id="input-valor-prestamo" type="text" inputmode="numeric" placeholder="Toca y escribe" required>
-            <svg class="np-icono-monto" viewBox="0 0 32 32" aria-hidden="true"><rect x="17" y="7" width="13" height="3.4" rx="1" fill="#002359"/><rect x="19" y="12" width="11" height="3.4" rx="1" fill="#002359"/><rect x="19" y="17" width="11" height="3.4" rx="1" fill="#002359"/><rect x="17" y="22" width="13" height="3.4" rx="1" fill="#002359"/><circle cx="12" cy="16" r="11" fill="#002359"/><path d="M15.2 12.6c-.6-1-1.7-1.5-3.1-1.5-1.8 0-3 .9-3 2.3 0 3.2 6.2 1.5 6.2 4.8 0 1.5-1.3 2.4-3.2 2.4-1.6 0-2.8-.6-3.4-1.8M12 8.8v14.4" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></svg>
+            <svg class="np-icono-monto" viewBox="0 0 32 32" aria-hidden="true"><rect x="17" y="7" width="13" height="3.4" rx="1" fill="#1F2F68"/><rect x="19" y="12" width="11" height="3.4" rx="1" fill="#1F2F68"/><rect x="19" y="17" width="11" height="3.4" rx="1" fill="#1F2F68"/><rect x="17" y="22" width="13" height="3.4" rx="1" fill="#1F2F68"/><circle cx="12" cy="16" r="11" fill="#1F2F68"/><path d="M15.2 12.6c-.6-1-1.7-1.5-3.1-1.5-1.8 0-3 .9-3 2.3 0 3.2 6.2 1.5 6.2 4.8 0 1.5-1.3 2.4-3.2 2.4-1.6 0-2.8-.6-3.4-1.8M12 8.8v14.4" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></svg>
           </div>
         </div>
         <div class="np-fila-2">
@@ -8323,7 +8379,7 @@ body.modo-oscuro .rc-fila{ border-bottom-color:#2A3040; }
       <div class="np-titulo">Calendario y Notas</div>
       <div class="np-card np-card-fecha">
         <div class="np-fecha">
-          <svg class="np-fecha-icono" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="5" y="9" width="32" height="30" rx="4" stroke="#002359" stroke-width="3"/><path d="M5 17h32" stroke="#002359" stroke-width="3"/><path d="M13 5v8M29 5v8" stroke="#002359" stroke-width="3" stroke-linecap="round"/><rect x="11" y="22" width="5" height="4.5" rx="1" fill="#002359"/><rect x="19" y="22" width="5" height="4.5" rx="1" fill="#002359"/><rect x="11" y="30" width="5" height="4.5" rx="1" fill="#002359"/><path d="M27 41l2-7 12-12 5 5-12 12z" fill="#34AC27" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <svg class="np-fecha-icono" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="5" y="9" width="32" height="30" rx="4" stroke="#1F2F68" stroke-width="3"/><path d="M5 17h32" stroke="#1F2F68" stroke-width="3"/><path d="M13 5v8M29 5v8" stroke="#1F2F68" stroke-width="3" stroke-linecap="round"/><rect x="11" y="22" width="5" height="4.5" rx="1" fill="#1F2F68"/><rect x="19" y="22" width="5" height="4.5" rx="1" fill="#1F2F68"/><rect x="11" y="30" width="5" height="4.5" rx="1" fill="#1F2F68"/><path d="M27 41l2-7 12-12 5 5-12 12z" fill="#12A150" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
           <div class="form-field">
             <label class="field-label" for="input-fecha-credito">Fecha de Desembolso</label>
             <div class="field-with-icon">
