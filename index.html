@@ -6894,32 +6894,39 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .share-fab{ box-shadow:0 8px 18px 
    (avatar sin cambios). Solo presentación. */
 body:not(.modo-oscuro) #screen-nuevo-prestamo{
   --np-fondo-1:#F7FBFA; --np-fondo-2:#F4F9F6;
-  --np-card:#E5F7EB; --np-card-borde:#B5C6BC; --np-card-sombra:0 4px 10px rgba(30,60,45,0.18);
-  --np-campo:#FFFFFF; --np-campo-borde:#C3D2C8;
+  --np-card:#FFFFFF; --np-card-borde:#C9D6CE; --np-card-sombra:0 4px 10px rgba(30,60,45,0.14);
+  --np-campo:#E5F7EB; --np-campo-borde:#B9D9C4;
 }
 body:not(.modo-oscuro) #screen-nuevo-prestamo .np-titulo{
   font-family:Georgia, 'Times New Roman', serif; font-size:19px; font-weight:700; color:#121417; letter-spacing:-0.2px;
 }
 body:not(.modo-oscuro) #screen-nuevo-prestamo .header h1{ color:#273363; }
-body:not(.modo-oscuro) #screen-nuevo-prestamo .field-input{ border:1px solid #C3D2C8; box-shadow:0 1px 3px rgba(30,60,45,0.10); }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .field-input{ border:1px solid #B9D9C4; box-shadow:0 1px 3px rgba(30,60,45,0.10); }
 body:not(.modo-oscuro) #screen-nuevo-prestamo .field-input::placeholder{ color:#2E333A; -webkit-text-fill-color:#2E333A; }
-body:not(.modo-oscuro) #screen-nuevo-prestamo .np-caja{ background:#FFFFFF; border:1px solid #C3D2C8; box-shadow:0 1px 3px rgba(30,60,45,0.10); }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-caja{ background:#E5F7EB; border:1px solid #B9D9C4; box-shadow:0 1px 3px rgba(30,60,45,0.10); }
 body:not(.modo-oscuro) #screen-nuevo-prestamo .np-caja .field-input{ box-shadow:none; border:none; }
 body:not(.modo-oscuro) #screen-nuevo-prestamo .np-caja.np-calculado{ border:1.5px dashed #B7C2BC; box-shadow:none; }
 body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn{ background:#EEF6F1; color:#273363; border:1.5px solid #768292; box-shadow:none; }
 /* Fecha de desembolso: recuadro con borde dorado y fecha en dorado oscuro */
-body:not(.modo-oscuro) #screen-nuevo-prestamo .np-fecha{ background:#FFFFFF; border:1px solid #C3D2C8; box-shadow:0 1px 3px rgba(30,60,45,0.10); }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-fecha{ background:#E5F7EB; border:1px solid #B9D9C4; box-shadow:0 1px 3px rgba(30,60,45,0.10); }
 /* Agregar Nota: botón menta suave, sin borde oscuro */
 /* CAMBIO (a pedido): Agregar Nota con el borde dorado y el texto dorado oscuro */
 body:not(.modo-oscuro) #screen-nuevo-prestamo .np-card-fecha .add-note-btn{
   background:#FFFEF9; border:1.5px solid #9C7A35; color:#8F6B1F; font-weight:600; box-shadow:none;
 }
 body:not(.modo-oscuro) #screen-nuevo-prestamo .np-card-fecha .add-note-btn.active{ color:#8F6B1F; border-color:#9C7A35; }
-body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cuota-caja{ background:#FFFFFF; border:1px solid #C3D2C8; box-shadow:0 1px 3px rgba(30,60,45,0.10); }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cuota-caja{ background:#E5F7EB; border:1px solid #B9D9C4; box-shadow:0 1px 3px rgba(30,60,45,0.10); }
 body:not(.modo-oscuro) #screen-nuevo-prestamo .btn-guardar-prestamo{ background:#25723A; border:1px solid #1E5F30; box-shadow:0 4px 10px rgba(30,60,45,0.20); }
 body:not(.modo-oscuro) #screen-nuevo-prestamo .btn-guardar-prestamo:active{ background:#1F6432; }
 body:not(.modo-oscuro) #screen-nuevo-prestamo .np-fecha .field-input,
 body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cuota-caja .field-input{ border:none !important; box-shadow:none !important; background:transparent !important; }
+/* CAMBIO (a pedido): tarjetas blancas; los campos a rellenar llevan el verde menta */
+body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cliente-avatar{ background:#E5F7EB; }
+body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn{ background:#E5F7EB; }
+/* NUEVO (a pedido): botón de intercambio en verde oscuro al tocarlo (modo cuota deseada) */
+#screen-nuevo-prestamo .swap-btn{ transition:background .15s ease, color .15s ease, border-color .15s ease; }
+#screen-nuevo-prestamo .swap-btn.swap-activo,
+body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn.swap-activo{ background:#25723A; border-color:#1E5F30; color:#FFFFFF; }
 </style>
 
 </head>
@@ -8358,7 +8365,7 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cuota-caja .field-input{ borde
           <div class="form-field np-caja" id="np-caja-interes">
             <label class="field-label" for="input-tasa-interes"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="15"></line><line x1="10" y1="20" x2="10" y2="12"></line><line x1="15" y1="20" x2="15" y2="14"></line><line x1="20" y1="20" x2="20" y2="10"></line><polyline points="4 10 10 5 14 8 20 3"></polyline></svg>Tasa de Interés</label>
             <div class="field-with-icon">
-              <input class="field-input" id="input-tasa-interes" type="text" inputmode="decimal" placeholder="0.00">
+              <input class="field-input" id="input-tasa-interes" type="text" inputmode="decimal" placeholder="0">
               <span class="field-suffix">%</span>
             </div>
           </div>
@@ -17904,6 +17911,14 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cuota-caja .field-input{ borde
   const inputValorPrestamo = document.getElementById('input-valor-prestamo');
   const inputCuotasPrestamo = document.getElementById('input-cuotas-prestamo');
   const inputTasaInteres = document.getElementById('input-tasa-interes');
+  // NUEVO (a pedido): muestra la tasa sin ceros sobrantes después del punto
+  // (10.00 → 10, 12.50 → 12.5). Es el mismo número redondeado a 2 decimales
+  // que antes, solo que sin los ceros finales — los cálculos no cambian.
+  function textoTasaSinCeros(n){
+    const num = Number(n);
+    if(!isFinite(num)) return '';
+    return String(parseFloat(num.toFixed(2)));
+  }
   const inputCuotaDeseada = document.getElementById('input-cuota-deseada');
   const btnSwapInteres = document.getElementById('btn-swap-interes');
   const selectTipoInteres = document.getElementById('select-tipo-interes');
@@ -18000,6 +18015,7 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cuota-caja .field-input{ borde
     if(cajaInt) cajaInt.classList.toggle('np-calculado', !modoInteresActivo);
     if(cajaCuo) cajaCuo.classList.toggle('np-calculado', modoInteresActivo);
     btnSwapInteres.setAttribute('aria-label', modoInteresActivo ? 'Usar cuota deseada como dato de entrada' : 'Usar interés como dato de entrada');
+    btnSwapInteres.classList.toggle('swap-activo', !modoInteresActivo); // NUEVO (a pedido): verde oscuro mientras se usa la cuota deseada
   }
 
   // Recalcula el campo "de salida" a partir del campo "de entrada" activo.
@@ -18015,7 +18031,7 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cuota-caja .field-input{ borde
     }else{
       const cuotaDeseada = numeroDesdeCampo(inputCuotaDeseada.value);
       const porcentaje = calcularInteresDesdeCuota(valor, cuotas, cuotaDeseada);
-      inputTasaInteres.value = cuotaDeseada ? porcentaje.toFixed(2) : '';
+      inputTasaInteres.value = cuotaDeseada ? textoTasaSinCeros(porcentaje) : '';
     }
   }
 
@@ -18084,7 +18100,7 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cuota-caja .field-input{ borde
     const cuotas = parseInt(inputCuotasPrestamo.value, 10) || 0;
     const porcentaje = calcularInteresAutomaticoPorBloque(cuotas, selectFrecuencia.value);
     if(porcentaje === null) return;
-    inputTasaInteres.value = porcentaje.toFixed(2);
+    inputTasaInteres.value = textoTasaSinCeros(porcentaje);
     interesEditadoManualmente = false; // se acaba de autocompletar: no es una edición manual del usuario
     sincronizarInteresCuota(); // dispara el recálculo YA EXISTENTE de "Cuota deseada"
   }
@@ -18552,7 +18568,7 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .np-cuota-caja .field-input{ borde
     establecerFechasManualesCuota(prestamo.fechaPrimeraCuota || '', prestamo.fechaSegundaCuota || '');
     inputCuotaDeseada.value = formatearMiles(prestamo.cuotaMostrada || 0);
     cuotaDeseadaEditadaManualmente = true; // ya viene con un valor guardado, no se recalcula solo
-    inputTasaInteres.value = (prestamo.tasa || 0).toFixed ? prestamo.tasa.toFixed(2) : prestamo.tasa;
+    inputTasaInteres.value = (prestamo.tasa || 0).toFixed ? textoTasaSinCeros(prestamo.tasa) : prestamo.tasa;
     interesEditadoManualmente = true;
     aplicarModoInteresCuota(); // Modo 1 por defecto también al editar
     sincronizarInteresCuota(); // asegura que ambos campos queden consistentes entre sí
