@@ -6851,6 +6851,7 @@ body.modo-oscuro .rc-azul{ color:#AFC0F2; }
 body.modo-oscuro .resumen-credito-caja{ border-color:#3A4253; }
 body.modo-oscuro .rc-fila{ border-bottom-color:#2A3040; }
 .loan-amount.loan-amount-tocable{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.lpp-abonado{ color:#2F5FD0; }
 </style>
 
 </head>
@@ -21688,11 +21689,11 @@ body.modo-oscuro .rc-fila{ border-bottom-color:#2A3040; }
         <span class="loan-row-label">Cuota:</span>
         <span class="loan-row-value">${formatearPesos(cuotaRealPrestamo(prestamo))} <span class="loan-freq">/ ${nombreFrecuencia}</span></span>
       </div>
-      <div class="loan-row loan-row-oculta-tarjeta"><!-- oculta (a pedido): ahora va bajo la barra -->
+      <div class="loan-row"><!-- CAMBIO (a pedido): vuelve a verse aquí (intercambiado con Total abonado) -->
         <span class="loan-row-label">Total a pagar:</span>
         <span class="loan-row-value">${formatearPesos(prestamo.totalAPagar || 0)}</span>
       </div>
-      <div class="loan-row">
+      <div class="loan-row loan-row-oculta-tarjeta"><!-- oculta (a pedido): ahora va bajo la barra, a la izquierda -->
         <span class="loan-row-label">Total abonado:</span>
         <span class="loan-row-value loan-abonado">${formatearPesos(totalAbonado)}</span>
       </div>
@@ -21715,7 +21716,7 @@ body.modo-oscuro .rc-fila{ border-bottom-color:#2A3040; }
         ${(prestamo.plan || []).map(c => `<span class="loan-progress-trozo${estaCuotaPagada(prestamo, c.numero) ? ' pagado' : (cuotaVencida(prestamo, c) ? ' vencido' : '')}"></span>`).join('')}
       </div>
       <div class="loan-progress-pie"><!-- NUEVO (a pedido): total a pagar (izq.) y saldo pendiente (der.) bajo la barra -->
-        <div class="lpp-item"><span class="lpp-label">Total a pagar</span><span class="lpp-valor lpp-total">${formatearPesos(prestamo.totalAPagar || 0)}</span></div>
+        <div class="lpp-item"><span class="lpp-label">Total abonado</span><span class="lpp-valor lpp-abonado">${formatearPesos(totalAbonado)}</span></div>
         <div class="lpp-item lpp-der"><span class="lpp-label">Saldo pendiente</span><span class="lpp-valor lpp-saldo${saldo <= 0 ? ' lpp-saldo-cero' : ''}">${formatearPesos(saldo)}</span></div>
       </div>
       ${prestamo.nota ? `
