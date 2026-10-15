@@ -6943,6 +6943,78 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn.swap-activo{ background:
 .acciones-prestamo-en-menu .fila-acciones-prestamo{ margin:0 0 8px !important; }
 body.acciones-prestamo-ocultas .acciones-prestamo-en-menu{ display:block; }
 body.acciones-prestamo-ocultas #screen-detalle-prestamo .fila-acciones-prestamo:not(.acciones-prestamo-en-menu .fila-acciones-prestamo){ display:none !important; }
+/* =====================================================================
+   NUEVO (a pedido, v449): mejoras visuales de las tarjetas de Inicio que
+   están debajo de las 4 principales. SOLO presentación (modo claro);
+   no cambia ningún dato, cálculo ni manejador.
+   ===================================================================== */
+body:not(.modo-oscuro) #tarjeta-total-prestado-recaudado,
+body:not(.modo-oscuro) #tarjeta-medios-pago-inicio,
+body:not(.modo-oscuro) #tarjeta-comparativo-ganancias,
+body:not(.modo-oscuro) #tarjeta-grafico-ganancias,
+body:not(.modo-oscuro) #tarjeta-top-rutas-capital{
+  background:#FFFFFF; border:1.5px solid #D5DCE6; border-radius:18px; box-shadow:none;
+}
+body:not(.modo-oscuro) #tarjeta-capital-calle{ border-radius:18px; box-shadow:none; }
+body:not(.modo-oscuro) #screen-inicio .card .section-title{ font-weight:800; color:#1F2F68; letter-spacing:-0.2px; }
+
+/* Total Prestado / Recaudado / Balance → 3 bloques con su tinte */
+#tarjeta-total-prestado-recaudado .loan-detail-grid{ gap:8px; }
+#tarjeta-total-prestado-recaudado::before{
+  content:'Resumen del período'; display:block; margin:-4px 34px 12px 0;
+  font-size:17px; font-weight:800; color:#1F2F68; letter-spacing:-0.2px;
+}
+#tarjeta-total-prestado-recaudado .loan-divider{ display:none; }
+body:not(.modo-oscuro) #tarjeta-total-prestado-recaudado .loan-detail-item{
+  border-radius:12px; padding:10px 12px; background:#F1F4FA; border:1px solid #E1E6EF;
+}
+body:not(.modo-oscuro) #tarjeta-total-prestado-recaudado .loan-detail-grid .loan-detail-item:first-child{ background:#EEF2FB; border-color:#D9E1F3; }
+body:not(.modo-oscuro) #tarjeta-total-prestado-recaudado .loan-detail-grid .loan-detail-item:last-child{ background:#ECF8F1; border-color:#CFEBDB; }
+body:not(.modo-oscuro) #tarjeta-total-prestado-recaudado > .loan-detail-item{ margin-top:8px; display:flex; align-items:center; justify-content:space-between; }
+#tarjeta-total-prestado-recaudado .loan-detail-label{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; }
+#tarjeta-total-prestado-recaudado .loan-detail-value{ font-weight:800; }
+#tarjeta-total-prestado-recaudado > .loan-detail-item .loan-detail-label{ margin:0; }
+#tarjeta-total-prestado-recaudado .loan-detail-grid .loan-detail-label{ white-space:nowrap; }
+@media (max-width:400px){ #tarjeta-total-prestado-recaudado .loan-detail-label{ font-size:10.5px; letter-spacing:0.2px; } }
+body:not(.modo-oscuro) #tarjeta-total-prestado-recaudado .loan-detail-grid .loan-detail-item:first-child .loan-detail-value{ color:#1F2F68; }
+#tarjeta-total-prestado-recaudado .info-tarjeta-btn{ top:13px; right:12px; }
+
+/* Medios de Pago */
+#tarjeta-medios-pago-inicio .mdp-fila{ padding:9px 0; }
+#tarjeta-medios-pago-inicio .mdp-icono{ width:34px; height:34px; border-radius:11px; }
+#tarjeta-medios-pago-inicio .mdp-icono svg{ width:17px; height:17px; }
+body:not(.modo-oscuro) #tarjeta-medios-pago-inicio .mdp-icono.verde{ background:#E6F6EC; border:1px solid #CDEBD8; }
+body:not(.modo-oscuro) #tarjeta-medios-pago-inicio .mdp-icono.morado{ background:#F0EBFC; border:1px solid #DED3F7; }
+#tarjeta-medios-pago-inicio .mdp-nombre{ font-weight:600; }
+#tarjeta-medios-pago-inicio .mdp-valor{ font-weight:800; }
+body:not(.modo-oscuro) #tarjeta-medios-pago-inicio .mdp-total{
+  margin-top:8px; padding:10px 12px; border-radius:12px; background:#F1F4FA; border:1px solid #E1E6EF;
+}
+body:not(.modo-oscuro) #tarjeta-medios-pago-inicio .mdp-total span:last-child{ color:#1F2F68; font-weight:800; }
+
+/* Ganancias (comparativo) */
+#tarjeta-comparativo-ganancias .comparativo-ganancias-col-valor{ font-weight:800; }
+#tarjeta-comparativo-ganancias .comparativo-ganancias-barra-track{ height:8px; border-radius:99px; }
+#tarjeta-comparativo-ganancias .comparativo-ganancias-barra-fill{ border-radius:99px; }
+body:not(.modo-oscuro) #tarjeta-comparativo-ganancias .comparativo-ganancias-resumen{
+  background:#F1F4FA; border:1px solid #E1E6EF; border-radius:12px; padding:10px 12px; margin-top:12px;
+}
+
+/* Ganancias del Mes: título en una línea y menos espacio vacío arriba del gráfico */
+#tarjeta-grafico-ganancias .grafico-ganancias-header .section-title{ font-size:16.5px; line-height:1.2; }
+@media (max-width:400px){ #tarjeta-grafico-ganancias .grafico-ganancias-header .section-title{ font-size:15px; } }
+#tarjeta-grafico-ganancias .ggm-chart-wrap{ margin-top:4px; }
+#tarjeta-grafico-ganancias .ggm-total-valor{ font-weight:800; }
+body:not(.modo-oscuro) #tarjeta-grafico-ganancias .ggm-resumen-inferior-verde{ border-radius:12px; overflow:hidden; }
+
+/* Capital por Ruta */
+#tarjeta-top-rutas-capital .info-tarjeta-btn{ top:14px; right:12px; }
+
+/* Acciones Rápidas: Recordatorios con su fondo (antes salía sin él) e íconos más limpios */
+.quick-item .icon-container.blue{ background:#EEF1FB; border-color:#DCE2F5; color:#1F2F68; }
+.quick-item .icon-container{ width:56px; height:56px; }
+.quick-item span{ font-weight:700; white-space:nowrap; font-size:12px; }
+body.modo-oscuro .quick-item .icon-container.blue{ background:rgba(99,125,220,0.15); border-color:rgba(99,125,220,0.3); color:#AFC1F5; }
 </style>
 
 </head>
