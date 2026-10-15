@@ -7231,6 +7231,33 @@ body:not(.modo-oscuro) #btn-abrir-busqueda{
   box-shadow:0 4px 8px rgba(35,45,80,0.18), 0 1px 2px rgba(35,45,80,0.12), inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -2px 3px rgba(0,0,0,0.08) !important;
 }
 body:not(.modo-oscuro) #btn-abrir-busqueda svg{ stroke:#3E63AE !important; }
+/* NUEVO (a pedido, v464): barra de progreso de la tarjeta del crédito con el
+   mismo efecto "relieve 3D": canal hundido, cuotas pagadas/vencidas como
+   piezas levantadas y pendientes como huecos tallados. Solo modo claro. */
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-progress-track.loan-progress-segmentado{
+  height:20px; padding:3px; gap:3px; box-sizing:border-box; border-radius:9px;
+  background:rgba(30,45,80,0.08) !important;
+  box-shadow:inset 0 2px 3px rgba(20,30,60,0.16), inset 0 -1px 0 rgba(255,255,255,0.7), 0 1px 0 rgba(255,255,255,0.8);
+}
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-progress-trozo{
+  border-radius:5px; color:#6A7690;
+  background:linear-gradient(180deg,rgba(255,255,255,0.55),rgba(255,255,255,0.35));
+  box-shadow:inset 0 1px 2px rgba(20,30,60,0.14), inset 0 -1px 0 rgba(255,255,255,0.6);
+  text-shadow:0 1px 0 rgba(255,255,255,0.8);
+}
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-progress-trozo.pagado{
+  color:#fff; background:linear-gradient(180deg,#72CF93 0%,#3FA968 100%);
+  box-shadow:0 1.5px 2px rgba(20,80,40,0.30), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1.5px 1px rgba(0,0,0,0.12);
+  text-shadow:0 1px 1px rgba(0,0,0,0.25);
+}
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-progress-trozo.vencido{
+  color:#fff; background:linear-gradient(180deg,#F28B8B 0%,#D65454 100%);
+  box-shadow:0 1.5px 2px rgba(110,20,20,0.30), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1.5px 1px rgba(0,0,0,0.12);
+  text-shadow:0 1px 1px rgba(0,0,0,0.25);
+}
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-finalizado .loan-progress-trozo.pagado{ background:linear-gradient(180deg,#9AA5B8,#6F7B91); }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-progress-segmentado.muchas{ gap:1px; }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-progress-segmentado.nums-chicos{ gap:2px; }
 </style>
 
 </head>
