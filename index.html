@@ -7152,7 +7152,7 @@ body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente{
   box-shadow:0 6px 12px rgba(35,45,80,0.12), 0 2px 3px rgba(35,45,80,0.08), inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -3px 4px rgba(0,0,0,0.06);
 }
 body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-al-dia{ background:linear-gradient(160deg,#F1F9EF 0%,#E0F1DC 100%); border-color:#B5DCB1; border-left-color:#2FAE5F; } /* CAMBIO (v469): verde más suave, a pedido */
-body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-mora{ background:linear-gradient(160deg,#FDF0F0 0%,#F8DEDE 100%); border-color:#E8B2B2; border-left-color:#E0111F; } /* CAMBIO (v468): rojo más suave, a pedido (antes #FBE3E3→#F2C9C9, borde #DC8E8E) */
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-mora{ background:linear-gradient(160deg,#FDF0F0 0%,#F8DEDE 100%); border-color:#E8B2B2; border-left-color:#E0111F; } /* v475: vuelve al tono de v468, a pedido. CAMBIO (v468): rojo más suave, a pedido (antes #FBE3E3→#F2C9C9, borde #DC8E8E) */
 body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-sin-credito{ background:linear-gradient(160deg,#E7EEFA 0%,#D3DFF4 100%); border-color:#A9BFE6; }
 body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-inhabilitado{ background:linear-gradient(160deg,#F2F3F6 0%,#E1E4EA 100%); border-color:#C9CED8; border-left-color:#9AA2AE; }
 body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente::before{
@@ -7182,7 +7182,7 @@ body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full{
   box-shadow:0 6px 12px rgba(35,45,80,0.12), 0 2px 3px rgba(35,45,80,0.08), inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -3px 4px rgba(0,0,0,0.06) !important;
 }
 body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-activo{ background:linear-gradient(160deg,#F1F9EF 0%,#E0F1DC 100%); border-color:#B5DCB1 !important; } /* CAMBIO (v469): verde más suave */
-body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido{ background:linear-gradient(160deg,#FCEBEB 0%,#F6D4D4 100%); border-color:#E4A5A5 !important; } /* CAMBIO (v472): más intensidad, a pedido; v471: un poco más de intensidad, a pedido; v470: rojo aún más suave, a pedido (v469: #FDF0F0→#F8DEDE) */
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido{ background:linear-gradient(160deg,#F9DEDE 0%,#F0C0C0 100%); border-color:#D98C8C !important; } /* CAMBIO (v473): rojo más intenso, a pedido; v472: más intensidad, a pedido; v471: un poco más de intensidad, a pedido; v470: rojo aún más suave, a pedido (v469: #FDF0F0→#F8DEDE) */
 body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full:not(.loan-card-activo):not(.loan-card-vencido){ background:linear-gradient(160deg,#E7EEFA 0%,#D3DFF4 100%); border-color:#A9BFE6 !important; }
 body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full::before{
   content:''; position:absolute; top:0; right:0; height:150px; width:62%; opacity:0.45;
@@ -7324,6 +7324,11 @@ body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm > *{ 
 body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm .value{ text-shadow:0 1px 0 rgba(255,255,255,0.8), 0 2px 3px rgba(30,40,80,0.15); }
 body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm:last-child .value{ color:#A86A0E !important; }
 body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm .label{ color:#4E5874; text-shadow:0 1px 0 rgba(255,255,255,0.7); }
+/* NUEVO (a pedido, v476): borde más marcado en las tarjetas del crédito del detalle del cliente */
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full{ border-width:2.5px !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-activo{ border-color:#95CB91 !important; } /* v477: un poco más suave */
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido{ border-color:#D98E8E !important; } /* v477 */
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full:not(.loan-card-activo):not(.loan-card-vencido){ border-color:#A3BAE3 !important; } /* v477 */
 </style>
 
 </head>
