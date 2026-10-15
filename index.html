@@ -7200,6 +7200,37 @@ body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full > *{ position:rel
 body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-card-nombre-principal{ text-shadow:0 1px 0 rgba(255,255,255,0.75); }
 body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-amount{ text-shadow:0 1px 0 rgba(255,255,255,0.75), 0 2px 3px rgba(30,40,80,0.18); }
 body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-badge{ box-shadow:0 2px 4px rgba(35,45,80,0.18), inset 0 1px 0 rgba(255,255,255,0.35); }
+/* =====================================================================
+   NUEVO (a pedido, v463): efecto "relieve 3D" en los buscadores y lupas
+   (campo de búsqueda en Clientes, Préstamos, Pagos, Cobros, etc. y la lupa
+   del encabezado de Inicio). Tono azul suave, campo levantado con líneas
+   talladas a la derecha y la lupa como tecla abultada. Solo modo claro.
+   ===================================================================== */
+body:not(.modo-oscuro) .search-box, body:not(.modo-oscuro) .cobros-buscador-wrap{
+  position:relative; overflow:hidden;
+  background:linear-gradient(160deg,#EEF3FC 0%,#DCE6F7 100%) !important;
+  border:1.5px solid #A9BFE6 !important;
+  box-shadow:0 5px 10px rgba(35,45,80,0.12), 0 1px 2px rgba(35,45,80,0.08), inset 0 2px 0 rgba(255,255,255,0.8), inset 0 -2px 3px rgba(0,0,0,0.05) !important;
+}
+body:not(.modo-oscuro) .search-box::before, body:not(.modo-oscuro) .cobros-buscador-wrap::before{
+  content:''; position:absolute; top:0; right:0; bottom:0; width:45%; opacity:0.55; pointer-events:none; z-index:0;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax slice'%3E%3Cg fill='none' stroke='%23A7BDE5' stroke-linecap='round' opacity='0.9'%3E%3Cpath d='M-20 104 C10 70 25 40 58 -6' stroke-width='1.6'/%3E%3Cpath d='M-3 104 C27 70 42 40 75 -6' stroke-width='1.6'/%3E%3Cpath d='M14 104 C44 70 59 40 92 -6' stroke-width='1.6'/%3E%3Cpath d='M31 104 C61 70 76 40 109 -6' stroke-width='1.6'/%3E%3Cpath d='M48 104 C78 70 93 40 126 -6' stroke-width='1.6'/%3E%3Cpath d='M65 104 C95 70 110 40 143 -6' stroke-width='1.6'/%3E%3Cpath d='M82 104 C112 70 127 40 160 -6' stroke-width='1.6'/%3E%3Cpath d='M99 104 C129 70 144 40 177 -6' stroke-width='1.6'/%3E%3C/g%3E%3C/svg%3E") no-repeat right center / cover;
+  -webkit-mask-image:linear-gradient(to right, transparent 0, #000 60%); mask-image:linear-gradient(to right, transparent 0, #000 60%);
+  filter:drop-shadow(0 1.2px 0 rgba(255,255,255,0.85)) drop-shadow(0 -1px 0 rgba(40,40,60,0.12));
+}
+body:not(.modo-oscuro) .search-box > *, body:not(.modo-oscuro) .cobros-buscador-wrap > *{ position:relative; z-index:1; }
+body:not(.modo-oscuro) .search-box > svg:first-child, body:not(.modo-oscuro) .cobros-buscador-wrap > svg:first-child{
+  width:32px !important; height:32px !important; padding:7px; box-sizing:border-box; border-radius:10px; margin-left:-6px;
+  stroke:#3E63AE !important; background:linear-gradient(160deg,#D9E4F8,#BDCFEF);
+  box-shadow:0 3px 6px rgba(35,45,80,0.18), 0 1px 2px rgba(35,45,80,0.12), inset 0 2px 0 rgba(255,255,255,0.65), inset 0 -2px 3px rgba(0,0,0,0.10);
+}
+body:not(.modo-oscuro) .search-box input::placeholder, body:not(.modo-oscuro) .cobros-buscador-wrap input::placeholder{ text-shadow:0 1px 0 rgba(255,255,255,0.7); }
+/* Lupa del encabezado de Inicio como tecla en relieve */
+body:not(.modo-oscuro) #btn-abrir-busqueda{
+  background:linear-gradient(160deg,#E3EBF9,#C9D8F1) !important; color:#3E63AE;
+  box-shadow:0 4px 8px rgba(35,45,80,0.18), 0 1px 2px rgba(35,45,80,0.12), inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -2px 3px rgba(0,0,0,0.08) !important;
+}
+body:not(.modo-oscuro) #btn-abrir-busqueda svg{ stroke:#3E63AE !important; }
 </style>
 
 </head>
