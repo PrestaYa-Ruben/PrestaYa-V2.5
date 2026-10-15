@@ -7015,6 +7015,83 @@ body:not(.modo-oscuro) #tarjeta-grafico-ganancias .ggm-resumen-inferior-verde{ b
 .quick-item .icon-container{ width:56px; height:56px; }
 .quick-item span{ font-weight:700; white-space:nowrap; font-size:12px; }
 body.modo-oscuro .quick-item .icon-container.blue{ background:rgba(99,125,220,0.15); border-color:rgba(99,125,220,0.3); color:#AFC1F5; }
+/* NUEVO (a pedido, v451): íconos de "Ganancias" y "Ganancias del Mes" en verde #36AB27 */
+.ggm-icono, .comparativo-ganancias-icono{ color:#1F7A16; background:#EAF6E7; } /* CAMBIO (v452): verde más oscuro, a pedido (antes #36AB27) */
+body.modo-oscuro .ggm-icono, body.modo-oscuro .comparativo-ganancias-icono{ background:rgba(54,171,39,0.16); }
+/* =====================================================================
+   NUEVO (a pedido, v453): mejoras visuales de la parte superior de Inicio
+   (marca, fecha, rango de fechas, período, rutas y las 4 tarjetas
+   principales). SOLO presentación; no cambia datos, cálculos ni clics.
+   ===================================================================== */
+#screen-inicio .welcome{ padding:16px 16px 2px; }
+#screen-inicio .welcome h2{ font-size:36px; margin-bottom:2px; }
+#screen-inicio .welcome .date{ text-transform:lowercase; font-size:14px; font-weight:600; }
+#screen-inicio .welcome .date::first-letter{ text-transform:uppercase; }
+
+/* Rango de fechas */
+#screen-inicio .rango-fechas-dashboard{ padding:12px 16px 10px; gap:10px; }
+#tabs-rango-fechas{ gap:7px; }
+#tabs-rango-fechas .tab-button{ padding:7px 15px; font-size:13.5px; font-weight:700; }
+body:not(.modo-oscuro) #tabs-rango-fechas .tab-button:not(.active){ background:#FFFFFF; border:1.5px solid #D5DCE6; color:#4A5468; }
+body:not(.modo-oscuro) #tabs-rango-fechas .tab-button.active{ background:#1F2F68; border:1.5px solid #1F2F68; }
+
+/* Período seleccionado: una sola fila limpia */
+#screen-inicio .periodo-seleccionado{
+  flex-direction:row; align-items:center; justify-content:space-between; gap:10px;
+  padding:11px 14px; border-radius:14px; box-shadow:none;
+}
+body:not(.modo-oscuro) #screen-inicio .periodo-seleccionado{ background:#FFFFFF; border:1.5px solid #D5DCE6; }
+#screen-inicio .periodo-seleccionado-label{ font-size:11px; font-weight:700; letter-spacing:0.5px; white-space:nowrap; }
+#screen-inicio .periodo-seleccionado-valor{ font-size:15px; font-weight:800; text-align:right; min-width:0; }
+body:not(.modo-oscuro) #screen-inicio .periodo-seleccionado-valor{ color:#1F2F68; }
+
+/* Chips de ruta */
+#chips-rutas-inicio{ padding:0 16px 4px; }
+
+/* 4 tarjetas principales: ícono + nombre arriba, valor grande abajo */
+#dashboard-tarjetas-inicio{ gap:6px; padding:10px 14px 5px; } /* CAMBIO (v454): antes 9px, a pedido */
+#dashboard-tarjetas-inicio .stat-card{
+  display:grid; grid-template-columns:auto 1fr; grid-template-areas:"icono nombre" "valor valor";
+  align-items:center; justify-items:start; text-align:left;
+  column-gap:9px; row-gap:10px; padding:13px 14px 14px; border-radius:16px; box-shadow:none; border-width:1.5px;
+}
+#dashboard-tarjetas-inicio .stat-card .icon-container{ grid-area:icono; width:34px; height:34px; border-radius:11px; }
+#dashboard-tarjetas-inicio .stat-card .icon-container svg{ width:18px; height:18px; }
+#dashboard-tarjetas-inicio .stat-card .label{ grid-area:nombre; font-size:12.5px; font-weight:700; line-height:1.2; opacity:1; }
+#dashboard-tarjetas-inicio .stat-card .value{
+  grid-area:valor; font-size:23px; font-weight:800; letter-spacing:-0.6px; line-height:1.1;
+  max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card .value{ color:#1F2F68; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card .label{ color:#55607A; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-morado{ background:#F2F6FD; border-color:#C4D6F4; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-ambar{ background:#FDF8EE; border-color:#EED9AE; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-verde{ background:#F0F9F3; border-color:#BFE4CB; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-rojo{ background:#FDF3F3; border-color:#F0C6C6; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-morado .icon-container{ background:#DCE7F9; color:#2F5FBF; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-ambar .icon-container{ background:#F7E7C4; color:#B87513; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-verde .icon-container{ background:#D3EEDC; color:#1F7A3E; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-rojo .icon-container{ background:#F7D9D9; color:#C23B3B; }
+@media (max-width:370px){
+  #dashboard-tarjetas-inicio .stat-card .value{ font-size:20px; }
+  #dashboard-tarjetas-inicio .stat-card .label{ font-size:11.5px; }
+  #dashboard-tarjetas-inicio .stat-card{ padding:12px 11px 13px; column-gap:7px; }
+  #tabs-rango-fechas .tab-button{ padding:6px 13px; font-size:13px; }
+}
+/* NUEVO (a pedido, v455): texturas decorativas suaves en las 4 tarjetas
+   principales, según la imagen de referencia (franjas, líneas geométricas,
+   ondas y puntos). Solo fondo decorativo; no tapa ni cambia nada. */
+#dashboard-tarjetas-inicio .stat-card .icon-container{ position:relative; z-index:1; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card::before{
+  content:''; position:absolute; top:0; right:0; bottom:0; width:66%;
+  background-repeat:no-repeat; background-position:right bottom; background-size:cover;
+  pointer-events:none; z-index:0; opacity:0.85;
+  -webkit-mask-image:linear-gradient(to right, transparent 0, #000 45%); mask-image:linear-gradient(to right, transparent 0, #000 45%);
+}
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-morado::before{ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax slice'%3E%3Cg fill='none' stroke='%23C3D5F1' stroke-linecap='round' opacity='0.9'%3E%3Cpath d='M-20 104 C10 70 25 40 58 -6' stroke-width='7'/%3E%3Cpath d='M-3 104 C27 70 42 40 75 -6' stroke-width='4'/%3E%3Cpath d='M14 104 C44 70 59 40 92 -6' stroke-width='7'/%3E%3Cpath d='M31 104 C61 70 76 40 109 -6' stroke-width='4'/%3E%3Cpath d='M48 104 C78 70 93 40 126 -6' stroke-width='7'/%3E%3Cpath d='M65 104 C95 70 110 40 143 -6' stroke-width='4'/%3E%3Cpath d='M82 104 C112 70 127 40 160 -6' stroke-width='7'/%3E%3Cpath d='M99 104 C129 70 144 40 177 -6' stroke-width='4'/%3E%3C/g%3E%3C/svg%3E"); }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-ambar::before{ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax slice'%3E%3Cg fill='none' stroke='%23E7CC92' stroke-width='1.1' stroke-linejoin='round'%3E%3Cpath d='M30 102 L62 70 L122 69'/%3E%3Cpath d='M50 54 L57 102'/%3E%3Cpath d='M50 54 L92 92 L93 102'/%3E%3Cpath d='M60 30 L105 72 L122 50'/%3E%3Cpath d='M100 26 L122 6'/%3E%3Cpath d='M62 70 L70 30'/%3E%3C/g%3E%3C/svg%3E"); }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-verde::before{ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax slice'%3E%3Cg fill='none' stroke='%23B9DFC2' stroke-width='1'%3E%3Cpath d='M-5 104 C10 80 35 75 25 50 S30 15 50 -4'/%3E%3Cpath d='M13 104 C28 80 53 75 43 50 S48 15 68 -4'/%3E%3Cpath d='M22 104 C37 80 62 75 52 50 S57 15 77 -4'/%3E%3Cpath d='M40 104 C55 80 80 75 70 50 S75 15 95 -4'/%3E%3Cpath d='M49 104 C64 80 89 75 79 50 S84 15 104 -4'/%3E%3Cpath d='M67 104 C82 80 107 75 97 50 S102 15 122 -4'/%3E%3Cpath d='M76 104 C91 80 116 75 106 50 S111 15 131 -4'/%3E%3Cpath d='M94 104 C109 80 134 75 124 50 S129 15 149 -4'/%3E%3Cpath d='M103 104 C118 80 143 75 133 50 S138 15 158 -4'/%3E%3Cpath d='M121 104 C136 80 161 75 151 50 S156 15 176 -4'/%3E%3C/g%3E%3C/svg%3E"); }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-rojo::before{ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax meet'%3E%3Cg fill='%23EDB9BD'%3E%3Ccircle cx='114' cy='94' r='2.3'/%3E%3Ccircle cx='104' cy='94' r='2.3'/%3E%3Ccircle cx='94' cy='94' r='2.3'/%3E%3Ccircle cx='84' cy='94' r='2.3'/%3E%3Ccircle cx='74' cy='94' r='2.3'/%3E%3Ccircle cx='64' cy='94' r='2.3'/%3E%3Ccircle cx='54' cy='94' r='2.3'/%3E%3Ccircle cx='44' cy='94' r='2.3'/%3E%3Ccircle cx='34' cy='94' r='2.3'/%3E%3Ccircle cx='114' cy='84' r='2.3'/%3E%3Ccircle cx='104' cy='84' r='2.3'/%3E%3Ccircle cx='94' cy='84' r='2.3'/%3E%3Ccircle cx='84' cy='84' r='2.3'/%3E%3Ccircle cx='74' cy='84' r='2.3'/%3E%3Ccircle cx='64' cy='84' r='2.3'/%3E%3Ccircle cx='54' cy='84' r='2.3'/%3E%3Ccircle cx='44' cy='84' r='2.3'/%3E%3Ccircle cx='34' cy='84' r='2.3'/%3E%3Ccircle cx='114' cy='74' r='2.3'/%3E%3Ccircle cx='104' cy='74' r='2.3'/%3E%3Ccircle cx='94' cy='74' r='2.3'/%3E%3Ccircle cx='84' cy='74' r='2.3'/%3E%3Ccircle cx='74' cy='74' r='2.3'/%3E%3Ccircle cx='64' cy='74' r='2.3'/%3E%3Ccircle cx='54' cy='74' r='2.3'/%3E%3Ccircle cx='44' cy='74' r='2.3'/%3E%3Ccircle cx='34' cy='74' r='2.3'/%3E%3Ccircle cx='114' cy='64' r='2.3'/%3E%3Ccircle cx='104' cy='64' r='2.3'/%3E%3Ccircle cx='94' cy='64' r='2.3'/%3E%3Ccircle cx='84' cy='64' r='2.3'/%3E%3Ccircle cx='74' cy='64' r='2.3'/%3E%3Ccircle cx='64' cy='64' r='2.3'/%3E%3Ccircle cx='54' cy='64' r='2.3'/%3E%3Ccircle cx='44' cy='64' r='2.3'/%3E%3Ccircle cx='114' cy='54' r='2.3'/%3E%3Ccircle cx='104' cy='54' r='2.3'/%3E%3Ccircle cx='94' cy='54' r='2.3'/%3E%3Ccircle cx='84' cy='54' r='2.3'/%3E%3Ccircle cx='74' cy='54' r='2.3'/%3E%3Ccircle cx='64' cy='54' r='2.3'/%3E%3Ccircle cx='54' cy='54' r='2.3'/%3E%3Ccircle cx='114' cy='44' r='2.3'/%3E%3Ccircle cx='104' cy='44' r='2.3'/%3E%3Ccircle cx='94' cy='44' r='2.3'/%3E%3Ccircle cx='84' cy='44' r='2.3'/%3E%3Ccircle cx='74' cy='44' r='2.3'/%3E%3Ccircle cx='64' cy='44' r='2.3'/%3E%3Ccircle cx='114' cy='34' r='2.3'/%3E%3Ccircle cx='104' cy='34' r='2.3'/%3E%3Ccircle cx='94' cy='34' r='2.3'/%3E%3Ccircle cx='84' cy='34' r='2.3'/%3E%3Ccircle cx='74' cy='34' r='2.3'/%3E%3Ccircle cx='114' cy='24' r='2.3'/%3E%3Ccircle cx='104' cy='24' r='2.3'/%3E%3Ccircle cx='94' cy='24' r='2.3'/%3E%3Ccircle cx='114' cy='14' r='2.3'/%3E%3C/g%3E%3C/svg%3E"); width:46%; background-size:contain; }
 </style>
 
 </head>
@@ -7442,10 +7519,14 @@ body.modo-oscuro .quick-item .icon-container.blue{ background:rgba(99,125,220,0.
       </div>
       <div class="ggm-stat-divisor"></div>
       <div class="ggm-stat ggm-stat-azul">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <!-- CAMBIO (a pedido): "Promedio diario" → "Peor día". El valor del
+             promedio se sigue calculando en un elemento oculto (no se borra). -->
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
         <div class="ggm-stat-texto">
-          <div class="ggm-stat-label">Promedio diario</div>
-          <div class="ggm-stat-valor" id="ggm-promedio-diario">$0</div>
+          <div class="ggm-stat-label">Peor día</div>
+          <div class="ggm-stat-valor" id="ggm-peor-dia">$0</div>
+          <div class="ggm-stat-sub" id="ggm-peor-dia-fecha">—</div>
+          <div class="ggm-stat-valor" id="ggm-promedio-diario" style="display:none;">$0</div>
         </div>
       </div>
       <div class="ggm-stat-divisor"></div>
@@ -21538,6 +21619,17 @@ body.modo-oscuro .quick-item .icon-container.blue{ background:rgba(99,125,220,0.
     datosEsteMes.forEach(d => { if(d.total > mejorDia.total) mejorDia = d; });
     document.getElementById('ggm-mejor-dia').textContent = formatearPesos(mejorDia.total);
     document.getElementById('ggm-mejor-dia-fecha').textContent = mejorDia.total > 0 ? ('Día ' + mejorDia.dia) : '—';
+
+    // NUEVO (a pedido): "Peor día" — el día con MENOR ganancia entre los
+    // días que sí tuvieron ganancia (> 0). En el mes actual solo cuenta
+    // hasta hoy. Si ningún día tuvo ganancia, muestra "—".
+    let peorDia = null;
+    datosEsteMes.forEach(d => {
+      if(esMesActual && d.dia > hoy.getDate()) return;
+      if(d.total > 0 && (!peorDia || d.total < peorDia.total)) peorDia = d;
+    });
+    document.getElementById('ggm-peor-dia').textContent = peorDia ? formatearPesos(peorDia.total) : '—';
+    document.getElementById('ggm-peor-dia-fecha').textContent = peorDia ? ('Día ' + peorDia.dia) : '—';
 
     // ---------- Eje de valores (5 etiquetas, escala automática) ----------
     const maxReal = Math.max(1, ...datosEsteMes.map(d => d.total));
