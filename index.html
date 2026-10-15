@@ -7387,6 +7387,9 @@ body:not(.modo-oscuro) #screen-inicio .quick-item span{ text-shadow:0 1px 0 rgba
 /* NUEVO (a pedido, v480): texto de las notas con menos intensidad (antes 600 casi negro) */
 .loan-card-full .loan-note-contenido span{ font-weight:500 !important; color:#465068 !important; }
 .loan-card-full .loan-note-textarea{ font-weight:500 !important; color:#3A4560 !important; }
+/* NUEVO (v482): la cápsula "Próxima cuota" se puede tocar */
+.crs-proxima.crs-proxima-tocable{ cursor:pointer; -webkit-tap-highlight-color:transparent; transition:transform .12s ease; }
+.crs-proxima.crs-proxima-tocable:active{ transform:scale(0.96); }
 </style>
 
 </head>
@@ -17292,7 +17295,17 @@ body:not(.modo-oscuro) #screen-inicio .quick-item span{ text-shadow:0 1px 0 rgba
           else if(difDias === 1){ estadoProx = 'manana'; textoProx = 'Próxima cuota: <b>Mañana</b>'; }
           else { estadoProx = 'normal'; textoProx = 'Próxima cuota: <b>' + fechaTxt + '</b>'; }
           const lineaProx = document.createElement('div');
-          lineaProx.className = 'crs-proxima crs-proxima-' + estadoProx;
+          lineaProx.className = 'crs-proxima crs-proxima-' + estadoProx + ' crs-proxima-tocable';
+          lineaProx.setAttribute('role', 'button');
+          lineaProx.setAttribute('aria-label', 'Editar fecha de esta cuota');
+          // NUEVO (a pedido, v482): tocar la cápsula abre directo "Editar fecha"
+          // de esa misma cuota (misma pantalla y misma lógica que desde el
+          // detalle del préstamo). No abre la tarjeta del cliente.
+          const prestamoProx = prestamosActivosCliente.find(p => (p.plan || []).includes(proxima));
+          lineaProx.addEventListener('click', (ev)=>{
+            ev.stopPropagation();
+            if(prestamoProx && typeof abrirEditarFechaDesdeClientes === 'function') abrirEditarFechaDesdeClientes(prestamoProx, proxima);
+          });
           lineaProx.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>' + textoProx + '</span>';
           info.appendChild(lineaProx);
         }
@@ -26419,8 +26432,28 @@ body:not(.modo-oscuro) #screen-inicio .quick-item span{ text-shadow:0 1px 0 rgba
     window.scrollTo(0,0);
   }
 
+  // NUEVO (a pedido, v482): "Editar fecha" abierto desde la cápsula
+  // "Próxima cuota" de la tarjeta del cliente. Al cerrar o guardar se vuelve
+  // a Clientes (no al detalle del préstamo) y se conserva el scroll.
+  let editarFechaDesdeClientes = null; // { scrollY }
+  function abrirEditarFechaDesdeClientes(prestamo, cuota){
+    const pantallaClientes = document.getElementById('screen-clientes');
+    editarFechaDesdeClientes = { scrollY: window.scrollY };
+    if(pantallaClientes) pantallaClientes.style.display = 'none';
+    abrirEditarFechaCuota(prestamo, cuota);
+  }
   function cerrarEditarFechaCuota(){
     screenEditarFechaCuota.style.display = 'none';
+    if(editarFechaDesdeClientes){
+      const volverA = editarFechaDesdeClientes.scrollY || 0;
+      editarFechaDesdeClientes = null;
+      const pantallaClientes = document.getElementById('screen-clientes');
+      if(pantallaClientes) pantallaClientes.style.display = 'block';
+      bottomNav.style.display = 'flex';
+      try{ renderizarClientes(clientesFiltrados()); }catch(err){}
+      window.scrollTo(0, volverA);
+      return;
+    }
     screenDetallePrestamo.style.display = 'block';
     bottomNav.style.display = 'none';
     window.scrollTo(0,0);
@@ -26483,8 +26516,9 @@ body:not(.modo-oscuro) #screen-inicio .quick-item span{ text-shadow:0 1px 0 rgba
     });
 
     guardarPrestamos(prestamosGuardados);
+    const veniaDeClientes = !!editarFechaDesdeClientes;
     cerrarEditarFechaCuota();
-    refrescarDetallePrestamo();
+    if(!veniaDeClientes) refrescarDetallePrestamo();
   });
 
   // ---------- Compartir cronograma completo ----------
