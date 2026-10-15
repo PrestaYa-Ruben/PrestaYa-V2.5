@@ -22315,7 +22315,11 @@ body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm .labe
 
     // NUEVO (a pedido): tocar el valor del crédito abre "Resumen del crédito"
     // (sin abrir el detalle del préstamo).
-    const valorCreditoTarjeta = card.querySelector('.loan-amount');
+    // RETIRADO (a pedido, v467): tocar el valor ya no abre el modal "Resumen
+    // del crédito". La función abrirResumenCredito y el modal se conservan
+    // (no se borran); para reactivarlo basta poner esta bandera en true.
+    const RESUMEN_CREDITO_AL_TOCAR_VALOR = false;
+    const valorCreditoTarjeta = RESUMEN_CREDITO_AL_TOCAR_VALOR ? card.querySelector('.loan-amount') : null;
     if(valorCreditoTarjeta){
       valorCreditoTarjeta.classList.add('loan-amount-tocable');
       valorCreditoTarjeta.addEventListener('click', (e)=>{
