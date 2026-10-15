@@ -17043,9 +17043,33 @@ body:not(.modo-oscuro) #screen-inicio .quick-item span{ text-shadow:0 1px 0 rgba
   // Devuelve el SVG del avatar con un id de recorte único (si dos SVG comparten id
   // y el primero está en una pantalla oculta, el recorte deja de aplicarse).
   let contadorAvatarIlustrado = 0;
+  const AVATAR_MUNECO_RELIEVE = true; // v481: false = quitar el realce del muñeco
   function svgAvatarIlustrado(femenino){
     const idUnico = 'avIlus' + (++contadorAvatarIlustrado);
-    return (femenino ? ICONO_AVATAR_ILUSTRADO_FEMENINO : ICONO_AVATAR_ILUSTRADO).replace(/avIlusClipF?/g, idUnico);
+    let svg = (femenino ? ICONO_AVATAR_ILUSTRADO_FEMENINO : ICONO_AVATAR_ILUSTRADO).replace(/avIlusClipF?/g, idUnico);
+    // NUEVO (a pedido, v481): realce en relieve SOLO para el muñeco (cara,
+    // cabello, orejas y ropa): luz suave arriba, sombra suave abajo y una
+    // sombrita fina en el contorno. El círculo y el anillo no se tocan.
+    if(AVATAR_MUNECO_RELIEVE){
+      const idF = idUnico + 'r';
+      const filtro = '<filter id="' + idF + '" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">'
+        + '<feGaussianBlur in="SourceAlpha" stdDeviation="0.9" result="b"/>'
+        + '<feOffset in="b" dy="1.3" result="bAbajo"/><feComposite in="SourceAlpha" in2="bAbajo" operator="out" result="bordeArriba"/>'
+        + '<feFlood flood-color="#FFFFFF" flood-opacity="0.55"/><feComposite in2="bordeArriba" operator="in" result="luz"/>'
+        + '<feOffset in="b" dy="-1.3" result="bArriba"/><feComposite in="SourceAlpha" in2="bArriba" operator="out" result="bordeAbajo"/>'
+        + '<feFlood flood-color="#000000" flood-opacity="0.28"/><feComposite in2="bordeAbajo" operator="in" result="sombraInt"/>'
+        + '<feDropShadow in="SourceGraphic" dx="0" dy="0.8" stdDeviation="0.7" flood-color="#0A1A24" flood-opacity="0.35" result="conSombra"/>'
+        + '<feMerge><feMergeNode in="conSombra"/><feMergeNode in="luz"/><feMergeNode in="sombraInt"/></feMerge>'
+        + '</filter>';
+      svg = svg.replace('</defs>', filtro + '</defs>');
+      const ini = svg.indexOf('<g clip-path');
+      const fin = svg.indexOf('</g>', ini);
+      if(ini >= 0 && fin > ini){
+        const grupo = svg.slice(ini, fin).replace(/<(path|ellipse)([^>]*?)fill="#([0-9A-Fa-f]{6})"/g, '<$1$2fill="#$3" filter="url(#' + idF + ')"');
+        svg = svg.slice(0, ini) + grupo + svg.slice(fin);
+      }
+    }
+    return svg;
   }
   // NUEVO (a pedido): respeta el avatar elegido en el formulario; si no hay, usa el nombre.
   function clienteAvatarFemenino(cliente){
