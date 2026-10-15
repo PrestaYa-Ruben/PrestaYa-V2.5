@@ -6927,6 +6927,22 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn{ background:#E5F7EB; }
 #screen-nuevo-prestamo .swap-btn{ transition:background .15s ease, color .15s ease, border-color .15s ease; }
 #screen-nuevo-prestamo .swap-btn.swap-activo,
 body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn.swap-activo{ background:#25723A; border-color:#1E5F30; color:#FFFFFF; }
+/* NUEVO (a pedido): cápsula de método de pago en la esquina inferior derecha de las casillas pagadas */
+.cuota-item.con-chip-metodo, .pago-item.con-chip-metodo{ position:relative; padding-bottom:30px; }
+.chip-metodo-pago{
+  position:absolute; bottom:7px; right:8px; z-index:2;
+  display:inline-flex; align-items:center; gap:4px;
+  padding:2px 8px 2px 6px; border-radius:999px;
+  font-size:10.5px; font-weight:700; line-height:1.4; color:#FFFFFF; white-space:nowrap;
+}
+.chip-metodo-pago svg{ width:12px; height:12px; stroke:currentColor; flex-shrink:0; }
+.chip-metodo-pago.efectivo{ background:#E3EDFC; color:#2F5FBF; border:1px solid #C3D6F5; }
+.chip-metodo-pago.transferencia{ background:#EFE8FB; color:#7A55C2; border:1px solid #D9CCF2; }
+/* NUEVO (a pedido): "Ocultar botones de acción" del detalle del préstamo */
+.acciones-prestamo-en-menu{ display:none; margin:12px 0 4px; }
+.acciones-prestamo-en-menu .fila-acciones-prestamo{ margin:0 0 8px !important; }
+body.acciones-prestamo-ocultas .acciones-prestamo-en-menu{ display:block; }
+body.acciones-prestamo-ocultas #screen-detalle-prestamo .fila-acciones-prestamo:not(.acciones-prestamo-en-menu .fila-acciones-prestamo){ display:none !important; }
 </style>
 
 </head>
@@ -8573,7 +8589,31 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn.swap-activo{ background:
 
     <div class="comprobante-opciones-contenido" id="comprobante-opciones-contenido">
       <div style="padding:22px 16px;">
-      <div class="section-title" style="margin-bottom:2px;">Comprobante de cada abono</div>
+      <!-- NUEVO (a pedido): interruptor global "Ocultar botones de acción".
+           Apagado por defecto. Al activarlo se ocultan las 2 filas de botones
+           de arriba (Historial, Cronograma, Editar, Eliminar, Renovar,
+           Descuento) y esos mismos 6 aparecen aquí; cada uno reenvía el toque
+           al botón original, así que la acción es exactamente la misma. -->
+      <div class="mora-toggle-row" style="padding:0;">
+        <div class="mora-toggle-text">
+          <div class="mora-toggle-title">Ocultar botones de acción</div>
+          <div class="mora-toggle-subtitle">Oculta los 6 botones de arriba en todos los préstamos y los muestra aquí</div>
+        </div>
+        <button type="button" class="toggle-switch" id="toggle-ocultar-acciones-prestamo" role="switch" aria-checked="false" aria-label="Ocultar botones de acción del préstamo"></button>
+      </div>
+      <div class="acciones-prestamo-en-menu" id="acciones-prestamo-en-menu">
+        <div class="fila-acciones-prestamo">
+          <button type="button" class="btn-accion-prestamo historial" data-reenviar="btn-compartir-historial">Historial</button>
+          <button type="button" class="btn-accion-prestamo cronograma" data-reenviar="btn-compartir-cronograma">Cronograma</button>
+          <button type="button" class="btn-accion-prestamo editar" data-reenviar="btn-editar-prestamo-detalle">Editar</button>
+        </div>
+        <div class="fila-acciones-prestamo">
+          <button type="button" class="btn-accion-prestamo eliminar" data-reenviar="btn-fila-eliminar-prestamo">Eliminar</button>
+          <button type="button" class="btn-accion-prestamo renovar" data-reenviar="btn-fila-renovar-credito">Renovar</button>
+          <button type="button" class="btn-accion-prestamo descuento" data-reenviar="btn-fila-aplicar-descuento">Descuento</button>
+        </div>
+      </div>
+      <div class="section-title" style="margin-bottom:2px; margin-top:18px;">Comprobante de cada abono</div>
       <p style="font-size:12.5px; color:var(--text-secondary); font-weight:400; margin-bottom:10px;">Qué se incluye en la imagen que se comparte al registrar o ver el abono de una cuota.</p>
       <!-- CAMBIO: a pedido — el interruptor "Saldo pendiente" salió de aquí
            y ahora vive arriba, junto a la píldora "Más opciones" (ver
@@ -22482,6 +22522,19 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn.swap-activo{ background:
   // (tarjeta con número, monto, estado y sus acciones). Se usa tanto en
   // "Todas" como en la nueva pestaña "Pendientes", para no duplicar
   // toda esta lógica en dos lugares.
+  // NUEVO (a pedido): cápsula con el método de pago (Efectivo en azul suave,
+  // Transferencia — y otros medios digitales — en morado), en la esquina
+  // superior derecha de las casillas pagadas. Solo presentación.
+  function chipMetodoPagoHTML(metodo){
+    const m = metodo || 'efectivo';
+    const esEfectivo = m === 'efectivo';
+    const nombre = (typeof nombresMetodoPago !== 'undefined' && nombresMetodoPago[m]) || (esEfectivo ? 'Efectivo' : 'Transferencia');
+    const icono = esEfectivo
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"></rect><circle cx="12" cy="12" r="2.6"></circle><path d="M6 9.5v.01M18 14.5v.01"></path></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h14l-3.5-3.5"></path><path d="M20 16H6l3.5 3.5"></path></svg>';
+    return `<span class="chip-metodo-pago ${esEfectivo ? 'efectivo' : 'transferencia'}">${icono}<span>${nombre}</span></span>`;
+  }
+
   function crearItemCuota(prestamo, cuota){
     const pagada = estaCuotaPagada(prestamo, cuota.numero);
     const vencida = !pagada && cuotaVencida(prestamo, cuota);
@@ -22550,6 +22603,12 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn.swap-activo{ background:
       fechaEl.insertAdjacentHTML('afterbegin', '<svg class="cuota-ico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect><path d="M8 3v4M16 3v4M3.5 10h17M10 13.5v4M14 13.5v4"></path></svg>');
       // (a pedido) se quitó el chulo dentro de la píldora "Pendiente"
       item.insertAdjacentHTML('beforeend', '<svg class="cuota-chevron" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"></polyline></svg>');
+    }
+    if(pagada){
+      const pagosCuotaChip = pagosDeCuota(prestamo, cuota.numero);
+      const ultimoPagoChip = pagosCuotaChip[pagosCuotaChip.length - 1];
+      item.classList.add('con-chip-metodo');
+      item.insertAdjacentHTML('beforeend', chipMetodoPagoHTML(ultimoPagoChip && ultimoPagoChip.metodoPago));
     }
     if(!pagada){
       // CORREGIDO: antes cada cuota pendiente tenía 2 iconos sueltos
@@ -22796,6 +22855,8 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn.swap-activo{ background:
             ${iconoMasVerticalMini()}
           </div>`;
         if(notaGrupo) itemG.querySelector('.pago-nota').textContent = notaGrupo;
+        itemG.classList.add('con-chip-metodo');
+        itemG.insertAdjacentHTML('beforeend', chipMetodoPagoHTML(grupo[grupo.length - 1].metodoPago));
         // Toda la tarjeta abre el menú (ver / compartir comprobante del abono
         // completo, o eliminarlo): "Detalle del Pago" es de un solo registro.
         itemG.addEventListener('click', ()=> abrirMenuCuota(prestamo, cuotaPlanGrupo, grupo));
@@ -22864,6 +22925,8 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn.swap-activo{ background:
       if(pago.nota){
         item.querySelector('.pago-nota').textContent = pago.nota;
       }
+      item.classList.add('con-chip-metodo');
+      item.insertAdjacentHTML('beforeend', chipMetodoPagoHTML(pago.metodoPago));
       item.addEventListener('click', ()=>{
         abrirDetallePago(prestamo, cuotaPlan || { numero: pago.cuota }, pago);
       });
@@ -26024,6 +26087,36 @@ body:not(.modo-oscuro) #screen-nuevo-prestamo .swap-btn.swap-activo{ background:
       setTimeout(()=> contenido.classList.remove('abierto'), 320);
     }
   });
+
+  // NUEVO (a pedido): interruptor global "Ocultar botones de acción" del
+  // detalle del préstamo. Solo visual: los botones originales siguen en el
+  // DOM con sus manejadores; las copias del menú les reenvían el toque.
+  (function(){
+    const CLAVE = 'prestaya_ocultar_acciones_prestamo';
+    const toggle = document.getElementById('toggle-ocultar-acciones-prestamo');
+    function leer(){ try{ return localStorage.getItem(CLAVE) === '1'; }catch(e){ return false; } }
+    function aplicar(activo){
+      document.body.classList.toggle('acciones-prestamo-ocultas', activo);
+      toggle.classList.toggle('on', activo);
+      toggle.classList.toggle('toggle-verde', activo);
+      toggle.setAttribute('aria-checked', String(activo));
+      const contenido = document.getElementById('comprobante-opciones-contenido');
+      if(contenido && contenido.classList.contains('abierto')) contenido.style.maxHeight = contenido.scrollHeight + 'px';
+    }
+    toggle.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const nuevo = !leer();
+      try{ localStorage.setItem(CLAVE, nuevo ? '1' : '0'); }catch(err){}
+      aplicar(nuevo);
+    });
+    document.querySelectorAll('#acciones-prestamo-en-menu [data-reenviar]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const original = document.getElementById(btn.dataset.reenviar);
+        if(original) original.click();
+      });
+    });
+    aplicar(leer());
+  })();
 
   // NUEVO (a pedido): "Saldo pendiente" en Más opciones — mismo ajuste global
   document.getElementById('toggle-comprobante-saldo-opciones').addEventListener('click', ()=>{
