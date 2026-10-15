@@ -7279,6 +7279,51 @@ body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido
 body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note-agregar, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note-titulo{ text-shadow:0 1px 0 rgba(255,255,255,0.75); }
 body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note-agregar{ color:#6F7A90; font-weight:600; }
 body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note-contenido span{ text-shadow:0 1px 0 rgba(255,255,255,0.6); }
+/* =====================================================================
+   NUEVO (a pedido, v466): mismo efecto "relieve 3D" en la información del
+   cliente (tarjeta de perfil y las 3 tarjetitas de resumen) en el detalle
+   del cliente. Tono azul (perfil) y dorado (Pendiente). Solo modo claro.
+   ===================================================================== */
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente{
+  position:relative; overflow:hidden;
+  background:linear-gradient(160deg,#EEF3FC 0%,#D8E3F6 100%) !important;
+  border:1.5px solid #A9BFE6 !important; border-radius:16px !important;
+  box-shadow:0 6px 12px rgba(35,45,80,0.12), 0 2px 3px rgba(35,45,80,0.08), inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -3px 4px rgba(0,0,0,0.06) !important;
+}
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente::before{
+  content:''; position:absolute; top:0; right:0; width:60%; height:150px; opacity:0.5; pointer-events:none; z-index:0;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax slice'%3E%3Cg fill='none' stroke='%23A7BDE5' stroke-linecap='round' opacity='0.9'%3E%3Cpath d='M-20 104 C10 70 25 40 58 -6' stroke-width='1.6'/%3E%3Cpath d='M-3 104 C27 70 42 40 75 -6' stroke-width='1.6'/%3E%3Cpath d='M14 104 C44 70 59 40 92 -6' stroke-width='1.6'/%3E%3Cpath d='M31 104 C61 70 76 40 109 -6' stroke-width='1.6'/%3E%3Cpath d='M48 104 C78 70 93 40 126 -6' stroke-width='1.6'/%3E%3Cpath d='M65 104 C95 70 110 40 143 -6' stroke-width='1.6'/%3E%3Cpath d='M82 104 C112 70 127 40 160 -6' stroke-width='1.6'/%3E%3Cpath d='M99 104 C129 70 144 40 177 -6' stroke-width='1.6'/%3E%3C/g%3E%3C/svg%3E") no-repeat right top / cover;
+  -webkit-mask-image:linear-gradient(to right, transparent 0, #000 55%), linear-gradient(to bottom, #000 50%, transparent 100%);
+  -webkit-mask-composite:source-in; mask-image:linear-gradient(to right, transparent 0, #000 55%), linear-gradient(to bottom, #000 50%, transparent 100%); mask-composite:intersect;
+  filter:drop-shadow(0 1.2px 0 rgba(255,255,255,0.85)) drop-shadow(0 -1px 0 rgba(40,40,60,0.12));
+}
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente > *{ position:relative; z-index:1; }
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente .profile-card-name{ text-shadow:0 1px 0 rgba(255,255,255,0.8), 0 2px 3px rgba(30,40,80,0.12); }
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente .profile-divider,
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente .detail-row{ border-color:rgba(30,45,80,0.12) !important; box-shadow:0 1px 0 rgba(255,255,255,0.7); }
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente .detail-row-value{ text-shadow:0 1px 0 rgba(255,255,255,0.7); }
+body:not(.modo-oscuro) #screen-detalle-cliente #btn-editar-cliente{
+  border-radius:11px; background:linear-gradient(160deg,#FFFFFF,#E3EAF6);
+  box-shadow:0 3px 6px rgba(35,45,80,0.18), 0 1px 2px rgba(35,45,80,0.12), inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -2px 3px rgba(0,0,0,0.08);
+}
+body:not(.modo-oscuro) #screen-detalle-cliente #cliente-estado-badge{ box-shadow:0 2px 4px rgba(35,45,80,0.15), inset 0 1px 0 rgba(255,255,255,0.7); }
+/* 3 tarjetitas de resumen */
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm{
+  position:relative; overflow:hidden; border-radius:14px !important;
+  background:linear-gradient(160deg,#EEF3FC 0%,#D8E3F6 100%) !important;
+  border:1.5px solid #A9BFE6 !important; box-shadow:0 6px 12px rgba(35,45,80,0.12), 0 2px 3px rgba(35,45,80,0.08), inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -3px 4px rgba(0,0,0,0.06) !important;
+}
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm:last-child{ background:linear-gradient(160deg,#FAF0D6 0%,#EED9A9 100%) !important; border-color:#D4B26C !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm::before{
+  content:''; position:absolute; inset:0; opacity:0.3; pointer-events:none; z-index:0;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax slice'%3E%3Cg fill='none' stroke='%23A7BDE5' stroke-linecap='round' opacity='0.9'%3E%3Cpath d='M-20 104 C10 70 25 40 58 -6' stroke-width='1.6'/%3E%3Cpath d='M-3 104 C27 70 42 40 75 -6' stroke-width='1.6'/%3E%3Cpath d='M14 104 C44 70 59 40 92 -6' stroke-width='1.6'/%3E%3Cpath d='M31 104 C61 70 76 40 109 -6' stroke-width='1.6'/%3E%3Cpath d='M48 104 C78 70 93 40 126 -6' stroke-width='1.6'/%3E%3Cpath d='M65 104 C95 70 110 40 143 -6' stroke-width='1.6'/%3E%3Cpath d='M82 104 C112 70 127 40 160 -6' stroke-width='1.6'/%3E%3Cpath d='M99 104 C129 70 144 40 177 -6' stroke-width='1.6'/%3E%3C/g%3E%3C/svg%3E") no-repeat right bottom / cover;
+  -webkit-mask-image:linear-gradient(to right, transparent 40%, #000 95%); mask-image:linear-gradient(to right, transparent 40%, #000 95%);
+}
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm:last-child::before{ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax slice'%3E%3Cg fill='none' stroke='%23CFA95A' stroke-width='1.1' stroke-linejoin='round'%3E%3Cpath d='M30 102 L62 70 L122 69'/%3E%3Cpath d='M50 54 L57 102'/%3E%3Cpath d='M50 54 L92 92 L93 102'/%3E%3Cpath d='M60 30 L105 72 L122 50'/%3E%3Cpath d='M100 26 L122 6'/%3E%3Cpath d='M62 70 L70 30'/%3E%3C/g%3E%3C/svg%3E"); }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm > *{ position:relative; z-index:1; }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm .value{ text-shadow:0 1px 0 rgba(255,255,255,0.8), 0 2px 3px rgba(30,40,80,0.15); }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm:last-child .value{ color:#A86A0E !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm .label{ color:#4E5874; text-shadow:0 1px 0 rgba(255,255,255,0.7); }
 </style>
 
 </head>
