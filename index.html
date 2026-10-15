@@ -7258,6 +7258,27 @@ body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-progress-tr
 body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-finalizado .loan-progress-trozo.pagado{ background:linear-gradient(180deg,#9AA5B8,#6F7B91); }
 body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-progress-segmentado.muchas{ gap:1px; }
 body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-progress-segmentado.nums-chicos{ gap:2px; }
+/* NUEVO (a pedido, v465): parte de notas de la tarjeta del crédito con el
+   mismo efecto "relieve 3D": panel tallado/hundido en la tarjeta y el ícono
+   como tecla levantada. Solo modo claro. */
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note.loan-note-vacia{
+  background:linear-gradient(180deg,rgba(255,255,255,0.30),rgba(255,255,255,0.50)) !important;
+  border:none !important; border-radius:12px;
+  box-shadow:inset 0 2px 4px rgba(20,30,60,0.16), inset 0 -1px 0 rgba(255,255,255,0.75), 0 1px 0 rgba(255,255,255,0.8);
+}
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note.loan-note-vacia{ padding:8px 12px; }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note-icono{
+  width:28px !important; height:28px !important; border-radius:8px !important; margin-top:0;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  background:linear-gradient(160deg,#FFFFFF,#E6EAF2) !important;
+  box-shadow:0 2px 4px rgba(35,45,80,0.18), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1.5px 2px rgba(0,0,0,0.08) !important;
+}
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note-icono svg{ width:15px !important; height:15px !important; stroke:#5A6880 !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-activo .loan-note-icono svg{ stroke:#2E7D45 !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido .loan-note-icono svg{ stroke:#B8383B !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note-agregar, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note-titulo{ text-shadow:0 1px 0 rgba(255,255,255,0.75); }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note-agregar{ color:#6F7A90; font-weight:600; }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note-contenido span{ text-shadow:0 1px 0 rgba(255,255,255,0.6); }
 </style>
 
 </head>
