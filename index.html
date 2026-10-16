@@ -7698,6 +7698,11 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
   #tarjeta-grafico-ganancias .ggm-stat-label{ white-space:normal !important; overflow:visible !important; text-overflow:clip !important; line-height:1.15; }
   #tarjeta-grafico-ganancias .ggm-stat-valor{ font-size:13px !important; white-space:normal !important; overflow:visible !important; text-overflow:clip !important; overflow-wrap:anywhere; }
 }
+/* NUEVO (v517): selector "Concepto en el recibo" */
+#screen-agregar-abono .campo-concepto-abono.field-select-trigger{ background:#FFFFFF; color:#1F2F68; border:1.5px solid #C9D0DB; font-weight:600; }
+#screen-agregar-abono .campo-concepto-abono.field-select-trigger .chevron-select{ stroke:#1F2F68; }
+#screen-agregar-abono .campo-concepto-abono.field-select-trigger:not([data-valor="auto"]){ background:#EEF3FC; border-color:#9FB7E2; }
+body.modo-oscuro #screen-agregar-abono .campo-concepto-abono.field-select-trigger{ background:var(--surface); color:var(--text); border-color:var(--border); }
 </style>
 
 </head>
@@ -9551,6 +9556,17 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
         </select>
       </div>
 
+      <!-- NUEVO (a pedido, v517): concepto SOLO visual para recibos y comprobantes.
+           No interviene en ningún cálculo (eso lo decide "Aplicar abono a"). -->
+      <div class="form-field sin-margen" style="margin-top:12px;">
+        <label class="field-label" for="select-concepto-abono">Concepto en el recibo</label>
+        <select class="field-input field-select campo-concepto-abono" id="select-concepto-abono">
+          <option value="auto" selected>Automático (según "Aplicar abono a")</option>
+          <option value="pago_interes">Pago de interés</option>
+          <option value="recargo_prorroga">Recargo por prórroga de pago</option>
+        </select>
+      </div>
+
       <hr class="loan-divider">
 
       <div class="form-field sin-margen">
@@ -9905,6 +9921,16 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
         <option value="solo_interes">Solo interés</option>
         <option value="mora">Recargo por mora</option>
         <option value="solo_capital">Solo capital</option>
+      </select>
+    </div>
+
+    <!-- NUEVO (v517): concepto solo visual del recibo -->
+    <div class="form-field">
+      <label class="field-label" for="select-concepto-abono-editar">Concepto en el recibo</label>
+      <select class="field-input field-select" id="select-concepto-abono-editar">
+        <option value="auto">Automático (según "Aplicar abono a")</option>
+          <option value="pago_interes">Pago de interés</option>
+          <option value="recargo_prorroga">Recargo por prórroga de pago</option>
       </select>
     </div>
 
@@ -20017,7 +20043,7 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
         }
         ctxTmp.textAlign = 'left';
         ctxTmp.fillText(formatearFechaCorta(new Date(pago.fecha)), col2X + 10, y + 23);
-        ctxTmp.fillText(nombresAplicarA[pago.aplicarA] || 'Interés y Capital', col3X + 10, y + 23);
+        ctxTmp.fillText(conceptoAbono(pago) || nombresAplicarA[pago.aplicarA] || 'Interés y Capital', col3X + 10, y + 23);
         ctxTmp.font = 'bold 13px Arial, sans-serif';
         ctxTmp.fillText(formatearPesos(pago.monto), col4X + 10, y + 23);
 
@@ -24351,6 +24377,7 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
       ? formatearMiles(Math.round(pendienteDeCuota(prestamo, cuotaInicialAbono)))
       : '';
     selectAplicarAbono.value = 'capital_interes';
+    { const sc = document.getElementById('select-concepto-abono'); if(sc) sc.value = 'auto'; } // v517
     selectMetodoPago.value = 'efectivo';
     inputFechaAbono.value = claveFechaConOffset(0);
     notaAbonoVisible = false;
@@ -24404,13 +24431,14 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
     const fechaISO = new Date(inputFechaAbono.value + 'T00:00:00').toISOString();
     const metodo = selectMetodoPago.value;
     const nota = inputNotaAbono.value.trim();
+    const conceptoSel = (((document.getElementById('select-concepto-abono') || {}).value) || '').replace('auto',''); // v517: solo visual
     const pagosCreados = [];
 
     if(modo === 'mora'){
       // La mora es un cobro aparte (no se reparte entre cuotas): igual que antes
       const nuevoPago = {
         id: Date.now(), cuota: cuotaInicial.numero, fecha: fechaISO, monto: valorIngresado,
-        interesPagado: 0, capitalPagado: 0, aplicarA: modo, metodoPago: metodo, nota
+        interesPagado: 0, capitalPagado: 0, aplicarA: modo, metodoPago: metodo, nota, concepto: conceptoSel
       };
       prestamosGuardados[indice].pagos.push(nuevoPago);
       pagosCreados.push(nuevoPago);
@@ -24434,7 +24462,8 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
           capitalPagado: parte.capitalPagado,
           aplicarA: modo,
           metodoPago: metodo,
-          nota
+          nota,
+          concepto: conceptoSel
         };
         prestamosGuardados[indice].pagos.push(nuevoPago);
         pagosCreados.push(nuevoPago);
@@ -24446,7 +24475,7 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
         const nuevoPago = {
           id: Date.now(), cuota: cuotaInicial.numero, fecha: fechaISO, monto: valorIngresado,
           interesPagado: 0, capitalPagado: modo === 'solo_capital' ? valorIngresado : 0,
-          aplicarA: modo, metodoPago: metodo, nota
+          aplicarA: modo, metodoPago: metodo, nota, concepto: conceptoSel
         };
         prestamosGuardados[indice].pagos.push(nuevoPago);
         pagosCreados.push(nuevoPago);
@@ -24897,6 +24926,12 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
   // NUEVO: etiqueta legible de a qué se aplicó el abono (mismos valores que
   // usa el select "Aplicar abono a*" del formulario)
   const nombresAplicarA = { capital_interes:'Interés y Capital', solo_interes:'Solo interés', solo_capital:'Solo capital', mora:'Recargo por mora', abono:'Abono' };
+  // NUEVO (a pedido, v517): concepto personalizado SOLO visual (recibos y
+  // comprobantes). Vacío = se usa el texto de siempre según "Aplicar abono a".
+  function conceptoAbono(pago){
+    const nombres = { pago_interes:'Pago de interés', recargo_prorroga:'Recargo por prórroga de pago' };
+    return (pago && nombres[pago.concepto]) || '';
+  }
 
   let cuotaMenuActiva = null; // { prestamo, cuota, pago }
 
@@ -25094,6 +25129,7 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
     // NUEVO: precarga el modo actual del pago en el nuevo select "Aplicar abono a"
     // (una vez convertido a bottom sheet, asignar .value ya refresca el trigger solo)
     document.getElementById('select-aplicar-abono-editar').value = pago.aplicarA || 'capital_interes';
+    document.getElementById('select-concepto-abono-editar').value = pago.concepto || 'auto'; // v517
 
     screenDetallePrestamo.style.display = 'none';
     bottomNav.style.display = 'none';
@@ -25189,6 +25225,7 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
     pago.capitalPagado = capitalPagado;
     pago.metodoPago = document.getElementById('select-metodo-editar-pago').value;
     pago.nota = document.getElementById('input-editar-pago-nota').value.trim();
+    pago.concepto = (document.getElementById('select-concepto-abono-editar').value || '').replace('auto',''); // v517: solo visual
 
     // NUEVO: cambiar el modo (ej. de "Recargo por mora" a "Capital y
     // interés") puede completar o descompletar una cuota, así que el
@@ -25492,6 +25529,15 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
       ['Modalidad de pago', NOMBRES_FRECUENCIA[prestamo.frecuencia] || prestamo.frecuencia]
     ];
 
+    // NUEVO (v517): concepto personalizado (solo visual) — reemplaza el
+    // "Concepto" existente o se agrega justo después de "Monto del préstamo".
+    { const conceptoP = conceptoAbono(ultimoPago);
+      if(conceptoP){
+        const filaC = filas.find(f => f && f[0] === 'Concepto');
+        if(filaC) filaC[1] = conceptoP;
+        else { const iM = filas.findIndex(f => f && f[0] === 'Monto del préstamo'); filas.splice(iM >= 0 ? iM + 1 : 1, 0, ['Concepto', conceptoP]); }
+      }
+    }
     // NUEVO: campos a incluir en el recibo (Ajustes → Plantilla de recibo).
     // "Recargo por la" también se oculta con el interruptor de cuota, porque
     // en un recargo por mora esa fila ES la referencia a la cuota.
@@ -25725,7 +25771,8 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
     ctx.fillStyle = colorTitulo;
     ctx.font = fuente(700, 17);   // A pedido: aún más pequeño (antes 21; al inicio 26)
     ctx.textAlign = 'center';
-    ctx.fillText(esRecargoMora ? 'RECARGO PAGADO' : 'ABONO REALIZADO', centroX, yEtiquetaAbono);
+    // v518: si se eligio un 'Concepto en el recibo', ese texto reemplaza el titulo sobre el valor (solo visual)
+    ctx.fillText(conceptoAbono(ultimoPago) ? conceptoAbono(ultimoPago).toUpperCase() : (esRecargoMora ? 'RECARGO PAGADO' : 'ABONO REALIZADO'), centroX, yEtiquetaAbono);
 
     // Caja verde muy clara + monto (el elemento más grande del comprobante)
     trazarRectRedondeado(ctx, xCajaMonto, yCajaMonto, anchoCajaMonto, altoCajaMonto, 30);
@@ -26174,7 +26221,7 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
     // NUEVO: "Abonado a" (bajo el monto) siempre visible — reemplaza el
     // método de pago que iba ahí antes. El método de pago ahora es una
     // fila más de la lista, controlada por el interruptor "Método de pago".
-    document.getElementById('detalle-pago-abonado-a').textContent = nombresAplicarA[pagoEnDetalle.pago.aplicarA] || 'Interés y Capital';
+    document.getElementById('detalle-pago-abonado-a').textContent = conceptoAbono(pagoEnDetalle.pago) || nombresAplicarA[pagoEnDetalle.pago.aplicarA] || 'Interés y Capital';
 
     // NUEVO: "Puntualidad del pago" — justo debajo del monto, controlada
     // por su propio interruptor (Ajustes → Comprobante de cada abono).
@@ -26484,7 +26531,7 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
 
     ctx.font = '500 14px ' + FUENTE;
     ctx.fillStyle = colorGris;
-    ctx.fillText(nombresAplicarA[pago.aplicarA] || 'Interés y Capital', anchoCard / 2, y + 12);
+    ctx.fillText(conceptoAbono(pago) || nombresAplicarA[pago.aplicarA] || 'Interés y Capital', anchoCard / 2, y + 12);
     y += ALTO_SUBTITULO;
 
     dibujarLineaPunteadaDetallePago(ctx, padX, anchoCard - padX, y + 16, false);
@@ -26702,6 +26749,11 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
       texto += obtenerReciboMostrarCuota() ? '\nConcepto: Abono a cuota #' + cuota.numero : '\nConcepto: Abono';
     }else if(obtenerReciboMostrarCuota()){
       texto += '\nCuota #' + cuota.numero;
+    }
+    // v517: concepto personalizado (solo visual)
+    if(conceptoAbono(pago)){
+      if(/\nConcepto: [^\n]*/.test(texto)) texto = texto.replace(/\nConcepto: [^\n]*/, '\nConcepto: ' + conceptoAbono(pago));
+      else texto += '\nConcepto: ' + conceptoAbono(pago);
     }
     texto += '\nValor: ' + formatearPesos(pago.monto);
     if(obtenerReciboMostrarMetodo()){
@@ -28954,7 +29006,10 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
       filas.push(['Valor del abono', formatearPesos(ultimo.pago.monto)]);
       // NUEVO: un recargo por mora o un "Abono" genérico no son el pago de
       // una cuota específica — no debe mostrarse como si lo fueran.
-      if(ultimo.pago.aplicarA === 'mora'){
+      if(conceptoAbono(ultimo.pago)){
+        filas.push(['Concepto', conceptoAbono(ultimo.pago)]); // v517
+        if(ultimo.pago.aplicarA !== 'mora' && ultimo.pago.aplicarA !== 'abono') filas.push(['Cuota', 'N.° ' + ultimo.pago.cuota + ' de ' + ultimo.prestamo.cuotas]);
+      }else if(ultimo.pago.aplicarA === 'mora'){
         filas.push(['Concepto', 'Recargo por mora']);
       }else if(ultimo.pago.aplicarA === 'abono'){
         filas.push(['Concepto', 'Abono a cuota N.° ' + ultimo.pago.cuota + ' de ' + ultimo.prestamo.cuotas]);
@@ -31823,6 +31878,8 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
   // ==========================================================
   convertirSelectAPersonalizado(document.getElementById('select-aplicar-abono'), 'Aplicar Abono');
   convertirSelectAPersonalizado(document.getElementById('select-aplicar-abono-editar'), 'Aplicar Abono');
+  convertirSelectAPersonalizado(document.getElementById('select-concepto-abono'), 'Concepto en el recibo');
+  convertirSelectAPersonalizado(document.getElementById('select-concepto-abono-editar'), 'Concepto en el recibo');
   convertirSelectAPersonalizado(document.getElementById('select-metodo-pago'), 'Método de Pago');
   convertirSelectAPersonalizado(document.getElementById('select-tipo-interes'), 'Tipo de Interés');
   convertirSelectAPersonalizado(document.getElementById('select-frecuencia'), 'Frecuencia de Pago');
