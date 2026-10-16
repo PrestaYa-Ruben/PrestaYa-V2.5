@@ -7684,6 +7684,20 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
 /* CAMBIO (a pedido, v515): botón flotante "Agregar cliente" en el verde de las franjas (#2FAE5F) */
 #btn-agregar-cliente-fab{ background:#2FAE5F !important; background-image:none !important; box-shadow:0 6px 16px rgba(47,174,95,0.35) !important; }
 #btn-agregar-cliente-fab svg{ stroke:#FFFFFF; }
+/* NUEVO (a pedido, v516): Ganancia hoy / Peor día / Mejor día como 3 cajitas separadas */
+#tarjeta-grafico-ganancias .ggm-resumen-inferior-verde{ gap:8px; overflow:visible; background:none !important; box-shadow:none !important; border-radius:0 !important; }
+#tarjeta-grafico-ganancias .ggm-stat-divisor{ display:none; }
+#tarjeta-grafico-ganancias .ggm-stat{ border-radius:12px; padding:10px 9px; }
+#tarjeta-grafico-ganancias .ggm-stat-verde{ border:1.5px solid #B7DEC6; }
+#tarjeta-grafico-ganancias .ggm-stat-azul{ border:1.5px solid #BFD0F2; }
+#tarjeta-grafico-ganancias .ggm-stat-dorado{ border:1.5px solid #EED5A6; }
+@media (max-width:400px){
+  #tarjeta-grafico-ganancias .ggm-resumen-inferior-verde{ gap:6px; }
+  #tarjeta-grafico-ganancias .ggm-stat{ padding:9px 7px; gap:4px; }
+  #tarjeta-grafico-ganancias .ggm-stat svg{ width:13px; height:13px; }
+  #tarjeta-grafico-ganancias .ggm-stat-label{ white-space:normal !important; overflow:visible !important; text-overflow:clip !important; line-height:1.15; }
+  #tarjeta-grafico-ganancias .ggm-stat-valor{ font-size:13px !important; white-space:normal !important; overflow:visible !important; text-overflow:clip !important; overflow-wrap:anywhere; }
+}
 </style>
 
 </head>
