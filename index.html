@@ -7677,6 +7677,13 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
 /* CORREGIDO (a pedido, v513): en los resultados de la búsqueda las tarjetas salían pegadas */
 #resultados-busqueda{ display:flex; flex-direction:column; gap:12px; }
 #resultados-busqueda > .client-row{ margin:0 !important; }
+/* CAMBIO (a pedido, v514): se oculta el botón "+" de nuevo cliente junto al buscador de
+   Clientes (no se borra; sigue el botón flotante). El buscador ocupa todo el ancho. */
+#screen-clientes #btn-nuevo-cliente{ display:none !important; }
+#screen-clientes .search-row .search-box{ flex:1 1 100%; width:100%; }
+/* CAMBIO (a pedido, v515): botón flotante "Agregar cliente" en el verde de las franjas (#2FAE5F) */
+#btn-agregar-cliente-fab{ background:#2FAE5F !important; background-image:none !important; box-shadow:0 6px 16px rgba(47,174,95,0.35) !important; }
+#btn-agregar-cliente-fab svg{ stroke:#FFFFFF; }
 </style>
 
 </head>
