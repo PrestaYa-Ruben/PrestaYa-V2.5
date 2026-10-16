@@ -7459,6 +7459,79 @@ body:not(.modo-oscuro) #btn-abrir-busqueda{ box-shadow:inset 0 2px 0 rgba(255,25
 #screen-editar-fecha-cuota .efc-botones .primary-button svg{ width:16px; height:16px; }
 /* NUEVO (a pedido, v488): más espacio entre las tarjetas de cliente en Clientes (antes 7px) */
 #screen-clientes #clientes-lista.clients-list{ gap:12px !important; }
+/* =====================================================================
+   NUEVO (a pedido, v489): paleta "fresca y limpia" para la información del
+   cliente, pensada para convivir con las tarjetas de crédito (verde/rosado):
+   perfil casi blanco con un toque azul-pizarra frío y acentos en el azul
+   marino de la marca; las 3 tarjetitas en menta / azul / ámbar suaves.
+   Solo presentación, modo claro.
+   ===================================================================== */
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente{
+  background:linear-gradient(165deg,#FFFFFF 0%,#F3F7FA 60%,#EAF1F5 100%) !important;
+  border:1.5px solid #CFDCE5 !important;
+}
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente::before{ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax slice'%3E%3Cg fill='none' stroke='%23BCD3DC' stroke-linecap='round' opacity='0.9'%3E%3Cpath d='M-20 104 C10 70 25 40 58 -6' stroke-width='1.6'/%3E%3Cpath d='M-3 104 C27 70 42 40 75 -6' stroke-width='1.6'/%3E%3Cpath d='M14 104 C44 70 59 40 92 -6' stroke-width='1.6'/%3E%3Cpath d='M31 104 C61 70 76 40 109 -6' stroke-width='1.6'/%3E%3Cpath d='M48 104 C78 70 93 40 126 -6' stroke-width='1.6'/%3E%3Cpath d='M65 104 C95 70 110 40 143 -6' stroke-width='1.6'/%3E%3Cpath d='M82 104 C112 70 127 40 160 -6' stroke-width='1.6'/%3E%3Cpath d='M99 104 C129 70 144 40 177 -6' stroke-width='1.6'/%3E%3C/g%3E%3C/svg%3E"); opacity:0.45; }
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente .profile-card-name{ color:#1F2F68; }
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente .profile-divider,
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente .detail-row{ border-color:#E1E9EF !important; box-shadow:none; }
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente .detail-row-icon:not(.detail-row-icon-whatsapp){ stroke:#3A6E86; }
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente .detail-row-value{ color:#24324A; }
+body:not(.modo-oscuro) #screen-detalle-cliente #profile-card-cliente .client-since{ color:#7A8AA0; }
+body:not(.modo-oscuro) #screen-detalle-cliente #btn-editar-cliente{ background:linear-gradient(160deg,#FFFFFF,#EAF1F5); color:#1F2F68; }
+/* Tarjetitas de resumen */
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm{ border-width:1.5px !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm:nth-child(1){ background:linear-gradient(160deg,#F2FAF6 0%,#E0F2E8 100%) !important; border-color:#B7DEC8 !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm:nth-child(1)::before{ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax slice'%3E%3Cg fill='none' stroke='%23A9D6BE' stroke-width='1'%3E%3Cpath d='M-5 104 C10 80 35 75 25 50 S30 15 50 -4'/%3E%3Cpath d='M13 104 C28 80 53 75 43 50 S48 15 68 -4'/%3E%3Cpath d='M22 104 C37 80 62 75 52 50 S57 15 77 -4'/%3E%3Cpath d='M40 104 C55 80 80 75 70 50 S75 15 95 -4'/%3E%3Cpath d='M49 104 C64 80 89 75 79 50 S84 15 104 -4'/%3E%3Cpath d='M67 104 C82 80 107 75 97 50 S102 15 122 -4'/%3E%3Cpath d='M76 104 C91 80 116 75 106 50 S111 15 131 -4'/%3E%3Cpath d='M94 104 C109 80 134 75 124 50 S129 15 149 -4'/%3E%3Cpath d='M103 104 C118 80 143 75 133 50 S138 15 158 -4'/%3E%3Cpath d='M121 104 C136 80 161 75 151 50 S156 15 176 -4'/%3E%3C/g%3E%3C/svg%3E"); }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm:nth-child(1) .value{ color:#1E7A4C !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm:nth-child(2){ background:linear-gradient(160deg,#F3F6FC 0%,#E2E9F7 100%) !important; border-color:#C3D0EA !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm:nth-child(2) .value{ color:#1F2F68 !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm:nth-child(3){ background:linear-gradient(160deg,#FFF8EC 0%,#F7EACB 100%) !important; border-color:#E4CB93 !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm:nth-child(3)::before{ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax slice'%3E%3Cg fill='none' stroke='%23CFA95A' stroke-width='1.1' stroke-linejoin='round'%3E%3Cpath d='M30 102 L62 70 L122 69'/%3E%3Cpath d='M50 54 L57 102'/%3E%3Cpath d='M50 54 L92 92 L93 102'/%3E%3Cpath d='M60 30 L105 72 L122 50'/%3E%3Cpath d='M100 26 L122 6'/%3E%3Cpath d='M62 70 L70 30'/%3E%3C/g%3E%3C/svg%3E"); }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm:nth-child(3) .value{ color:#A86A0E !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm .label{ color:#5B6880; font-weight:600; }
+/* =====================================================================
+   NUEVO (a pedido, v490): tarjeta "Estado del crédito" (detalle del préstamo)
+   con la misma paleta, estilo y relieve de la información del cliente:
+   casi blanca con toque azul-pizarra, líneas tenues, acentos azul marino,
+   estado en cápsula levantada y datos en cajitas talladas. Solo modo claro.
+   ===================================================================== */
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card{
+  position:relative; overflow:hidden; border-radius:16px !important;
+  background:linear-gradient(165deg,#FFFFFF 0%,#F3F7FA 60%,#EAF1F5 100%) !important;
+  border:1.5px solid #CFDCE5 !important; box-shadow:inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -3px 4px rgba(0,0,0,0.06) !important;
+}
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card::before{
+  content:''; position:absolute; top:0; right:0; width:60%; height:140px; opacity:0.45; pointer-events:none; z-index:0;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax slice'%3E%3Cg fill='none' stroke='%23BCD3DC' stroke-linecap='round' opacity='0.9'%3E%3Cpath d='M-20 104 C10 70 25 40 58 -6' stroke-width='1.6'/%3E%3Cpath d='M-3 104 C27 70 42 40 75 -6' stroke-width='1.6'/%3E%3Cpath d='M14 104 C44 70 59 40 92 -6' stroke-width='1.6'/%3E%3Cpath d='M31 104 C61 70 76 40 109 -6' stroke-width='1.6'/%3E%3Cpath d='M48 104 C78 70 93 40 126 -6' stroke-width='1.6'/%3E%3Cpath d='M65 104 C95 70 110 40 143 -6' stroke-width='1.6'/%3E%3Cpath d='M82 104 C112 70 127 40 160 -6' stroke-width='1.6'/%3E%3Cpath d='M99 104 C129 70 144 40 177 -6' stroke-width='1.6'/%3E%3C/g%3E%3C/svg%3E") no-repeat right top / cover;
+  -webkit-mask-image:linear-gradient(to right, transparent 0, #000 55%), linear-gradient(to bottom, #000 50%, transparent 100%);
+  -webkit-mask-composite:source-in; mask-image:linear-gradient(to right, transparent 0, #000 55%), linear-gradient(to bottom, #000 50%, transparent 100%); mask-composite:intersect;
+  filter:drop-shadow(0 1.2px 0 rgba(255,255,255,0.85)) drop-shadow(0 -1px 0 rgba(40,40,60,0.12));
+}
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card > *{ position:relative; z-index:1; }
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-detail-client{ color:#1F2F68; font-weight:700; text-shadow:0 1px 0 rgba(255,255,255,0.8); }
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-detail-amount{ color:#1F2F68; text-shadow:0 1px 0 rgba(255,255,255,0.8), 0 2px 3px rgba(30,40,80,0.14); }
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-detail-amount-toggle svg{ stroke:#3A6E86 !important; }
+/* Estado en cápsula levantada */
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-detail-estado{
+  padding:6px 12px 7px; border-radius:12px; text-align:right;
+  box-shadow:0 2px 4px rgba(35,45,80,0.12), inset 0 1.5px 0 rgba(255,255,255,0.8), inset 0 -1.5px 2px rgba(0,0,0,0.05);
+}
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-detail-estado.activo{ background:linear-gradient(160deg,#F2FAF6,#DDF0E5); border:1.5px solid #B7DEC8; }
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-detail-estado.vencido{ background:linear-gradient(160deg,#FDF2F2,#F7DCDC); border:1.5px solid #E7B3B3; }
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-detail-estado.finalizado{ background:linear-gradient(160deg,#F3F6FC,#E2E9F7); border:1.5px solid #C3D0EA; }
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-detail-estado-label{ color:#5B6880; font-weight:600; }
+/* Datos (al desplegar) en cajitas talladas */
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-detail-grid{ gap:8px; }
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-detail-item{
+  padding:8px 10px; border-radius:11px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.45),rgba(255,255,255,0.75)); box-shadow:inset 0 2px 4px rgba(20,30,60,0.12), inset 0 -1px 0 rgba(255,255,255,0.8), 0 1px 0 rgba(255,255,255,0.85);
+}
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-detail-label{ color:#5B6880; }
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-detail-value{ text-shadow:0 1px 0 rgba(255,255,255,0.7); }
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-divider{ border-color:#E1E9EF !important; }
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-divider{ margin:12px 0 !important; }
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-progress-track{ height:10px; background:rgba(30,45,80,0.08) !important; box-shadow:inset 0 1.5px 3px rgba(20,30,60,0.18), 0 1px 0 rgba(255,255,255,0.85); }
+body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-progress-fill{ box-shadow:inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 2px rgba(20,60,40,0.25); }
 </style>
 
 </head>
