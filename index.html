@@ -7615,6 +7615,25 @@ body.modo-oscuro .loan-card-full .lam-texto b{ color:#FFF6D6; }
 body.modo-oscuro .client-row.client-row-cliente .client-alerta-mora{ background:#5A4A12; border-color:#7A651C; color:#F7EBC0; }
 body.modo-oscuro .client-row.client-row-cliente .cam-texto b{ color:#FFF6D6; }
 body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-con-alerta::before{ bottom:28px; }
+/* NUEVO (a pedido, v504): mismo blanco suave de las tarjetas de Clientes/Cliente
+   en Ganancias del Mes, Capital en la Calle y Capital por Ruta (Inicio). */
+body:not(.modo-oscuro) #screen-inicio #tarjeta-grafico-ganancias, body:not(.modo-oscuro) #screen-inicio #tarjeta-capital-calle, body:not(.modo-oscuro) #screen-inicio #tarjeta-top-rutas-capital{
+  background:linear-gradient(160deg,#FCFCFA 0%,#F6F7F5 100%) !important; border:1.5px solid #CDD5DF !important;
+}
+body:not(.modo-oscuro) #screen-inicio #tarjeta-capital-calle .card-glow{ display:none; }
+/* NUEVO (a pedido, v506): 4 tarjetas principales de Inicio con colores más suaves */
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-morado{ background:linear-gradient(160deg,#EEF3FC 0%,#E0E9F8 100%) !important; border-color:#BCCDEB !important; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-ambar{ background:linear-gradient(160deg,#FBF4E3 0%,#F4E7C8 100%) !important; border-color:#E2CB97 !important; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-verde{ background:linear-gradient(160deg,#EAF6E8 0%,#D9EFD6 100%) !important; border-color:#ABD5A7 !important; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-rojo{ background:linear-gradient(160deg,#FCEEEE 0%,#F7DEDE 100%) !important; border-color:#E8B6B6 !important; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-morado .icon-container{ background:linear-gradient(160deg,#E6EDFA,#D2DFF5) !important; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-ambar .icon-container{ background:linear-gradient(160deg,#F8EBCC,#EED8A6) !important; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-verde .icon-container{ background:linear-gradient(160deg,#D2ECCD,#B4DEAD) !important; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-rojo .icon-container{ background:linear-gradient(160deg,#F7D3D3,#EFB7B7) !important; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card::before{ opacity:0.6 !important; }
+/* NUEVO (a pedido, v507): título "Estadísticas" en Inicio */
+#screen-inicio .titulo-estadisticas-inicio{ padding:0 16px; margin:2px 0 10px; font-size:18px; font-weight:800; letter-spacing:-0.2px; }
+body:not(.modo-oscuro) #screen-inicio .titulo-estadisticas-inicio{ color:#1F2F68; }
 </style>
 
 </head>
@@ -7869,6 +7888,8 @@ body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-ro
        dashboard. Los IDs de Medios de Pago se mantienen (ya los usa
        actualizarMediosPagoDashboard), así que ese JS no cambió.
        ========================================================== -->
+  <!-- NUEVO (a pedido, v506b): título de sección entre las 4 tarjetas y "Resumen del período" -->
+  <div class="section-title titulo-estadisticas-inicio">Estadísticas</div>
   <div class="card" id="tarjeta-total-prestado-recaudado" style="padding:20px 18px; margin:0 14px; position:relative;">
     <button type="button" class="info-tarjeta-btn" data-info-titulo="Total Prestado y Recaudado" data-info-texto="Total Prestado: la suma de los créditos nuevos otorgados en el período seleccionado (tocá el monto para ver a quién se le prestó). Total Recaudado: la suma de todos los abonos cobrados (efectivo + transferencia) en ese mismo período. Balance: Total Recaudado menos Total Prestado — en verde si recaudaste más de lo que prestaste en el período, en rojo si prestaste más de lo que recaudaste.">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
@@ -7890,32 +7911,6 @@ body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-ro
     <div class="loan-detail-item">
       <div class="loan-detail-label">Balance</div>
       <div class="loan-detail-value success" id="dashboard-balance-periodo">$0</div>
-    </div>
-  </div>
-
-  <!-- NUEVO: Medios de Pago rediseñada — Efectivo y Transferencia
-       apiladas (una fila debajo de otra) en vez de en columnas, con
-       clases propias "mdp-*" y paddings reducidos para que quede lo más
-       compacta posible. -->
-  <div class="card" id="tarjeta-medios-pago-inicio" style="padding:14px 16px; margin:9px 14px 0;">
-    <div class="section-title" style="margin-bottom:6px;">Medios de Pago</div>
-    <div class="mdp-fila">
-      <div class="mdp-icono verde">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="3"></circle></svg>
-      </div>
-      <span class="mdp-nombre">Efectivo</span>
-      <span class="mdp-valor verde" id="dashboard-medio-efectivo">$0</span>
-    </div>
-    <div class="mdp-fila">
-      <div class="mdp-icono morado">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-      </div>
-      <span class="mdp-nombre">Transferencia</span>
-      <span class="mdp-valor morado" id="dashboard-medio-transferencia">$0</span>
-    </div>
-    <div class="mdp-total">
-      <span>Total Movido</span>
-      <span id="dashboard-medios-total">$0</span>
     </div>
   </div>
 
@@ -7967,6 +7962,32 @@ body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-ro
         <span class="comparativo-ganancias-resumen-pct" id="comparativo-ganancias-resumen-pct">0,00%</span>
       </div>
       <div class="comparativo-ganancias-resumen-texto" id="comparativo-ganancias-texto">Las ganancias se mantienen iguales</div>
+    </div>
+  </div>
+
+  <!-- NUEVO: Medios de Pago rediseñada — Efectivo y Transferencia
+       apiladas (una fila debajo de otra) en vez de en columnas, con
+       clases propias "mdp-*" y paddings reducidos para que quede lo más
+       compacta posible. -->
+  <div class="card" id="tarjeta-medios-pago-inicio" style="padding:14px 16px; margin:9px 14px 0;">
+    <div class="section-title" style="margin-bottom:6px;">Medios de Pago</div>
+    <div class="mdp-fila">
+      <div class="mdp-icono verde">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="3"></circle></svg>
+      </div>
+      <span class="mdp-nombre">Efectivo</span>
+      <span class="mdp-valor verde" id="dashboard-medio-efectivo">$0</span>
+    </div>
+    <div class="mdp-fila">
+      <div class="mdp-icono morado">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+      </div>
+      <span class="mdp-nombre">Transferencia</span>
+      <span class="mdp-valor morado" id="dashboard-medio-transferencia">$0</span>
+    </div>
+    <div class="mdp-total">
+      <span>Total Movido</span>
+      <span id="dashboard-medios-total">$0</span>
     </div>
   </div>
 
