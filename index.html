@@ -7703,6 +7703,9 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
 #screen-agregar-abono .campo-concepto-abono.field-select-trigger .chevron-select{ stroke:#1F2F68; }
 #screen-agregar-abono .campo-concepto-abono.field-select-trigger:not([data-valor="auto"]){ background:#EEF3FC; border-color:#9FB7E2; }
 body.modo-oscuro #screen-agregar-abono .campo-concepto-abono.field-select-trigger{ background:var(--surface); color:var(--text); border-color:var(--border); }
+/* NUEVO (a pedido, v520): valor pendiente en rojo + "de $total a pagar" en letra pequeña */
+.loan-card-full .loan-amount{ color:#D0464B !important; white-space:nowrap; }
+.loan-card-full .loan-amount .loan-amount-de{ font-size:13px; font-weight:600; letter-spacing:0; color:#7A8599; margin-left:4px; text-shadow:none; }
 </style>
 
 </head>
@@ -22717,7 +22720,7 @@ body.modo-oscuro #screen-agregar-abono .campo-concepto-abono.field-select-trigge
         <div>
           <div class="loan-card-nombre-principal">${clienteTarjeta ? escaparHtml(clienteTarjeta.nombre) : 'Cliente eliminado'}</div>
           <div class="loan-code">${prestamo.codigo || ''}</div>
-          <div class="loan-amount">${formatearPesos(prestamo.valor)}</div>
+          <div class="loan-amount" title="Saldo pendiente">${formatearPesos(saldo)}<span class="loan-amount-de"> de ${formatearPesos(prestamo.totalAPagar || 0)}</span></div><!-- v520: "X de total a pagar" --><!-- CAMBIO (a pedido, v519): antes el valor otorgado; ahora el total pendiente -->
         </div>
         <div class="loan-card-top-derecha">
           <div class="loan-badge ${estadoVisual}">${etiquetaEstadoVisual(estadoVisual)}</div>
@@ -22730,6 +22733,10 @@ body.modo-oscuro #screen-agregar-abono .campo-concepto-abono.field-select-trigge
       <div class="loan-row">
         <span class="loan-row-label">Fecha inicio:</span>
         <span class="loan-row-value">${fechaInicioTexto}</span>
+      </div>
+      <div class="loan-row"><!-- NUEVO (a pedido, v519): el monto otorgado pasa aquí -->
+        <span class="loan-row-label">Monto otorgado:</span>
+        <span class="loan-row-value">${formatearPesos(prestamo.valor)}</span>
       </div>
       ${prestamo.estado === 'finalizado' && prestamo.fechaFinalizacion ? `
       <div class="loan-row">
