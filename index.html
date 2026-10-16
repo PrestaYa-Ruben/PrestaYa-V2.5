@@ -7706,6 +7706,13 @@ body.modo-oscuro #screen-agregar-abono .campo-concepto-abono.field-select-trigge
 /* NUEVO (a pedido, v520): valor pendiente en rojo + "de $total a pagar" en letra pequeña */
 .loan-card-full .loan-amount{ color:#D0464B !important; white-space:nowrap; }
 .loan-card-full .loan-amount .loan-amount-de{ font-size:13px; font-weight:600; letter-spacing:0; color:#7A8599; margin-left:4px; text-shadow:none; }
+/* CAMBIO (a pedido, v521): se oculta el botón flotante del Simulador (no se borra); ahora está en el encabezado */
+#btn-abrir-simulador{ display:none !important; }
+body:not(.modo-oscuro) #btn-simulador-header{
+  background:linear-gradient(160deg,#E6F4EA,#C9E8D3) !important; color:#1F7A3E;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,0.65), inset 0 -2px 3px rgba(0,0,0,0.08) !important;
+}
+body:not(.modo-oscuro) #btn-simulador-header svg{ stroke:#1F7A3E !important; }
 </style>
 
 </head>
@@ -7866,6 +7873,10 @@ body.modo-oscuro #screen-agregar-abono .campo-concepto-abono.field-select-trigge
            el dashboard desde cero, sin reiniciar la app. -->
       <button class="refrescar-btn" id="btn-refrescar-inicio" aria-label="Refrescar pantalla">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+      </button>
+      <!-- NUEVO (a pedido, v521): el Simulador de crédito pasa al encabezado (el botón flotante queda oculto). -->
+      <button class="refrescar-btn" id="btn-simulador-header" aria-label="Simulador de crédito" title="Simulador de crédito">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="8.01" y2="10"></line><line x1="12" y1="10" x2="12.01" y2="10"></line><line x1="16" y1="10" x2="16.01" y2="10"></line><line x1="8" y1="14" x2="8.01" y2="14"></line><line x1="12" y1="14" x2="12.01" y2="14"></line><line x1="16" y1="14" x2="16.01" y2="14"></line><line x1="8" y1="18" x2="8.01" y2="18"></line><line x1="12" y1="18" x2="16" y2="18"></line></svg>
       </button>
       <button class="refrescar-btn" id="btn-abrir-busqueda" aria-label="Buscar cliente o crédito">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -17970,6 +17981,8 @@ body.modo-oscuro #screen-agregar-abono .campo-concepto-abono.field-select-trigge
     setTimeout(()=> inputBusquedaGlobal.focus(), 150);
   });
 
+  // NUEVO (v521): el botón del encabezado abre el mismo Simulador que el botón flotante (oculto).
+  document.getElementById('btn-simulador-header').addEventListener('click', ()=> document.getElementById('btn-abrir-simulador').click());
   // NUEVO (v511): el buscador de la casilla "Período seleccionado" abre la misma búsqueda.
   document.getElementById('btn-buscador-inicio').addEventListener('click', ()=> document.getElementById('btn-abrir-busqueda').click());
 
