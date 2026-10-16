@@ -7674,6 +7674,9 @@ body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
 #screen-inicio .periodo-y-buscador .periodo-seleccionado-valor{ font-size:13px; line-height:1.2; }
 #screen-inicio .buscador-inicio{ min-height:0; padding-top:6px; padding-bottom:6px; font-size:13px; }
 #screen-inicio .buscador-inicio svg{ width:16px; height:16px; }
+/* CORREGIDO (a pedido, v513): en los resultados de la búsqueda las tarjetas salían pegadas */
+#resultados-busqueda{ display:flex; flex-direction:column; gap:12px; }
+#resultados-busqueda > .client-row{ margin:0 !important; }
 </style>
 
 </head>
