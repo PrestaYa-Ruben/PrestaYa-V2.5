@@ -7634,6 +7634,46 @@ body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .
 /* NUEVO (a pedido, v507): título "Estadísticas" en Inicio */
 #screen-inicio .titulo-estadisticas-inicio{ padding:0 16px; margin:2px 0 10px; font-size:18px; font-weight:800; letter-spacing:-0.2px; }
 body:not(.modo-oscuro) #screen-inicio .titulo-estadisticas-inicio{ color:#1F2F68; }
+/* NUEVO (a pedido, v508): verde más oscuro en Total Recaudado y Balance (Resumen del período) */
+#screen-inicio #tarjeta-total-prestado-recaudado .loan-detail-value.success{ color:#15803D !important; }
+/* NUEVO (a pedido, v509): íconos de las 4 tarjetas "incrustados" (hundidos en la
+   tarjeta) en vez de verse como un botón flotando. */
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card .icon-container{
+  box-shadow:inset 0 2px 4px rgba(20,30,60,0.18), inset 0 -1px 0 rgba(255,255,255,0.7), 0 1px 0 rgba(255,255,255,0.85) !important;
+}
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-morado .icon-container{ background:#D9E3F5 !important; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-ambar .icon-container{ background:#EFDFB9 !important; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-verde .icon-container{ background:#C9E5C4 !important; }
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card.tinte-rojo .icon-container{ background:#F2CDCD !important; }
+/* NUEVO (a pedido, v510): realce solo al ícono (trazo más grueso + luz arriba y sombra abajo) */
+body:not(.modo-oscuro):not(.tinte-dashboard-activo) #dashboard-tarjetas-inicio .stat-card .icon-container svg{
+  filter:drop-shadow(0 -1px 0 rgba(255,255,255,0.9)) drop-shadow(0 1.2px 0.8px rgba(20,30,60,0.32));
+}
+/* NUEVO (a pedido, v511): "Período seleccionado" + buscador de clientes lado a lado */
+#screen-inicio .periodo-y-buscador{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+#screen-inicio .periodo-y-buscador .periodo-seleccionado{ flex-direction:column; align-items:flex-start; justify-content:center; gap:2px; min-width:0; }
+#screen-inicio .periodo-y-buscador .periodo-seleccionado-label{ font-size:10.5px; }
+#screen-inicio .periodo-y-buscador .periodo-seleccionado-valor{ text-align:left; font-size:14px; line-height:1.25; white-space:normal; max-width:100%; }
+#screen-inicio .periodo-y-buscador .periodo-seleccionado-label{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+#screen-inicio .buscador-inicio{
+  display:flex; align-items:center; gap:8px; min-width:0; padding:0 14px; border-radius:14px; cursor:pointer;
+  font-family:inherit; font-size:14px; font-weight:600; color:var(--text-secondary); text-align:left;
+  background:var(--surface); border:1.5px solid var(--border);
+}
+#screen-inicio .buscador-inicio svg{ width:18px; height:18px; flex-shrink:0; stroke:#3E63AE; }
+#screen-inicio .buscador-inicio span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#screen-inicio .buscador-inicio:active{ transform:scale(0.98); }
+body:not(.modo-oscuro) #screen-inicio .buscador-inicio{
+  background:linear-gradient(160deg,#EEF3FC 0%,#DCE6F7 100%); border-color:#A9BFE6; color:#4A5A7A;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -3px 4px rgba(0,0,0,0.06);
+}
+@media (max-width:380px){ #screen-inicio .periodo-y-buscador .periodo-seleccionado-label{ font-size:9.5px; letter-spacing:0.1px; } #screen-inicio .periodo-y-buscador .periodo-seleccionado{ padding-left:11px; padding-right:9px; } }
+/* NUEVO (a pedido, v512): casillas "Período seleccionado" y buscador más bajas */
+#screen-inicio .periodo-y-buscador .periodo-seleccionado{ padding-top:6px !important; padding-bottom:6px !important; gap:1px; }
+#screen-inicio .periodo-y-buscador .periodo-seleccionado-label{ font-size:9.5px; line-height:1.2; }
+#screen-inicio .periodo-y-buscador .periodo-seleccionado-valor{ font-size:13px; line-height:1.2; }
+#screen-inicio .buscador-inicio{ min-height:0; padding-top:6px; padding-bottom:6px; font-size:13px; }
+#screen-inicio .buscador-inicio svg{ width:16px; height:16px; }
 </style>
 
 </head>
@@ -7831,9 +7871,18 @@ body:not(.modo-oscuro) #screen-inicio .titulo-estadisticas-inicio{ color:#1F2F68
       </div>
     </div>
 
+    <!-- CAMBIO (a pedido, v511): la casilla se divide en 2 — izquierda el
+         período seleccionado, derecha un buscador de clientes (abre la misma
+         pantalla de búsqueda de siempre). -->
+    <div class="periodo-y-buscador">
     <div class="periodo-seleccionado">
       <span class="periodo-seleccionado-label">Período seleccionado</span>
       <span class="periodo-seleccionado-valor" id="periodo-seleccionado-valor">Hoy</span>
+    </div>
+    <button type="button" class="buscador-inicio" id="btn-buscador-inicio" aria-label="Buscar cliente">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <span>Buscar cliente</span>
+    </button>
     </div>
   </section>
 
@@ -17867,6 +17916,9 @@ body:not(.modo-oscuro) #screen-inicio .titulo-estadisticas-inicio{ color:#1F2F68
     window.scrollTo(0, 0);
     setTimeout(()=> inputBusquedaGlobal.focus(), 150);
   });
+
+  // NUEVO (v511): el buscador de la casilla "Período seleccionado" abre la misma búsqueda.
+  document.getElementById('btn-buscador-inicio').addEventListener('click', ()=> document.getElementById('btn-abrir-busqueda').click());
 
   document.getElementById('btn-cerrar-busqueda').addEventListener('click', ()=>{
     screenBusqueda.style.display = 'none';
