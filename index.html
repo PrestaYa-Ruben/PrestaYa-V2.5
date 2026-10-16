@@ -7532,6 +7532,59 @@ body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-divider{
 body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-divider{ margin:12px 0 !important; }
 body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-progress-track{ height:10px; background:rgba(30,45,80,0.08) !important; box-shadow:inset 0 1.5px 3px rgba(20,30,60,0.18), 0 1px 0 rgba(255,255,255,0.85); }
 body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-progress-fill{ box-shadow:inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 2px rgba(20,60,40,0.25); }
+/* NUEVO (a pedido, v491): tarjetas de cliente en Clientes con colores más suaves */
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-al-dia{ background:linear-gradient(160deg,#F7FCF6 0%,#ECF7EA 100%); border-color:#CBE6C8; border-left-color:#2FAE5F; }
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-mora{ background:linear-gradient(160deg,#FEF7F7 0%,#FAECEC 100%); border-color:#F0CDCD; border-left-color:#E0111F; }
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-sin-credito{ background:linear-gradient(160deg,#F5F8FD 0%,#E9EFF9 100%); border-color:#C9D6EE; }
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente::before{ opacity:0.32; }
+/* NUEVO (a pedido, v492): tarjetas del crédito en el detalle del cliente con colores más suaves */
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-activo{ background:linear-gradient(160deg,#F7FCF6 0%,#ECF7EA 100%) !important; border-color:#B9DDB6 !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido{ background:linear-gradient(160deg,#FEF7F7 0%,#FAECEC 100%) !important; border-color:#E8BDBD !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full:not(.loan-card-activo):not(.loan-card-vencido){ background:linear-gradient(160deg,#F5F8FD 0%,#E9EFF9 100%) !important; border-color:#C3D2EC !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full::before{ opacity:0.32; }
+/* NUEVO (a pedido, v493): rojo claro cálido (coral suave) en vez de rosa para lo vencido */
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido{ background:linear-gradient(160deg,#FDEDEA 0%,#F8D8D2 100%) !important; border-color:#E9A9A0 !important; }
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-mora{ background:linear-gradient(160deg,#FDEDEA 0%,#F8D8D2 100%); border-color:#E9A9A0; border-left-color:#E0111F; }
+/* PRUEBA (a pedido, v494): tarjetas de cliente en Clientes en blanco suave
+   (no blanco puro). Las franjas de color de la izquierda se conservan.
+   Para retirarla basta con borrar este bloque. */
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-al-dia, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-mora, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-sin-credito, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-inhabilitado{
+  background:linear-gradient(160deg,#FCFCFA 0%,#F6F7F5 100%) !important; border-color:#DCE1E7 !important;
+}
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-al-dia{ border-left-color:#2FAE5F !important; }
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-mora{ border-left-color:#E0111F !important; }
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-inhabilitado{ border-left-color:#9AA2AE !important; }
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-sin-credito{ border-left-color:#AEB5C0 !important; }
+/* PRUEBA (a pedido, v495): tarjetas del crédito en el detalle del cliente en
+   blanco suave + franja de color a la izquierda (igual que las tarjetas de
+   Clientes). Para retirarla basta con borrar este bloque. */
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-activo, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full:not(.loan-card-activo):not(.loan-card-vencido){
+  background:linear-gradient(160deg,#FCFCFA 0%,#F6F7F5 100%) !important;
+  border-width:1.5px 1.5px 1.5px 6px !important; border-style:solid !important; border-color:#DCE1E7 !important;
+}
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-activo{ border-left-color:#2FAE5F !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido{ border-left-color:#E0111F !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full:not(.loan-card-activo):not(.loan-card-vencido){ border-left-color:#9AA2AE !important; }
+/* PRUEBA (a pedido, v496): borde más marcado y look limpio (sin sombras ni
+   reflejos) en las tarjetas de Clientes y del crédito en el detalle del cliente.
+   Las franjas de color de la izquierda se conservan. */
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-al-dia, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-mora, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-sin-credito, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-inhabilitado{ border-top-color:#C3CBD6 !important; border-right-color:#C3CBD6 !important; border-bottom-color:#C3CBD6 !important;
+  border-top-width:2px !important; border-right-width:2px !important; border-bottom-width:2px !important; box-shadow:none !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-activo, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full:not(.loan-card-activo):not(.loan-card-vencido){ border-top-color:#C3CBD6 !important; border-right-color:#C3CBD6 !important; border-bottom-color:#C3CBD6 !important;
+  border-top-width:2px !important; border-right-width:2px !important; border-bottom-width:2px !important; box-shadow:none !important; }
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente::before, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full::before{ filter:none !important; }
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente .info .name, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente .crs-saldo-valor, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente .client-row-badge,
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-card-nombre-principal, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-amount, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-badge{ text-shadow:none !important; }
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente .client-row-badge, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-badge{ box-shadow:none !important; }
+/* NUEVO (a pedido, v497): zona de notas más visible sobre el fondo blanco suave */
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note.loan-note-vacia{
+  background:#EEF2F6 !important; border:1.5px solid #CDD6E1 !important;
+  box-shadow:inset 0 2px 4px rgba(20,30,60,0.10) !important;
+}
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-activo .loan-note, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-activo .loan-note.loan-note-vacia{ background:#EAF5EC !important; border-color:#BFDDC6 !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido .loan-note, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido .loan-note.loan-note-vacia{ background:#FBEDEB !important; border-color:#EBC3BD !important; }
+/* NUEVO (a pedido, v500): saldo pendiente de la tarjeta de cliente en un rojo más suave (antes #B4232A) */
+#screen-clientes .client-row.client-row-cliente .crs-saldo-valor{ color:#DA7375 !important; } /* v501: un poco más suave (v500: #D0585A) */
 </style>
 
 </head>
