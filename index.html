@@ -7585,6 +7585,36 @@ body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-activo 
 body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido .loan-note, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido .loan-note.loan-note-vacia{ background:#FBEDEB !important; border-color:#EBC3BD !important; }
 /* NUEVO (a pedido, v500): saldo pendiente de la tarjeta de cliente en un rojo más suave (antes #B4232A) */
 #screen-clientes .client-row.client-row-cliente .crs-saldo-valor{ color:#DA7375 !important; } /* v501: un poco más suave (v500: #D0585A) */
+/* NUEVO (a pedido, v502): franja amarilla de alerta de mora en la tarjeta del crédito */
+.loan-card-full .loan-alerta-mora{
+  display:flex; align-items:center; gap:10px;
+  margin:10px -15px 2px; padding:9px 15px;
+  background:#FBEBA8; border-top:1px solid #F1D774; border-bottom:1px solid #F1D774;
+  position:relative; z-index:1;
+}
+.loan-card-full .lam-titulo{ display:flex; align-items:center; gap:5px; flex-shrink:0; color:#C8261B; font-weight:800; font-size:13px; letter-spacing:0.3px; }
+.loan-card-full .lam-titulo svg{ width:18px; height:18px; flex-shrink:0; }
+.loan-card-full .lam-texto{ font-size:13px; line-height:1.3; color:#3D3415; font-weight:500; }
+.loan-card-full .lam-texto b{ font-weight:800; color:#1F1A00; }
+body.modo-oscuro .loan-card-full .loan-alerta-mora{ background:#5A4A12; border-color:#7A651C; }
+body.modo-oscuro .loan-card-full .lam-texto{ color:#F7EBC0; }
+body.modo-oscuro .loan-card-full .lam-texto b{ color:#FFF6D6; }
+/* NUEVO (a pedido, v503): franja amarilla compacta de alerta de mora en la tarjeta del cliente
+   (va pegada al borde inferior; la tarjeta gana un poco de alto abajo para no tapar nada) */
+.client-row.client-row-cliente.client-row-con-alerta{ padding-bottom:40px !important; }
+.client-row.client-row-cliente .client-alerta-mora{
+  position:absolute; left:0; right:0; bottom:0; z-index:3; box-sizing:border-box;
+  display:flex; align-items:center; gap:6px; min-width:0; height:28px;
+  padding:0 12px; background:#FBEBA8; border-top:1px solid #F1D774; border-radius:0 0 10px 6px;
+  font-size:12px; line-height:1; color:#3D3415; white-space:nowrap; overflow:hidden;
+}
+.client-row.client-row-cliente .client-alerta-mora svg{ width:15px; height:15px; flex-shrink:0; }
+.client-row.client-row-cliente .cam-titulo{ color:#C8261B; font-weight:800; letter-spacing:0.3px; flex-shrink:0; }
+.client-row.client-row-cliente .cam-texto{ font-weight:500; overflow:hidden; text-overflow:ellipsis; }
+.client-row.client-row-cliente .cam-texto b{ font-weight:800; color:#1F1A00; }
+body.modo-oscuro .client-row.client-row-cliente .client-alerta-mora{ background:#5A4A12; border-color:#7A651C; color:#F7EBC0; }
+body.modo-oscuro .client-row.client-row-cliente .cam-texto b{ color:#FFF6D6; }
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-con-alerta::before{ bottom:28px; }
 </style>
 
 </head>
@@ -17656,6 +17686,26 @@ body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido
     // tarjeta de cada crédito.
     if(card._lateralCliente) card.appendChild(card._lateralCliente);
 
+    // NUEVO (a pedido, v503): franja amarilla compacta de alerta cuando el
+    // cliente tiene créditos en mora. Días = suma de los días de mora de sus
+    // créditos vencidos (misma cuenta que la franja de la tarjeta del crédito
+    // y que "Mora acumulada"). Solo lectura.
+    try{
+      if(card.classList.contains('client-row-mora')){
+        const diasMoraCliente = prestamosGuardados
+          .filter(p => p.clienteId === cliente.id && p.estado === 'activo' && estadoVisualPrestamo(p) === 'vencido')
+          .reduce((suma, p) => suma + diasMoraYAnticipadoPrestamo(p).mora, 0);
+        if(diasMoraCliente > 0){
+          const franjaCli = document.createElement('div');
+          franjaCli.className = 'client-alerta-mora';
+          franjaCli.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 1.6 21h20.8z" fill="#D92D20"/><rect x="11" y="9" width="2" height="6.5" rx="1" fill="#fff"/><circle cx="12" cy="18" r="1.15" fill="#fff"/></svg>'
+            + '<span class="cam-titulo">ATENCIÓN</span><span class="cam-texto">Presenta <b>' + diasMoraCliente + (diasMoraCliente === 1 ? ' día' : ' días') + '</b> acumulados de mora</span>';
+          card.appendChild(franjaCli);
+          card.classList.add('client-row-con-alerta');
+        }
+      }
+    }catch(errAlerta){}
+
     // Al tocar la tarjeta se abre el detalle completo del cliente
     card.addEventListener('click', ()=> abrirDetalleCliente(cliente));
 
@@ -22611,6 +22661,22 @@ body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido
     `;
     if(prestamo.nota){
       card.querySelector('.loan-note span').textContent = prestamo.nota;
+    }
+
+    // NUEVO (a pedido, v502): franja amarilla de ALERTA cuando el crédito está
+    // en mora. Los días son la SUMA de los días de mora de cada cuota (misma
+    // cuenta que "Mora acumulada" del detalle: cuotas vencidas sin pagar a hoy
+    // + días tarde de las cuotas pagadas con atraso). Solo lectura.
+    if(estadoVisual === 'vencido'){
+      const diasMoraAlerta = diasMoraYAnticipadoPrestamo(prestamo).mora;
+      if(diasMoraAlerta > 0){
+        const franja = document.createElement('div');
+        franja.className = 'loan-alerta-mora';
+        franja.innerHTML = '<div class="lam-titulo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 1.6 21h20.8z" fill="#D92D20"/><rect x="11" y="9" width="2" height="6.5" rx="1" fill="#fff"/><circle cx="12" cy="18" r="1.15" fill="#fff"/></svg><span>ATENCIÓN</span></div>'
+          + '<div class="lam-texto">Este crédito presenta <b>' + diasMoraAlerta + (diasMoraAlerta === 1 ? ' día' : ' días') + '</b> acumulados de mora.</div>';
+        const topCard = card.querySelector('.loan-card-top');
+        if(topCard) topCard.insertAdjacentElement('afterend', franja);
+      }
     }
 
     // NUEVO: ícono de recordatorio en la tarjeta — abre directo "Programar
