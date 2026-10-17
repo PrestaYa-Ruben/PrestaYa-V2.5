@@ -25437,6 +25437,13 @@ body.modo-oscuro #screen-agregar-abono .resumen-exceso strong{ color:#F08A8D; }
   // comprobantes). Vacío = se usa el texto de siempre según "Aplicar abono a".
   // NUEVO (a pedido, v528): concepto de los recibos de un préstamo a solo
   // intereses (si no se eligió un "Concepto en el recibo" a mano).
+  // NUEVO (a pedido, v529): saldo que se muestra en recibos/comprobantes.
+  // En un préstamo a solo intereses es solo el capital que falta (sin
+  // intereses); en los demás, el saldo pendiente de siempre.
+  function saldoReciboPrestamo(prestamo){
+    if(prestamo && prestamo.soloInteres) return capitalPendienteSoloInteres(prestamo);
+    return saldoPendientePrestamo(prestamo);
+  }
   function conceptoReciboSoloInteres(prestamo, pagos){
     if(!prestamo || !prestamo.soloInteres) return '';
     const lista = (Array.isArray(pagos) ? pagos : [pagos]).filter(p => p && p.aplicarA !== 'mora');
@@ -26120,7 +26127,7 @@ body.modo-oscuro #screen-agregar-abono .resumen-exceso strong{ color:#F08A8D; }
     }
     const ocultarSaldoYProximo = !!(opciones && opciones.ocultarSaldoYProximo);
     if(mostrarReciboSaldo() && !ocultarSaldoYProximo){
-      filas.push(['Saldo pendiente', formatearPesos(saldoPendientePrestamo(prestamo))]);
+      filas.push(['Saldo pendiente', formatearPesos(saldoReciboPrestamo(prestamo))]); // v529
     }
     if(mostrarReciboProximo() && !ocultarSaldoYProximo){
       const proxima = proximaCuotaPendiente(prestamo);
@@ -26735,7 +26742,7 @@ body.modo-oscuro #screen-agregar-abono .resumen-exceso strong{ color:#F08A8D; }
     const { prestamo } = pagoEnDetalle;
 
     if(mostrarReciboSaldo()){
-      document.getElementById('detalle-pago-saldo').textContent = formatearPesos(saldoPendientePrestamo(prestamo));
+      document.getElementById('detalle-pago-saldo').textContent = formatearPesos(saldoReciboPrestamo(prestamo)); // v529
       filaSaldo.style.display = 'flex';
     }else{
       filaSaldo.style.display = 'none';
@@ -26991,7 +26998,7 @@ body.modo-oscuro #screen-agregar-abono .resumen-exceso strong{ color:#F08A8D; }
       filas.push(['Nota', pago.nota]);
     }
     if(mostrarReciboSaldo()){
-      filas.push(['Saldo pendiente', formatearPesos(saldoPendientePrestamo(prestamo))]);
+      filas.push(['Saldo pendiente', formatearPesos(saldoReciboPrestamo(prestamo))]); // v529
     }
     if(mostrarReciboProximo()){
       const proxima = proximaCuotaPendiente(prestamo);
@@ -27304,7 +27311,7 @@ body.modo-oscuro #screen-agregar-abono .resumen-exceso strong{ color:#F08A8D; }
     }
 
     if(mostrarReciboSaldo()){
-      texto += '\nSaldo pendiente: ' + formatearPesos(saldoPendientePrestamo(prestamo));
+      texto += '\nSaldo pendiente: ' + formatearPesos(saldoReciboPrestamo(prestamo)); // v529
     }
     if(mostrarReciboProximo()){
       const proxima = proximaCuotaPendiente(prestamo);
@@ -29565,7 +29572,7 @@ body.modo-oscuro #screen-agregar-abono .resumen-exceso strong{ color:#F08A8D; }
     }
     if(prestamoRef){
       filas.push(['Monto del préstamo', formatearPesos(prestamoRef.valor)]);
-      filas.push(['Saldo pendiente', formatearPesos(saldoPendientePrestamo(prestamoRef))]);
+      filas.push(['Saldo pendiente', formatearPesos(saldoReciboPrestamo(prestamoRef))]); // v529
       filas.push(['Modalidad de pago', NOMBRES_FRECUENCIA[prestamoRef.frecuencia] || prestamoRef.frecuencia]);
       filas.push(['Estado del crédito', prestamoRef.estado === 'finalizado' ? 'Finalizado' : 'Activo']);
     }
