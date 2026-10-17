@@ -7797,6 +7797,41 @@ body.modo-oscuro #screen-nuevo-prestamo .np-tipo-opcion.activo{ color:#10141C; b
 #screen-agregar-abono .resumen-exceso strong{ color:#D0464B; }
 body.modo-oscuro #screen-agregar-abono .resumen-exceso span,
 body.modo-oscuro #screen-agregar-abono .resumen-exceso strong{ color:#F08A8D; }
+
+/* NUEVO (a pedido, v530): sombra muy sutil bajo las tarjetas de cliente en Clientes (modo claro) */
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-al-dia, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-mora, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-sin-credito, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-inhabilitado{
+  box-shadow:0 2px 4px rgba(20,30,60,0.05), 0 4px 10px rgba(20,30,60,0.05) !important;
+}
+
+/* NUEVO (a pedido, v531): efecto "ficha de dominó" en las tarjetas de cliente
+   (modo claro): canto inferior sólido que da grosor, sombra suave debajo y
+   brillo arriba. Reemplaza la sombra sutil de v530. */
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-al-dia, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-mora, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-sin-credito, body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente.client-row-inhabilitado{
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.95),
+    inset 0 -2px 3px rgba(20,30,60,0.06),
+    0 2px 0 #DEE3EA,
+    0 3px 0 #D2D8E0,
+    0 6px 11px rgba(20,30,60,0.09) !important; /* v532: canto más delgado y gris más suave */
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+/* al tocarla, la ficha "baja" (se hunde su canto) */
+body:not(.modo-oscuro) #screen-clientes .client-row.client-row-cliente:active{
+  transform:translateY(2px);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,0.95), 0 1px 0 #D2D8E0, 0 3px 6px rgba(20,30,60,0.08) !important;
+}
+body:not(.modo-oscuro) #screen-clientes #clientes-lista.clients-list{ gap:16px !important; padding-bottom:6px; }
+
+/* NUEVO (a pedido, v533): mismo canto tipo dominó (v532) en las tarjetas del crédito del detalle del cliente (modo claro) */
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-activo, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.loan-card-vencido, body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full:not(.loan-card-activo):not(.loan-card-vencido){
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.95),
+    inset 0 -2px 3px rgba(20,30,60,0.06),
+    0 2px 0 #DEE3EA,
+    0 3px 0 #D2D8E0,
+    0 6px 11px rgba(20,30,60,0.09) !important;
+  margin-bottom:4px;
+}
 </style>
 
 </head>
