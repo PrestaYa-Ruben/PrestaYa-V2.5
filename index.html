@@ -25435,6 +25435,18 @@ body.modo-oscuro #screen-agregar-abono .resumen-exceso strong{ color:#F08A8D; }
   const nombresAplicarA = { capital_interes:'Interés y Capital', solo_interes:'Solo interés', solo_capital:'Solo capital', mora:'Recargo por mora', abono:'Abono', capital:'Abono a capital' }; // v527: + capital
   // NUEVO (a pedido, v517): concepto personalizado SOLO visual (recibos y
   // comprobantes). Vacío = se usa el texto de siempre según "Aplicar abono a".
+  // NUEVO (a pedido, v528): concepto de los recibos de un préstamo a solo
+  // intereses (si no se eligió un "Concepto en el recibo" a mano).
+  function conceptoReciboSoloInteres(prestamo, pagos){
+    if(!prestamo || !prestamo.soloInteres) return '';
+    const lista = (Array.isArray(pagos) ? pagos : [pagos]).filter(p => p && p.aplicarA !== 'mora');
+    if(!lista.length) return '';
+    const hayCapital = lista.some(p => p.aplicarA === 'capital');
+    const hayInteres = lista.some(p => p.aplicarA !== 'capital');
+    if(hayCapital && !hayInteres) return 'Abono a capital';
+    if(hayCapital && hayInteres) return 'Pago de intereses y abono a capital';
+    return 'Pago de intereses';
+  }
   function conceptoAbono(pago){
     const nombres = { pago_interes:'Pago de interés', recargo_prorroga:'Recargo por prórroga de pago' };
     return (pago && nombres[pago.concepto]) || '';
@@ -26038,6 +26050,16 @@ body.modo-oscuro #screen-agregar-abono .resumen-exceso strong{ color:#F08A8D; }
       ['Modalidad de pago', NOMBRES_FRECUENCIA[prestamo.frecuencia] || prestamo.frecuencia]
     ];
 
+    // NUEVO (v528): préstamo a solo intereses — sin fila "Cuota" y con
+    // fila "Concepto" (Pago de intereses / Abono a capital).
+    const conceptoSI = conceptoReciboSoloInteres(prestamo, pagosCuota);
+    if(prestamo.soloInteres){
+      filas = filas.filter(f => !f || f[0] !== 'Cuota');
+      if(conceptoSI && !filas.some(f => f && f[0] === 'Concepto')){
+        const iM = filas.findIndex(f => f && f[0] === 'Monto del préstamo');
+        filas.splice(iM >= 0 ? iM + 1 : 1, 0, ['Concepto', conceptoSI]);
+      }
+    }
     // NUEVO (v517): concepto personalizado (solo visual) — reemplaza el
     // "Concepto" existente o se agrega justo después de "Monto del préstamo".
     { const conceptoP = conceptoAbono(ultimoPago);
@@ -26281,7 +26303,7 @@ body.modo-oscuro #screen-agregar-abono .resumen-exceso strong{ color:#F08A8D; }
     ctx.font = fuente(700, 17);   // A pedido: aún más pequeño (antes 21; al inicio 26)
     ctx.textAlign = 'center';
     // v518: si se eligio un 'Concepto en el recibo', ese texto reemplaza el titulo sobre el valor (solo visual)
-    ctx.fillText(conceptoAbono(ultimoPago) ? conceptoAbono(ultimoPago).toUpperCase() : (esRecargoMora ? 'RECARGO PAGADO' : 'ABONO REALIZADO'), centroX, yEtiquetaAbono);
+    ctx.fillText(conceptoAbono(ultimoPago) ? conceptoAbono(ultimoPago).toUpperCase() : (esRecargoMora ? 'RECARGO PAGADO' : (conceptoSI ? conceptoSI.toUpperCase() : 'ABONO REALIZADO')), centroX, yEtiquetaAbono); // v528: solo intereses
 
     // Caja verde muy clara + monto (el elemento más grande del comprobante)
     trazarRectRedondeado(ctx, xCajaMonto, yCajaMonto, anchoCajaMonto, altoCajaMonto, 30);
@@ -26730,7 +26752,18 @@ body.modo-oscuro #screen-agregar-abono .resumen-exceso strong{ color:#F08A8D; }
     // NUEVO: "Abonado a" (bajo el monto) siempre visible — reemplaza el
     // método de pago que iba ahí antes. El método de pago ahora es una
     // fila más de la lista, controlada por el interruptor "Método de pago".
-    document.getElementById('detalle-pago-abonado-a').textContent = conceptoAbono(pagoEnDetalle.pago) || nombresAplicarA[pagoEnDetalle.pago.aplicarA] || 'Interés y Capital';
+    document.getElementById('detalle-pago-abonado-a').textContent = conceptoAbono(pagoEnDetalle.pago) || conceptoReciboSoloInteres(pagoEnDetalle.prestamo, pagoEnDetalle.pago) || nombresAplicarA[pagoEnDetalle.pago.aplicarA] || 'Interés y Capital';
+    { // v528: solo intereses — la fila "Cuota" pasa a ser "Concepto"
+      const valorCuotaEl = document.getElementById('detalle-pago-cuota');
+      const etiquetaCuotaEl = valorCuotaEl && valorCuotaEl.previousElementSibling;
+      const pr = pagoEnDetalle.prestamo, pg = pagoEnDetalle.pago;
+      if(pr && pr.soloInteres && pg.aplicarA !== 'mora'){
+        if(etiquetaCuotaEl) etiquetaCuotaEl.textContent = 'Concepto';
+        valorCuotaEl.textContent = conceptoAbono(pg) || conceptoReciboSoloInteres(pr, pg);
+      }else if(etiquetaCuotaEl){
+        etiquetaCuotaEl.textContent = 'Cuota';
+      }
+    }
 
     // NUEVO: "Puntualidad del pago" — justo debajo del monto, controlada
     // por su propio interruptor (Ajustes → Comprobante de cada abono).
@@ -26948,7 +26981,8 @@ body.modo-oscuro #screen-agregar-abono .resumen-exceso strong{ color:#F08A8D; }
       // total (mismo dato que ya usaba el caso de mora), sin importar el
       // número específico de cuota tocada por este abono.
       const textoCuota = esAbono ? 'Abono' : cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas;
-      filas.push(['Cuota', textoCuota]);
+      if(prestamo.soloInteres && !esRecargoMora) filas.push(['Concepto', conceptoAbono(pago) || conceptoReciboSoloInteres(prestamo, pago)]); // v528: sin "Cuota"
+      else filas.push(['Cuota', textoCuota]);
     }
     if(obtenerReciboMostrarMetodo()){
       filas.push(['Método de pago', nombresMetodoPago[pago.metodoPago] || pago.metodoPago || 'Efectivo']);
@@ -27040,7 +27074,7 @@ body.modo-oscuro #screen-agregar-abono .resumen-exceso strong{ color:#F08A8D; }
 
     ctx.font = '500 14px ' + FUENTE;
     ctx.fillStyle = colorGris;
-    ctx.fillText(conceptoAbono(pago) || nombresAplicarA[pago.aplicarA] || 'Interés y Capital', anchoCard / 2, y + 12);
+    ctx.fillText(conceptoAbono(pago) || conceptoReciboSoloInteres(prestamo, pago) || nombresAplicarA[pago.aplicarA] || 'Interés y Capital', anchoCard / 2, y + 12); // v528
     y += ALTO_SUBTITULO;
 
     dibujarLineaPunteadaDetallePago(ctx, padX, anchoCard - padX, y + 16, false);
