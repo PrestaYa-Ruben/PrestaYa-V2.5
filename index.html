@@ -20195,16 +20195,21 @@ body.modo-oscuro .sello-riesgo{ color:#E0525A; opacity:.7; }
   // que usa el resto del sistema, ver estadoVisualPrestamo). Función
   // independiente y reutilizable: se llama desde cualquier generador de
   // canvas, en el centro de la tarjeta, sin alterar el resto del dibujo.
-  function dibujarSelloCreditoPagado(ctx, cardX, cardY, anchoCard, altoCard){
+  function dibujarSelloCreditoPagado(ctx, cardX, cardY, anchoCard, altoCard, opciones){
     // CAMBIO: se corrió el centro del sello un poco hacia la izquierda
     // (antes justo al centro de la tarjeta) — ahí es donde suele quedar
     // el espacio más vacío, bajo la columna Cliente/Valor abonado/Estado.
-    const centroX = cardX + anchoCard * 0.4;
-    const centroY = cardY + altoCard / 2;
+    // NUEVO (v535): "opciones" opcional { centroX, centroY, escala, alpha }
+    // — sin opciones, el sello sale exactamente igual que antes.
+    const op = opciones || {};
+    const centroX = op.centroX != null ? op.centroX : cardX + anchoCard * 0.4;
+    const centroY = op.centroY != null ? op.centroY : cardY + altoCard / 2;
+    const escalaSello = op.escala || 1;
     ctx.save();
     ctx.translate(centroX, centroY);
     ctx.rotate(-14 * Math.PI / 180);
-    ctx.globalAlpha = 1;   // CAMBIO: tinta sólida, sin transparencia, para que se vea nítido
+    if(escalaSello !== 1) ctx.scale(escalaSello, escalaSello);
+    ctx.globalAlpha = op.alpha != null ? op.alpha : 1;   // CAMBIO: tinta sólida, sin transparencia, para que se vea nítido
 
     // NUEVO: sombra sutil para dar sensación de relieve, como si el
     // timbre estuviera realmente presionado sobre el papel del comprobante.
@@ -20235,7 +20240,7 @@ body.modo-oscuro .sello-riesgo{ color:#E0525A; opacity:.7; }
     // aparte, ahí se le "quita" un poco de tinta (motas diminutas, un par
     // de roces y zonas con menos carga) y luego se estampa sobre el
     // comprobante. El desgaste usa una semilla fija: siempre sale igual.
-    const ESCALA_SELLO = 3, MARGEN_SELLO = 8;
+    const ESCALA_SELLO = 3 * Math.max(1, escalaSello), MARGEN_SELLO = 8; // v535: más resolución si el sello se agranda
     const anchoLienzo = selloAncho + MARGEN_SELLO * 2, altoLienzo = selloAlto + MARGEN_SELLO * 2;
     const lienzoSello = document.createElement('canvas');
     lienzoSello.width = Math.ceil(anchoLienzo * ESCALA_SELLO);
@@ -26671,7 +26676,8 @@ body.modo-oscuro .sello-riesgo{ color:#E0525A; opacity:.7; }
       // El sello va sobre el espacio libre a la derecha de las últimas
       // filas de la tarjeta de datos, para no tapar el monto ni la píldora.
       // (La función centra el sello en x + ancho*0.4, y + alto/2.)
-      dibujarSelloCreditoPagado(ctx, W - 134, yFinTarjeta - altoFila - 6, 0, 0);
+      // CAMBIO (a pedido, v535): más al centro del recibo, más grande y más transparente
+      dibujarSelloCreditoPagado(ctx, 0, 0, 0, 0, { centroX: W / 2, centroY: (alturaHeader + yFinTarjeta) / 2 + 85, escala: 1.9, alpha: 0.58 } /* v536: más abajo y menos transparente */);
     }
 
     return canvas;
