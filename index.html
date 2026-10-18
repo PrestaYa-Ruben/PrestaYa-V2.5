@@ -7851,6 +7851,116 @@ body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full, body:not(.modo-o
 body.modo-oscuro .sello-riesgo{ color:#E0525A; opacity:.7; }
 #screen-clientes .client-row-cliente.con-sello-riesgo,
 #screen-detalle-cliente .loan-card-full.con-sello-riesgo{ position:relative; }
+
+/* ==========================================================
+   NUEVO (a pedido, v537): diseños de la tarjeta del crédito
+   ("Paneles" y "Resumen") — Ajustes → Diseño tarjeta del crédito.
+   Solo presentación; la tarjeta "Actual" no cambia.
+   ========================================================== */
+.loan-card-full.ltd{ --ltd-txt:#1F2937; --ltd-sub:#5B6576; --ltd-rojo:#C2382F; --ltd-azul:#2F67C4; --ltd-oro:#D39A12; --ltd-caja:#FFFFFF; --ltd-caja-borde:#E1E5EA; --ltd-gris:#EDEFF2; color:var(--ltd-txt); }
+body.modo-oscuro .loan-card-full.ltd{ --ltd-txt:#E8ECF2; --ltd-sub:#A3AEBE; --ltd-rojo:#F07A72; --ltd-azul:#7FA8F0; --ltd-oro:#F0C04A; --ltd-caja:rgba(255,255,255,0.05); --ltd-caja-borde:rgba(255,255,255,0.10); --ltd-gris:rgba(255,255,255,0.06); }
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full.ltd::before{ display:none !important; }
+.ltd .ltd-cab{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.ltd-paneles .ltd-cab{ background:var(--ltd-gris); border:1px solid var(--ltd-caja-borde); border-radius:10px; padding:9px 10px; }
+.ltd .ltd-cliente{ display:flex; align-items:flex-start; gap:7px; min-width:0; }
+.ltd .ltd-ico-persona{ width:19px; height:19px; flex-shrink:0; margin-top:2px; color:#4B5563; }
+body.modo-oscuro .ltd .ltd-ico-persona{ color:#C5CDD8; }
+.ltd .ltd-ico-persona svg, .ltd .ltd-ico-monedas svg, .ltd .ltd-ico-pila svg, .ltd .ltd-prox-ico svg{ width:100%; height:100%; display:block; }
+.ltd .ltd-nombre{ font-size:17px; font-weight:800; text-transform:uppercase; letter-spacing:.2px; line-height:1.2; color:var(--ltd-txt); overflow-wrap:anywhere; }
+.ltd .ltd-nombre-pre{ font-weight:500; }
+.ltd .ltd-id{ font-size:12.5px; color:var(--ltd-sub); margin-top:1px; }
+.ltd .ltd-cab-der{ display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0; }
+.ltd .ltd-tit{ font-size:12.5px; font-weight:800; text-transform:uppercase; letter-spacing:.2px; color:var(--ltd-txt); margin:0 0 7px; line-height:1.25; }
+.ltd-resumen .ltd-tit{ font-weight:600; color:var(--ltd-sub); }
+.ltd .ltd-cols{ display:grid; grid-template-columns:minmax(0,0.92fr) minmax(0,1.08fr); gap:10px; margin-top:12px; }
+.ltd .ltd-cols-dividida .ltd-col-detalles{ border-left:1.5px solid var(--ltd-caja-borde); padding-left:10px; }
+.ltd .ltd-col{ min-width:0; }
+.ltd .ltd-panel{ background:var(--ltd-caja); border:1px solid var(--ltd-caja-borde); border-radius:10px; padding:8px 9px; box-shadow:0 2px 6px rgba(20,30,60,0.06); margin-bottom:8px; }
+.ltd .ltd-panel-pagado{ display:flex; align-items:center; gap:7px; margin-bottom:0; }
+.ltd .ltd-saldo{ font-size:clamp(19px, 5.6vw, 24px); font-weight:800; color:var(--ltd-rojo); line-height:1.1; letter-spacing:-.3px; white-space:nowrap; }
+.ltd-resumen .ltd-saldo{ margin-bottom:8px; }
+.ltd .ltd-pagado{ font-size:clamp(17px, 5vw, 21px); font-weight:800; color:var(--ltd-azul); line-height:1.1; white-space:nowrap; }
+.ltd .ltd-lbl{ font-size:10.5px; font-weight:600; text-transform:uppercase; color:var(--ltd-sub); letter-spacing:.2px; margin-top:2px; line-height:1.2; }
+.ltd .ltd-lbl2{ font-size:11.5px; font-weight:600; text-transform:uppercase; color:var(--ltd-sub); letter-spacing:.2px; line-height:1.2; }
+.ltd .ltd-ico-monedas{ width:28px; height:28px; flex-shrink:0; color:var(--ltd-azul); }
+.ltd .ltd-filas{ display:flex; flex-direction:column; gap:5px; }
+.ltd .ltd-fila{ display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; column-gap:6px; font-size:11.5px; line-height:1.3; }
+.ltd .ltd-fila span{ color:var(--ltd-sub); }
+.ltd .ltd-fila b{ font-size:12.5px; font-weight:800; color:var(--ltd-txt); margin-left:auto; white-space:nowrap; }
+.ltd .ltd-filas-caja .ltd-fila{ background:var(--ltd-gris); border-radius:6px; padding:5px 7px; }
+.ltd-paneles .ltd-fila span{ text-transform:uppercase; font-size:10.5px; letter-spacing:.1px; }
+.ltd .ltd-estado-vencido{ color:var(--ltd-rojo) !important; }
+.ltd .ltd-estado-finalizado{ color:#16834A !important; }
+.ltd .ltd-hr{ border:none; border-top:1px solid var(--ltd-caja-borde); margin:12px 0 10px; }
+.ltd .ltd-prox-bloque{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:start; gap:6px; }
+.ltd .ltd-tit-avance{ margin-top:20px; margin-bottom:0; }
+.ltd .ltd-ico-pila{ width:46px; height:40px; color:#5B6472; margin-top:4px; }
+body.modo-oscuro .ltd .ltd-ico-pila{ color:#9AA4B3; }
+.ltd .ltd-prox-der{ text-align:right; }
+.ltd .ltd-prox-linea{ line-height:1.15; }
+.ltd .ltd-prox-ico{ display:inline-block; width:18px; height:18px; color:var(--ltd-oro); vertical-align:-2px; margin-right:3px; }
+.ltd .ltd-prox-valor{ font-size:clamp(18px, 5.2vw, 22px); font-weight:800; color:var(--ltd-oro); white-space:nowrap; }
+.ltd .ltd-prox-fecha{ font-size:14px; font-weight:800; color:var(--ltd-oro); white-space:nowrap; }
+.ltd-paneles .ltd-prox-fecha{ display:block; }
+.ltd .ltd-prox-ninguno{ font-size:13.5px; font-weight:700; color:var(--ltd-sub); }
+.ltd .ltd-tit-pagos{ display:flex; align-items:center; justify-content:space-between; }
+.ltd .ltd-ico-pila-mini{ width:24px; height:20px; margin:0; }
+.ltd .ltd-pagos{ display:grid; grid-template-columns:minmax(0,0.8fr) minmax(0,1.2fr); gap:8px; }
+.ltd .ltd-pagos-item{ display:flex; align-items:flex-start; gap:6px; min-width:0; }
+.ltd .ltd-pagos-item .ltd-ico-monedas{ width:24px; height:24px; }
+.ltd .ltd-pagos-der{ justify-content:flex-end; text-align:right; }
+.ltd .ltd-pagos-der .ltd-prox-ico{ width:18px; height:20px; margin-top:2px; flex-shrink:0; }
+.ltd .ltd-pagos-der .ltd-prox-valor{ font-size:15px; }
+.ltd .ltd-pagos-der .ltd-prox-fecha{ font-size:15px; }
+.ltd .ltd-avance{ display:grid; grid-template-columns:96px minmax(0,1fr); gap:12px; align-items:center; margin-top:10px; }
+.ltd .ltd-anillo{ position:relative; width:96px; height:96px; }
+.ltd .ltd-anillo svg{ width:100%; height:100%; display:block; }
+.ltd .ltd-anillo::before{ content:''; position:absolute; inset:3px; border-radius:50%; border:1.5px solid var(--ltd-caja-borde); }
+.ltd .ltd-seg-pagada{ stroke:#2FAE5F; }
+.ltd .ltd-seg-vencida{ stroke:#E0111F; }
+.ltd .ltd-seg-pendiente{ stroke:#CBD2DC; }
+body.modo-oscuro .ltd .ltd-seg-pendiente{ stroke:#475263; }
+.ltd .ltd-anillo-txt{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; line-height:1.1; }
+.ltd .ltd-anillo-txt span{ font-size:10px; color:var(--ltd-sub); text-transform:uppercase; font-weight:600; }
+.ltd .ltd-anillo-txt b{ font-size:17px; font-weight:800; color:var(--ltd-txt); }
+.ltd .ltd-anillo-txt small{ font-size:8.5px; color:var(--ltd-sub); text-transform:uppercase; font-weight:600; }
+.ltd .ltd-nota-slot{ min-width:0; }
+.ltd .ltd-nota-slot .loan-note{ margin:0 !important; }
+/* Selector en Ajustes */
+.diseno-tarjeta-card{ background:var(--surface); border-radius:16px; padding:18px 16px 16px; width:100%; max-width:380px; box-shadow:0 24px 60px rgba(0,0,0,0.30); max-height:88vh; overflow-y:auto; }
+.diseno-tarjeta-titulo{ font-size:18px; font-weight:800; color:var(--text); }
+.diseno-tarjeta-sub{ font-size:13px; color:var(--text-secondary); margin:4px 0 12px; }
+.diseno-tarjeta-opciones{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; }
+.dt-opcion{ position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; padding:8px 6px 9px; border-radius:12px; border:2px solid var(--border); background:var(--background); font-family:inherit; cursor:pointer; min-width:0; }
+.dt-opcion.seleccionada{ border-color:#2FAE5F; box-shadow:0 0 0 3px rgba(47,174,95,0.16); }
+.dt-nombre{ font-size:13px; font-weight:700; color:var(--text); }
+.dt-check{ position:absolute; top:-7px; right:-7px; width:22px; height:22px; border-radius:50%; background:#2FAE5F; color:#fff; display:none; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
+.dt-check svg{ width:14px; height:14px; }
+.dt-opcion.seleccionada .dt-check{ display:flex; }
+.dtp{ position:relative; width:100%; aspect-ratio:3/4; background:#FAFAF8; border:1px solid #DCE1E7; border-radius:7px; padding:6px 5px 5px 8px; display:flex; flex-direction:column; gap:3px; overflow:hidden; }
+.dtp i{ display:block; }
+.dtp .dtp-franja{ position:absolute; left:0; top:0; bottom:0; width:3px; background:#2FAE5F; }
+.dtp .dtp-l{ height:4px; border-radius:2px; background:#9AA3B0; }
+.dtp .dtp-l.big{ height:6px; }
+.dtp .dtp-l.rojo{ background:#D0464B; } .dtp .dtp-l.azul{ background:#2F67C4; } .dtp .dtp-l.oro{ background:#D39A12; }
+.dtp .w40{ width:40%; } .dtp .w55{ width:55%; } .dtp .w60{ width:60%; } .dtp .w70{ width:70%; } .dtp .w80{ width:80%; } .dtp .w90{ width:90%; }
+.dtp .dtp-pill{ position:absolute; top:6px; right:5px; width:24%; height:6px; border-radius:4px; background:#2FAE5F; }
+.dtp .dtp-hr{ height:1px; background:#DCE1E7; margin:2px 0; }
+.dtp .dtp-barra{ height:5px; border-radius:3px; background:linear-gradient(90deg,#2FAE5F 35%,#DCE1E7 35%); }
+.dtp .dtp-nota{ flex:1; min-height:8px; border-radius:4px; background:#E3F3E2; border:1px solid #BFDDC0; }
+.dtp .dtp-cab{ height:12px; width:70%; border-radius:3px; background:#EDEFF2; }
+.dtp .dtp-2{ display:grid; grid-template-columns:1fr 1fr; gap:3px; }
+.dtp .dtp-2 > div{ display:flex; flex-direction:column; gap:3px; }
+.dtp .dtp-div > div + div{ border-left:1px solid #DCE1E7; padding-left:3px; }
+.dtp .dtp-caja{ display:block; background:#fff; border:1px solid #DCE1E7; border-radius:3px; padding:3px; }
+.dtp .dtp-fila{ height:6px; border-radius:2px; background:#EDEFF2; }
+.dtp .dtp-pie{ grid-template-columns:auto 1fr; align-items:center; margin-top:auto; }
+.dtp .dtp-anillo{ width:20px; height:20px; border-radius:50%; border:3px solid #9AA3B0; }
+
+/* NUEVO (v542): zona "Próximo vencimiento" tocable en los diseños de la tarjeta del crédito */
+.ltd .ltd-prox-editable.tocable{ cursor:pointer; border-radius:10px; padding:4px 6px; margin:-4px -6px; transition:background .15s ease; }
+.ltd .ltd-prox-editable.tocable:active{ background:rgba(211,154,18,0.14); }
+.ltd .ltd-prox-editable.tocable .ltd-prox-fecha{ text-decoration:underline dotted; text-underline-offset:3px; }
 </style>
 
 </head>
@@ -10928,6 +11038,18 @@ body.modo-oscuro .sello-riesgo{ color:#E0525A; opacity:.7; }
       </div>
     </div>
 
+    <!-- NUEVO (a pedido, v537): elegir el diseño de la tarjeta del crédito -->
+    <div class="card settings-item" id="item-diseno-tarjeta-credito" role="button" tabindex="0">
+      <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="2.5"></rect><path d="M2.5 9h19"></path><path d="M6.5 13.5h4M6.5 16.5h7"></path><circle cx="17" cy="15" r="2"></circle></svg></div>
+      <div class="info">
+        <div class="title">Diseño tarjeta del crédito</div>
+        <div class="subtitle" id="subtitulo-diseno-tarjeta-credito">Diseño: Actual</div>
+      </div>
+      <div class="trailing chevron">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+    </div>
+
     <div class="card settings-item" id="item-copia-seguridad" role="button" tabindex="0" style="background:var(--success-light); border-color:var(--success);">
       <div class="icon-container green"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2"></path><path d="M12 12v9"></path><path d="m16 16-4-4-4 4"></path></svg></div>
       <div class="info">
@@ -12714,6 +12836,20 @@ body.modo-oscuro .sello-riesgo{ color:#E0525A; opacity:.7; }
      en la tarjeta del cliente (área Clientes). Tabla por cuota con su fecha,
      valor y estado (PAGADA / VENCIDA), con opción de compartir como imagen. -->
 <!-- NUEVO (a pedido): "Resumen del crédito" — se abre al tocar el valor del crédito en su tarjeta -->
+
+<!-- NUEVO (a pedido, v537): selector de diseño de la tarjeta del crédito -->
+<div id="diseno-tarjeta-overlay" class="confirm-modal-overlay" style="display:none;">
+  <div class="diseno-tarjeta-card" role="dialog" aria-modal="true" aria-labelledby="diseno-tarjeta-titulo">
+    <div class="diseno-tarjeta-titulo" id="diseno-tarjeta-titulo">Diseño tarjeta del crédito</div>
+    <div class="diseno-tarjeta-sub">Se aplica a la tarjeta del crédito en el detalle del cliente.</div>
+    <div class="diseno-tarjeta-opciones" id="diseno-tarjeta-opciones" role="radiogroup">
+      <button type="button" class="dt-opcion" data-diseno="actual" role="radio"><div class="dtp dtp-actual"><i class="dtp-franja"></i><i class="dtp-l w40"></i><i class="dtp-pill"></i><i class="dtp-l big rojo w55"></i><i class="dtp-hr"></i><i class="dtp-l w80"></i><i class="dtp-l w70"></i><i class="dtp-barra"></i><i class="dtp-nota"></i></div><span class="dt-nombre">Actual</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      <button type="button" class="dt-opcion" data-diseno="paneles" role="radio"><div class="dtp dtp-paneles"><i class="dtp-franja"></i><i class="dtp-cab"></i><i class="dtp-pill"></i><div class="dtp-2"><div><i class="dtp-caja"><i class="dtp-l big rojo w80"></i></i><i class="dtp-caja"><i class="dtp-l azul w60"></i></i></div><div><i class="dtp-fila"></i><i class="dtp-fila"></i><i class="dtp-fila"></i><i class="dtp-fila"></i></div></div><div class="dtp-2 dtp-pie"><i class="dtp-anillo"></i><i class="dtp-nota"></i></div></div><span class="dt-nombre">Paneles</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      <button type="button" class="dt-opcion" data-diseno="resumen" role="radio"><div class="dtp dtp-resumen"><i class="dtp-franja"></i><i class="dtp-l w55"></i><i class="dtp-pill"></i><div class="dtp-2 dtp-div"><div><i class="dtp-l big rojo w80"></i><i class="dtp-l big rojo w80"></i></div><div><i class="dtp-l w90"></i><i class="dtp-l w90"></i><i class="dtp-l w90"></i><i class="dtp-l w90"></i></div></div><div class="dtp-2"><i class="dtp-l azul w40"></i><i class="dtp-l oro w70"></i></div><div class="dtp-2 dtp-pie"><i class="dtp-anillo"></i><i class="dtp-nota"></i></div></div><span class="dt-nombre">Resumen</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+    </div>
+    <button type="button" class="btn-outline-share" id="btn-cerrar-diseno-tarjeta" style="width:100%; margin:14px 0 0;">Listo</button>
+  </div>
+</div>
 <div id="resumen-credito-overlay" class="confirm-modal-overlay" style="display:none;">
   <div class="resumen-credito-card" role="dialog" aria-modal="true" aria-labelledby="resumen-credito-titulo">
     <div class="resumen-credito-titulo" id="resumen-credito-titulo">Resumen del crédito</div>
@@ -23614,6 +23750,231 @@ body.modo-oscuro .sello-riesgo{ color:#E0525A; opacity:.7; }
     pintar();
   }
 
+
+  // ==========================================================
+  // NUEVO (a pedido, v537): DISEÑO DE LA TARJETA DEL CRÉDITO (Ajustes).
+  // Solo cambia la apariencia de la tarjeta del crédito en el detalle del
+  // cliente. "actual" = la tarjeta de siempre (crearTarjetaPrestamo, sin
+  // tocar). "paneles" y "resumen" = diseños de las imágenes de referencia.
+  // Mismos datos de siempre (saldoPendientePrestamo, totalAbonadoPrestamo,
+  // proximaCuotaPendiente…): no hay ningún cálculo nuevo.
+  // ==========================================================
+  const DISENO_TARJETA_CREDITO_KEY = 'prestaya_diseno_tarjeta_credito';
+  const DISENOS_TARJETA_CREDITO = [
+    { clave:'actual',  nombre:'Actual',  detalle:'La tarjeta de siempre' },
+    { clave:'paneles', nombre:'Paneles', detalle:'Resumen en recuadros y detalles en filas' },
+    { clave:'resumen', nombre:'Resumen', detalle:'Resumen financiero y de pagos, más limpio' }
+  ];
+  function obtenerDisenoTarjetaCredito(){
+    let v = 'actual';
+    try{ v = localStorage.getItem(DISENO_TARJETA_CREDITO_KEY) || 'actual'; }catch(e){}
+    return DISENOS_TARJETA_CREDITO.some(d => d.clave === v) ? v : 'actual';
+  }
+  function guardarDisenoTarjetaCredito(v){
+    try{ localStorage.setItem(DISENO_TARJETA_CREDITO_KEY, v); }catch(e){}
+  }
+
+  const ICONOS_LTD = {
+    persona:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="4.2" fill="currentColor"/><path d="M3.5 21c.6-4.6 4.1-7.2 8.5-7.2s7.9 2.6 8.5 7.2z" fill="currentColor"/></svg>',
+    monedas:'<svg viewBox="0 0 32 32" aria-hidden="true"><ellipse cx="13" cy="7" rx="9" ry="3.6" fill="currentColor"/><path d="M4 7v4.6c0 2 4 3.6 9 3.6s9-1.6 9-3.6V7c0 2-4 3.6-9 3.6S4 9 4 7z" fill="currentColor" opacity=".85"/><path d="M4 13.2v4.6c0 2 4 3.6 9 3.6 1 0 2-.1 2.9-.2a8 8 0 0 1 .4-4.6c-1 .2-2.1.3-3.3.3-5 0-9-1.6-9-3.7z" fill="currentColor" opacity=".7"/><path d="M4 19.4V24c0 2 4 3.6 9 3.6 1.6 0 3.1-.2 4.4-.5a8 8 0 0 1-1.7-3.9c-.9.1-1.8.2-2.7.2-5 0-9-1.6-9-4z" fill="currentColor" opacity=".55"/><circle cx="24" cy="23" r="6.5" fill="currentColor"/><path d="M24 19.8v6.4M20.8 23h6.4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>',
+    pila:'<svg viewBox="0 0 48 40" aria-hidden="true"><g fill="currentColor"><ellipse cx="32" cy="7" rx="12" ry="4.5"/><path d="M20 7v5c0 2.5 5.4 4.5 12 4.5S44 14.5 44 12V7c0 2.5-5.4 4.5-12 4.5S20 9.5 20 7z" opacity=".85"/><path d="M20 14v5c0 2.5 5.4 4.5 12 4.5S44 21.5 44 19v-5c0 2.5-5.4 4.5-12 4.5S20 16.5 20 14z" opacity=".75"/><path d="M20 21v5c0 2.5 5.4 4.5 12 4.5S44 28.5 44 26v-5c0 2.5-5.4 4.5-12 4.5S20 23.5 20 21z" opacity=".65"/><ellipse cx="14" cy="21" rx="11" ry="4.2"/><path d="M3 21v5c0 2.3 4.9 4.2 11 4.2s11-1.9 11-4.2v-5c0 2.3-4.9 4.2-11 4.2S3 23.3 3 21z" opacity=".85"/><path d="M3 28v5c0 2.3 4.9 4.2 11 4.2s11-1.9 11-4.2v-5c0 2.3-4.9 4.2-11 4.2S3 30.3 3 28z" opacity=".7"/></g></svg>',
+    reloj:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2.5h12M6 21.5h12M7 2.5c0 5 3.5 6.5 5 9.5-1.5 3-5 4.5-5 9.5M17 2.5c0 5-3.5 6.5-5 9.5 1.5 3 5 4.5 5 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8.6 5h6.8c-.6 2.2-2.4 3.4-3.4 5-1-1.6-2.8-2.8-3.4-5zM8.5 20c.4-2.4 2.3-3.3 3.5-4.6 1.2 1.3 3.1 2.2 3.5 4.6z" fill="currentColor"/></svg>',
+    alerta:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 1.6 21h20.8z" fill="currentColor"/><rect x="11" y="9" width="2" height="6.5" rx="1" fill="#fff"/><circle cx="12" cy="18" r="1.15" fill="#fff"/></svg>'
+  };
+
+  // Anillo de cuotas: un segmento por cuota (pagada / vencida / pendiente)
+  function anilloCuotasLtdSVG(prestamo){
+    const plan = prestamo.plan || [];
+    const n = plan.length;
+    const r = 42, cx = 50, cy = 50, sw = 9;
+    let segs = '';
+    if(n > 0 && n <= 48){
+      const gap = n > 1 ? Math.min(4, 120 / n) : 0;
+      const paso = 360 / n;
+      plan.forEach((c, i)=>{
+        const a0 = -90 + i * paso + gap / 2, a1 = -90 + (i + 1) * paso - gap / 2;
+        const rad = a => a * Math.PI / 180;
+        const x0 = cx + r * Math.cos(rad(a0)), y0 = cy + r * Math.sin(rad(a0));
+        const x1 = cx + r * Math.cos(rad(a1)), y1 = cy + r * Math.sin(rad(a1));
+        const grande = (a1 - a0) > 180 ? 1 : 0;
+        const est = estaCuotaPagada(prestamo, c.numero) ? 'pagada' : (cuotaVencida(prestamo, c) ? 'vencida' : 'pendiente');
+        segs += n === 1
+          ? `<circle cx="${cx}" cy="${cy}" r="${r}" class="ltd-seg ltd-seg-${est}" fill="none" stroke-width="${sw}"/>`
+          : `<path d="M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${grande} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}" class="ltd-seg ltd-seg-${est}" fill="none" stroke-width="${sw}"/>`;
+      });
+    }else if(n > 48){
+      const pagadas = plan.filter(c => estaCuotaPagada(prestamo, c.numero)).length;
+      const L = 2 * Math.PI * r, f = pagadas / n;
+      segs = `<circle cx="${cx}" cy="${cy}" r="${r}" class="ltd-seg ltd-seg-pendiente" fill="none" stroke-width="${sw}"/>`
+        + `<circle cx="${cx}" cy="${cy}" r="${r}" class="ltd-seg ltd-seg-pagada" fill="none" stroke-width="${sw}" stroke-dasharray="${(L * f).toFixed(1)} ${L.toFixed(1)}" transform="rotate(-90 50 50)"/>`;
+    }
+    return `<svg viewBox="0 0 100 100" aria-hidden="true">${segs}</svg>`;
+  }
+
+  function crearTarjetaPrestamoDiseno(prestamo, diseno){
+    const estadoVisual = estadoVisualPrestamo(prestamo);
+    const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId);
+    const saldo = saldoPendientePrestamo(prestamo);
+    const abonado = totalAbonadoPrestamo(prestamo);
+    const plan = prestamo.plan || [];
+    const pagadas = plan.filter(c => estaCuotaPagada(prestamo, c.numero)).length;
+    const proxima = prestamo.estado === 'finalizado' ? null : proximaCuotaPendiente(prestamo);
+    const proxValor = proxima ? formatearPesos(pendienteDeCuota(prestamo, proxima)) : '';
+    const proxFecha = proxima ? formatearFechaCorta(new Date(proxima.fechaISO)) : '';
+    const nCredito = numeroCreditoCliente(prestamo);
+    const estadoCuenta = estadoVisual === 'finalizado' ? 'Pagado' : (estadoVisual === 'vencido' ? 'En mora' : 'Al día');
+    const tipoInteres = prestamo.soloInteres ? 'Solo interés' : 'Fijo';
+    const frecuencia = nombresFrecuencia[prestamo.frecuencia] || prestamo.frecuencia || '—';
+    const nombre = cliente ? escaparHtml(cliente.nombre) : 'Cliente eliminado';
+    const idTexto = 'ID: ' + escaparHtml(prestamo.codigo || ('#' + prestamo.id));
+    const filasDetalle = [
+      ['Monto otorgado', formatearPesos(prestamo.valor)],
+      ['Valor por cuota', formatearPesos(cuotaRealPrestamo(prestamo))], // NUEVO (a pedido, v540)
+      ['Fecha de inicio', formatearFechaCorta(new Date(prestamo.fecha + 'T00:00:00'))],
+      ['Frecuencia', frecuencia]
+      // RETIRADO (a pedido, v538): "Tipo de interés" y "Estado de cuenta" (tipoInteres / estadoCuenta se conservan arriba)
+    ];
+    if(prestamo.estado === 'finalizado' && prestamo.fechaFinalizacion) filasDetalle.splice(3, 0, ['Finalizado', formatearFechaCorta(new Date(prestamo.fechaFinalizacion))]);
+    const filasHTML = filasDetalle.map(f => `<div class="ltd-fila"><span>${f[0]}</span><b class="${f[0] === 'Estado de cuenta' ? 'ltd-estado-' + estadoVisual : ''}">${f[1]}</b></div>`).join('');
+
+    const cabecera = `
+      <div class="ltd-cab">
+        <div class="ltd-cliente">
+          <span class="ltd-ico-persona">${ICONOS_LTD.persona}</span>
+          <div class="ltd-cliente-txt">
+            <div class="ltd-nombre">${nombre}</div><!-- v539: sin la palabra "Cliente:" -->
+            <div class="ltd-id">${idTexto}</div>
+          </div>
+        </div>
+        <div class="ltd-cab-der">
+          <div class="loan-badge ${estadoVisual}">${etiquetaEstadoVisual(estadoVisual)}</div>
+          ${nCredito ? `<span class="loan-num-credito"><span class="loan-num-hash">#</span> <span class="loan-num-valor">${nCredito}</span></span>` : ''}
+        </div>
+      </div>`;
+    const proximoHTML = proxima
+      ? `<span class="ltd-prox-ico">${ICONOS_LTD.reloj}</span><span class="ltd-prox-valor">${proxValor}</span><span class="ltd-prox-fecha"> / ${proxFecha}</span>`
+      : `<span class="ltd-prox-ninguno">${prestamo.estado === 'finalizado' ? 'Crédito pagado' : 'Sin cuotas pendientes'}</span>`;
+    const avance = `
+      <div class="ltd-avance">
+        <div class="ltd-anillo">${anilloCuotasLtdSVG(prestamo)}
+          <div class="ltd-anillo-txt"><span>Cuotas</span><b>${pagadas} / ${plan.length}</b></div><!-- v541: sin "Completadas" -->
+        </div>
+        <div class="ltd-nota-slot"><div class="loan-note"></div></div>
+      </div>`;
+
+    let cuerpo;
+    if(diseno === 'paneles'){
+      cuerpo = `
+        <div class="ltd-cols">
+          <div class="ltd-col">
+            <div class="ltd-tit">Cuenta de resumen</div>
+            <div class="ltd-panel"><div class="ltd-saldo">${formatearPesos(saldo)}</div><div class="ltd-lbl">Saldo total debe</div></div>
+            <div class="ltd-panel ltd-panel-pagado"><span class="ltd-ico-monedas">${ICONOS_LTD.monedas}</span><div><div class="ltd-pagado">${formatearPesos(abonado)}</div><div class="ltd-lbl">Pagado hasta la fecha</div></div></div>
+          </div>
+          <div class="ltd-col ltd-col-detalles">
+            <div class="ltd-tit">Detalles del préstamo</div>
+            <div class="ltd-filas ltd-filas-caja">${filasHTML}</div>
+          </div>
+        </div>
+        <hr class="ltd-hr">
+        <div class="ltd-prox-bloque">
+          <div class="ltd-prox-izq"><div class="ltd-tit">Próximo movimiento</div><div class="ltd-tit ltd-tit-avance">Avances y notas</div></div>
+          <span class="ltd-ico-pila">${ICONOS_LTD.pila}</span>
+          <div class="ltd-prox-der ltd-prox-editable"><div class="ltd-prox-linea">${proximoHTML}</div><div class="ltd-lbl">Próximo vencimiento</div></div>
+        </div>
+        ${avance}`;
+    }else{
+      cuerpo = `
+        <div class="ltd-cols ltd-cols-dividida">
+          <div class="ltd-col">
+            <div class="ltd-tit">Resumen financiero</div>
+            <div class="ltd-lbl2">Total a pagar:</div><div class="ltd-saldo">${formatearPesos(prestamo.totalAPagar || 0)}</div><!-- v542: antes "Saldo total" -->
+            <div class="ltd-lbl2">Debe:</div><div class="ltd-saldo">${formatearPesos(saldo)}</div><!-- v542: antes "Saldo debe" -->
+          </div>
+          <div class="ltd-col ltd-col-detalles">
+            <div class="ltd-tit">Detalles del préstamo</div>
+            <div class="ltd-filas">${filasHTML}</div>
+          </div>
+        </div>
+        <hr class="ltd-hr">
+        <div class="ltd-tit ltd-tit-pagos">Resumen de pagos <span class="ltd-ico-pila ltd-ico-pila-mini">${ICONOS_LTD.pila}</span></div>
+        <div class="ltd-pagos">
+          <div class="ltd-pagos-item"><span class="ltd-ico-monedas">${ICONOS_LTD.monedas}</span><div><div class="ltd-lbl2">Ha pagado:</div><div class="ltd-pagado">${formatearPesos(abonado)}</div></div></div>
+          <div class="ltd-pagos-item ltd-pagos-der ltd-prox-editable"><span class="ltd-prox-ico">${ICONOS_LTD.reloj}</span><div><div class="ltd-lbl2">Próximo vencimiento:</div><div class="ltd-prox-linea">${proxima ? `<span class="ltd-prox-valor">${proxValor}</span><span class="ltd-prox-fecha"> / ${proxFecha}</span>` : `<span class="ltd-prox-ninguno">${prestamo.estado === 'finalizado' ? 'Crédito pagado' : 'Sin cuotas pendientes'}</span>`}</div></div></div>
+        </div>
+        ${avance}`;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'card loan-card-full loan-card-' + estadoVisual + ' ltd ltd-' + diseno;
+    card.innerHTML = cabecera + cuerpo;
+
+    // Misma franja de ALERTA de mora que la tarjeta de siempre
+    if(estadoVisual === 'vencido'){
+      const diasMoraAlerta = diasMoraYAnticipadoPrestamo(prestamo).mora;
+      if(diasMoraAlerta > 0){
+        const franja = document.createElement('div');
+        franja.className = 'loan-alerta-mora';
+        franja.innerHTML = '<div class="lam-titulo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 1.6 21h20.8z" fill="#D92D20"/><rect x="11" y="9" width="2" height="6.5" rx="1" fill="#fff"/><circle cx="12" cy="18" r="1.15" fill="#fff"/></svg><span>ATENCIÓN</span></div>'
+          + '<div class="lam-texto">Este crédito presenta <b>' + diasMoraAlerta + (diasMoraAlerta === 1 ? ' día' : ' días') + '</b> acumulados de mora.</div>';
+        card.querySelector('.ltd-cab').insertAdjacentElement('afterend', franja);
+      }
+    }
+    // NUEVO (a pedido, v542): tocar "Próximo vencimiento" abre "Editar fecha"
+    // de esa cuota, igual que la cápsula de la tarjeta en Clientes.
+    const zonaProx = card.querySelector('.ltd-prox-editable');
+    if(zonaProx && proxima){
+      zonaProx.classList.add('tocable');
+      zonaProx.setAttribute('role', 'button');
+      zonaProx.setAttribute('aria-label', 'Editar fecha del próximo vencimiento');
+      zonaProx.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        editarFechaDesdeClientes = { scrollY: window.scrollY, alCerrar: ()=>{ if(clienteEnDetalle) renderizarPrestamosCliente(clienteEnDetalle.id); } };
+        abrirEditarFechaCuota(prestamo, proxima);
+      });
+    }
+    // La píldora de estado abre el "Ticket de Crédito" (igual que siempre)
+    const badge = card.querySelector('.loan-badge');
+    if(badge) badge.addEventListener('click', (e)=>{ e.stopPropagation(); abrirTicketPrestamo(prestamo); });
+    // Sello "Alerta de riesgo" (v534)
+    if(cliente && cliente.alertaRiesgo && estadoVisual === 'vencido'){
+      card.classList.add('con-sello-riesgo');
+      card.insertAdjacentHTML('beforeend', selloRiesgoHTML());
+    }
+    return card;
+  }
+
+  // ---------- Ajustes → "Diseño tarjeta del crédito" ----------
+  (function iniciarAjusteDisenoTarjeta(){
+    const item = document.getElementById('item-diseno-tarjeta-credito');
+    const overlay = document.getElementById('diseno-tarjeta-overlay');
+    const lista = document.getElementById('diseno-tarjeta-opciones');
+    const sub = document.getElementById('subtitulo-diseno-tarjeta-credito');
+    if(!item || !overlay || !lista) return;
+    function nombreActual(){ const d = DISENOS_TARJETA_CREDITO.find(x => x.clave === obtenerDisenoTarjetaCredito()); return d ? d.nombre : 'Actual'; }
+    function pintar(){
+      const actual = obtenerDisenoTarjetaCredito();
+      lista.querySelectorAll('.dt-opcion').forEach(b=>{
+        const sel = b.dataset.diseno === actual;
+        b.classList.toggle('seleccionada', sel);
+        b.setAttribute('aria-checked', String(sel));
+      });
+      if(sub) sub.textContent = 'Diseño: ' + nombreActual();
+    }
+    item.addEventListener('click', ()=>{ pintar(); overlay.style.display = 'flex'; });
+    document.getElementById('btn-cerrar-diseno-tarjeta').addEventListener('click', ()=>{ overlay.style.display = 'none'; });
+    overlay.addEventListener('click', (e)=>{ if(e.target === overlay) overlay.style.display = 'none'; });
+    lista.querySelectorAll('.dt-opcion').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        guardarDisenoTarjetaCredito(b.dataset.diseno);
+        pintar();
+        try{ if(clienteEnDetalle) renderizarPrestamosCliente(clienteEnDetalle.id); }catch(e){}
+        if(typeof mostrarMensajeToast === 'function') mostrarMensajeToast('Diseño aplicado: ' + nombreActual());
+      });
+    });
+    pintar();
+  })();
+
   function renderizarPrestamosCliente(clienteId){
     const listaContenedor = document.getElementById('lista-prestamos-cliente');
     const prestamosCliente = prestamosGuardados.filter(p => p.clienteId === clienteId);
@@ -23660,7 +24021,8 @@ body.modo-oscuro .sello-riesgo{ color:#E0525A; opacity:.7; }
       let prestamosOrdenados = prestamosFiltrados.slice().sort((a, b)=> (b.fecha || '').localeCompare(a.fecha || '') || (b.id - a.id));
       if(ordenInvertidoHistorialCreditos) prestamosOrdenados = prestamosOrdenados.reverse();
       prestamosOrdenados.forEach(prestamo=>{
-        const card = crearTarjetaPrestamo(prestamo);
+        const disenoTarjeta = obtenerDisenoTarjetaCredito(); // v537: diseño elegido en Ajustes
+        const card = disenoTarjeta === 'actual' ? crearTarjetaPrestamo(prestamo) : crearTarjetaPrestamoDiseno(prestamo, disenoTarjeta);
         habilitarNotaEditableTarjeta(card, prestamo); // NUEVO: nota editable desde la tarjeta
         card.classList.add('loan-card-clickable');
         card.addEventListener('click', ()=> abrirDetallePrestamo(prestamo));
@@ -27530,8 +27892,10 @@ body.modo-oscuro .sello-riesgo{ color:#E0525A; opacity:.7; }
     screenEditarFechaCuota.style.display = 'none';
     if(editarFechaDesdeClientes){
       const volverA = editarFechaDesdeClientes.scrollY || 0;
+      const alCerrarEfc = editarFechaDesdeClientes.alCerrar; // v542: abierto desde la tarjeta del crédito (diseños nuevos)
       editarFechaDesdeClientes = null;
       try{ renderizarClientes(clientesFiltrados()); }catch(err){}
+      if(typeof alCerrarEfc === 'function'){ try{ alCerrarEfc(); }catch(err){} }
       window.scrollTo(0, volverA);
       return;
     }
