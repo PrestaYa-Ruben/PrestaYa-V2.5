@@ -7832,12 +7832,43 @@ body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full, body:not(.modo-o
     0 6px 11px rgba(20,30,60,0.09) !important;
   margin-bottom:4px;
 }
+
+/* ==========================================================
+   NUEVO (a pedido, v534): sello "ALERTA DE RIESGO" sobre las tarjetas de
+   créditos vencidos de un cliente marcado (Más opciones → Alerta de riesgo).
+   Semitransparente y sin capturar toques (la tarjeta sigue funcionando).
+   ========================================================== */
+.sello-riesgo{ display:none; }
+#screen-clientes .client-row-cliente .sello-riesgo,
+#screen-detalle-cliente .loan-card-full .sello-riesgo{
+  display:block !important; position:absolute !important; z-index:6; pointer-events:none;
+  right:4%; left:auto; top:50%; width:min(62%, 250px); margin:0 !important; padding:0 !important;
+  transform:translateY(-50%) rotate(-14deg);
+  opacity:.74; color:#9B1B22;
+}
+#screen-detalle-cliente .loan-card-full .sello-riesgo{ top:44%; right:auto; left:50%; width:min(76%, 290px); transform:translate(-50%,-50%) rotate(-14deg); }
+.sello-riesgo svg{ display:block; width:100%; height:auto; overflow:visible; }
+body.modo-oscuro .sello-riesgo{ color:#E0525A; opacity:.7; }
+#screen-clientes .client-row-cliente.con-sello-riesgo,
+#screen-detalle-cliente .loan-card-full.con-sello-riesgo{ position:relative; }
 </style>
 
 </head>
 <body>
 <!-- NUEVO (a pedido, v522): sección independiente "Tareas del Día" (ver CSS .tareas-fab / #screen-tareas).
      Va primero en el documento para que el botón Atrás de Android cierre esta sección antes que la pantalla de abajo. -->
+<!-- NUEVO (v534): filtro "tinta de sello" para el sello de Alerta de riesgo -->
+<svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="filtro-sello-riesgo" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="ruido"/>
+      <feColorMatrix in="ruido" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.7 1.6" result="huecos"/>
+      <feComposite in="SourceGraphic" in2="huecos" operator="in" result="gastado"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="3" result="ondas"/>
+      <feDisplacementMap in="gastado" in2="ondas" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
 <div id="screen-tareas" style="display:none;" role="dialog" aria-label="Tareas del Día">
   <button type="button" id="btn-cerrar-tareas" aria-label="Volver">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -12490,6 +12521,16 @@ body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full, body:not(.modo-o
         </div>
         <span style="flex:1;">Bloqueado</span>
         <button type="button" class="toggle-switch" id="toggle-bloqueo-general-cliente" role="switch" aria-checked="false" aria-label="Bloquear cliente"></button>
+      </div>
+
+      <!-- NUEVO (a pedido, v534): "Alerta de riesgo" — muestra un sello rojo
+           sobre las tarjetas de sus créditos VENCIDOS (Clientes y detalle). -->
+      <div class="action-sheet-item-toggle-row" id="fila-alerta-riesgo-menu">
+        <div class="icon-container red">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        </div>
+        <span style="flex:1;">Alerta de riesgo</span>
+        <button type="button" class="toggle-switch" id="toggle-alerta-riesgo-cliente" role="switch" aria-checked="false" aria-label="Mostrar sello de alerta de riesgo"></button>
       </div>
 
       <div class="action-sheet-item-toggle-row" id="fila-bloqueo-mora-menu">
@@ -17227,7 +17268,28 @@ body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full, body:not(.modo-o
     if(toggleGeneral){ toggleGeneral.classList.toggle('on', bloqueoGeneral); toggleGeneral.setAttribute('aria-checked', String(bloqueoGeneral)); }
     const btnNuevo = document.getElementById('btn-nuevo-prestamo-cliente');
     if(btnNuevo) btnNuevo.classList.toggle('bloqueado', bloqueado || bloqueoMonto || bloqueoCreditos || bloqueoGeneral);
+    // NUEVO (v534): interruptor "Alerta de riesgo"
+    const toggleRiesgo = document.getElementById('toggle-alerta-riesgo-cliente');
+    if(toggleRiesgo){ toggleRiesgo.classList.toggle('on', !!cliente.alertaRiesgo); toggleRiesgo.setAttribute('aria-checked', String(!!cliente.alertaRiesgo)); }
   }
+  // NUEVO (a pedido, v534): sello "Alerta de riesgo" — solo visual.
+  function selloRiesgoHTML(){
+    const FUENTE = "Impact, 'Haettenschweiler', 'Arial Narrow Bold', 'Roboto Condensed', 'Arial Narrow', sans-serif-condensed, 'Arial Black', sans-serif";
+    const linea = (y, txt) => `<text x="210" y="${y}" text-anchor="middle" textLength="364" lengthAdjust="spacingAndGlyphs" font-family="${FUENTE}" font-weight="900" font-size="54" fill="currentColor" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round">${txt}</text>`; // trazo extra: engrosa la letra si la del sistema es delgada
+    return `<div class="sello-riesgo" aria-label="Alerta de riesgo: posible pérdida, crédito crítico" role="img"><svg viewBox="0 0 420 214" aria-hidden="true"><g filter="url(#filtro-sello-riesgo)">
+      <rect x="5" y="5" width="410" height="204" rx="12" fill="none" stroke="currentColor" stroke-width="9"/>
+      <rect x="19" y="19" width="382" height="176" rx="5" fill="none" stroke="currentColor" stroke-width="3.5"/>
+      ${linea(76, 'ALERTA DE RIESGO')}${linea(132, 'POSIBLE PÉRDIDA')}${linea(188, 'CRÉDITO CRÍTICO')}
+    </g></svg></div>`;
+  }
+  document.getElementById('toggle-alerta-riesgo-cliente').addEventListener('click', ()=>{
+    if(!clienteEnDetalle) return;
+    clienteEnDetalle.alertaRiesgo = !clienteEnDetalle.alertaRiesgo;
+    guardarClientes(clientesGuardados);
+    actualizarBloqueoMoraCliente(clienteEnDetalle);
+    try{ renderizarPrestamosCliente(clienteEnDetalle.id); }catch(e){ console.warn(e); }
+    try{ renderizarClientes(clientesFiltrados()); }catch(e){ console.warn(e); }
+  });
   document.getElementById('toggle-bloqueo-general-cliente').addEventListener('click', ()=>{
     if(!clienteEnDetalle) return;
     clienteEnDetalle.bloqueadoGeneral = !clienteEnDetalle.bloqueadoGeneral;
@@ -17707,6 +17769,11 @@ body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full, body:not(.modo-o
       );
       card.classList.toggle('client-row-mora', tieneCuotaVencida);
       card.classList.toggle('client-row-al-dia', !tieneCuotaVencida);
+      // NUEVO (v534): sello "Alerta de riesgo" si el cliente está marcado y tiene créditos vencidos
+      if(cliente.alertaRiesgo && tieneCuotaVencida){
+        card.classList.add('con-sello-riesgo');
+        card.insertAdjacentHTML('beforeend', selloRiesgoHTML());
+      }
 
       const saldoTotal = prestamosActivosCliente.reduce((s, p) => s + saldoPendientePrestamo(p), 0);
       // NUEVO: cuotas pagadas / total, sumado entre todos los préstamos
@@ -23347,6 +23414,13 @@ body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full, body:not(.modo-o
         e.stopPropagation();
         abrirTicketPrestamo(prestamo);
       });
+    }
+
+    // NUEVO (v534): sello "Alerta de riesgo" solo en créditos vencidos de un cliente marcado
+    const clienteSello = clientesGuardados.find(c => c.id === prestamo.clienteId);
+    if(clienteSello && clienteSello.alertaRiesgo && estadoVisual === 'vencido'){
+      card.classList.add('con-sello-riesgo');
+      card.insertAdjacentHTML('beforeend', selloRiesgoHTML());
     }
 
     return card;
