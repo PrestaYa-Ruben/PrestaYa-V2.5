@@ -7961,6 +7961,74 @@ body.modo-oscuro .ltd .ltd-seg-pendiente{ stroke:#475263; }
 .ltd .ltd-prox-editable.tocable{ cursor:pointer; border-radius:10px; padding:4px 6px; margin:-4px -6px; transition:background .15s ease; }
 .ltd .ltd-prox-editable.tocable:active{ background:rgba(211,154,18,0.14); }
 .ltd .ltd-prox-editable.tocable .ltd-prox-fecha{ text-decoration:underline dotted; text-underline-offset:3px; }
+
+/* NUEVO (a pedido, v543): "Total a pagar" en azul marino para diferenciarlo de "Debe" (rojo) */
+.ltd .ltd-saldo.ltd-total{ color:#1F2F68; }
+body.modo-oscuro .ltd .ltd-saldo.ltd-total{ color:#A9BDF0; }
+
+/* v544: el código del crédito no se parte en dos líneas */
+.ltd .ltd-id{ white-space:nowrap; font-size:12px; }
+.ltd .ltd-cab-der .loan-badge{ white-space:nowrap; }
+
+/* NUEVO (a pedido, v545): "Próximo vencimiento" (diseño Paneles) igual a la imagen de referencia */
+.ltd .ltd-vence{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:2px 2px 4px; }
+.ltd .ltd-vence-monedas{ width:80px; height:66px; flex-shrink:0; color:#4E5563; margin-left:8px; }
+.ltd .ltd-vence-monedas svg{ width:100%; height:100%; display:block; }
+.ltd .ltd-vence-der{ text-align:right; min-width:0; }
+.ltd .ltd-vence-valor{ display:flex; align-items:center; justify-content:flex-end; gap:6px; font-size:clamp(26px, 8vw, 32px); font-weight:800; color:#C9A04A; line-height:1.05; letter-spacing:-.3px; white-space:nowrap; }
+.ltd .ltd-vence-reloj{ width:.72em; height:.85em; color:#C9A04A; flex-shrink:0; display:inline-flex; }
+.ltd .ltd-vence-reloj svg{ width:100%; height:100%; }
+.ltd .ltd-vence-fecha{ font-size:clamp(19px, 5.8vw, 23px); font-weight:800; color:#C9A04A; line-height:1.15; margin-top:2px; white-space:nowrap; }
+.ltd .ltd-vence-slash{ color:#2A2F38; font-weight:500; }
+.ltd .ltd-vence-lbl{ font-size:clamp(13px, 3.9vw, 15px); font-weight:500; color:#1F2329; text-transform:uppercase; letter-spacing:.1px; margin-top:4px; white-space:nowrap; }
+.ltd .ltd-vence-ninguno{ font-size:16px; font-weight:700; color:var(--ltd-sub); }
+.ltd .ltd-vence-der.tocable{ padding:4px 6px; margin:-4px -6px; }
+.ltd .ltd-vence-der.tocable .ltd-vence-fecha{ text-decoration:none; }
+
+/* v546: línea "Ha pagado" del diseño Resumen */
+.ltd .ltd-hapagado{ display:flex; align-items:center; gap:7px; margin-bottom:8px; }
+.ltd .ltd-hapagado .ltd-ico-monedas{ width:24px; height:24px; }
+.ltd .ltd-hapagado .ltd-pagado{ font-size:19px; }
+
+/* v547: "Próximo vencimiento" compacto dentro de la fila de Resumen de pagos */
+.ltd .ltd-vence-mini{ justify-content:flex-end; }
+.ltd .ltd-vence-mini .ltd-vence-valor{ font-size:20px; gap:4px; }
+.ltd .ltd-vence-mini .ltd-vence-fecha{ font-size:15px; margin-top:1px; }
+.ltd .ltd-vence-mini .ltd-vence-lbl{ font-size:11px; margin-top:2px; }
+
+/* v548: área "Próximo vencimiento" (Paneles) según la imagen de referencia */
+.ltd .ltd-vence-ref{ display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:8px; }
+.ltd .ltd-vence-ref .ltd-vence-titulos{ display:flex; flex-direction:column; justify-content:space-between; align-self:stretch; gap:22px; padding:4px 0 2px; }
+.ltd .ltd-vence-ref .ltd-vence-titulos .ltd-tit{ margin:0; }
+.ltd .ltd-vence-ref .ltd-vence-monedas{ width:54px; height:46px; margin:0; }
+.ltd .ltd-vence-ref .ltd-vence-valor{ font-size:clamp(20px, 6vw, 25px); gap:5px; }
+.ltd .ltd-vence-ref .ltd-vence-fecha{ font-size:clamp(15px, 4.4vw, 18px); }
+.ltd .ltd-vence-ref .ltd-vence-lbl{ font-size:clamp(11px, 3.2vw, 13px); margin-top:2px; }
+
+/* v549: monedas grandes a la izquierda de "Próximo vencimiento" (diseño Resumen) */
+.ltd .ltd-vence-mini{ align-items:center; gap:8px; }
+.ltd .ltd-vence-mini .ltd-vence-monedas{ width:50px; height:42px; margin:0; flex-shrink:0; }
+.ltd-resumen .ltd-pagos{ grid-template-columns:minmax(0,0.75fr) minmax(0,1.25fr); align-items:center; }
+.ltd .ltd-vence-mini .ltd-vence-lbl{ font-size:clamp(9.5px, 2.75vw, 11px); }
+.ltd .ltd-vence-mini .ltd-vence-monedas{ width:clamp(40px, 12vw, 50px); height:auto; aspect-ratio:84/70; }
+
+/* v550/v551: el bloque "Próximo vencimiento" sube para que la frase "PRÓXIMO VENCIMIENTO" quede a la altura del valor de "Ha pagado" (diseño Resumen) */
+.ltd-resumen .ltd-pagos{ align-items:start; position:relative; z-index:1; }
+.ltd-resumen .ltd-pagos > .ltd-pagos-item:first-child{ align-items:flex-start; }
+.ltd-resumen .ltd-vence-mini{ align-items:flex-start; }
+.ltd-resumen .ltd-vence-mini .ltd-vence-der{ margin-top:var(--ltd-desfase-prox, -24px); }
+.ltd-resumen .ltd-vence-mini .ltd-vence-monedas{ margin-top:-8px; } /* v551: las monedas no suben, para no tapar el título */
+
+/* v552 (diseño Resumen): sin reloj de arena; las monedas pasan a la izquierda del valor y la fecha,
+   sobre la palabra "PRÓXIMO" */
+.ltd-resumen .ltd-vence-mini .ltd-vence-fila{ display:flex; align-items:center; justify-content:flex-end; gap:8px; }
+.ltd-resumen .ltd-vence-mini .ltd-vence-fila .ltd-vence-monedas{ width:clamp(36px, 11vw, 46px); height:auto; aspect-ratio:84/70; margin:0; flex-shrink:0; }
+.ltd-resumen .ltd-vence-mini .ltd-vence-textos{ text-align:right; }
+
+/* NUEVO (a pedido, v553): ícono de notas con el mismo estilo del ícono de monedas
+   (sólido gris oscuro con separaciones blancas) en los diseños nuevos de la tarjeta del crédito */
+body #screen-detalle-cliente .loan-card-full.ltd .loan-note .loan-note-icono, .loan-card-full.ltd .loan-note .loan-note-icono{ background-color:transparent !important; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='8' y='8' width='38' height='50' rx='5' fill='%234E5563' stroke='%23fff' stroke-width='1.8'/%3E%3Crect x='13' y='3' width='5' height='11' rx='2.5' fill='%234E5563' stroke='%23fff' stroke-width='1.8'/%3E%3Crect x='24.5' y='3' width='5' height='11' rx='2.5' fill='%234E5563' stroke='%23fff' stroke-width='1.8'/%3E%3Crect x='36' y='3' width='5' height='11' rx='2.5' fill='%234E5563' stroke='%23fff' stroke-width='1.8'/%3E%3Crect x='15' y='21' width='24' height='3.2' rx='1.6' fill='%23fff'/%3E%3Crect x='15' y='29.5' width='24' height='3.2' rx='1.6' fill='%23fff'/%3E%3Crect x='15' y='38' width='15' height='3.2' rx='1.6' fill='%23fff'/%3E%3Cg transform='rotate(40 46 44)'%3E%3Crect x='41' y='22' width='10' height='30' rx='2' fill='%234E5563' stroke='%23fff' stroke-width='1.8'/%3E%3Cpath d='M41 52 L46 61 L51 52 Z' fill='%234E5563' stroke='%23fff' stroke-width='1.8' stroke-linejoin='round'/%3E%3Crect x='41' y='26.5' width='10' height='2.6' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat !important; border:none !important; box-shadow:none !important; width:28px !important; height:28px !important; min-width:28px; } /* v554: más pequeño (antes 40px) */
+.loan-card-full.ltd .loan-note .loan-note-icono svg{ display:none !important; }
 </style>
 
 </head>
@@ -23847,8 +23915,9 @@ body.modo-oscuro .ltd .ltd-seg-pendiente{ stroke:#475263; }
           </div>
         </div>
         <div class="ltd-cab-der">
-          <div class="loan-badge ${estadoVisual}">${etiquetaEstadoVisual(estadoVisual)}</div>
-          ${nCredito ? `<span class="loan-num-credito"><span class="loan-num-hash">#</span> <span class="loan-num-valor">${nCredito}</span></span>` : ''}
+          <!-- CAMBIO (a pedido, v544): la píldora dice "Crédito" (o "Crédito #N" si hay varios activos),
+               conserva el color del estado y sigue abriendo el resumen/ticket. Se retiró la píldora amarilla "#N". -->
+          <div class="loan-badge ${estadoVisual}" title="${etiquetaEstadoVisual(estadoVisual)}">${nCredito ? 'Crédito #' + nCredito : 'Crédito'}</div>
         </div>
       </div>`;
     const proximoHTML = proxima
@@ -23877,10 +23946,18 @@ body.modo-oscuro .ltd .ltd-seg-pendiente{ stroke:#475263; }
           </div>
         </div>
         <hr class="ltd-hr">
-        <div class="ltd-prox-bloque">
-          <div class="ltd-prox-izq"><div class="ltd-tit">Próximo movimiento</div><div class="ltd-tit ltd-tit-avance">Avances y notas</div></div>
-          <span class="ltd-ico-pila">${ICONOS_LTD.pila}</span>
-          <div class="ltd-prox-der ltd-prox-editable"><div class="ltd-prox-linea">${proximoHTML}</div><div class="ltd-lbl">Próximo vencimiento</div></div>
+        <!-- CAMBIO (a pedido, v548): "Próximo vencimiento" como la imagen de referencia:
+             títulos a la izquierda, monedas al centro y valor/fecha a la derecha, compacto. -->
+        <div class="ltd-vence ltd-vence-ref">
+          <div class="ltd-vence-titulos"><div class="ltd-tit">Próximo movimiento</div><div class="ltd-tit">Avances y notas</div></div>
+          <span class="ltd-vence-monedas"><svg viewBox="0 0 84 70" aria-hidden="true"><path d="M39 52 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="52" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 43 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="43" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 34 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="34" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 25 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="25" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 16 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="16" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M10 58 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="27" cy="58" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M10 49 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="27" cy="49" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M10 40 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="27" cy="40" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/></svg></span>
+          <div class="ltd-vence-der ltd-prox-editable">
+            ${proxima
+              ? `<div class="ltd-vence-valor"><span class="ltd-vence-reloj"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="1.5" width="17" height="2.6" rx="1.1" fill="currentColor"/><rect x="3.5" y="19.9" width="17" height="2.6" rx="1.1" fill="currentColor"/><path d="M5.5 4.1h13c0 3.4-2.2 5.6-4.4 7.9 2.2 2.3 4.4 4.5 4.4 7.9h-13c0-3.4 2.2-5.6 4.4-7.9C7.7 9.7 5.5 7.5 5.5 4.1z" fill="currentColor"/></svg></span>${proxValor}</div>
+                 <div class="ltd-vence-fecha"><span class="ltd-vence-slash">/</span> ${proxFecha}</div>`
+              : `<div class="ltd-vence-ninguno">${prestamo.estado === 'finalizado' ? 'Crédito pagado' : 'Sin cuotas pendientes'}</div>`}
+            <div class="ltd-vence-lbl">Próximo vencimiento</div>
+          </div>
         </div>
         ${avance}`;
     }else{
@@ -23888,7 +23965,7 @@ body.modo-oscuro .ltd .ltd-seg-pendiente{ stroke:#475263; }
         <div class="ltd-cols ltd-cols-dividida">
           <div class="ltd-col">
             <div class="ltd-tit">Resumen financiero</div>
-            <div class="ltd-lbl2">Total a pagar:</div><div class="ltd-saldo">${formatearPesos(prestamo.totalAPagar || 0)}</div><!-- v542: antes "Saldo total" -->
+            <div class="ltd-lbl2">Total a pagar:</div><div class="ltd-saldo ltd-total">${formatearPesos(prestamo.totalAPagar || 0)}</div><!-- v542: antes "Saldo total" -->
             <div class="ltd-lbl2">Debe:</div><div class="ltd-saldo">${formatearPesos(saldo)}</div><!-- v542: antes "Saldo debe" -->
           </div>
           <div class="ltd-col ltd-col-detalles">
@@ -23897,10 +23974,21 @@ body.modo-oscuro .ltd .ltd-seg-pendiente{ stroke:#475263; }
           </div>
         </div>
         <hr class="ltd-hr">
-        <div class="ltd-tit ltd-tit-pagos">Resumen de pagos <span class="ltd-ico-pila ltd-ico-pila-mini">${ICONOS_LTD.pila}</span></div>
+        <!-- CAMBIO (a pedido, v547): se vuelve a la fila de siempre (Ha pagado | Próximo vencimiento),
+             con el estilo de la imagen de referencia en tamaño compacto. -->
+        <div class="ltd-tit ltd-tit-pagos">Resumen de pagos</div><!-- v549: el ícono de monedas pasa al lado izquierdo de "Próximo vencimiento" -->
         <div class="ltd-pagos">
           <div class="ltd-pagos-item"><span class="ltd-ico-monedas">${ICONOS_LTD.monedas}</span><div><div class="ltd-lbl2">Ha pagado:</div><div class="ltd-pagado">${formatearPesos(abonado)}</div></div></div>
-          <div class="ltd-pagos-item ltd-pagos-der ltd-prox-editable"><span class="ltd-prox-ico">${ICONOS_LTD.reloj}</span><div><div class="ltd-lbl2">Próximo vencimiento:</div><div class="ltd-prox-linea">${proxima ? `<span class="ltd-prox-valor">${proxValor}</span><span class="ltd-prox-fecha"> / ${proxFecha}</span>` : `<span class="ltd-prox-ninguno">${prestamo.estado === 'finalizado' ? 'Crédito pagado' : 'Sin cuotas pendientes'}</span>`}</div></div></div>
+          <div class="ltd-pagos-item ltd-pagos-der ltd-prox-editable ltd-vence-mini">
+            
+            <div class="ltd-vence-der">
+              ${proxima
+                ? `<div class="ltd-vence-fila"><span class="ltd-vence-monedas"><svg viewBox="0 0 84 70" aria-hidden="true"><path d="M39 52 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="52" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 43 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="43" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 34 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="34" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 25 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="25" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 16 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="16" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M10 58 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="27" cy="58" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M10 49 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="27" cy="49" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M10 40 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="27" cy="40" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/></svg></span><div class="ltd-vence-textos"><div class="ltd-vence-valor">${proxValor}</div>
+                   <div class="ltd-vence-fecha"><span class="ltd-vence-slash">/</span> ${proxFecha}</div></div></div>`
+                : `<div class="ltd-vence-ninguno">${prestamo.estado === 'finalizado' ? 'Crédito pagado' : 'Sin cuotas pendientes'}</div>`}
+              <div class="ltd-vence-lbl">Próximo vencimiento</div>
+            </div>
+          </div>
         </div>
         ${avance}`;
     }
