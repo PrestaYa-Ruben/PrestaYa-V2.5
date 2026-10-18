@@ -8029,6 +8029,17 @@ body.modo-oscuro .ltd .ltd-saldo.ltd-total{ color:#A9BDF0; }
    (sólido gris oscuro con separaciones blancas) en los diseños nuevos de la tarjeta del crédito */
 body #screen-detalle-cliente .loan-card-full.ltd .loan-note .loan-note-icono, .loan-card-full.ltd .loan-note .loan-note-icono{ background-color:transparent !important; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='8' y='8' width='38' height='50' rx='5' fill='%234E5563' stroke='%23fff' stroke-width='1.8'/%3E%3Crect x='13' y='3' width='5' height='11' rx='2.5' fill='%234E5563' stroke='%23fff' stroke-width='1.8'/%3E%3Crect x='24.5' y='3' width='5' height='11' rx='2.5' fill='%234E5563' stroke='%23fff' stroke-width='1.8'/%3E%3Crect x='36' y='3' width='5' height='11' rx='2.5' fill='%234E5563' stroke='%23fff' stroke-width='1.8'/%3E%3Crect x='15' y='21' width='24' height='3.2' rx='1.6' fill='%23fff'/%3E%3Crect x='15' y='29.5' width='24' height='3.2' rx='1.6' fill='%23fff'/%3E%3Crect x='15' y='38' width='15' height='3.2' rx='1.6' fill='%23fff'/%3E%3Cg transform='rotate(40 46 44)'%3E%3Crect x='41' y='22' width='10' height='30' rx='2' fill='%234E5563' stroke='%23fff' stroke-width='1.8'/%3E%3Cpath d='M41 52 L46 61 L51 52 Z' fill='%234E5563' stroke='%23fff' stroke-width='1.8' stroke-linejoin='round'/%3E%3Crect x='41' y='26.5' width='10' height='2.6' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat !important; border:none !important; box-shadow:none !important; width:28px !important; height:28px !important; min-width:28px; } /* v554: más pequeño (antes 40px) */
 .loan-card-full.ltd .loan-note .loan-note-icono svg{ display:none !important; }
+
+/* v561: píldora de la tarjeta del crédito (diseños nuevos) sin el punto blanco, solo "# N" */
+.ltd .ltd-cab-der .loan-badge::before, .ltd .ltd-cab-der .loan-badge::after{ display:none !important; content:none !important; }
+.ltd .ltd-cab-der .loan-badge{ padding-left:14px !important; padding-right:14px !important; letter-spacing:.5px; }
+
+/* v562: número de la píldora más grande (el "#" y la píldora quedan igual) y sin el ID del préstamo bajo el nombre */
+.ltd .ltd-cab-der .loan-badge .ltd-num-credito{ font-size:1.45em; line-height:0; vertical-align:-0.08em; margin-left:2px; font-weight:800; }
+.ltd .ltd-id{ display:none !important; }
+
+/* v563: más espacio entre el nombre del cliente y los títulos de las columnas (diseños nuevos) */
+.ltd .ltd-cols{ margin-top:20px; }
 </style>
 
 </head>
@@ -17873,6 +17884,7 @@ body #screen-detalle-cliente .loan-card-full.ltd .loan-note .loan-note-icono, .l
   const ICONO_AVATAR_ILUSTRADO = '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><clipPath id="avIlusClip"><circle cx="32" cy="32" r="30"/></clipPath></defs><circle cx="32" cy="32" r="30" fill="#E4F0EA"/><g clip-path="url(#avIlusClip)"><path d="M10 64c0-12 9.5-19 22-19s22 7 22 19z" fill="#24485A"/><path d="M26.5 40h11v7.5c0 2.6-2.5 4.5-5.5 4.5s-5.5-1.9-5.5-4.5z" fill="#E9B48F"/><path d="M24 46.5c2 3.6 4.8 5.3 8 5.3s6-1.7 8-5.3" fill="none" stroke="#1C3A4A" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="20.6" cy="29.5" rx="2.2" ry="3.2" fill="#E3AA84"/><ellipse cx="43.4" cy="29.5" rx="2.2" ry="3.2" fill="#E3AA84"/><path d="M21.5 25.5c0-7.6 4.7-12 10.5-12s10.5 4.4 10.5 12v5.2c0 6.6-4.8 11.6-10.5 11.6s-10.5-5-10.5-11.6z" fill="#F2C29F"/><path d="M20.6 28.5c-1-9.5 3.2-16.2 11.6-16.2 7.8 0 12.7 5 11.4 15.6-.8-3.6-2.5-6.4-5.3-7.6-3.9 2.1-10.2 2.5-14.4 1.3-1.7 1.6-2.8 4-3.3 6.9z" fill="#1E2A33"/></g><circle cx="32" cy="32" r="30.4" fill="none" stroke="#3E8A6A" stroke-width="1.5"/></svg>';
   const ICONO_AVATAR_PERSONA = '<svg class="icono-avatar-persona" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8.2" r="4.3"></circle><path d="M3.6 20.3c.7-4.1 4.1-6.8 8.4-6.8s7.7 2.7 8.4 6.8c.1.5-.3.9-.8.9H4.4c-.5 0-.9-.4-.8-.9z"></path></svg>';
 
+
   // CAMBIO (a pedido): avatar de persona en lugar de la torta de cuotas (false = volver a la torta)
   const AVATAR_PERSONA_TARJETA = true;
   function crearTarjetaCliente(cliente){
@@ -23897,7 +23909,8 @@ body #screen-detalle-cliente .loan-card-full.ltd .loan-note .loan-note-icono, .l
     const idTexto = 'ID: ' + escaparHtml(prestamo.codigo || ('#' + prestamo.id));
     const filasDetalle = [
       ['Monto otorgado', formatearPesos(prestamo.valor)],
-      ['Valor por cuota', formatearPesos(cuotaRealPrestamo(prestamo))], // NUEVO (a pedido, v540)
+      // CAMBIO (a pedido, v560): "Cuotas: 4 por $68.000" (antes "Valor por cuota"). En solo intereses no hay número fijo de cuotas.
+      ['Cuotas', prestamo.soloInteres ? 'Interés de ' + formatearPesos(cuotaRealPrestamo(prestamo)) : (prestamo.cuotas || plan.length) + ' por ' + formatearPesos(cuotaRealPrestamo(prestamo))],
       ['Fecha de inicio', formatearFechaCorta(new Date(prestamo.fecha + 'T00:00:00'))],
       ['Frecuencia', frecuencia]
       // RETIRADO (a pedido, v538): "Tipo de interés" y "Estado de cuenta" (tipoInteres / estadoCuenta se conservan arriba)
@@ -23917,7 +23930,7 @@ body #screen-detalle-cliente .loan-card-full.ltd .loan-note .loan-note-icono, .l
         <div class="ltd-cab-der">
           <!-- CAMBIO (a pedido, v544): la píldora dice "Crédito" (o "Crédito #N" si hay varios activos),
                conserva el color del estado y sigue abriendo el resumen/ticket. Se retiró la píldora amarilla "#N". -->
-          <div class="loan-badge ${estadoVisual}" title="${etiquetaEstadoVisual(estadoVisual)}">${nCredito ? 'Crédito #' + nCredito : 'Crédito'}</div>
+          <div class="loan-badge ${estadoVisual}" title="${etiquetaEstadoVisual(estadoVisual)}"># <span class="ltd-num-credito">${nCredito || 1}</span></div><!-- v561: solo "# N"; v562: número más grande -->
         </div>
       </div>`;
     const proximoHTML = proxima
