@@ -8040,6 +8040,14 @@ body #screen-detalle-cliente .loan-card-full.ltd .loan-note .loan-note-icono, .l
 
 /* v563: más espacio entre el nombre del cliente y los títulos de las columnas (diseños nuevos) */
 .ltd .ltd-cols{ margin-top:20px; }
+
+/* v564: ocultar icono de notas en tarjeta del crédito (cliente) */
+body #screen-detalle-cliente .loan-card-full .loan-note .loan-note-icono,
+body .loan-card-full.ltd .loan-note .loan-note-icono,
+body:not(.modo-oscuro) #screen-detalle-cliente .loan-card-full .loan-note-icono{ display:none !important; }
+
+/* v565: texto de la nota un poco más pequeño (antes 14.5px) */
+body #screen-detalle-cliente .loan-card-full .loan-note-contenido span{ font-size:13px !important; line-height:1.38 !important; }
 </style>
 
 </head>
