@@ -8216,6 +8216,20 @@ body.modo-oscuro .bottom-nav .nav-cristal{ box-shadow:0 6px 14px rgba(0,0,0,0.45
 /* línea divisora entre el resumen de un crédito y el siguiente */
 #resumen-creditos-cliente .np-resumen-credito + .np-resumen-credito{ margin-top:14px !important; padding-top:16px !important; border-top:2px solid #9AA6BC !important; }
 body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-credito{ border-top-color:#4A5570 !important; }
+
+/* v586: modal compacto "Resumen del crédito" */
+.ltd .ltd-anillo.tocable{ cursor:pointer; -webkit-tap-highlight-color:transparent; transition:transform .15s ease; }
+.ltd .ltd-anillo.tocable:active{ transform:scale(.94); }
+#modal-resumen-credito-cliente{ position:fixed; inset:0; z-index:9500; display:none; align-items:center; justify-content:center; padding:16px; background:rgba(15,20,35,0); transition:background .18s ease; }
+#modal-resumen-credito-cliente.abierto{ background:rgba(15,20,35,.45); }
+#modal-resumen-credito-cliente .mrc-caja{ position:relative; width:100%; max-width:400px; max-height:calc(100vh - 32px); overflow:auto; background:var(--surface); border-radius:16px; box-shadow:0 18px 40px rgba(0,0,0,.25); padding:12px 14px 8px; transform:translateY(12px) scale(.97); opacity:0; transition:transform .2s ease, opacity .18s ease; }
+#modal-resumen-credito-cliente.abierto .mrc-caja{ transform:none; opacity:1; }
+#modal-resumen-credito-cliente .mrc-cerrar{ position:absolute; top:6px; right:8px; width:32px; height:32px; border:none; background:transparent; font-size:24px; line-height:1; color:var(--text-secondary); cursor:pointer; }
+#modal-resumen-credito-cliente .np-resumen-credito{ background:transparent; border:none; box-shadow:none; padding:0; }
+#modal-resumen-credito-cliente .np-rc-titulo{ font-size:16px; margin:2px 36px 4px 0; }
+#modal-resumen-credito-cliente .np-rc-seccion{ font-weight:600; font-size:13px; margin:8px 0 0; padding-bottom:3px; }
+#modal-resumen-credito-cliente .np-rc-titulo + .np-rc-seccion{ margin-top:0; }
+#modal-resumen-credito-cliente .np-rc-fila{ padding:2px 1px !important; font-size:13px; line-height:1.25; grid-template-columns:minmax(0, 10.5em) minmax(0, 1fr); }
 </style>
 
 </head>
@@ -9478,7 +9492,7 @@ body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-cre
     </div>
 
     <!-- NUEVO (v581): "Resumen del crédito" de cada crédito activo, con datos reales -->
-    <div id="resumen-creditos-cliente"></div>
+    <div id="resumen-creditos-cliente" style="display:none;"></div>
 
     <!-- NUEVO: Resumen Histórico + Comportamiento de Pago (calculados a partir
          de los créditos y movimientos reales del cliente). Se mantiene oculta
@@ -24280,8 +24294,10 @@ body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-cre
     }
     // NUEVO (a pedido, v542): tocar "Próximo vencimiento" abre "Editar fecha"
     // de esa cuota, igual que la cápsula de la tarjeta en Clientes.
+    // v585: a pedido se retiró esta acción (queda desactivada, no borrada).
+    const TOCAR_PROX_EDITA_FECHA = false;
     const zonaProx = card.querySelector('.ltd-prox-editable');
-    if(zonaProx && proxima){
+    if(TOCAR_PROX_EDITA_FECHA && zonaProx && proxima){
       zonaProx.classList.add('tocable');
       zonaProx.setAttribute('role', 'button');
       zonaProx.setAttribute('aria-label', 'Editar fecha del próximo vencimiento');
@@ -24290,6 +24306,12 @@ body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-cre
         editarFechaDesdeClientes = { scrollY: window.scrollY, alCerrar: ()=>{ if(clienteEnDetalle) renderizarPrestamosCliente(clienteEnDetalle.id); } };
         abrirEditarFechaCuota(prestamo, proxima);
       });
+    }
+    // v586: tocar el anillo de "Cuotas" abre el modal compacto del Resumen del crédito
+    const anillo = card.querySelector('.ltd-anillo');
+    if(anillo){
+      anillo.classList.add('tocable'); anillo.setAttribute('role', 'button'); anillo.setAttribute('aria-label', 'Ver resumen del crédito');
+      anillo.addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); });
     }
     // La píldora de estado abre el "Ticket de Crédito" (igual que siempre)
     const badge = card.querySelector('.loan-badge');
@@ -24336,12 +24358,9 @@ body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-cre
   // NUEVO (v581): "Resumen del crédito" en Detalle del Cliente (debajo de
   // "Más opciones"), uno por cada crédito activo. Solo lectura: usa las
   // mismas funciones de saldo/cartera/cuotas que el resto de la app.
-  function renderizarResumenCreditosCliente(clienteId){
-    const cont = document.getElementById('resumen-creditos-cliente');
-    if(!cont) return;
-    const activos = prestamosGuardados.filter(p => p.clienteId === clienteId && p.estado === 'activo')
-      .sort((a, b) => (a.fecha || '').localeCompare(b.fecha || '') || (a.id - b.id));
-    if(!activos.length){ cont.innerHTML = ''; cont.style.display = 'none'; return; }
+  // v586: arma el HTML del "Resumen del crédito" de UN préstamo (lo usan la
+  // sección bajo "Más opciones" y el modal que abre el anillo de Cuotas).
+  function htmlResumenCreditoCliente(p, titulo){
     const fecha = v => {
       if(!v) return '--';
       const t = String(v); const d = new Date(t.length === 10 ? t + 'T00:00:00' : t);
@@ -24352,47 +24371,76 @@ body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-cre
     const pct = n => (Math.round((Number(n) || 0) * 100) / 100).toLocaleString('es-CO', { maximumFractionDigits: 2 }) + '%';
     const fila = (k, v) => '<div class="np-rc-fila"><span class="np-rc-k">' + escaparHtml(k) + '</span><span class="np-rc-v">' + escaparHtml(String(v)) + '</span></div>';
     const seccion = (t, filas) => '<div class="np-rc-seccion">' + escaparHtml(t) + '</div>' + filas.map(f => fila(f[0], f[1])).join('');
-    cont.innerHTML = activos.map((p, i) => {
-      const plan = p.plan || [];
-      const valor = Number(p.valor) || 0;
-      const totalAPagar = Number(p.totalAPagar) || plan.reduce((a, c) => a + (Number(c.total) || 0), 0);
-      const pagadas = plan.filter(c => estaCuotaPagada(p, c.numero)).length;
-      const vencidas = plan.filter(c => cuotaVencida(p, c)).length;
-      const totalPend = saldoPendientePrestamo(p);
-      const capitalPend = carteraPendientePrestamo(p);
-      const interesPend = Math.max(totalPend - capitalPend, 0);
-      const titulo = 'Resumen del crédito' + (activos.length > 1 ? ' # ' + (i + 1) : '');
-      return '<div class="np-resumen-credito rc-cliente">' +
-        '<div class="np-rc-titulo">' + escaparHtml(titulo) + '</div>' +
-        seccion('Identificación', [
-          ['ID del crédito', p.codigo || '--'],
-          ['Fecha del crédito', fecha(p.fecha)]
-        ]) +
-        seccion('Condiciones financieras', [
-          ['Total prestado', formatearPesos(valor)],
-          [p.soloInteres ? 'Interés por cuota' : 'Interés', pct(p.tasa)],
-          ['Total intereses', p.soloInteres ? '--' : formatearPesos(Math.max(totalAPagar - valor, 0))],
-          ['Total a pagar', p.soloInteres ? '--' : formatearPesos(totalAPagar)]
-        ]) +
-        seccion('Plan de pago', [
-          ['Número de cuotas', p.soloInteres ? 'Sin plazo' : String(plan.length || p.cuotas || 0)],
-          ['Frecuencia de pago', (nombresFrec[p.frecuencia] || p.frecuencia || '--').toUpperCase()],
-          ['Valor cada cuota', formatearPesos(cuotaRealPrestamo(p))],
-          ['Vencimiento', p.soloInteres ? '--' : fecha(plan.length ? plan[plan.length - 1].fechaISO : '')]
-        ]) +
-        seccion('Estado del crédito', [
-          ['Cuotas pagadas', String(pagadas)],
-          ['Total abonado', formatearPesos(totalAbonadoPrestamo(p))],
-          ['Cuotas pendientes', String(Math.max(plan.length - pagadas, 0))],
-          ['Cuotas vencidas', String(vencidas)],
-          ['Capital recuperado', formatearPesos(capitalRecuperadoPrestamo(p))], // v584
-          ['Deuda a capital', formatearPesos(capitalPend)],
-          ['Intereses pendientes', formatearPesos(interesPend)],
-          ['Total pendiente', formatearPesos(totalPend)]
-        ]) +
-      '</div>';
-    }).join('');
+    const plan = p.plan || [];
+    const valor = Number(p.valor) || 0;
+    const totalAPagar = Number(p.totalAPagar) || plan.reduce((a, c) => a + (Number(c.total) || 0), 0);
+    const pagadas = plan.filter(c => estaCuotaPagada(p, c.numero)).length;
+    const vencidas = plan.filter(c => cuotaVencida(p, c)).length;
+    const totalPend = saldoPendientePrestamo(p);
+    const capitalPend = carteraPendientePrestamo(p);
+    const interesPend = Math.max(totalPend - capitalPend, 0);
+    return '<div class="np-resumen-credito rc-cliente">' +
+      '<div class="np-rc-titulo">' + escaparHtml(titulo) + '</div>' +
+      seccion('Identificación', [
+        ['ID del crédito', p.codigo || '--'],
+        ['Fecha del crédito', fecha(p.fecha)]
+      ]) +
+      seccion('Condiciones financieras', [
+        ['Total prestado', formatearPesos(valor)],
+        [p.soloInteres ? 'Interés por cuota' : 'Interés', pct(p.tasa)],
+        ['Total intereses', p.soloInteres ? '--' : formatearPesos(Math.max(totalAPagar - valor, 0))],
+        ['Total a pagar', p.soloInteres ? '--' : formatearPesos(totalAPagar)]
+      ]) +
+      seccion('Plan de pago', [
+        ['Número de cuotas', p.soloInteres ? 'Sin plazo' : String(plan.length || p.cuotas || 0)],
+        ['Frecuencia de pago', (nombresFrec[p.frecuencia] || p.frecuencia || '--').toUpperCase()],
+        ['Valor cada cuota', formatearPesos(cuotaRealPrestamo(p))],
+        ['Vencimiento', p.soloInteres ? '--' : fecha(plan.length ? plan[plan.length - 1].fechaISO : '')]
+      ]) +
+      seccion('Estado del crédito', [
+        ['Cuotas pagadas', String(pagadas)],
+        ['Total abonado', formatearPesos(totalAbonadoPrestamo(p))],
+        ['Cuotas pendientes', String(Math.max(plan.length - pagadas, 0))],
+        ['Cuotas vencidas', String(vencidas)],
+        ['Capital recuperado', formatearPesos(capitalRecuperadoPrestamo(p))], // v584
+        ['Deuda a capital', formatearPesos(capitalPend)],
+        ['Intereses pendientes', formatearPesos(interesPend)],
+        ['Total pendiente', formatearPesos(totalPend)]
+      ]) +
+    '</div>';
+  }
+
+  // v587: a pedido se retiró la sección bajo "Más opciones" (el resumen se
+  // ve ahora tocando el anillo de Cuotas). Queda oculta, no borrada.
+  const MOSTRAR_RESUMEN_BAJO_MAS_OPCIONES = false;
+  function renderizarResumenCreditosCliente(clienteId){
+    const cont = document.getElementById('resumen-creditos-cliente');
+    if(!cont) return;
+    if(!MOSTRAR_RESUMEN_BAJO_MAS_OPCIONES){ cont.innerHTML = ''; cont.style.display = 'none'; return; }
+    const activos = prestamosGuardados.filter(p => p.clienteId === clienteId && p.estado === 'activo')
+      .sort((a, b) => (a.fecha || '').localeCompare(b.fecha || '') || (a.id - b.id));
+    if(!activos.length){ cont.innerHTML = ''; cont.style.display = 'none'; return; }
+    cont.innerHTML = activos.map((p, i) => htmlResumenCreditoCliente(p, 'Resumen del crédito' + (activos.length > 1 ? ' # ' + (i + 1) : ''))).join('');
     cont.style.display = '';
+  }
+
+  // v586: modal compacto con el Resumen del crédito (al tocar el anillo de Cuotas)
+  function abrirModalResumenCreditoCliente(prestamo){
+    let ov = document.getElementById('modal-resumen-credito-cliente');
+    if(!ov){
+      ov = document.createElement('div');
+      ov.id = 'modal-resumen-credito-cliente';
+      ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+      ov.innerHTML = '<div class="mrc-caja"><button type="button" class="mrc-cerrar" aria-label="Cerrar">×</button><div class="mrc-cuerpo"></div></div>';
+      document.body.appendChild(ov);
+      const cerrar = () => { ov.classList.remove('abierto'); setTimeout(()=>{ ov.style.display = 'none'; }, 180); };
+      ov.addEventListener('click', e => { if(e.target === ov) cerrar(); });
+      ov.querySelector('.mrc-cerrar').addEventListener('click', cerrar);
+    }
+    const n = numeroCreditoCliente(prestamo);
+    ov.querySelector('.mrc-cuerpo').innerHTML = htmlResumenCreditoCliente(prestamo, 'Resumen del crédito' + (n ? ' # ' + n : ''));
+    ov.style.display = 'flex';
+    requestAnimationFrame(() => ov.classList.add('abierto'));
   }
 
   function renderizarPrestamosCliente(clienteId){
