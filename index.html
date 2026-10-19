@@ -24385,6 +24385,7 @@ body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-cre
           ['Total abonado', formatearPesos(totalAbonadoPrestamo(p))],
           ['Cuotas pendientes', String(Math.max(plan.length - pagadas, 0))],
           ['Cuotas vencidas', String(vencidas)],
+          ['Capital recuperado', formatearPesos(capitalRecuperadoPrestamo(p))], // v584
           ['Deuda a capital', formatearPesos(capitalPend)],
           ['Intereses pendientes', formatearPesos(interesPend)],
           ['Total pendiente', formatearPesos(totalPend)]
