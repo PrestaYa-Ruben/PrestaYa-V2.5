@@ -8858,6 +8858,10 @@ body.modo-oscuro .bottom-nav .nav-cristal{ box-shadow:0 6px 14px rgba(0,0,0,0.45
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-2px; margin-right:3px;"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15.5 14"></polyline></svg>
       Vencidos (<span id="conteo-clientes-vencidos">0</span>)
     </button>
+    <!-- NUEVO (v575): clientes con el interruptor "Alerta de riesgo" encendido -->
+    <button type="button" class="tab-button tab-pequeno tab-red" data-filtro-cliente="alto-riesgo">
+      Alto Riesgo (<span id="conteo-clientes-alto-riesgo">0</span>)
+    </button>
     <button type="button" class="tab-button tab-pequeno tab-red" data-filtro-cliente="inhabilitados">Inhabilitados</button>
   </div>
 
@@ -30995,6 +30999,14 @@ body.modo-oscuro .bottom-nav .nav-cristal{ box-shadow:0 6px 14px rgba(0,0,0,0.45
 
         const tieneCreditoActivo = prestamosGuardados.some(p => p.clienteId === c.id && p.estado === 'activo');
 
+        // NUEVO (v575): "Alto Riesgo" = clientes con el interruptor
+        // "Alerta de riesgo" encendido (tengan o no crédito activo).
+        // v576: y esos clientes SOLO se ven en esa pestaña.
+        if(filtroClienteActivo === 'alto-riesgo'){
+          return !!c.alertaRiesgo;
+        }
+        if(c.alertaRiesgo) return false;
+
         if(filtroClienteActivo === 'sin-credito'){
           return !tieneCreditoActivo;
         }
@@ -31056,17 +31068,21 @@ body.modo-oscuro .bottom-nav .nav-cristal{ box-shadow:0 6px 14px rgba(0,0,0,0.45
     // el total general, sin importar la ruta seleccionada. "Pagan hoy" sí
     // lo respetaba (clientesPaganHoy() ya lo filtraba por dentro); ahora
     // los otros dos siguen exactamente el mismo criterio.
-    const coincideRuta = c => !rutasFiltroActivas || rutasFiltroActivas.has(c.ruta || '');
+    // v576: los clientes con "Alerta de riesgo" no cuentan en las demás pestañas
+    const coincideRuta = c => (!rutasFiltroActivas || rutasFiltroActivas.has(c.ruta || '')) && !c.alertaRiesgo;
     const pagaronHoy = clientesGuardados.filter(c => coincideRuta(c) &&
       prestamosGuardados.some(prestamo => prestamo.clienteId === c.id && pagosDe(prestamo).some(pago => claveFechaLocal(new Date(pago.fecha)) === hoyClave))
     ).length;
-    const paganHoy = new Set(clientesPaganHoy().map(item => item.cliente.id)).size;
+    const paganHoy = new Set(clientesPaganHoy().filter(item => !item.cliente.alertaRiesgo).map(item => item.cliente.id)).size;
     const vencidos = clientesGuardados.filter(c => coincideRuta(c) &&
       prestamosGuardados.some(p => p.clienteId === c.id && p.estado === 'activo' && (p.plan || []).some(cuota => cuotaVencida(p, cuota)))
     ).length;
     document.getElementById('conteo-clientes-pagaron-hoy').textContent = pagaronHoy;
     document.getElementById('conteo-clientes-pagan-hoy').textContent = paganHoy;
     document.getElementById('conteo-clientes-vencidos').textContent = vencidos;
+    // NUEVO (v575): contador de "Alto Riesgo" (respeta la ruta activa; excluye inhabilitados)
+    const conteoRiesgo = document.getElementById('conteo-clientes-alto-riesgo');
+    if(conteoRiesgo) conteoRiesgo.textContent = clientesGuardados.filter(c => (!rutasFiltroActivas || rutasFiltroActivas.has(c.ruta || '')) && c.alertaRiesgo && c.estadoCliente !== 'inhabilitado').length;
   }
 
   document.getElementById('tabs-filtro-clientes').querySelectorAll('.tab-button').forEach(btn=>{
