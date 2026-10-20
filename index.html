@@ -8721,6 +8721,15 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
 /* v616: el modal compacto (Resumen del crédito / Comparativo) también desenfoca lo de atrás, igual que los demás modales */
 #modal-resumen-credito-cliente{ -webkit-backdrop-filter:blur(0px); backdrop-filter:blur(0px); transition:background .18s ease, backdrop-filter .22s ease, -webkit-backdrop-filter .22s ease !important; }
 #modal-resumen-credito-cliente.abierto{ -webkit-backdrop-filter:blur(7px) saturate(115%); backdrop-filter:blur(7px) saturate(115%); background:rgba(15,23,42,0.30) !important; }
+
+/* v617: fecha de cada periodo debajo del nombre */
+#modal-resumen-credito-cliente .cmp-fecha{ display:block; font-size:11px !important; color:var(--text-secondary); opacity:.85; margin-top:1px; }
+#modal-resumen-credito-cliente .cmp-tabla{ align-items:center; }
+
+/* v617: líneas divisorias parejas en el Comparativo */
+#modal-resumen-credito-cliente .cmp-tabla{ align-items:stretch !important; }
+#modal-resumen-credito-cliente .cmp-td{ display:flex; align-items:center; flex-wrap:wrap; column-gap:4px; }
+#modal-resumen-credito-cliente .cmp-td.cmp-periodo{ flex-direction:column; align-items:flex-start; justify-content:center; }
 </style>
 
 </head>
@@ -23322,32 +23331,37 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
   // respeta el filtro de ruta activo). Solo lectura.
   // ==========================================================
   function htmlComparativoGanancias(){
+    // v617: hoy se compara contra ayer, contra el mismo día del mes pasado
+    // y contra el mismo día del año pasado (si ese día no existe, p. ej. 31,
+    // se toma el último día de ese mes).
     const ahora = new Date();
-    const ini = d => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-    const fin = d => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999).getTime();
-    const ayerD = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate() - 1);
-    const hoy = gananciasEnRangoFechas(ini(ahora), fin(ahora));
-    const ayer = gananciasEnRangoFechas(ini(ayerD), fin(ayerD));
-    const mesPasado = gananciasEnRangoFechas(new Date(ahora.getFullYear(), ahora.getMonth() - 1, 1).getTime(), new Date(ahora.getFullYear(), ahora.getMonth(), 0, 23, 59, 59, 999).getTime());
-    const anioPasado = gananciasEnRangoFechas(new Date(ahora.getFullYear() - 1, 0, 1).getTime(), new Date(ahora.getFullYear() - 1, 11, 31, 23, 59, 59, 999).getTime());
-    const dif = (a, b, txt) => {
-      const d = a - b;
+    const dia = (y, m, d) => { const ult = new Date(y, m + 1, 0).getDate(); return new Date(y, m, Math.min(d, ult)); };
+    const total = d => gananciasEnRangoFechas(new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(), new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999).getTime());
+    const MES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const fTxt = d => d.getDate() + ' ' + MES[d.getMonth()] + ' ' + d.getFullYear();
+    const dHoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+    const dAyer = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate() - 1);
+    const dMes = dia(ahora.getFullYear(), ahora.getMonth() - 1, ahora.getDate()); // enero → diciembre del año anterior
+    const dAnio = dia(ahora.getFullYear() - 1, ahora.getMonth(), ahora.getDate());
+    const hoy = total(dHoy);
+    const dif = (b, txt) => {
+      const d = hoy - b;
       const cls = d > 0 ? 'cmp-sube' : (d < 0 ? 'cmp-baja' : 'cmp-igual');
       return '<span class="' + cls + '">' + (d > 0 ? '+' : (d < 0 ? '-' : '')) + formatearPesos(Math.abs(d)) + '</span> <small>(Vs ' + txt + ')</small>';
     };
     const filas = [
-      ['Hoy', hoy, dif(hoy, ayer, 'ayer')],
-      ['Ayer', ayer, dif(hoy, mesPasado, 'mes pasado')],
-      ['Mes pasado', mesPasado, dif(hoy, anioPasado, 'año pasado')],
-      ['Año pasado', anioPasado, '<span class="cmp-igual">-</span>']
-    ];
+      ['Hoy', fTxt(dHoy), hoy, '<span class="cmp-igual">-</span>'],
+      ['Ayer', fTxt(dAyer), total(dAyer), null, 'ayer'],
+      ['Mes pasado', fTxt(dMes), total(dMes), null, 'mes pasado'],
+      ['Año pasado', fTxt(dAnio), total(dAnio), null, 'año pasado']
+    ].map(f => [f[0], f[1], f[2], f[3] || dif(f[2], f[4])]);
     return '<div class="cmp-ganancias">'
       + '<div class="np-rc-titulo">Comparativo</div>'
       + '<div class="cmp-tabla">'
       + '<div class="cmp-th">Periodo</div><div class="cmp-th">Monto</div><div class="cmp-th">Comparación</div>'
-      + filas.map(f => '<div class="cmp-td cmp-periodo">' + f[0] + '</div><div class="cmp-td cmp-monto">' + formatearPesos(f[1]) + '</div><div class="cmp-td">' + f[2] + '</div>').join('')
+      + filas.map(f => '<div class="cmp-td cmp-periodo">' + f[0] + '<small class="cmp-fecha">' + f[1] + '</small></div><div class="cmp-td cmp-monto">' + formatearPesos(f[2]) + '</div><div class="cmp-td">' + f[3] + '</div>').join('')
       + '</div>'
-      + '<div class="cmp-nota">Ganancias = interés + mora cobrados' + (rutasFiltroActivas ? ' · ruta filtrada' : '') + '</div>'
+      + '<div class="cmp-nota">Hoy comparado con ayer, el mismo día del mes pasado y el mismo día del año pasado · Ganancias = interés + mora' + (rutasFiltroActivas ? ' · ruta filtrada' : '') + '</div>'
       + '</div>';
   }
   (function(){
