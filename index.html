@@ -8681,6 +8681,13 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna{ backgrou
 .ltd-moderna.loan-card-vencido .ltm-hero{ background:rgba(194,56,47,.08) !important; }
 .ltd-moderna.loan-card-finalizado .ltm-hero{ background:rgba(91,101,118,.08) !important; }
 .ltd-moderna .ltm-ico-solido{ width:21px !important; height:21px !important; color:#4B5260 !important; filter:none !important; }
+
+/* v609: rayas decorativas más suaves (tarjeta Moderna y las 3 mini tarjetas del cliente) y mini tarjetas lo más bajas posible */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna{ background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cg fill='none' stroke='%23CFEAD8' stroke-width='1' opacity='.55'%3E%3Ccircle cx='200' cy='0' r='90'/%3E%3Ccircle cx='200' cy='0' r='130'/%3E%3Ccircle cx='200' cy='0' r='170'/%3E%3C/g%3E%3C/svg%3E") no-repeat right top / 62% auto, linear-gradient(180deg,#FFFFFF 0%,#FBFDFC 100%) !important; }
+body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm::before{ opacity:.12 !important; }
+html body #screen-detalle-cliente .detail-stats .card.stat-card-sm{ padding:5px 6px 6px !important; gap:0 !important; min-height:0 !important; }
+html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .value{ font-size:17px !important; line-height:1.15 !important; }
+html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-size:11.5px !important; line-height:1.15 !important; margin:0 !important; }
 </style>
 
 </head>
@@ -9889,7 +9896,7 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna{ backgrou
            préstamos activos del cliente (ver resumen-activos-cliente-overlay). -->
       <div class="card stat-card-sm stat-card-tocable" id="card-stat-prestamos-activos" role="button" tabindex="0" aria-label="Ver resumen de préstamos activos">
         <div class="value" id="stat-prestamos-activos">0</div>
-        <div class="label">Préstamos Activos</div>
+        <div class="label">Préstamos</div><!-- v609: antes "Préstamos Activos" -->
       </div>
       <div class="card stat-card-sm">
         <div class="value" id="stat-total-prestado">$0</div>
