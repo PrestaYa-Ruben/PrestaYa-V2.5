@@ -8407,6 +8407,100 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium{ border-l
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium.loan-card-vencido{ border-left-color:#E5484D !important; }
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium.loan-card-finalizado{ border-left-color:#8C96A8 !important; }
 .ltd-premium .ltp-stat b.ltp-verde{ color:#1E9E57 !important; }
+
+/* ==========================================================
+   v592: diseño "Clásica" (réplica de la imagen de referencia)
+   ========================================================== */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla{
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 160'%3E%3Cg fill='none' stroke='%2393C9A0' stroke-width='0.7' opacity='0.55'%3E%3Cpath d='M40 0 C90 40 140 70 200 80'/%3E%3Cpath d='M60 0 C105 35 150 60 200 66'/%3E%3Cpath d='M80 0 C120 30 160 50 200 52'/%3E%3Cpath d='M100 0 C135 25 170 40 200 38'/%3E%3Cpath d='M120 0 C150 20 180 30 200 24'/%3E%3Cpath d='M200 0 C160 40 130 90 120 160'/%3E%3Cpath d='M200 20 C165 55 140 100 135 160'/%3E%3Cpath d='M200 40 C170 70 152 110 150 160'/%3E%3Cpath d='M200 60 C176 86 166 120 165 160'/%3E%3Cpath d='M200 80 C182 100 178 130 180 160'/%3E%3C/g%3E%3C/svg%3E") no-repeat right top / 62% auto, #FFFFFF !important;
+  border:1px solid #E3E7EC !important; border-left:7px solid #3BA55C !important; border-radius:22px !important;
+  box-shadow:0 10px 26px rgba(20,30,50,.08), 0 1px 3px rgba(20,30,50,.06) !important;
+  padding:20px 18px 16px 20px !important; color:#1F2937;
+}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla.loan-card-vencido{ border-left-color:#D64545 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla.loan-card-finalizado{ border-left-color:#8C96A8 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla::before, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla::after{ display:none !important; }
+.ltd-tabla .ltc-cab{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.ltd-tabla .ltc-nombre{ font-family:'Roboto Slab','Rockwell','Georgia','Times New Roman',serif; font-size:clamp(21px, 6.4vw, 27px); font-weight:800; color:#1E5631; line-height:1.15; letter-spacing:-.3px; min-width:0; overflow-wrap:anywhere; }
+.ltd-tabla.loan-card-vencido .ltc-nombre{ color:#8E2424; }
+.ltd-tabla.loan-card-finalizado .ltc-nombre{ color:#3E4757; }
+.ltd-tabla .ltc-estado{ flex-shrink:0; display:inline-flex; align-items:center; gap:6px; background:#1E6B34; color:#fff; font-size:clamp(10.5px, 3vw, 12.5px); font-weight:700; letter-spacing:.2px; padding:7px 12px; border-radius:999px; box-shadow:0 2px 5px rgba(20,60,30,.25); cursor:pointer; white-space:nowrap; }
+.ltd-tabla .ltc-estado-vencido{ background:#B42318; }
+.ltd-tabla .ltc-estado-finalizado{ background:#5B6576; }
+.ltd-tabla .ltc-punto{ width:8px; height:8px; border-radius:50%; background:#3BE07A; box-shadow:0 0 0 3px rgba(59,224,122,.35), 0 0 6px #3BE07A; }
+.ltd-tabla .ltc-estado-vencido .ltc-punto{ background:#FF8A80; box-shadow:0 0 0 3px rgba(255,138,128,.35), 0 0 6px #FF8A80; }
+.ltd-tabla .ltc-estado-finalizado .ltc-punto{ background:#D0D5DD; box-shadow:0 0 0 3px rgba(208,213,221,.35); }
+.ltd-tabla .ltc-deuda{ font-size:clamp(20px, 6vw, 25px); font-weight:800; color:#2B2F38; margin:14px 0 10px; letter-spacing:-.2px; white-space:nowrap; }
+.ltd-tabla .ltc-cols{ display:grid; grid-template-columns:1.22fr 1.12fr 1fr 1.05fr; border-top:1.5px solid #D9DDE3; border-bottom:1.5px solid #D9DDE3; }
+.ltd-tabla .ltc-cols > div{ padding:9px 5px 10px; min-width:0; }
+.ltd-tabla .ltc-cols > div + div{ border-left:1.5px solid #D9DDE3; padding-left:6px; }
+.ltd-tabla .ltc-cols > div:first-child{ padding-left:0; }
+.ltd-tabla .ltc-cols span{ display:block; font-size:clamp(9.5px, 2.75vw, 12px); color:#2B2F38; line-height:1.2; margin-bottom:4px; }
+.ltd-tabla .ltc-cols b{ display:block; font-size:clamp(11px, 3.3vw, 14.5px); font-weight:800; color:#1F2329; line-height:1.2; }
+.ltd-tabla .ltc-prog{ margin-top:13px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.ltd-tabla .ltc-prog:active{ opacity:.85; }
+.ltd-tabla .ltc-prog-cab{ display:flex; justify-content:space-between; align-items:baseline; font-size:clamp(12px, 3.6vw, 15px); color:#1F2329; margin-bottom:8px; }
+.ltd-tabla .ltc-prog-cab b{ font-weight:800; }
+.ltd-tabla .ltc-prog-pct{ position:relative; font-weight:800; }
+.ltd-tabla .ltc-prog-pct::after{ content:''; position:absolute; right:0; bottom:-8px; border-left:5px solid transparent; border-right:5px solid transparent; border-top:6px solid #8A9099; }
+.ltd-tabla .ltc-pista{ display:flex; gap:4px; padding:3px; border-radius:999px; background:#F1F3F5; border:1.5px solid #C9CED6; box-shadow:inset 0 1px 2px rgba(0,0,0,.06); }
+.ltd-tabla .ltc-trozo{ flex:1; height:20px; border-radius:999px; background:linear-gradient(180deg,#E3E6EA,#CDD2D9); color:#7A818C; font-size:11.5px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+.ltd-tabla .ltc-trozo.pagado{ background:linear-gradient(180deg,#5FCB7C,#2E9E52); color:#fff; }
+.ltd-tabla .ltc-trozo.vencido{ background:linear-gradient(180deg,#F07A72,#C8372F); color:#fff; }
+.ltd-tabla .ltc-tabla{ display:grid; grid-template-columns:1.55fr 1fr 0.95fr; margin-top:16px; font-size:clamp(13px, 4vw, 16px); }
+.ltd-tabla .ltc-tabla > div{ padding:6px 0; border-bottom:1.5px solid #D9DDE3; }
+.ltd-tabla .ltc-tabla > div:nth-child(3n+1){ border-right:1.5px solid #D9DDE3; }
+.ltd-tabla .ltc-tabla > div:nth-child(3n+2){ border-right:1.5px solid #D9DDE3; }
+.ltd-tabla .ltc-tabla > div:nth-last-child(-n+3){ border-bottom:none; }
+.ltd-tabla .ltc-th{ color:#1F2329; font-weight:500; }
+.ltd-tabla .ltc-c{ text-align:center; }
+.ltd-tabla .ltc-r{ text-align:right; }
+.ltd-tabla .ltc-pagado{ color:#2F67C4; font-weight:800; }
+.ltd-tabla .ltc-saldo{ color:#C2382F; font-weight:800; white-space:nowrap; font-size:.94em; }
+.ltd-tabla .ltc-num{ font-weight:800; color:#16213E; white-space:nowrap; }
+.ltd-tabla .ltc-rojo{ color:#C2382F !important; }
+.ltd-tabla .ltc-nota{ margin-top:12px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note.loan-note-vacia{ background:#E6F4E8 !important; border:none !important; box-shadow:none !important; border-radius:12px !important; padding:12px 14px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note.loan-note-vacia .loan-note-agregar{ font-size:0 !important; text-align:center; color:#1E6B34 !important; text-shadow:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note.loan-note-vacia .loan-note-agregar::before{ content:'✎  MODIFICAR O AGREGAR NOTA'; font-size:clamp(12.5px, 3.8vw, 15px); font-weight:800; letter-spacing:.1px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note.loan-note-vacia .loan-note-agregar::after{ content:' (Opcional)'; font-size:clamp(12.5px, 3.8vw, 15px); font-weight:400; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note.loan-note-vacia .loan-note-contenido{ width:100%; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note.loan-note-vacia .loan-note-contenido::after{ content:' (Opcional)'; display:none; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note-titulo{ color:#1E6B34 !important; text-shadow:none !important; font-weight:700; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note-contenido span{ color:#1F2329 !important; text-shadow:none !important; }
+.ltd-tabla .loan-alerta-mora{ margin-top:12px; border-radius:10px; }
+body.modo-oscuro html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla{ color:#1F2937; }
+/* vista previa */
+.dtp.dtp-tabla{ background:#fff; }
+.dtp .dtp-pill-osc{ background:#1E6B34; }
+.dtp .dtp-l.verde{ background:#1E5631; }
+.dtp .dtp-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:2px; border-top:1px solid #DCE1E7; border-bottom:1px solid #DCE1E7; padding:2px 0; }
+.dtp .dtp-4 i{ height:6px; border-radius:2px; background:#C9CFD8; }
+.dtp .dtp-barra-num{ height:6px; background:linear-gradient(90deg,#3BA55C 72%,#DCE1E7 72%); border-radius:4px; }
+.dtp.dtp-tabla .dtp-nota{ background:#E6F4E8; border-color:#CFE6D3; }
+
+/* v593: cápsula solo con "# N"; columnas con títulos más grandes y valores alineados en una misma línea */
+.ltd-tabla .ltc-estado{ font-size:clamp(15px, 4.4vw, 18px) !important; font-weight:800 !important; padding:5px 15px !important; gap:5px !important; }
+.ltd-tabla .ltc-estado .ltc-signo{ font-weight:400; opacity:.8; font-size:.85em; }
+.ltd-tabla .ltc-cols > div{ display:flex; flex-direction:column; justify-content:space-between; }
+.ltd-tabla .ltc-cols span{ font-size:clamp(11px, 3.15vw, 13px) !important; min-height:2.4em; margin-bottom:5px !important; }
+.ltd-tabla .ltc-cols b{ white-space:nowrap; font-size:clamp(11.5px, 3.4vw, 14.5px) !important; }
+
+/* v594: filas de la tabla Concepto / Pagado / Saldo restante más bajas */
+.ltd-tabla .ltc-tabla{ margin-top:12px !important; }
+.ltd-tabla .ltc-tabla > div{ padding:3px 0 !important; line-height:1.25; }
+
+/* v596: borde de la tarjeta Clásica más marcado */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla{ border-top:2px solid #BFC6D1 !important; border-right:2px solid #BFC6D1 !important; border-bottom:2px solid #BFC6D1 !important; border-top-width:2px !important; border-right-width:2px !important; border-bottom-width:2px !important; }
+
+/* v597: valor de la cuota (4.ª columna) un poco más grande para que resalte */
+.ltd-tabla .ltc-cols > div:nth-child(4) b{ font-size:clamp(13.5px, 4.1vw, 17.5px) !important; letter-spacing:-.2px; }
+
+/* v598: área de notas (Clásica) con profundidad — hundida en la tarjeta */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note.loan-note-vacia{
+  background:linear-gradient(180deg,#DCEEDF 0%,#E9F5EB 100%) !important;
+  box-shadow:inset 0 3px 6px rgba(20,70,35,.18), inset 0 1px 2px rgba(20,70,35,.14), inset 0 -1px 0 rgba(255,255,255,.9), 0 1px 0 rgba(255,255,255,.95) !important;
+}
 </style>
 
 </head>
@@ -13304,7 +13398,8 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium.loan-card
       <button type="button" class="dt-opcion" data-diseno="resumen" role="radio"><div class="dtp dtp-resumen"><i class="dtp-franja"></i><i class="dtp-l w55"></i><i class="dtp-pill"></i><div class="dtp-2 dtp-div"><div><i class="dtp-l big rojo w80"></i><i class="dtp-l big rojo w80"></i></div><div><i class="dtp-l w90"></i><i class="dtp-l w90"></i><i class="dtp-l w90"></i><i class="dtp-l w90"></i></div></div><div class="dtp-2"><i class="dtp-l azul w40"></i><i class="dtp-l oro w70"></i></div><div class="dtp-2 dtp-pie"><i class="dtp-anillo"></i><i class="dtp-nota"></i></div></div><span class="dt-nombre">Resumen</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
       <button type="button" class="dt-opcion" data-diseno="destacada" role="radio"><div class="dtp dtp-destacada"><i class="dtp-franja"></i><i class="dtp-l w55"></i><i class="dtp-pill"></i><i class="dtp-hero"><i class="dtp-l blanco w40"></i><i class="dtp-l big blanco w70"></i></i><div class="dtp-2"><i class="dtp-caja"><i class="dtp-l w60"></i></i><i class="dtp-caja"><i class="dtp-l w70"></i></i><i class="dtp-caja"><i class="dtp-l w55"></i></i><i class="dtp-caja"><i class="dtp-l oro w70"></i></i></div><div class="dtp-2 dtp-pie"><i class="dtp-anillo"></i><i class="dtp-nota"></i></div></div><span class="dt-nombre">Destacada</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
       <button type="button" class="dt-opcion" data-diseno="minimal" role="radio"><div class="dtp dtp-minimal"><i class="dtp-franja"></i><i class="dtp-l w55"></i><i class="dtp-pill"></i><div class="dtp-2" style="margin-top:4px;"><div><i class="dtp-l w40"></i><i class="dtp-l big rojo w80"></i></div><div style="align-items:flex-end;"><i class="dtp-l w55"></i><i class="dtp-l big oro w70"></i></div></div><i class="dtp-barra dtp-barra-seg"></i><div class="dtp-chips"><i></i><i></i><i></i></div><i class="dtp-nota"></i></div><span class="dt-nombre">Minimal</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-      <button type="button" class="dt-opcion" data-diseno="premium" role="radio"><div class="dtp dtp-premium"><i class="dtp-l blanco w55"></i><i class="dtp-pill"></i><div class="dtp-2" style="grid-template-columns:1fr auto; align-items:center; margin-top:4px;"><div><i class="dtp-l w40"></i><i class="dtp-l big oro w80"></i><i class="dtp-l w60"></i></div><i class="dtp-anillo dtp-anillo-oro"></i></div><div class="dtp-chips dtp-chips-glass"><i></i><i></i><i></i></div><i class="dtp-nota"></i></div><span class="dt-nombre">Premium</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      <button type="button" class="dt-opcion" style="display:none;" aria-hidden="true" tabindex="-1" data-diseno="premium" role="radio"><div class="dtp dtp-premium"><i class="dtp-l blanco w55"></i><i class="dtp-pill"></i><div class="dtp-2" style="grid-template-columns:1fr auto; align-items:center; margin-top:4px;"><div><i class="dtp-l w40"></i><i class="dtp-l big oro w80"></i><i class="dtp-l w60"></i></div><i class="dtp-anillo dtp-anillo-oro"></i></div><div class="dtp-chips dtp-chips-glass"><i></i><i></i><i></i></div><i class="dtp-nota"></i></div><span class="dt-nombre">Premium</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      <button type="button" class="dt-opcion" data-diseno="tabla" role="radio"><div class="dtp dtp-tabla"><i class="dtp-franja"></i><i class="dtp-pill dtp-pill-osc"></i><i class="dtp-l big verde w60"></i><i class="dtp-l big w80"></i><div class="dtp-4"><i></i><i></i><i></i><i></i></div><i class="dtp-barra dtp-barra-num"></i><i class="dtp-l azul w40"></i><i class="dtp-l rojo w55"></i><i class="dtp-nota"></i></div><span class="dt-nombre">Clásica</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
     </div>
     <button type="button" class="btn-outline-share" id="btn-cerrar-diseno-tarjeta" style="width:100%; margin:14px 0 0;">Listo</button>
   </div>
@@ -24301,11 +24396,13 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium.loan-card
     { clave:'resumen', nombre:'Resumen', detalle:'Resumen financiero y de pagos, más limpio' },
     { clave:'destacada', nombre:'Destacada', detalle:'Saldo grande en una banda de color y datos en recuadros' }, // v589
     { clave:'minimal', nombre:'Minimal', detalle:'Compacta: saldo, próximo pago y barra de progreso' },     // v589
-    { clave:'premium', nombre:'Premium', detalle:'Tarjeta elegante color perla con acentos dorados' }               // v590
+    // v592: "Premium" retirado de la lista a pedido (su código queda, oculto)
+    { clave:'tabla', nombre:'Clásica', detalle:'Deuda total, datos en columnas, progreso numerado y tabla Pagado / Saldo' } // v592
   ];
   function obtenerDisenoTarjetaCredito(){
     let v = 'actual';
     try{ v = localStorage.getItem(DISENO_TARJETA_CREDITO_KEY) || 'actual'; }catch(e){}
+    if(v === 'premium') v = 'tabla'; // v592: Premium retirado → pasa al nuevo diseño
     return DISENOS_TARJETA_CREDITO.some(d => d.clave === v) ? v : 'actual';
   }
   function guardarDisenoTarjetaCredito(v){
@@ -24408,6 +24505,72 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium.loan-card
       ? `<b>${proxValor}</b><small>${proxFecha}</small>`
       : `<b class="ltd-tile-ok">${prestamo.estado === 'finalizado' ? 'Crédito pagado' : 'Sin pendientes'}</b>`;
     const cuotasTxt = prestamo.soloInteres ? 'Interés ' + formatearPesos(cuotaRealPrestamo(prestamo)) : (prestamo.cuotas || plan.length) + ' × ' + formatearPesos(cuotaRealPrestamo(prestamo));
+    if(diseno === 'tabla'){
+      // v592: diseño "Clásica" — réplica de la imagen de referencia
+      const MESES_TC = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      const fIni = new Date(prestamo.fecha + 'T00:00:00');
+      const fechaIni = isNaN(fIni) ? '—' : fIni.getDate() + ' de ' + MESES_TC[fIni.getMonth()] + '. ' + String(fIni.getFullYear()).slice(-2); // v593: año en 2 dígitos
+      const totalPagar = Number(prestamo.totalAPagar) || plan.reduce((a, c) => a + (Number(c.total) || 0), 0);
+      const interesTotal = prestamo.soloInteres ? cuotaRealPrestamo(prestamo) : Math.max(totalPagar - (Number(prestamo.valor) || 0), 0);
+      const pctCuotas = plan.length ? Math.round(pagadas / plan.length * 100) : 0;
+      const pctPagado = totalPagar > 0 ? Math.min(100, Math.round(abonado / totalPagar * 100)) : 0;
+      const pctSaldo = totalPagar > 0 ? Math.max(0, 100 - pctPagado) : 0;
+      const estadoTxt = estadoVisual === 'finalizado' ? 'FINALIZADO' : (estadoVisual === 'vencido' ? 'VENCIDO' : 'ACTIVO');
+      const trozos = plan.length <= 40
+        ? plan.map(c => `<span class="ltc-trozo${estaCuotaPagada(prestamo, c.numero) ? ' pagado' : (cuotaVencida(prestamo, c) ? ' vencido' : '')}">${plan.length <= 16 ? c.numero : ''}</span>`).join('')
+        : `<span class="ltc-trozo pagado" style="flex:${pagadas}"></span><span class="ltc-trozo" style="flex:${Math.max(plan.length - pagadas, 0)}"></span>`;
+      const cuerpoTabla = `
+        <div class="ltd-cab ltc-cab">
+          <div class="ltc-nombre">${nombre}</div>
+          <div class="ltc-estado ltc-estado-${estadoVisual}" role="button" title="Ver ticket del crédito"><span class="ltc-signo">#</span> ${nCredito || 1}</div><!-- v593: solo el contador (antes "ESTADO: ACTIVO") -->
+        </div>
+        <div class="ltc-deuda">CRÉDITO: ${formatearPesos(prestamo.valor)}</div><!-- v595: antes "DEUDA TOTAL" (total a pagar); ahora el capital prestado -->
+        <div class="ltc-cols">
+          <div><span>Fecha de inicio</span><b>${fechaIni}</b></div>
+          <div><span>Capital Otorgado</span><b>${formatearPesos(prestamo.valor)}</b></div>
+          <div><span>${prestamo.soloInteres ? 'Interés Cuota' : 'Interés Total'}</span><b>${formatearPesos(interesTotal)}</b></div>
+          <div><span>Cuota ${frecuencia}</span><b>${formatearPesos(cuotaRealPrestamo(prestamo))}</b></div>
+        </div>
+        <div class="ltc-prog" role="button" aria-label="Ver resumen del crédito">
+          <div class="ltc-prog-cab"><span><b>PROGRESO DE PAGO</b> (${pagadas} de ${plan.length} cuotas)</span><span class="ltc-prog-pct">${pctCuotas}%</span></div>
+          <div class="ltc-pista">${trozos}</div>
+        </div>
+        <div class="ltc-tabla">
+          <div class="ltc-th">Concepto</div><div class="ltc-th ltc-c">Monto</div><div class="ltc-th ltc-r">Porcentaje</div>
+          <div class="ltc-pagado">PAGADO</div><div class="ltc-c ltc-num">${formatearPesos(abonado)}</div><div class="ltc-r ltc-num">${pctPagado}%</div>
+          <div class="ltc-saldo">SALDO RESTANTE</div><div class="ltc-c ltc-num ltc-rojo">${formatearPesos(saldo)}</div><div class="ltc-r ltc-num ltc-rojo">${pctSaldo}%</div>
+        </div>
+        <div class="ltd-nota-slot ltc-nota"><div class="loan-note"></div></div>`;
+      const cardT = document.createElement('div');
+      cardT.className = 'card loan-card-full loan-card-' + estadoVisual + ' ltd ltd-tabla';
+      cardT.innerHTML = cuerpoTabla;
+      if(estadoVisual === 'vencido'){
+        const diasMoraAlerta = diasMoraYAnticipadoPrestamo(prestamo).mora;
+        if(diasMoraAlerta > 0){
+          const franja = document.createElement('div');
+          franja.className = 'loan-alerta-mora';
+          franja.innerHTML = '<div class="lam-titulo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 1.6 21h20.8z" fill="#D92D20"/><rect x="11" y="9" width="2" height="6.5" rx="1" fill="#fff"/><circle cx="12" cy="18" r="1.15" fill="#fff"/></svg><span>ATENCIÓN</span></div>'
+            + '<div class="lam-texto">Este crédito presenta <b>' + diasMoraAlerta + (diasMoraAlerta === 1 ? ' día' : ' días') + '</b> acumulados de mora.</div>';
+          cardT.querySelector('.ltd-cab').insertAdjacentElement('afterend', franja);
+        }
+      }
+      // v597: si un valor no cabe en su columna (montos grandes en pantallas angostas), se reduce solo su letra
+      requestAnimationFrame(()=> requestAnimationFrame(()=>{
+        cardT.querySelectorAll('.ltc-cols > div').forEach(celda=>{
+          const v = celda.querySelector('b'); if(!v) return;
+          let tam = parseFloat(getComputedStyle(v).fontSize), guard = 0;
+          const disponible = () => celda.clientWidth - parseFloat(getComputedStyle(celda).paddingLeft) - parseFloat(getComputedStyle(celda).paddingRight);
+          while(v.scrollWidth > disponible() + 0.5 && tam > 9 && guard++ < 30){ tam -= 0.5; v.style.setProperty('font-size', tam + 'px', 'important'); }
+        });
+      }));
+      cardT.querySelector('.ltc-prog').addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); });
+      cardT.querySelector('.ltc-estado').addEventListener('click', (e)=>{ e.stopPropagation(); abrirTicketPrestamo(prestamo); });
+      if(cliente && cliente.alertaRiesgo && estadoVisual === 'vencido'){
+        cardT.classList.add('con-sello-riesgo');
+        cardT.insertAdjacentHTML('beforeend', selloRiesgoHTML());
+      }
+      return cardT;
+    }
     if(diseno === 'premium'){
       // v590: diseño "Premium" — tarjeta oscura tipo tarjeta bancaria, con acentos dorados
       const pctPagado = (prestamo.totalAPagar || 0) > 0 ? Math.min(100, Math.round(abonado / prestamo.totalAPagar * 100)) : 0;
