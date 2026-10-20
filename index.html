@@ -8664,6 +8664,12 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna{ border-t
 .ltd-moderna .ltm-hero, .ltd-moderna.loan-card-vencido .ltm-hero{ box-shadow:none !important; border:none !important; background:var(--ltm-verde-suave) !important; }
 .ltd-moderna .ltm-dato .ltm-ico{ display:none !important; }
 .ltd-moderna .ltm-dato{ padding:5px 2px !important; }
+
+/* v606: íconos de las filas sin círculo, en el mismo estilo sólido de las pilas de monedas; valor de la cuota más grande */
+.ltd-moderna .ltm-ico-solido{ flex-shrink:0; width:22px; height:22px; color:#4B5260; display:block; filter:drop-shadow(0 1px 1px rgba(20,30,50,.15)); }
+.ltd-moderna .ltm-ico-solido svg{ width:100%; height:100%; display:block; }
+.ltd-moderna .ltm-dato{ gap:10px !important; }
+.ltd-moderna .ltm-dato b.ltm-cuota-valor{ font-size:clamp(15.5px, 4.6vw, 18px) !important; letter-spacing:-.2px; }
 </style>
 
 </head>
@@ -24710,10 +24716,10 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna{ border-t
             </div>
           </div>
           <div class="ltm-datos">
-            <div class="ltm-dato"><span class="ltm-ico">${ICONOS_LTM.cal}</span><span class="ltm-k">Fecha inicio:</span><b>${fechaIni}</b></div>
+            <div class="ltm-dato"><span class="ltm-ico-solido"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="17.5" rx="3" fill="currentColor"/><rect x="6.2" y="1.5" width="2.8" height="5.2" rx="1.4" fill="currentColor" stroke="#fff" stroke-width="1.2"/><rect x="15" y="1.5" width="2.8" height="5.2" rx="1.4" fill="currentColor" stroke="#fff" stroke-width="1.2"/><rect x="2.5" y="8.6" width="19" height="1.4" fill="#fff"/><g fill="#fff"><rect x="5.6" y="12" width="3" height="2.6" rx=".6"/><rect x="10.5" y="12" width="3" height="2.6" rx=".6"/><rect x="15.4" y="12" width="3" height="2.6" rx=".6"/><rect x="5.6" y="16.3" width="3" height="2.6" rx=".6"/><rect x="10.5" y="16.3" width="3" height="2.6" rx=".6"/></g></svg></span><span class="ltm-k">Fecha inicio:</span><b>${fechaIni}</b></div>
             <!-- v603: "Monto otorgado" → "Frecuencia de pago"; "Cuota" solo con el valor -->
-            <div class="ltm-dato"><span class="ltm-ico"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.2-5L4 8"/><path d="M4 3.5V8h4.5"/><path d="M4 13a8 8 0 0 0 14.2 5L20 16"/><path d="M20 20.5V16h-4.5"/></svg></span><span class="ltm-k">Frecuencia de pago:</span><b>${frecuencia}</b></div>
-            <div class="ltm-dato"><span class="ltm-ico">${ICONOS_LTM.tarjeta}</span><span class="ltm-k">Cuota:</span><b>${formatearPesos(cuotaRealPrestamo(prestamo))}</b></div>
+            <div class="ltm-dato"><span class="ltm-ico-solido"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="currentColor"/><g fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.2 10.4A5.4 5.4 0 0 0 7.6 8.6"/><path d="M7.4 5.9v2.9h2.9"/><path d="M6.8 13.6a5.4 5.4 0 0 0 9.6 1.8"/><path d="M16.6 18.1v-2.9h-2.9"/></g></svg></span><span class="ltm-k">Frecuencia de pago:</span><b>${frecuencia}</b></div>
+            <div class="ltm-dato"><span class="ltm-ico-solido"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="5" width="21" height="14" rx="2.6" fill="currentColor"/><rect x="1.5" y="8.4" width="21" height="2.4" fill="#fff"/><rect x="4.5" y="14" width="6" height="2" rx="1" fill="#fff"/><circle cx="17.6" cy="15" r="1.6" fill="#fff"/></svg></span><span class="ltm-k">Cuota:</span><b class="ltm-cuota-valor">${formatearPesos(cuotaRealPrestamo(prestamo))}</b></div>
           </div>
         </div>
         <div class="ltm-prog" role="button" aria-label="Ver resumen del crédito">
