@@ -8230,6 +8230,183 @@ body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-cre
 #modal-resumen-credito-cliente .np-rc-seccion{ font-weight:600; font-size:13px; margin:8px 0 0; padding-bottom:3px; }
 #modal-resumen-credito-cliente .np-rc-titulo + .np-rc-seccion{ margin-top:0; }
 #modal-resumen-credito-cliente .np-rc-fila{ padding:2px 1px !important; font-size:13px; line-height:1.25; grid-template-columns:minmax(0, 10.5em) minmax(0, 1fr); }
+
+/* v588: "Progreso" tocable en la tarjeta Actual */
+.loan-progress-header .loan-progreso-tocable{ cursor:pointer; text-decoration:underline dotted; text-underline-offset:3px; padding:4px 6px; margin:-4px -6px; border-radius:8px; -webkit-tap-highlight-color:transparent; transition:background .15s ease; }
+.loan-progress-header .loan-progreso-tocable:active{ background:rgba(47,95,208,0.12); }
+
+/* ==========================================================
+   v589: modal Resumen del crédito — fondo congelado
+   ========================================================== */
+html.modal-resumen-abierto, html.modal-resumen-abierto body{ overflow:hidden !important; overscroll-behavior:none; }
+#modal-resumen-credito-cliente{ touch-action:none; overscroll-behavior:contain; }
+#modal-resumen-credito-cliente .mrc-caja{ touch-action:pan-y; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
+
+/* ==========================================================
+   v589: diseños nuevos de la tarjeta del crédito — Destacada y Minimal
+   ========================================================== */
+.ltd-destacada .ltd-hero{ margin-top:12px; border-radius:14px; padding:12px 14px 11px; color:#fff; background:linear-gradient(135deg,#2C9E5A 0%,#1F7A45 100%); box-shadow:0 6px 14px rgba(31,122,69,.22); }
+.ltd-destacada .ltd-hero-vencido{ background:linear-gradient(135deg,#D9534F 0%,#A8302C 100%); box-shadow:0 6px 14px rgba(168,48,44,.22); }
+.ltd-destacada .ltd-hero-finalizado{ background:linear-gradient(135deg,#7A8597 0%,#566173 100%); box-shadow:0 6px 14px rgba(86,97,115,.2); }
+.ltd-destacada .ltd-hero-lbl{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; opacity:.9; }
+.ltd-destacada .ltd-hero-valor{ font-size:clamp(26px, 8vw, 32px); font-weight:800; letter-spacing:-.5px; line-height:1.1; margin:2px 0 3px; white-space:nowrap; }
+.ltd-destacada .ltd-hero-sub{ font-size:12px; opacity:.92; }
+.ltd-destacada .ltd-tiles{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+.ltd-destacada .ltd-tile{ background:var(--ltd-caja); border:1px solid var(--ltd-caja-borde); border-radius:11px; padding:8px 10px; display:flex; flex-direction:column; gap:1px; min-width:0; }
+.ltd-destacada .ltd-tile span{ font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.2px; color:var(--ltd-sub); }
+.ltd-destacada .ltd-tile b{ font-size:15px; font-weight:800; color:var(--ltd-txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ltd-destacada .ltd-tile small{ font-size:11.5px; color:var(--ltd-sub); }
+.ltd-destacada .ltd-tile-prox b{ color:var(--ltd-oro); }
+.ltd .ltd-tile-ok{ color:#16834A !important; }
+.ltd-destacada .ltd-avance{ margin-top:12px; }
+
+.ltd-minimal .ltd-min-top{ display:flex; justify-content:space-between; align-items:flex-end; gap:10px; margin-top:12px; }
+.ltd-minimal .ltd-min-der{ text-align:right; }
+.ltd-minimal .ltd-saldo{ margin:1px 0 0; }
+.ltd-minimal .ltd-min-prox{ font-size:clamp(17px, 5vw, 20px); font-weight:800; color:var(--ltd-oro); line-height:1.15; white-space:nowrap; }
+.ltd-minimal .ltd-min-de{ font-size:12px; color:var(--ltd-sub); margin-top:1px; }
+.ltd-minimal .ltd-min-prog{ margin-top:12px; padding:8px 10px 9px; border-radius:11px; background:var(--ltd-gris); cursor:pointer; -webkit-tap-highlight-color:transparent; transition:transform .15s ease; }
+.ltd-minimal .ltd-min-prog:active{ transform:scale(.98); }
+.ltd-minimal .ltd-min-prog-cab{ display:flex; justify-content:space-between; font-size:12px; color:var(--ltd-sub); margin-bottom:6px; }
+.ltd-minimal .ltd-min-prog-tit{ font-weight:700; color:var(--ltd-txt); text-decoration:underline dotted; text-underline-offset:3px; }
+.ltd-minimal .ltd-min-barra{ display:flex; gap:3px; height:8px; }
+.ltd-minimal .ltd-min-barra i{ flex:1; border-radius:4px; background:#D5DAE2; }
+.ltd-minimal .ltd-min-barra i.pagada{ background:#2FAE5F; }
+.ltd-minimal .ltd-min-barra i.vencida{ background:#D9534F; }
+body.modo-oscuro .ltd-minimal .ltd-min-barra i{ background:rgba(255,255,255,.14); }
+body.modo-oscuro .ltd-minimal .ltd-min-barra i.pagada{ background:#3CC572; }
+body.modo-oscuro .ltd-minimal .ltd-min-barra i.vencida{ background:#E0605B; }
+.ltd-minimal .ltd-min-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.ltd-minimal .ltd-min-chips span{ font-size:11.5px; font-weight:600; color:var(--ltd-txt); background:var(--ltd-caja); border:1px solid var(--ltd-caja-borde); border-radius:999px; padding:3px 9px; white-space:nowrap; }
+.ltd-minimal .ltd-min-nota{ margin-top:10px; }
+
+/* vistas previas en el selector */
+.diseno-tarjeta-opciones .dtp .dtp-hero{ display:flex; flex-direction:column; gap:3px; background:#2C9E5A; border-radius:4px; padding:4px; margin:2px 0; }
+.dtp .dtp-l.blanco{ background:rgba(255,255,255,.9); }
+.dtp .dtp-2 > .dtp-caja{ display:block; }
+.dtp .dtp-barra-seg{ background:repeating-linear-gradient(90deg,#2FAE5F 0 18%,transparent 18% 21%,#DCE1E7 21% 39%,transparent 39% 42%); margin-top:3px; }
+.dtp .dtp-chips{ display:flex; gap:2px; }
+.dtp .dtp-chips i{ flex:1; height:6px; border-radius:4px; background:#E4E8EE; }
+
+/* v589: en modo oscuro la tarjeta del crédito (diseños nuevos) mantiene fondo claro,
+   así que sus textos vuelven a los colores claros-legibles (antes el nombre y varios datos no se veían) */
+body.modo-oscuro .loan-card-full.ltd{ --ltd-txt:#1F2937; --ltd-sub:#5B6576; --ltd-rojo:#C2382F; --ltd-azul:#2F67C4; --ltd-oro:#B98208; --ltd-caja:#FFFFFF; --ltd-caja-borde:#E1E5EA; --ltd-gris:#EDEFF2; }
+body.modo-oscuro .ltd-minimal .ltd-min-barra i{ background:#D5DAE2; }
+body.modo-oscuro .ltd-minimal .ltd-min-barra i.pagada{ background:#2FAE5F; }
+body.modo-oscuro .ltd-minimal .ltd-min-barra i.vencida{ background:#D9534F; }
+
+/* ==========================================================
+   v590: diseño "Premium" de la tarjeta del crédito — oscuro, elegante, dorado
+   ========================================================== */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium{
+  --ltd-txt:#F3F5FA; --ltd-sub:#A9B3C7; --ltd-oro:#F2C14E;
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgba(242,193,78,.20) 0%, rgba(242,193,78,0) 55%),
+    radial-gradient(90% 70% at 0% 100%, rgba(88,120,255,.22) 0%, rgba(88,120,255,0) 60%),
+    linear-gradient(150deg, #1B2340 0%, #111628 55%, #0B0F1D 100%) !important;
+  border:1px solid rgba(242,193,78,.35) !important; border-left:4px solid #2FAE5F !important;
+  box-shadow:0 14px 30px rgba(10,14,30,.35), 0 2px 6px rgba(10,14,30,.25), inset 0 1px 0 rgba(255,255,255,.08) !important;
+  color:#F3F5FA; overflow:hidden;
+}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium.loan-card-vencido{ border-left-color:#E5484D !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium.loan-card-finalizado{ border-left-color:#8C96A8 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium::before{ display:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium::after{ content:''; position:absolute; right:-40px; top:-40px; width:150px; height:150px; border-radius:50%; border:1px solid rgba(242,193,78,.18); box-shadow:0 0 0 18px rgba(242,193,78,.04), 0 0 0 36px rgba(242,193,78,.025) !important; pointer-events:none; z-index:0; }
+.ltd-premium > *{ position:relative; z-index:1; }
+.ltd-premium .ltd-nombre{ color:#FFFFFF; letter-spacing:.6px; }
+.ltd-premium .ltd-ico-persona{ color:#F2C14E; }
+.ltd-premium .ltp-hero{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:center; margin-top:14px; }
+.ltd-premium .ltp-lbl{ font-size:11px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#A9B3C7; }
+.ltd-premium .ltp-saldo{ font-size:clamp(28px, 8.4vw, 34px); font-weight:800; letter-spacing:-.6px; line-height:1.08; margin:3px 0 2px; white-space:nowrap;
+  background:linear-gradient(180deg,#FFF6DC 0%,#F2C14E 55%,#C9922A 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.ltd-premium .ltp-de{ font-size:12px; color:#A9B3C7; }
+.ltd-premium .ltp-pct{ color:#5FD38D; font-weight:700; }
+.ltd-premium .ltp-prox{ display:inline-flex; align-items:center; gap:8px; margin-top:10px; padding:7px 11px 7px 8px; border-radius:12px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+.ltd-premium .ltp-prox-ico{ width:22px; height:22px; color:#F2C14E; flex-shrink:0; }
+.ltd-premium .ltp-prox-ico svg{ width:100%; height:100%; display:block; }
+.ltd-premium .ltp-prox small{ display:block; font-size:9.5px; letter-spacing:.8px; text-transform:uppercase; color:#A9B3C7; }
+.ltd-premium .ltp-prox b{ font-size:15px; font-weight:800; color:#FFFFFF; margin-right:6px; }
+.ltd-premium .ltp-prox em{ font-style:normal; font-size:12px; color:#F2C14E; }
+.ltd-premium .ltp-prox-ok b{ color:#5FD38D; }
+.ltd-premium .ltp-anillo{ width:100px; height:100px; filter:drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
+.ltd-premium .ltp-anillo::before{ border-color:rgba(255,255,255,.10) !important; }
+.ltd-premium .ltd-seg-pagada{ stroke:#5FD38D !important; }
+.ltd-premium .ltd-seg-vencida{ stroke:#FF5A5F !important; }
+.ltd-premium .ltd-seg-pendiente{ stroke:rgba(255,255,255,.14) !important; }
+.ltd-premium .ltd-anillo-txt span{ color:#A9B3C7; }
+.ltd-premium .ltd-anillo-txt b{ color:#FFFFFF; font-size:18px; }
+.ltd-premium .ltp-stats{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:7px; margin-top:14px; }
+.ltd-premium .ltp-stat{ min-width:0; padding:8px 9px; border-radius:12px; background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.10); }
+.ltd-premium .ltp-stat small{ display:block; font-size:9.5px; letter-spacing:.7px; text-transform:uppercase; color:#A9B3C7; margin-bottom:2px; }
+.ltd-premium .ltp-stat b{ display:block; font-size:13.5px; font-weight:700; color:#FFFFFF; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ltd-premium .ltp-verde{ color:#5FD38D !important; }
+.ltd-premium .ltp-meta{ display:flex; align-items:center; gap:8px; margin-top:10px; font-size:12px; color:#A9B3C7; }
+.ltd-premium .ltp-meta i{ width:4px; height:4px; border-radius:50%; background:#F2C14E; }
+.ltd-premium .ltp-nota{ margin-top:12px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium .loan-note,
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium .loan-note.loan-note-vacia{ background:rgba(255,255,255,.06) !important; border:1px dashed rgba(255,255,255,.18) !important; box-shadow:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium .loan-note-titulo, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium .loan-note-agregar{ color:#A9B3C7 !important; text-shadow:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium .loan-note-contenido span{ color:#F3F5FA !important; text-shadow:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium .loan-note-textarea{ background:#0F1424 !important; color:#F3F5FA !important; border-color:rgba(242,193,78,.45) !important; }
+.ltd-premium .loan-alerta-mora{ margin-top:10px; border-radius:10px; }
+/* vista previa en el selector */
+.dtp.dtp-premium{ background:linear-gradient(150deg,#1B2340,#0B0F1D); border-color:#3A3420; padding-left:6px; }
+.dtp .dtp-anillo-oro{ width:22px; height:22px; border-color:#5FD38D #F2C14E #F2C14E #F2C14E; }
+.dtp .dtp-chips-glass i{ background:rgba(255,255,255,.14); }
+.dtp.dtp-premium .dtp-nota{ background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.15); }
+.dtp.dtp-premium .dtp-l:not(.oro):not(.blanco){ background:#5A6378; }
+
+.ltd-premium .ltp-prox em{ display:block; margin-top:1px; }
+.ltd-premium .ltp-stat b{ font-size:clamp(12px, 3.5vw, 13.5px); }
+.ltd-premium .ltp-stat{ padding:8px 8px; }
+
+/* ==========================================================
+   v591: "Premium" en modo día — fondo perla claro, textos oscuros y acentos dorados
+   ========================================================== */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium{
+  --ltd-txt:#1B2340; --ltd-sub:#6B7488;
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgba(232,184,74,.22) 0%, rgba(232,184,74,0) 55%),
+    radial-gradient(90% 70% at 0% 100%, rgba(120,150,255,.14) 0%, rgba(120,150,255,0) 60%),
+    linear-gradient(150deg, #FFFFFF 0%, #FBF8F1 55%, #F4EFE3 100%) !important;
+  border:1px solid rgba(201,146,42,.38) !important;
+  box-shadow:0 14px 30px rgba(60,48,20,.14), 0 2px 6px rgba(60,48,20,.08), inset 0 1px 0 rgba(255,255,255,.9) !important;
+  color:#1B2340;
+}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium::after{ border-color:rgba(201,146,42,.22); box-shadow:0 0 0 18px rgba(201,146,42,.05), 0 0 0 36px rgba(201,146,42,.03) !important; }
+.ltd-premium .ltd-nombre{ color:#1B2340 !important; }
+.ltd-premium .ltd-ico-persona{ color:#C9922A !important; }
+.ltd-premium .ltp-lbl, .ltd-premium .ltp-de, .ltd-premium .ltp-meta, .ltd-premium .ltp-prox small, .ltd-premium .ltp-stat small, .ltd-premium .ltd-anillo-txt span{ color:#6B7488 !important; }
+.ltd-premium .ltp-saldo{ background:linear-gradient(180deg,#E0A93A 0%,#C08422 55%,#8E5E12 100%) !important; -webkit-background-clip:text !important; background-clip:text !important; color:transparent !important; }
+.ltd-premium .ltp-pct, .ltd-premium .ltp-verde, .ltd-premium .ltp-prox-ok b{ color:#1E9E57 !important; }
+.ltd-premium .ltp-prox{ background:rgba(255,255,255,.75) !important; border:1px solid rgba(201,146,42,.30) !important; box-shadow:0 4px 10px rgba(60,48,20,.08); }
+.ltd-premium .ltp-prox-ico{ color:#C9922A !important; }
+.ltd-premium .ltp-prox b{ color:#1B2340 !important; }
+.ltd-premium .ltp-prox em{ color:#B07A1C !important; }
+.ltd-premium .ltp-anillo{ filter:drop-shadow(0 6px 12px rgba(60,48,20,.12)) !important; }
+.ltd-premium .ltp-anillo::before{ border-color:rgba(201,146,42,.25) !important; }
+.ltd-premium .ltd-seg-pagada{ stroke:#2FAE5F !important; }
+.ltd-premium .ltd-seg-vencida{ stroke:#E5484D !important; }
+.ltd-premium .ltd-seg-pendiente{ stroke:#E6DCC6 !important; }
+.ltd-premium .ltd-anillo-txt b{ color:#1B2340 !important; }
+.ltd-premium .ltp-stat{ background:linear-gradient(180deg,#FFFFFF,#FAF6EC) !important; border:1px solid rgba(201,146,42,.22) !important; box-shadow:0 2px 6px rgba(60,48,20,.06); }
+.ltd-premium .ltp-stat b{ color:#1B2340 !important; }
+.ltd-premium .ltp-meta i{ background:#C9922A !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium .loan-note, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium .loan-note.loan-note-vacia{ background:rgba(255,255,255,.7) !important; border:1px dashed rgba(201,146,42,.40) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium .loan-note-titulo, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium .loan-note-agregar{ color:#8A7A55 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium .loan-note-contenido span{ color:#1B2340 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium .loan-note-textarea{ background:#FFFFFF !important; color:#1B2340 !important; border-color:rgba(201,146,42,.55) !important; }
+/* vista previa */
+.dtp.dtp-premium{ background:linear-gradient(150deg,#FFFFFF,#F4EFE3) !important; border-color:#E2C88E !important; }
+.dtp.dtp-premium .dtp-l.blanco{ background:#1B2340; }
+.dtp.dtp-premium .dtp-l:not(.oro):not(.blanco){ background:#B8AE98 !important; }
+.dtp.dtp-premium .dtp-chips-glass i{ background:#EFE6D2; }
+.dtp.dtp-premium .dtp-nota{ background:#FFFFFF !important; border-color:#E2C88E !important; }
+
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium{ border-left:4px solid #2FAE5F !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium.loan-card-vencido{ border-left-color:#E5484D !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-premium.loan-card-finalizado{ border-left-color:#8C96A8 !important; }
+.ltd-premium .ltp-stat b.ltp-verde{ color:#1E9E57 !important; }
 </style>
 
 </head>
@@ -13125,6 +13302,9 @@ body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-cre
       <button type="button" class="dt-opcion" data-diseno="actual" role="radio"><div class="dtp dtp-actual"><i class="dtp-franja"></i><i class="dtp-l w40"></i><i class="dtp-pill"></i><i class="dtp-l big rojo w55"></i><i class="dtp-hr"></i><i class="dtp-l w80"></i><i class="dtp-l w70"></i><i class="dtp-barra"></i><i class="dtp-nota"></i></div><span class="dt-nombre">Actual</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
       <button type="button" class="dt-opcion" data-diseno="paneles" role="radio"><div class="dtp dtp-paneles"><i class="dtp-franja"></i><i class="dtp-cab"></i><i class="dtp-pill"></i><div class="dtp-2"><div><i class="dtp-caja"><i class="dtp-l big rojo w80"></i></i><i class="dtp-caja"><i class="dtp-l azul w60"></i></i></div><div><i class="dtp-fila"></i><i class="dtp-fila"></i><i class="dtp-fila"></i><i class="dtp-fila"></i></div></div><div class="dtp-2 dtp-pie"><i class="dtp-anillo"></i><i class="dtp-nota"></i></div></div><span class="dt-nombre">Paneles</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
       <button type="button" class="dt-opcion" data-diseno="resumen" role="radio"><div class="dtp dtp-resumen"><i class="dtp-franja"></i><i class="dtp-l w55"></i><i class="dtp-pill"></i><div class="dtp-2 dtp-div"><div><i class="dtp-l big rojo w80"></i><i class="dtp-l big rojo w80"></i></div><div><i class="dtp-l w90"></i><i class="dtp-l w90"></i><i class="dtp-l w90"></i><i class="dtp-l w90"></i></div></div><div class="dtp-2"><i class="dtp-l azul w40"></i><i class="dtp-l oro w70"></i></div><div class="dtp-2 dtp-pie"><i class="dtp-anillo"></i><i class="dtp-nota"></i></div></div><span class="dt-nombre">Resumen</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      <button type="button" class="dt-opcion" data-diseno="destacada" role="radio"><div class="dtp dtp-destacada"><i class="dtp-franja"></i><i class="dtp-l w55"></i><i class="dtp-pill"></i><i class="dtp-hero"><i class="dtp-l blanco w40"></i><i class="dtp-l big blanco w70"></i></i><div class="dtp-2"><i class="dtp-caja"><i class="dtp-l w60"></i></i><i class="dtp-caja"><i class="dtp-l w70"></i></i><i class="dtp-caja"><i class="dtp-l w55"></i></i><i class="dtp-caja"><i class="dtp-l oro w70"></i></i></div><div class="dtp-2 dtp-pie"><i class="dtp-anillo"></i><i class="dtp-nota"></i></div></div><span class="dt-nombre">Destacada</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      <button type="button" class="dt-opcion" data-diseno="minimal" role="radio"><div class="dtp dtp-minimal"><i class="dtp-franja"></i><i class="dtp-l w55"></i><i class="dtp-pill"></i><div class="dtp-2" style="margin-top:4px;"><div><i class="dtp-l w40"></i><i class="dtp-l big rojo w80"></i></div><div style="align-items:flex-end;"><i class="dtp-l w55"></i><i class="dtp-l big oro w70"></i></div></div><i class="dtp-barra dtp-barra-seg"></i><div class="dtp-chips"><i></i><i></i><i></i></div><i class="dtp-nota"></i></div><span class="dt-nombre">Minimal</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      <button type="button" class="dt-opcion" data-diseno="premium" role="radio"><div class="dtp dtp-premium"><i class="dtp-l blanco w55"></i><i class="dtp-pill"></i><div class="dtp-2" style="grid-template-columns:1fr auto; align-items:center; margin-top:4px;"><div><i class="dtp-l w40"></i><i class="dtp-l big oro w80"></i><i class="dtp-l w60"></i></div><i class="dtp-anillo dtp-anillo-oro"></i></div><div class="dtp-chips dtp-chips-glass"><i></i><i></i><i></i></div><i class="dtp-nota"></i></div><span class="dt-nombre">Premium</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
     </div>
     <button type="button" class="btn-outline-share" id="btn-cerrar-diseno-tarjeta" style="width:100%; margin:14px 0 0;">Listo</button>
   </div>
@@ -23826,7 +24006,7 @@ body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-cre
       </div>
       <hr class="loan-divider">
       <div class="loan-progress-header">
-        <span>Progreso</span>
+        <span class="loan-progreso-tocable" role="button" aria-label="Ver resumen del crédito">Progreso</span><!-- v588: abre el Resumen del crédito -->
         <span>${cuotasPagadas} / ${prestamo.cuotas} cuotas <span class="loan-progress-porcentaje">· ${Math.round(porcentajeProgreso)}%</span></span>
       </div>
       <div class="loan-progress-track loan-progress-segmentado${(prestamo.plan || []).length > 40 ? ' muchas' : ''}${(prestamo.plan || []).length > 16 ? ' nums-chicos' : ''}${(prestamo.plan || []).length > 30 ? ' sin-nums' : ''}">
@@ -23907,6 +24087,10 @@ body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-cre
         abrirTicketPrestamo(prestamo);
       });
     }
+
+    // v588: tocar "Progreso" abre el modal compacto del Resumen del crédito
+    const progresoTocable = card.querySelector('.loan-progreso-tocable');
+    if(progresoTocable) progresoTocable.addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); });
 
     // NUEVO (v534): sello "Alerta de riesgo" solo en créditos vencidos de un cliente marcado
     const clienteSello = clientesGuardados.find(c => c.id === prestamo.clienteId);
@@ -24114,7 +24298,10 @@ body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-cre
   const DISENOS_TARJETA_CREDITO = [
     { clave:'actual',  nombre:'Actual',  detalle:'La tarjeta de siempre' },
     { clave:'paneles', nombre:'Paneles', detalle:'Resumen en recuadros y detalles en filas' },
-    { clave:'resumen', nombre:'Resumen', detalle:'Resumen financiero y de pagos, más limpio' }
+    { clave:'resumen', nombre:'Resumen', detalle:'Resumen financiero y de pagos, más limpio' },
+    { clave:'destacada', nombre:'Destacada', detalle:'Saldo grande en una banda de color y datos en recuadros' }, // v589
+    { clave:'minimal', nombre:'Minimal', detalle:'Compacta: saldo, próximo pago y barra de progreso' },     // v589
+    { clave:'premium', nombre:'Premium', detalle:'Tarjeta elegante color perla con acentos dorados' }               // v590
   ];
   function obtenerDisenoTarjetaCredito(){
     let v = 'actual';
@@ -24216,7 +24403,65 @@ body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-cre
       </div>`;
 
     let cuerpo;
-    if(diseno === 'paneles'){
+    // v589: dos diseños nuevos — "Destacada" y "Minimal" (solo presentación; mismos datos y funciones)
+    const proxTile = proxima
+      ? `<b>${proxValor}</b><small>${proxFecha}</small>`
+      : `<b class="ltd-tile-ok">${prestamo.estado === 'finalizado' ? 'Crédito pagado' : 'Sin pendientes'}</b>`;
+    const cuotasTxt = prestamo.soloInteres ? 'Interés ' + formatearPesos(cuotaRealPrestamo(prestamo)) : (prestamo.cuotas || plan.length) + ' × ' + formatearPesos(cuotaRealPrestamo(prestamo));
+    if(diseno === 'premium'){
+      // v590: diseño "Premium" — tarjeta oscura tipo tarjeta bancaria, con acentos dorados
+      const pctPagado = (prestamo.totalAPagar || 0) > 0 ? Math.min(100, Math.round(abonado / prestamo.totalAPagar * 100)) : 0;
+      cuerpo = `
+        <div class="ltp-hero">
+          <div class="ltp-info">
+            <div class="ltp-lbl">Saldo pendiente</div>
+            <div class="ltp-saldo">${formatearPesos(saldo)}</div>
+            <div class="ltp-de">de ${formatearPesos(prestamo.totalAPagar || 0)} · <span class="ltp-pct">${pctPagado}% pagado</span></div>
+            ${proxima
+              ? `<div class="ltp-prox"><span class="ltp-prox-ico">${ICONOS_LTD.reloj}</span><div><small>Próximo pago</small><b>${proxValor}</b><em>${proxFecha}</em></div></div>`
+              : `<div class="ltp-prox ltp-prox-ok"><div><small>Estado</small><b>${prestamo.estado === 'finalizado' ? 'Crédito pagado' : 'Sin pendientes'}</b></div></div>`}
+          </div>
+          <div class="ltd-anillo ltp-anillo">${anilloCuotasLtdSVG(prestamo)}
+            <div class="ltd-anillo-txt"><span>Cuotas</span><b>${pagadas} / ${plan.length}</b></div>
+          </div>
+        </div>
+        <div class="ltp-stats">
+          <div class="ltp-stat"><small>Otorgado</small><b>${formatearPesos(prestamo.valor)}</b></div>
+          <div class="ltp-stat"><small>Ha pagado</small><b class="ltp-verde">${formatearPesos(abonado)}</b></div>
+          <div class="ltp-stat"><small>Cuotas</small><b>${cuotasTxt}</b></div>
+        </div>
+        <div class="ltp-meta"><span>${frecuencia}</span><i></i><span>Desde ${formatearFechaCorta(new Date(prestamo.fecha + 'T00:00:00'))}</span></div>
+        <div class="ltd-nota-slot ltp-nota"><div class="loan-note"></div></div>`;
+    }else if(diseno === 'destacada'){
+      cuerpo = `
+        <div class="ltd-hero ltd-hero-${estadoVisual}">
+          <div class="ltd-hero-lbl">Saldo pendiente</div>
+          <div class="ltd-hero-valor">${formatearPesos(saldo)}</div>
+          <div class="ltd-hero-sub">de ${formatearPesos(prestamo.totalAPagar || 0)} · Ha pagado ${formatearPesos(abonado)}</div>
+        </div>
+        <div class="ltd-tiles">
+          <div class="ltd-tile"><span>Monto otorgado</span><b>${formatearPesos(prestamo.valor)}</b></div>
+          <div class="ltd-tile"><span>Cuotas</span><b>${cuotasTxt}</b></div>
+          <div class="ltd-tile"><span>Frecuencia</span><b>${frecuencia}</b><small>Desde ${formatearFechaCorta(new Date(prestamo.fecha + 'T00:00:00'))}</small></div>
+          <div class="ltd-tile ltd-tile-prox"><span>Próximo vencimiento</span>${proxTile}</div>
+        </div>
+        ${avance}`;
+    }else if(diseno === 'minimal'){
+      const segs = plan.length <= 60
+        ? plan.map(c => `<i class="${estaCuotaPagada(prestamo, c.numero) ? 'pagada' : (cuotaVencida(prestamo, c) ? 'vencida' : '')}"></i>`).join('')
+        : `<i class="pagada" style="flex:${pagadas}"></i><i style="flex:${Math.max(plan.length - pagadas, 0)}"></i>`;
+      cuerpo = `
+        <div class="ltd-min-top">
+          <div><div class="ltd-lbl2">Debe</div><div class="ltd-saldo">${formatearPesos(saldo)}</div><div class="ltd-min-de">de ${formatearPesos(prestamo.totalAPagar || 0)}</div></div>
+          <div class="ltd-min-der"><div class="ltd-lbl2">Próximo pago</div>${proxima ? `<div class="ltd-min-prox">${proxValor}</div><div class="ltd-min-de">${proxFecha}</div>` : `<div class="ltd-min-de ltd-tile-ok">${prestamo.estado === 'finalizado' ? 'Crédito pagado' : 'Sin pendientes'}</div>`}</div>
+        </div>
+        <div class="ltd-min-prog">
+          <div class="ltd-min-prog-cab"><span class="ltd-min-prog-tit">Progreso</span><span>${pagadas} / ${plan.length} cuotas</span></div>
+          <div class="ltd-min-barra">${segs}</div>
+        </div>
+        <div class="ltd-min-chips"><span>Otorgado ${formatearPesos(prestamo.valor)}</span><span>${cuotasTxt}</span><span>${frecuencia}</span><span>Ha pagado ${formatearPesos(abonado)}</span></div>
+        <div class="ltd-nota-slot ltd-min-nota"><div class="loan-note"></div></div>`;
+    }else if(diseno === 'paneles'){
       cuerpo = `
         <div class="ltd-cols">
           <div class="ltd-col">
@@ -24306,6 +24551,12 @@ body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-cre
         editarFechaDesdeClientes = { scrollY: window.scrollY, alCerrar: ()=>{ if(clienteEnDetalle) renderizarPrestamosCliente(clienteEnDetalle.id); } };
         abrirEditarFechaCuota(prestamo, proxima);
       });
+    }
+    // v589: en "Minimal" el bloque de Progreso abre el mismo modal
+    const progMin = card.querySelector('.ltd-min-prog');
+    if(progMin){
+      progMin.setAttribute('role', 'button'); progMin.setAttribute('aria-label', 'Ver resumen del crédito');
+      progMin.addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); });
     }
     // v586: tocar el anillo de "Cuotas" abre el modal compacto del Resumen del crédito
     const anillo = card.querySelector('.ltd-anillo');
@@ -24433,14 +24684,35 @@ body.modo-oscuro #resumen-creditos-cliente .np-resumen-credito + .np-resumen-cre
       ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
       ov.innerHTML = '<div class="mrc-caja"><button type="button" class="mrc-cerrar" aria-label="Cerrar">×</button><div class="mrc-cuerpo"></div></div>';
       document.body.appendChild(ov);
-      const cerrar = () => { ov.classList.remove('abierto'); setTimeout(()=>{ ov.style.display = 'none'; }, 180); };
+      const cerrar = () => { ov.classList.remove('abierto'); desbloquearFondoModalResumen(); setTimeout(()=>{ ov.style.display = 'none'; }, 180); };
+      // v589: el fondo no recibe toques ni desplazamiento mientras el modal está abierto
+      ov.addEventListener('touchmove', e => { if(!e.target.closest('.mrc-caja')) e.preventDefault(); }, { passive:false });
+      ov.addEventListener('wheel', e => { if(!e.target.closest('.mrc-caja')) e.preventDefault(); }, { passive:false });
       ov.addEventListener('click', e => { if(e.target === ov) cerrar(); });
       ov.querySelector('.mrc-cerrar').addEventListener('click', cerrar);
     }
     const n = numeroCreditoCliente(prestamo);
     ov.querySelector('.mrc-cuerpo').innerHTML = htmlResumenCreditoCliente(prestamo, 'Resumen del crédito' + (n ? ' # ' + n : ''));
+    bloquearFondoModalResumen();
     ov.style.display = 'flex';
     requestAnimationFrame(() => ov.classList.add('abierto'));
+  }
+  // v589: congela la pantalla de atrás (sin desplazamiento) mientras el modal está abierto
+  let scrollGuardadoModalResumen = null;
+  function bloquearFondoModalResumen(){
+    if(scrollGuardadoModalResumen !== null) return;
+    scrollGuardadoModalResumen = window.scrollY || 0;
+    const b = document.body.style;
+    b.position = 'fixed'; b.top = (-scrollGuardadoModalResumen) + 'px'; b.left = '0'; b.right = '0'; b.width = '100%';
+    document.documentElement.classList.add('modal-resumen-abierto');
+  }
+  function desbloquearFondoModalResumen(){
+    if(scrollGuardadoModalResumen === null) return;
+    const y = scrollGuardadoModalResumen; scrollGuardadoModalResumen = null;
+    const b = document.body.style;
+    b.position = ''; b.top = ''; b.left = ''; b.right = ''; b.width = '';
+    document.documentElement.classList.remove('modal-resumen-abierto');
+    window.scrollTo(0, y);
   }
 
   function renderizarPrestamosCliente(clienteId){
