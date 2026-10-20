@@ -8688,6 +8688,20 @@ body:not(.modo-oscuro) #screen-detalle-cliente .detail-stats .stat-card-sm::befo
 html body #screen-detalle-cliente .detail-stats .card.stat-card-sm{ padding:5px 6px 6px !important; gap:0 !important; min-height:0 !important; }
 html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .value{ font-size:17px !important; line-height:1.15 !important; }
 html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-size:11.5px !important; line-height:1.15 !important; margin:0 !important; }
+
+/* v612: "Resumen del abono" — lista en dos columnas, sin tapete; valores alineados a la izquierda */
+.resumen-final-abono{ margin:12px 0 2px; }
+.resumen-final-abono .rfa-titulo{ font-size:14px; font-weight:700; color:var(--text); margin-bottom:4px; }
+.resumen-final-abono .rfa-fila{ display:grid; grid-template-columns:minmax(0, 9.5em) minmax(0, 1fr); column-gap:12px; padding:4px 0; border-bottom:1px solid var(--border); font-size:14px; line-height:1.3; }
+.resumen-final-abono .rfa-fila:last-child{ border-bottom:none; }
+.resumen-final-abono .rfa-fila span{ color:var(--text-secondary); }
+.resumen-final-abono .rfa-fila b{ color:var(--text); font-weight:600; text-align:left; overflow-wrap:anywhere; }
+
+/* v612: la zona de progreso ya no es tocable completa; solo la palabra "Progreso" */
+.ltd-moderna .ltm-prog, .ltd-tabla .ltc-prog, .ltd-minimal .ltd-min-prog{ cursor:default !important; }
+.ltd-moderna .ltm-prog:active, .ltd-tabla .ltc-prog:active, .ltd-minimal .ltd-min-prog:active{ transform:none !important; opacity:1 !important; }
+.ltd-moderna .ltm-prog-tit, .ltd-tabla .ltc-prog-cab b, .ltd-minimal .ltd-min-prog-tit{ cursor:pointer; -webkit-tap-highlight-color:transparent; padding:3px 6px; margin:-3px -6px; border-radius:8px; transition:background .15s ease; }
+.ltd-moderna .ltm-prog-tit:active, .ltd-tabla .ltc-prog-cab b:active, .ltd-minimal .ltd-min-prog-tit:active{ background:rgba(31,138,76,.12); }
 </style>
 
 </head>
@@ -10671,6 +10685,16 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
         <button type="button" class="check-toggle on" id="toggle-compartir-abono" role="checkbox" aria-checked="true" aria-label="¿Desea compartir?">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
         </button>
+      </div>
+
+      <!-- NUEVO (v612): pequeño resumen del abono antes de registrarlo -->
+      <div class="resumen-final-abono" id="resumen-final-abono">
+        <div class="rfa-titulo">Resumen del abono</div>
+        <div class="rfa-fila"><span>Fecha de abono</span><b id="rfa-fecha">—</b></div>
+        <div class="rfa-fila"><span>Valor abonado</span><b id="rfa-valor">$0</b></div>
+        <div class="rfa-fila"><span>Abono aplicado a</span><b id="rfa-aplicado">—</b></div><!-- v613 -->
+        <div class="rfa-fila"><span>Número de cuota</span><b id="rfa-cuota">—</b></div>
+        <div class="rfa-fila"><span>Método de pago</span><b id="rfa-metodo">—</b></div>
       </div>
 
     </div>
@@ -21146,116 +21170,60 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
   // independiente y reutilizable: se llama desde cualquier generador de
   // canvas, en el centro de la tarjeta, sin alterar el resto del dibujo.
   function dibujarSelloCreditoPagado(ctx, cardX, cardY, anchoCard, altoCard, opciones){
-    // CAMBIO: se corrió el centro del sello un poco hacia la izquierda
-    // (antes justo al centro de la tarjeta) — ahí es donde suele quedar
-    // el espacio más vacío, bajo la columna Cliente/Valor abonado/Estado.
-    // NUEVO (v535): "opciones" opcional { centroX, centroY, escala, alpha }
-    // — sin opciones, el sello sale exactamente igual que antes.
+    // v610 (a pedido): sello "CRÉDITO PAGADO" rediseñado — limpio y moderno
+    // (insignia verde con ícono de chulo, sin textura de tinta) y un poco
+    // más pequeño. Misma firma y mismas posiciones que antes.
     const op = opciones || {};
     const centroX = op.centroX != null ? op.centroX : cardX + anchoCard * 0.4;
     const centroY = op.centroY != null ? op.centroY : cardY + altoCard / 2;
-    const escalaSello = op.escala || 1;
+    const escalaSello = op.escala ? op.escala * 0.66 : 0.9;  // v610: más pequeño que antes (recibo principal) y legible en los demás comprobantes
+    const VERDE = '#DC2626', VERDE_OSC = '#B91C1C'; // v611: a pedido, en rojo para que se note
     ctx.save();
     ctx.translate(centroX, centroY);
-    ctx.rotate(-14 * Math.PI / 180);
-    if(escalaSello !== 1) ctx.scale(escalaSello, escalaSello);
-    ctx.globalAlpha = op.alpha != null ? op.alpha : 1;   // CAMBIO: tinta sólida, sin transparencia, para que se vea nítido
+    ctx.rotate(-8 * Math.PI / 180);
+    ctx.scale(escalaSello, escalaSello);
+    ctx.globalAlpha = op.alpha != null ? Math.min(1, op.alpha + 0.32) : 1;
 
-    // NUEVO: sombra sutil para dar sensación de relieve, como si el
-    // timbre estuviera realmente presionado sobre el papel del comprobante.
-    // CAMBIO: se quitó la sombra difuminada — emborronaba los bordes del
-    // sello. Ahora el trazo queda limpio y definido.
-    ctx.shadowColor = 'transparent';
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-    ctx.lineJoin = 'round';
+    const FUENTE = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+    ctx.font = '600 13px ' + FUENTE;
+    const sup = 'C R É D I T O';
+    const anchoSup = ctx.measureText(sup).width;
+    ctx.font = '800 30px ' + FUENTE;
+    const inf = 'PAGADO';
+    const anchoInf = ctx.measureText(inf).width;
+    const icono = 40, sep = 12, padX = 16, padY = 11;
+    const anchoTexto = Math.max(anchoSup, anchoInf);
+    const w = padX + icono + sep + anchoTexto + padX + 4;
+    const h = Math.max(icono, 13 + 4 + 30) + padY * 2;
+    const x0 = -w / 2, y0 = -h / 2;
 
-    // CAMBIO: sello en DOS líneas — "CRÉDITO" arriba y "PAGADO" debajo —
-    // en vez de todo en una sola línea. CAMBIO: un poco más grande que
-    // antes (24px, subido desde 20px).
-    const lineaUno = 'CRÉDITO';
-    const lineaDos = 'PAGADO';
-    ctx.font = "800 28px Inter, 'Segoe UI', Roboto, Arial, sans-serif";
-    const anchoTexto = Math.max(ctx.measureText(lineaUno).width, ctx.measureText(lineaDos).width);
-    const padX = 17, padY = 10;
-    const altoLinea = 28;
-    const espacioEntreLineas = 5;
-    const altoTextoTotal = altoLinea * 2 + espacioEntreLineas;
-    const selloAncho = anchoTexto + padX * 2;
-    const selloAlto = altoTextoTotal + padY * 2;
+    // fondo translúcido + borde fino
+    trazarRectRedondeado(ctx, x0, y0, w, h, h / 2);
+    ctx.fillStyle = 'rgba(220,38,38,0.10)';
+    ctx.fill();
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = VERDE;
+    ctx.stroke();
 
-    // CAMBIO (a pedido): tinta ligeramente desgastada, muy sutil, para que
-    // parezca un sello real. El timbre se dibuja primero en un lienzo
-    // aparte, ahí se le "quita" un poco de tinta (motas diminutas, un par
-    // de roces y zonas con menos carga) y luego se estampa sobre el
-    // comprobante. El desgaste usa una semilla fija: siempre sale igual.
-    const ESCALA_SELLO = 3 * Math.max(1, escalaSello), MARGEN_SELLO = 8; // v535: más resolución si el sello se agranda
-    const anchoLienzo = selloAncho + MARGEN_SELLO * 2, altoLienzo = selloAlto + MARGEN_SELLO * 2;
-    const lienzoSello = document.createElement('canvas');
-    lienzoSello.width = Math.ceil(anchoLienzo * ESCALA_SELLO);
-    lienzoSello.height = Math.ceil(altoLienzo * ESCALA_SELLO);
-    const cs = lienzoSello.getContext('2d');
-    cs.scale(ESCALA_SELLO, ESCALA_SELLO);
-    cs.translate(anchoLienzo / 2, altoLienzo / 2);
-    cs.lineJoin = 'round';
-    cs.font = ctx.font;
+    // ícono: círculo verde con chulo blanco
+    const cx = x0 + padX + icono / 2, cy = 0;
+    ctx.beginPath(); ctx.arc(cx, cy, icono / 2, 0, Math.PI * 2);
+    ctx.fillStyle = VERDE; ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(cx - 9, cy + 0.5); ctx.lineTo(cx - 2.5, cy + 7); ctx.lineTo(cx + 10, cy - 6.5);
+    ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#FFFFFF'; ctx.stroke();
 
-    cs.strokeStyle = '#E0111F';
-    cs.lineWidth = 3.4;
-    trazarRectRedondeado(cs, -selloAncho / 2, -selloAlto / 2, selloAncho, selloAlto, 6);
-    cs.stroke();
-    // marco doble, como un timbre de verdad
-    trazarRectRedondeado(cs, -selloAncho / 2 + 5, -selloAlto / 2 + 5, selloAncho - 10, selloAlto - 10, 3.5);
-    cs.lineWidth = 1.5;
-    cs.stroke();
+    // textos
+    const tx = cx + icono / 2 + sep;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = VERDE;
+    ctx.font = '600 13px ' + FUENTE;
+    ctx.fillText(sup, tx, -6);
+    ctx.fillStyle = VERDE_OSC;
+    ctx.font = '800 30px ' + FUENTE;
+    ctx.fillText(inf, tx - 1, 22);
 
-    cs.fillStyle = '#E0111F';
-    cs.textAlign = 'center';
-    cs.textBaseline = 'middle';
-    cs.fillText(lineaUno, 0, -(altoLinea + espacioEntreLineas) / 2 + 1);
-    cs.fillText(lineaDos, 0, (altoLinea + espacioEntreLineas) / 2 + 1);
-
-    // --- desgaste de la tinta ---
-    let semilla = 20261005;
-    const azar = ()=>{ semilla = (semilla + 0x6D2B79F5) | 0; let t = Math.imul(semilla ^ (semilla >>> 15), 1 | semilla); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-    cs.globalCompositeOperation = 'destination-out';
-    // zonas con un poco menos de tinta (presión despareja del timbre)
-    [[-0.30, 0.28, 0.42, 0.20], [0.34, -0.26, 0.36, 0.16], [0.05, 0.05, 0.30, 0.08]].forEach(z=>{
-      const zx = z[0] * selloAncho, zy = z[1] * selloAlto, zr = z[2] * selloAncho;
-      const g = cs.createRadialGradient(zx, zy, 0, zx, zy, zr);
-      g.addColorStop(0, 'rgba(0,0,0,' + z[3] + ')');
-      g.addColorStop(1, 'rgba(0,0,0,0)');
-      cs.fillStyle = g;
-      cs.fillRect(-anchoLienzo / 2, -altoLienzo / 2, anchoLienzo, altoLienzo);
-    });
-    // motas diminutas donde la tinta no agarró
-    for(let n = 0; n < 420; n++){
-      const mx = (azar() - 0.5) * anchoLienzo, my = (azar() - 0.5) * altoLienzo;
-      const mr = 0.25 + azar() * azar() * 1.15;
-      cs.globalAlpha = 0.45 + azar() * 0.55;
-      cs.fillStyle = '#000';
-      cs.beginPath();
-      cs.arc(mx, my, mr, 0, Math.PI * 2);
-      cs.fill();
-    }
-    // un par de roces muy finos
-    cs.lineCap = 'round';
-    for(let n = 0; n < 5; n++){
-      const rx = (azar() - 0.5) * selloAncho, ry = (azar() - 0.5) * selloAlto;
-      const largo = 10 + azar() * 22, ang = -0.5 + azar() * 0.35;
-      cs.globalAlpha = 0.30 + azar() * 0.25;
-      cs.strokeStyle = '#000';
-      cs.lineWidth = 0.5 + azar() * 0.5;
-      cs.beginPath();
-      cs.moveTo(rx, ry);
-      cs.lineTo(rx + Math.cos(ang) * largo, ry + Math.sin(ang) * largo);
-      cs.stroke();
-    }
-
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(lienzoSello, -anchoLienzo / 2, -altoLienzo / 2, anchoLienzo, altoLienzo);
     ctx.restore();
   }
 
@@ -21838,7 +21806,10 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
     const numFilasVisuales = Math.max(1, Math.ceil(filas.length / 2));
     const yInicioFilas = cardY + alturaHeader + alturaBloqueHero;
     const yFinFilas = yInicioFilas + numFilasVisuales * alturaFilaPar;
-    const altoCard = (yFinFilas - cardY) + alturaPie;
+    // v611: si el crédito está pagado, se deja una franja libre antes del pie para el sello
+    const bandaSelloResumen = prestamo.estado === 'finalizado' ? 100 : 0;
+    const yPieResumen = yFinFilas + bandaSelloResumen;
+    const altoCard = (yFinFilas - cardY) + alturaPie + bandaSelloResumen;
     const altoLogicoResumen = altoCard;
     const ctx = prepararCanvasNitido(canvas, anchoLogicoResumen, altoLogicoResumen, 2);
 
@@ -21989,11 +21960,11 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
     ctx.strokeStyle = '#EDF0F4';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(cardX + 25, yFinFilas + 6);
-    ctx.lineTo(cardX + anchoCard - 25, yFinFilas + 6);
+    ctx.moveTo(cardX + 25, yPieResumen + 6);
+    ctx.lineTo(cardX + anchoCard - 25, yPieResumen + 6);
     ctx.stroke();
 
-    const piePersona = yFinFilas + alturaPie / 2 + 4;
+    const piePersona = yPieResumen + alturaPie / 2 + 4;
     // A pedido: nuevo pie — "<Negocio>, Soluciones financieras" y debajo
     // "Solución efectiva a sus necesidades". El bloque (escudo + textos)
     // se centra según el ancho real del texto.
@@ -22034,7 +22005,7 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
 
     // Sello "CRÉDITO PAGADO" cuando este préstamo ya está finalizado.
     if(prestamo.estado === 'finalizado'){
-      dibujarSelloCreditoPagado(ctx, cardX, cardY, anchoCard, altoCard);
+      dibujarSelloCreditoPagado(ctx, cardX, cardY, anchoCard, altoCard, { centroX: cardX + anchoCard / 2, centroY: yFinFilas + bandaSelloResumen / 2 - 4, escala: 1.4 }); // v611: en la franja libre
     }
 
     return canvas;
@@ -24767,7 +24738,7 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
           while(v.scrollWidth > v.clientWidth + 0.5 && tam > 9 && guard++ < 40){ tam -= 0.5; v.style.setProperty('font-size', tam + 'px', 'important'); }
         });
       }));
-      cardM.querySelector('.ltm-prog').addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); });
+      cardM.querySelector('.ltm-prog-tit').addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); }); // v612: solo la palabra "Progreso"
       cardM.querySelector('.ltm-estado').addEventListener('click', (e)=>{ e.stopPropagation(); abrirTicketPrestamo(prestamo); });
       if(cliente && cliente.alertaRiesgo && estadoVisual === 'vencido'){
         cardM.classList.add('con-sello-riesgo');
@@ -24833,7 +24804,7 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
           while(v.scrollWidth > disponible() + 0.5 && tam > 9 && guard++ < 30){ tam -= 0.5; v.style.setProperty('font-size', tam + 'px', 'important'); }
         });
       }));
-      cardT.querySelector('.ltc-prog').addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); });
+      cardT.querySelector('.ltc-prog-cab b').addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); }); // v612: solo "PROGRESO DE PAGO"
       cardT.querySelector('.ltc-estado').addEventListener('click', (e)=>{ e.stopPropagation(); abrirTicketPrestamo(prestamo); });
       if(cliente && cliente.alertaRiesgo && estadoVisual === 'vencido'){
         cardT.classList.add('con-sello-riesgo');
@@ -24986,7 +24957,7 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
       });
     }
     // v589: en "Minimal" el bloque de Progreso abre el mismo modal
-    const progMin = card.querySelector('.ltd-min-prog');
+    const progMin = card.querySelector('.ltd-min-prog-tit'); // v612: solo la palabra "Progreso"
     if(progMin){
       progMin.setAttribute('role', 'button'); progMin.setAttribute('aria-label', 'Ver resumen del crédito');
       progMin.addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); });
@@ -26327,6 +26298,7 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
   // cubre el selector (antes solo consideraba la primera, así que si el monto
   // alcanzaba para varias cuotas, el resumen no lo reflejaba).
   function recalcularResumenAbono(){
+    setTimeout(()=>{ try{ actualizarResumenFinalAbono(); }catch(e){} }, 0); // v612
     const cuota = cuotaSeleccionadaAbono();
     if(!cuota || !prestamoEnDetalle){
       resumenValor1.textContent = '$0';
@@ -26378,6 +26350,49 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
       resumenLinea2.style.display = 'none';
     }
   }
+  // NUEVO (v612): "Resumen del abono" (fecha, valor, cuota(s) y método) — solo informativo
+  function actualizarResumenFinalAbono(){
+    try{
+      const elF = document.getElementById('rfa-fecha'); if(!elF) return;
+      const fv = (document.getElementById('input-fecha-abono') || {}).value;
+      let fechaTxt = '—';
+      if(fv){ const d = new Date(fv + 'T00:00:00'); if(!isNaN(d)) fechaTxt = formatearFechaCorta(d); }
+      elF.textContent = fechaTxt;
+      const valor = numeroDesdeCampo(inputValorAbono.value);
+      document.getElementById('rfa-valor').textContent = formatearPesos(valor);
+      const selAp = document.getElementById('select-aplicar-abono');
+      const elAp = document.getElementById('rfa-aplicado');
+      if(elAp) elAp.textContent = selAp && selAp.selectedIndex >= 0 ? selAp.options[selAp.selectedIndex].text : '—'; // v613
+      const sel = document.getElementById('select-metodo-pago');
+      document.getElementById('rfa-metodo').textContent = sel && sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].text : '—';
+      let cuotaTxt = '—';
+      const cuotaRef = cuotaSeleccionadaAbono();
+      if(prestamoEnDetalle && cuotaRef){
+        const modo = selectAplicarAbono.value;
+        let nums = [];
+        if(modo !== 'mora' && valor > 0){
+          nums = repartirAbonoEntreCuotas(prestamoEnDetalle, valor, modo)
+            .filter(r => r.aplicarA !== 'capital')
+            .map(r => (r.cuota && r.cuota.numero != null) ? r.cuota.numero : r.cuota)
+            .filter(n => n != null);
+        }
+        if(!nums.length) nums = [cuotaRef.numero];
+        nums = [...new Set(nums)].sort((a, b) => a - b);
+        const total = (prestamoEnDetalle.plan || []).length;
+        if(prestamoEnDetalle.soloInteres) cuotaTxt = String(nums[0]);
+        else if(nums.length === 1) cuotaTxt = nums[0] + (total ? ' de ' + total : '');
+        else cuotaTxt = nums[0] + ' a ' + nums[nums.length - 1] + (total ? ' de ' + total : '');
+      }
+      document.getElementById('rfa-cuota').textContent = cuotaTxt;
+    }catch(e){ console.warn('[Resumen del abono]', e); }
+  }
+  (function(){
+    const form = btnGuardarAbono && btnGuardarAbono.closest('form');
+    if(!form) return;
+    form.addEventListener('input', ()=> setTimeout(actualizarResumenFinalAbono, 0));
+    form.addEventListener('change', ()=> setTimeout(actualizarResumenFinalAbono, 0));
+    form.addEventListener('click', ()=> setTimeout(actualizarResumenFinalAbono, 0));
+  })();
   function resumenLabel2Set(texto, valor){
     document.getElementById('resumen-label-2').textContent = texto;
     resumenValor2.textContent = formatearPesos(valor);
@@ -28213,7 +28228,7 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
       // filas de la tarjeta de datos, para no tapar el monto ni la píldora.
       // (La función centra el sello en x + ancho*0.4, y + alto/2.)
       // CAMBIO (a pedido, v535): más al centro del recibo, más grande y más transparente
-      dibujarSelloCreditoPagado(ctx, 0, 0, 0, 0, { centroX: W / 2, centroY: (alturaHeader + yFinTarjeta) / 2 + 85, escala: 1.9, alpha: 0.58 } /* v536: más abajo y menos transparente */);
+      dibujarSelloCreditoPagado(ctx, 0, 0, 0, 0, { centroX: W * 0.70, centroY: yFinTarjeta - 66 - 66, escala: 1.7, alpha: 0.68 } /* v614: a la línea de "Cuota" */);
     }
 
     return canvas;
