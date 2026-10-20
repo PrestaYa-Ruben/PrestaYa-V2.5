@@ -8702,6 +8702,25 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
 .ltd-moderna .ltm-prog:active, .ltd-tabla .ltc-prog:active, .ltd-minimal .ltd-min-prog:active{ transform:none !important; opacity:1 !important; }
 .ltd-moderna .ltm-prog-tit, .ltd-tabla .ltc-prog-cab b, .ltd-minimal .ltd-min-prog-tit{ cursor:pointer; -webkit-tap-highlight-color:transparent; padding:3px 6px; margin:-3px -6px; border-radius:8px; transition:background .15s ease; }
 .ltd-moderna .ltm-prog-tit:active, .ltd-tabla .ltc-prog-cab b:active, .ltd-minimal .ltd-min-prog-tit:active{ background:rgba(31,138,76,.12); }
+
+/* v615: modal "Comparativo" de ganancias (mismo modal del Resumen del crédito) */
+#tarjeta-ganancias .icono-tocable-ganancias{ cursor:pointer; -webkit-tap-highlight-color:transparent; transition:transform .15s ease; }
+#tarjeta-ganancias .icono-tocable-ganancias:active{ transform:scale(.9); }
+#modal-resumen-credito-cliente .cmp-tabla{ display:grid; grid-template-columns:auto auto minmax(0,1fr); column-gap:12px; margin-top:4px; }
+#modal-resumen-credito-cliente .cmp-th{ font-size:13px; font-weight:700; color:var(--text); padding:4px 0 5px; border-bottom:1px solid var(--border); }
+#modal-resumen-credito-cliente .cmp-td{ font-size:13px; padding:5px 0; border-bottom:1px solid var(--border); white-space:nowrap; }
+#modal-resumen-credito-cliente .cmp-tabla > div:nth-last-child(-n+3){ border-bottom:none; }
+#modal-resumen-credito-cliente .cmp-periodo{ color:var(--text-secondary); }
+#modal-resumen-credito-cliente .cmp-monto{ color:var(--text); font-weight:500; }
+#modal-resumen-credito-cliente .cmp-td small{ font-size:11.5px; color:var(--text-secondary); }
+#modal-resumen-credito-cliente .cmp-sube{ color:#16834A; font-weight:600; }
+#modal-resumen-credito-cliente .cmp-baja{ color:#C2382F; font-weight:600; }
+#modal-resumen-credito-cliente .cmp-igual{ color:var(--text-secondary); }
+#modal-resumen-credito-cliente .cmp-nota{ font-size:11px; color:var(--text-secondary); margin-top:8px; }
+
+/* v616: el modal compacto (Resumen del crédito / Comparativo) también desenfoca lo de atrás, igual que los demás modales */
+#modal-resumen-credito-cliente{ -webkit-backdrop-filter:blur(0px); backdrop-filter:blur(0px); transition:background .18s ease, backdrop-filter .22s ease, -webkit-backdrop-filter .22s ease !important; }
+#modal-resumen-credito-cliente.abierto{ -webkit-backdrop-filter:blur(7px) saturate(115%); backdrop-filter:blur(7px) saturate(115%); background:rgba(15,23,42,0.30) !important; }
 </style>
 
 </head>
@@ -23297,6 +23316,52 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
   }
 
   // ==========================================================
+  // NUEVO (v615): tocar el ícono de la mini tarjeta "Ganancias" abre un
+  // modal compacto "Comparativo" (mismo modal del Resumen del crédito).
+  // Ganancia = interés cobrado + mora cobrada (gananciasEnRangoFechas,
+  // respeta el filtro de ruta activo). Solo lectura.
+  // ==========================================================
+  function htmlComparativoGanancias(){
+    const ahora = new Date();
+    const ini = d => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    const fin = d => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999).getTime();
+    const ayerD = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate() - 1);
+    const hoy = gananciasEnRangoFechas(ini(ahora), fin(ahora));
+    const ayer = gananciasEnRangoFechas(ini(ayerD), fin(ayerD));
+    const mesPasado = gananciasEnRangoFechas(new Date(ahora.getFullYear(), ahora.getMonth() - 1, 1).getTime(), new Date(ahora.getFullYear(), ahora.getMonth(), 0, 23, 59, 59, 999).getTime());
+    const anioPasado = gananciasEnRangoFechas(new Date(ahora.getFullYear() - 1, 0, 1).getTime(), new Date(ahora.getFullYear() - 1, 11, 31, 23, 59, 59, 999).getTime());
+    const dif = (a, b, txt) => {
+      const d = a - b;
+      const cls = d > 0 ? 'cmp-sube' : (d < 0 ? 'cmp-baja' : 'cmp-igual');
+      return '<span class="' + cls + '">' + (d > 0 ? '+' : (d < 0 ? '-' : '')) + formatearPesos(Math.abs(d)) + '</span> <small>(Vs ' + txt + ')</small>';
+    };
+    const filas = [
+      ['Hoy', hoy, dif(hoy, ayer, 'ayer')],
+      ['Ayer', ayer, dif(hoy, mesPasado, 'mes pasado')],
+      ['Mes pasado', mesPasado, dif(hoy, anioPasado, 'año pasado')],
+      ['Año pasado', anioPasado, '<span class="cmp-igual">-</span>']
+    ];
+    return '<div class="cmp-ganancias">'
+      + '<div class="np-rc-titulo">Comparativo</div>'
+      + '<div class="cmp-tabla">'
+      + '<div class="cmp-th">Periodo</div><div class="cmp-th">Monto</div><div class="cmp-th">Comparación</div>'
+      + filas.map(f => '<div class="cmp-td cmp-periodo">' + f[0] + '</div><div class="cmp-td cmp-monto">' + formatearPesos(f[1]) + '</div><div class="cmp-td">' + f[2] + '</div>').join('')
+      + '</div>'
+      + '<div class="cmp-nota">Ganancias = interés + mora cobrados' + (rutasFiltroActivas ? ' · ruta filtrada' : '') + '</div>'
+      + '</div>';
+  }
+  (function(){
+    const ico = document.querySelector('#tarjeta-ganancias .icon-container');
+    if(!ico) return;
+    ico.setAttribute('role', 'button'); ico.setAttribute('aria-label', 'Ver comparativo de ganancias');
+    ico.classList.add('icono-tocable-ganancias');
+    ico.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      try{ abrirModalResumenCreditoCliente(null, htmlComparativoGanancias()); }catch(err){ console.warn('[Comparativo ganancias]', err); }
+    });
+  })();
+
+  // ==========================================================
   // NUEVO — "Ganancias: este mes vs. mes pasado". Reutiliza tal cual la
   // MISMA fórmula de la tarjeta "Ganancias" de arriba (interés cobrado +
   // mora cobrada) — solo que en vez de tomar el período de las pestañas
@@ -25080,7 +25145,7 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
   }
 
   // v586: modal compacto con el Resumen del crédito (al tocar el anillo de Cuotas)
-  function abrirModalResumenCreditoCliente(prestamo){
+  function abrirModalResumenCreditoCliente(prestamo, htmlPropio){ // v615: htmlPropio opcional (reutiliza el mismo modal para otros resúmenes)
     let ov = document.getElementById('modal-resumen-credito-cliente');
     if(!ov){
       ov = document.createElement('div');
@@ -25095,8 +25160,12 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
       ov.addEventListener('click', e => { if(e.target === ov) cerrar(); });
       ov.querySelector('.mrc-cerrar').addEventListener('click', cerrar);
     }
-    const n = numeroCreditoCliente(prestamo);
-    ov.querySelector('.mrc-cuerpo').innerHTML = htmlResumenCreditoCliente(prestamo, 'Resumen del crédito' + (n ? ' # ' + n : ''));
+    if(typeof htmlPropio === 'string'){
+      ov.querySelector('.mrc-cuerpo').innerHTML = htmlPropio;
+    }else{
+      const n = numeroCreditoCliente(prestamo);
+      ov.querySelector('.mrc-cuerpo').innerHTML = htmlResumenCreditoCliente(prestamo, 'Resumen del crédito' + (n ? ' # ' + n : ''));
+    }
     bloquearFondoModalResumen();
     ov.style.display = 'flex';
     requestAnimationFrame(() => ov.classList.add('abierto'));
