@@ -8501,6 +8501,169 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note,
   background:linear-gradient(180deg,#DCEEDF 0%,#E9F5EB 100%) !important;
   box-shadow:inset 0 3px 6px rgba(20,70,35,.18), inset 0 1px 2px rgba(20,70,35,.14), inset 0 -1px 0 rgba(255,255,255,.9), 0 1px 0 rgba(255,255,255,.95) !important;
 }
+
+/* ==========================================================
+   v599: diseño "Moderna" de la tarjeta del crédito
+   ========================================================== */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna{
+  --ltm-verde:#1F8A4C; --ltm-verde-suave:#EAF6EE; --ltm-borde:#DCE7E1; --ltm-navy:#16213E; --ltm-sub:#5E6B80;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cg fill='none' stroke='%23BFE3CB' stroke-width='1.2' opacity='.7'%3E%3Ccircle cx='200' cy='0' r='90'/%3E%3Ccircle cx='200' cy='0' r='130'/%3E%3Ccircle cx='200' cy='0' r='170'/%3E%3C/g%3E%3C/svg%3E") no-repeat right top / 46% auto, linear-gradient(180deg,#FFFFFF 0%,#FBFDFC 100%) !important;
+  border-top:1.5px solid #D5DEE6 !important; border-right:1.5px solid #D5DEE6 !important; border-bottom:1.5px solid #D5DEE6 !important;
+  border-left:8px solid #1F8A4C !important; border-radius:22px !important;
+  box-shadow:0 14px 30px rgba(18,40,30,.09), 0 2px 6px rgba(18,40,30,.06) !important;
+  padding:18px 16px 14px 16px !important; color:var(--ltm-navy); container-type:inline-size;
+}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna.loan-card-vencido{ border-left-color:#D64545 !important; --ltm-verde:#C2382F; --ltm-verde-suave:#FCEDEC; --ltm-borde:#F0D8D6; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna.loan-card-finalizado{ border-left-color:#8C96A8 !important; --ltm-verde:#5B6576; --ltm-verde-suave:#EEF1F5; --ltm-borde:#DDE2E9; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna::before, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna::after{ display:none !important; }
+.ltd-moderna .ltm-cab{ display:flex; align-items:center; gap:10px; }
+.ltd-moderna .ltm-logo{ width:34px; height:30px; flex-shrink:0; filter:drop-shadow(0 2px 3px rgba(31,138,76,.25)); }
+.ltd-moderna .ltm-logo svg{ width:100%; height:100%; display:block; }
+.ltd-moderna .ltm-nombre{ flex:1; min-width:0; font-size:clamp(18px, 5.4vw, 23px); font-weight:800; color:var(--ltm-navy); letter-spacing:-.3px; line-height:1.15; overflow-wrap:anywhere; }
+.ltd-moderna .ltm-estado{ flex-shrink:0; display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:999px; background:linear-gradient(180deg,#25A05A,#1A7A43); color:#fff; font-size:clamp(11.5px, 3.3vw, 14px); font-weight:800; letter-spacing:.4px; box-shadow:0 4px 10px rgba(26,122,67,.28), inset 0 1px 0 rgba(255,255,255,.25); cursor:pointer; white-space:nowrap; }
+.ltd-moderna .ltm-estado i{ width:8px; height:8px; border-radius:50%; background:#fff; box-shadow:0 0 0 3px rgba(255,255,255,.25); }
+.ltd-moderna .ltm-estado small{ font-size:.82em; opacity:.85; font-weight:700; }
+.ltd-moderna .ltm-estado-vencido{ background:linear-gradient(180deg,#E0524B,#B42318); box-shadow:0 4px 10px rgba(180,35,24,.28), inset 0 1px 0 rgba(255,255,255,.25); }
+.ltd-moderna .ltm-estado-finalizado{ background:linear-gradient(180deg,#7A8597,#566173); box-shadow:0 4px 10px rgba(86,97,115,.25); }
+.ltd-moderna .ltm-top{ display:grid; grid-template-columns:1fr; gap:10px; margin-top:14px; }
+@container (min-width: 480px){ .ltd-moderna .ltm-top{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:center; } }
+.ltd-moderna .ltm-hero{ display:flex; align-items:center; gap:12px; padding:14px 14px; border-radius:16px; background:linear-gradient(135deg,var(--ltm-verde-suave) 0%,#F7FBF8 100%); border:1px solid var(--ltm-borde); box-shadow:inset 0 1px 0 rgba(255,255,255,.8); }
+.ltd-moderna .ltm-ico{ width:38px; height:38px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:var(--ltm-verde-suave); color:var(--ltm-verde); box-shadow:inset 0 0 0 1px var(--ltm-borde); }
+.ltd-moderna .ltm-ico svg{ width:20px; height:20px; display:block; }
+.ltd-moderna .ltm-ico-grande{ width:50px; height:50px; background:#DCEFE3; }
+.ltd-moderna .ltm-ico-grande svg{ width:26px; height:26px; }
+.ltd-moderna .ltm-hero-txt{ flex:1; min-width:0; border-left:2px solid rgba(31,138,76,.35); padding-left:12px; }
+.ltd-moderna .ltm-hero-lbl{ font-size:13px; color:var(--ltm-sub); font-weight:600; }
+.ltd-moderna .ltm-hero-valor{ font-size:clamp(28px, 8.6vw, 36px); font-weight:800; color:#D92D20; letter-spacing:-.8px; line-height:1.1; white-space:nowrap; overflow:hidden; }
+.ltd-moderna.loan-card-finalizado .ltm-hero-valor{ color:#1F8A4C; }
+.ltd-moderna .ltm-hero-de{ font-size:13px; color:var(--ltm-sub); margin-top:2px; }
+.ltd-moderna .ltm-datos{ display:flex; flex-direction:column; }
+.ltd-moderna .ltm-dato{ display:flex; align-items:center; gap:9px; padding:6px 0; }
+.ltd-moderna .ltm-dato + .ltm-dato{ border-top:1px solid #E6EBEF; }
+.ltd-moderna .ltm-dato .ltm-ico{ width:32px; height:32px; }
+.ltd-moderna .ltm-dato .ltm-ico svg{ width:17px; height:17px; }
+.ltd-moderna .ltm-k{ font-size:13.5px; color:var(--ltm-sub); font-weight:600; white-space:nowrap; }
+.ltd-moderna .ltm-dato b{ margin-left:auto; font-size:14px; font-weight:800; color:var(--ltm-navy); white-space:nowrap; overflow:hidden; min-width:0; text-align:right; }
+.ltd-moderna .ltm-prog{ margin-top:12px; padding:12px 14px 14px; border-radius:16px; background:#F8FAFB; border:1px solid #E1E8EE; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:transform .15s ease, box-shadow .15s ease; }
+.ltd-moderna .ltm-prog:active{ transform:scale(.985); }
+.ltd-moderna .ltm-prog-cab{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px; }
+.ltd-moderna .ltm-prog-tit{ display:inline-flex; align-items:center; gap:9px; font-size:16px; font-weight:800; color:var(--ltm-navy); }
+.ltd-moderna .ltm-barras{ width:20px; height:20px; color:var(--ltm-verde); }
+.ltd-moderna .ltm-barras svg{ width:100%; height:100%; display:block; }
+.ltd-moderna .ltm-prog-info{ font-size:13.5px; color:var(--ltm-sub); font-weight:600; white-space:nowrap; }
+.ltd-moderna .ltm-prog-info i{ font-style:normal; margin:0 3px; opacity:.6; }
+.ltd-moderna .ltm-prog-info b{ color:var(--ltm-verde); font-weight:800; font-size:15px; }
+.ltd-moderna .ltm-pasos{ display:flex; align-items:center; padding:0 6px; }
+.ltd-moderna .ltm-paso{ flex-shrink:0; width:clamp(24px, 7.6vw, 32px); height:clamp(24px, 7.6vw, 32px); border-radius:50%; display:flex; align-items:center; justify-content:center; background:#E8EDF2; color:#4B5568; font-size:clamp(11px, 3.4vw, 14px); font-weight:800; box-shadow:inset 0 0 0 1px #D9E0E7; }
+.ltd-moderna .ltm-paso.pagada{ background:linear-gradient(180deg,#34B26A,#1F8A4C); color:#fff; box-shadow:0 3px 7px rgba(31,138,76,.3); }
+.ltd-moderna .ltm-paso.pagada svg{ width:58%; height:58%; }
+.ltd-moderna .ltm-paso.vencida{ background:linear-gradient(180deg,#EE6A63,#C2382F); color:#fff; box-shadow:0 3px 7px rgba(194,56,47,.3); }
+.ltd-moderna .ltm-linea{ flex:1; height:3px; border-radius:2px; background:#DFE5EB; margin:0 4px; }
+.ltd-moderna .ltm-linea.llena{ background:#34B26A; }
+.ltd-moderna .ltm-barra{ display:flex; gap:3px; height:10px; }
+.ltd-moderna .ltm-barra i{ flex:1; border-radius:5px; background:#DFE5EB; }
+.ltd-moderna .ltm-barra i.pagada{ background:#2FAE5F; }
+.ltd-moderna .ltm-barra i.vencida{ background:#D9534F; }
+.ltd-moderna .ltm-res{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); margin-top:10px; padding:12px 6px; border-radius:16px; background:#FFFFFF; border:1px solid #E1E8EE; box-shadow:0 4px 12px rgba(18,40,30,.05); }
+.ltd-moderna .ltm-res > div{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; padding:0 8px; min-width:0; }
+.ltd-moderna .ltm-res > div + div{ border-left:1px solid #E6EBEF; }
+.ltd-moderna .ltm-res > div > div{ min-width:0; width:100%; }
+.ltd-moderna .ltm-res .ltm-ico{ width:32px; height:32px; }
+.ltd-moderna .ltm-res .ltm-ico svg{ width:17px; height:17px; }
+.ltd-moderna .ltm-res small{ display:block; font-size:12px; color:var(--ltm-sub); font-weight:600; }
+.ltd-moderna .ltm-res b{ display:block; font-size:clamp(14px, 4.4vw, 19px); font-weight:800; letter-spacing:-.3px; white-space:nowrap; overflow:hidden; }
+.ltd-moderna .ltm-navy{ color:var(--ltm-navy); }
+.ltd-moderna .ltm-azul{ color:#1D5FD1; }
+.ltd-moderna .ltm-rojo{ color:#D92D20; }
+.ltd-moderna.loan-card-finalizado .ltm-rojo{ color:#1F8A4C; }
+.ltd-moderna .ltm-nota{ margin-top:10px; }
+.ltd-moderna .loan-alerta-mora{ margin-top:12px; border-radius:12px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .loan-note, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .loan-note.loan-note-vacia{ background:linear-gradient(180deg,#EDF7F0,#E4F3E8) !important; border:1px solid #CFE6D6 !important; border-radius:14px !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.8) !important; padding:11px 14px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .loan-note.loan-note-vacia .loan-note-contenido{ width:100%; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .loan-note.loan-note-vacia .loan-note-agregar{ font-size:0 !important; display:flex; align-items:center; gap:12px; color:#1F7A44 !important; text-shadow:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .loan-note.loan-note-vacia .loan-note-agregar::before{ content:'+'; flex-shrink:0; width:28px; height:28px; border-radius:50%; background:linear-gradient(180deg,#2AA05C,#1A7A43); color:#fff; font-size:20px; font-weight:700; line-height:28px; text-align:center; box-shadow:0 3px 6px rgba(26,122,67,.3); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .loan-note.loan-note-vacia .loan-note-agregar::after{ content:'Agregar nota'; flex:1; font-size:16px; font-weight:700; background:no-repeat right center / 18px 18px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231F7A44' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 5 16 12 9 19'/%3E%3C/svg%3E"); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .loan-note-titulo{ color:#1F7A44 !important; text-shadow:none !important; font-weight:700; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .loan-note-contenido span{ color:var(--ltm-navy) !important; text-shadow:none !important; }
+body.modo-oscuro html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna{ color:#16213E; }
+/* vista previa */
+.dtp.dtp-moderna{ background:#fff; }
+.dtp .dtp-caja-verde{ background:#EAF6EE !important; border-color:#CFE6D6 !important; padding:5px 3px !important; }
+.dtp .dtp-pasos{ display:flex; justify-content:space-between; align-items:center; padding:3px 4px; border:1px solid #E1E8EE; border-radius:4px; background:linear-gradient(#DFE5EB,#DFE5EB) no-repeat center / 80% 1px; }
+.dtp .dtp-pasos i{ width:6px; height:6px; border-radius:50%; background:#C9D1DA; }
+.dtp .dtp-pasos i:first-child{ background:#2FAE5F; }
+.dtp .dtp-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:3px; border:1px solid #E1E8EE; border-radius:4px; padding:3px; }
+.dtp.dtp-moderna .dtp-nota{ background:#EAF6EE; border-color:#CFE6D6; }
+
+/* ==========================================================
+   v600: Moderna — sin desborde con muchas cuotas y más compacta verticalmente
+   ========================================================== */
+.ltd-moderna .ltm-pasos{ padding:0 2px !important; min-width:0; }
+.ltd-moderna .ltm-paso{ width:min(30px, calc((100cqw - 70px) / var(--n, 4) * 0.72)) !important; height:auto !important; aspect-ratio:1/1; min-width:16px; font-size:clamp(9px, calc((100cqw - 70px) / var(--n, 4) * 0.36), 13px) !important; }
+.ltd-moderna .ltm-linea{ min-width:2px; margin:0 2px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna{ padding:14px 14px 12px 14px !important; }
+.ltd-moderna .ltm-logo{ width:28px !important; height:25px !important; }
+.ltd-moderna .ltm-nombre{ font-size:clamp(17px, 5vw, 21px) !important; }
+.ltd-moderna .ltm-estado{ padding:5px 12px !important; }
+.ltd-moderna .ltm-top{ margin-top:10px !important; gap:6px !important; }
+.ltd-moderna .ltm-hero{ padding:9px 12px !important; gap:10px !important; border-radius:14px !important; }
+.ltd-moderna .ltm-ico-grande{ width:42px !important; height:42px !important; }
+.ltd-moderna .ltm-ico-grande svg{ width:22px !important; height:22px !important; }
+.ltd-moderna .ltm-hero-lbl, .ltd-moderna .ltm-hero-de{ font-size:12px !important; }
+.ltd-moderna .ltm-hero-valor{ font-size:clamp(25px, 7.6vw, 31px) !important; line-height:1.05 !important; }
+.ltd-moderna .ltm-dato{ padding:3px 0 !important; gap:8px !important; }
+.ltd-moderna .ltm-dato .ltm-ico{ width:26px !important; height:26px !important; }
+.ltd-moderna .ltm-dato .ltm-ico svg{ width:15px !important; height:15px !important; }
+.ltd-moderna .ltm-k{ font-size:13px !important; }
+.ltd-moderna .ltm-dato b{ font-size:13.5px !important; }
+.ltd-moderna .ltm-prog{ margin-top:8px !important; padding:8px 12px 10px !important; border-radius:14px !important; }
+.ltd-moderna .ltm-prog-cab{ margin-bottom:8px !important; }
+.ltd-moderna .ltm-prog-tit{ font-size:15px !important; gap:7px !important; }
+.ltd-moderna .ltm-barras{ width:17px !important; height:17px !important; }
+.ltd-moderna .ltm-prog-info{ font-size:12.5px !important; }
+.ltd-moderna .ltm-res{ margin-top:8px !important; padding:8px 4px !important; border-radius:14px !important; }
+.ltd-moderna .ltm-res > div{ display:grid !important; grid-template-columns:auto minmax(0,1fr); align-items:center; column-gap:6px; row-gap:2px; padding:0 7px !important; }
+.ltd-moderna .ltm-res > div > div{ display:contents; }
+.ltd-moderna .ltm-res .ltm-ico{ width:24px !important; height:24px !important; }
+.ltd-moderna .ltm-res .ltm-ico svg{ width:14px !important; height:14px !important; }
+.ltd-moderna .ltm-res small{ font-size:11.5px !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ltd-moderna .ltm-res b{ grid-column:1 / -1; font-size:clamp(13.5px, 4.2vw, 17px) !important; }
+.ltd-moderna .ltm-nota{ margin-top:8px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .loan-note, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .loan-note.loan-note-vacia{ padding:7px 12px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .loan-note.loan-note-vacia .loan-note-agregar::before{ width:24px; height:24px; line-height:24px; font-size:18px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .loan-note.loan-note-vacia .loan-note-agregar::after{ font-size:15px; }
+
+/* v600: en celulares angostos, los íconos del resumen inferior se ocultan para que los títulos quepan completos */
+@container (max-width: 420px){
+  .ltd-moderna .ltm-res .ltm-ico{ display:none !important; }
+  .ltd-moderna .ltm-res > div{ grid-template-columns:minmax(0,1fr) !important; }
+}
+.ltd-moderna .ltm-res small{ text-overflow:clip !important; }
+
+/* v601: Moderna — cápsula solo con "# N", hero "Crédito otorgado / Recuperado" y profundidad en saldo y notas */
+.ltd-moderna .ltm-estado{ font-size:clamp(15px, 4.4vw, 18px) !important; padding:4px 15px !important; gap:5px !important; }
+.ltd-moderna .ltm-estado .ltm-signo{ font-weight:400; opacity:.8; font-size:.85em; }
+.ltd-moderna .ltm-hero-valor{ color:var(--ltm-navy) !important; }
+.ltd-moderna .ltm-hero-de{ font-size:13px !important; color:var(--ltm-sub); }
+.ltd-moderna .ltm-recuperado{ color:#1F8A4C; font-weight:800; font-size:14.5px; }
+.ltd-moderna .ltm-hero{ box-shadow:inset 0 3px 7px rgba(20,60,35,.16), inset 0 1px 2px rgba(20,60,35,.12), inset 0 -1px 0 rgba(255,255,255,.9), 0 1px 0 rgba(255,255,255,.95) !important; border-color:rgba(20,60,35,.10) !important; }
+.ltd-moderna.loan-card-vencido .ltm-hero{ box-shadow:inset 0 3px 7px rgba(120,30,25,.14), inset 0 1px 2px rgba(120,30,25,.10), inset 0 -1px 0 rgba(255,255,255,.9), 0 1px 0 rgba(255,255,255,.95) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .loan-note, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .loan-note.loan-note-vacia{ background:linear-gradient(180deg,#E1F1E6,#EDF7F0) !important; border:1px solid rgba(20,60,35,.10) !important; box-shadow:inset 0 3px 7px rgba(20,60,35,.16), inset 0 1px 2px rgba(20,60,35,.12), inset 0 -1px 0 rgba(255,255,255,.9), 0 1px 0 rgba(255,255,255,.95) !important; }
+
+/* v602: Moderna — píldora contadora más pequeña, borde más marcado e ícono de pilas de monedas */
+.ltd-moderna .ltm-estado{ font-size:clamp(12.5px, 3.6vw, 14.5px) !important; padding:3px 11px !important; gap:4px !important; box-shadow:0 2px 6px rgba(26,122,67,.22), inset 0 1px 0 rgba(255,255,255,.25) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna{ border-top:2px solid #B4BDC9 !important; border-right:2px solid #B4BDC9 !important; border-bottom:2px solid #B4BDC9 !important; border-top-width:2px !important; border-right-width:2px !important; border-bottom-width:2px !important; }
+.ltd-moderna .ltm-monedas-pila{ flex-shrink:0; width:clamp(48px, 14vw, 58px); color:#4B5260; display:block; filter:drop-shadow(0 2px 2px rgba(20,30,50,.15)); }
+.ltd-moderna .ltm-monedas-pila svg{ width:100%; height:auto; display:block; }
+
+/* v604: "Crédito otorgado" plano y ligeramente elevado (la profundidad queda solo en Notas) */
+.ltd-moderna .ltm-hero, .ltd-moderna.loan-card-vencido .ltm-hero{ box-shadow:0 4px 12px rgba(20,60,35,.08), 0 1px 2px rgba(20,60,35,.06), inset 0 1px 0 rgba(255,255,255,.9) !important; border:1px solid var(--ltm-borde) !important; }
+.ltd-moderna.loan-card-vencido .ltm-hero{ box-shadow:0 4px 12px rgba(120,30,25,.08), 0 1px 2px rgba(120,30,25,.06), inset 0 1px 0 rgba(255,255,255,.9) !important; }
+
+/* v605: "Crédito otorgado" integrado a la tarjeta (plano, sin sombra) y filas de datos sin íconos */
+.ltd-moderna .ltm-hero, .ltd-moderna.loan-card-vencido .ltm-hero{ box-shadow:none !important; border:none !important; background:var(--ltm-verde-suave) !important; }
+.ltd-moderna .ltm-dato .ltm-ico{ display:none !important; }
+.ltd-moderna .ltm-dato{ padding:5px 2px !important; }
 </style>
 
 </head>
@@ -13394,12 +13557,13 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note,
     <div class="diseno-tarjeta-sub">Se aplica a la tarjeta del crédito en el detalle del cliente.</div>
     <div class="diseno-tarjeta-opciones" id="diseno-tarjeta-opciones" role="radiogroup">
       <button type="button" class="dt-opcion" data-diseno="actual" role="radio"><div class="dtp dtp-actual"><i class="dtp-franja"></i><i class="dtp-l w40"></i><i class="dtp-pill"></i><i class="dtp-l big rojo w55"></i><i class="dtp-hr"></i><i class="dtp-l w80"></i><i class="dtp-l w70"></i><i class="dtp-barra"></i><i class="dtp-nota"></i></div><span class="dt-nombre">Actual</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-      <button type="button" class="dt-opcion" data-diseno="paneles" role="radio"><div class="dtp dtp-paneles"><i class="dtp-franja"></i><i class="dtp-cab"></i><i class="dtp-pill"></i><div class="dtp-2"><div><i class="dtp-caja"><i class="dtp-l big rojo w80"></i></i><i class="dtp-caja"><i class="dtp-l azul w60"></i></i></div><div><i class="dtp-fila"></i><i class="dtp-fila"></i><i class="dtp-fila"></i><i class="dtp-fila"></i></div></div><div class="dtp-2 dtp-pie"><i class="dtp-anillo"></i><i class="dtp-nota"></i></div></div><span class="dt-nombre">Paneles</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      <button type="button" class="dt-opcion" data-diseno="paneles" role="radio" style="display:none;" aria-hidden="true" tabindex="-1"><div class="dtp dtp-paneles"><i class="dtp-franja"></i><i class="dtp-cab"></i><i class="dtp-pill"></i><div class="dtp-2"><div><i class="dtp-caja"><i class="dtp-l big rojo w80"></i></i><i class="dtp-caja"><i class="dtp-l azul w60"></i></i></div><div><i class="dtp-fila"></i><i class="dtp-fila"></i><i class="dtp-fila"></i><i class="dtp-fila"></i></div></div><div class="dtp-2 dtp-pie"><i class="dtp-anillo"></i><i class="dtp-nota"></i></div></div><span class="dt-nombre">Paneles</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
       <button type="button" class="dt-opcion" data-diseno="resumen" role="radio"><div class="dtp dtp-resumen"><i class="dtp-franja"></i><i class="dtp-l w55"></i><i class="dtp-pill"></i><div class="dtp-2 dtp-div"><div><i class="dtp-l big rojo w80"></i><i class="dtp-l big rojo w80"></i></div><div><i class="dtp-l w90"></i><i class="dtp-l w90"></i><i class="dtp-l w90"></i><i class="dtp-l w90"></i></div></div><div class="dtp-2"><i class="dtp-l azul w40"></i><i class="dtp-l oro w70"></i></div><div class="dtp-2 dtp-pie"><i class="dtp-anillo"></i><i class="dtp-nota"></i></div></div><span class="dt-nombre">Resumen</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-      <button type="button" class="dt-opcion" data-diseno="destacada" role="radio"><div class="dtp dtp-destacada"><i class="dtp-franja"></i><i class="dtp-l w55"></i><i class="dtp-pill"></i><i class="dtp-hero"><i class="dtp-l blanco w40"></i><i class="dtp-l big blanco w70"></i></i><div class="dtp-2"><i class="dtp-caja"><i class="dtp-l w60"></i></i><i class="dtp-caja"><i class="dtp-l w70"></i></i><i class="dtp-caja"><i class="dtp-l w55"></i></i><i class="dtp-caja"><i class="dtp-l oro w70"></i></i></div><div class="dtp-2 dtp-pie"><i class="dtp-anillo"></i><i class="dtp-nota"></i></div></div><span class="dt-nombre">Destacada</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      <button type="button" class="dt-opcion" data-diseno="destacada" role="radio" style="display:none;" aria-hidden="true" tabindex="-1"><div class="dtp dtp-destacada"><i class="dtp-franja"></i><i class="dtp-l w55"></i><i class="dtp-pill"></i><i class="dtp-hero"><i class="dtp-l blanco w40"></i><i class="dtp-l big blanco w70"></i></i><div class="dtp-2"><i class="dtp-caja"><i class="dtp-l w60"></i></i><i class="dtp-caja"><i class="dtp-l w70"></i></i><i class="dtp-caja"><i class="dtp-l w55"></i></i><i class="dtp-caja"><i class="dtp-l oro w70"></i></i></div><div class="dtp-2 dtp-pie"><i class="dtp-anillo"></i><i class="dtp-nota"></i></div></div><span class="dt-nombre">Destacada</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
       <button type="button" class="dt-opcion" data-diseno="minimal" role="radio"><div class="dtp dtp-minimal"><i class="dtp-franja"></i><i class="dtp-l w55"></i><i class="dtp-pill"></i><div class="dtp-2" style="margin-top:4px;"><div><i class="dtp-l w40"></i><i class="dtp-l big rojo w80"></i></div><div style="align-items:flex-end;"><i class="dtp-l w55"></i><i class="dtp-l big oro w70"></i></div></div><i class="dtp-barra dtp-barra-seg"></i><div class="dtp-chips"><i></i><i></i><i></i></div><i class="dtp-nota"></i></div><span class="dt-nombre">Minimal</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
       <button type="button" class="dt-opcion" style="display:none;" aria-hidden="true" tabindex="-1" data-diseno="premium" role="radio"><div class="dtp dtp-premium"><i class="dtp-l blanco w55"></i><i class="dtp-pill"></i><div class="dtp-2" style="grid-template-columns:1fr auto; align-items:center; margin-top:4px;"><div><i class="dtp-l w40"></i><i class="dtp-l big oro w80"></i><i class="dtp-l w60"></i></div><i class="dtp-anillo dtp-anillo-oro"></i></div><div class="dtp-chips dtp-chips-glass"><i></i><i></i><i></i></div><i class="dtp-nota"></i></div><span class="dt-nombre">Premium</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
       <button type="button" class="dt-opcion" data-diseno="tabla" role="radio"><div class="dtp dtp-tabla"><i class="dtp-franja"></i><i class="dtp-pill dtp-pill-osc"></i><i class="dtp-l big verde w60"></i><i class="dtp-l big w80"></i><div class="dtp-4"><i></i><i></i><i></i><i></i></div><i class="dtp-barra dtp-barra-num"></i><i class="dtp-l azul w40"></i><i class="dtp-l rojo w55"></i><i class="dtp-nota"></i></div><span class="dt-nombre">Clásica</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      <button type="button" class="dt-opcion" data-diseno="moderna" role="radio"><div class="dtp dtp-moderna"><i class="dtp-franja"></i><i class="dtp-l w55" style="background:#1B2A4E;"></i><i class="dtp-pill"></i><div class="dtp-2"><i class="dtp-caja dtp-caja-verde"><i class="dtp-l big rojo w80"></i></i><div><i class="dtp-l w90"></i><i class="dtp-l w90"></i><i class="dtp-l w90"></i></div></div><i class="dtp-pasos"><i></i><i></i><i></i><i></i></i><div class="dtp-3"><i class="dtp-l w70" style="background:#1B2A4E;"></i><i class="dtp-l azul w40"></i><i class="dtp-l rojo w70"></i></div><i class="dtp-nota"></i></div><span class="dt-nombre">Moderna</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
     </div>
     <button type="button" class="btn-outline-share" id="btn-cerrar-diseno-tarjeta" style="width:100%; margin:14px 0 0;">Listo</button>
   </div>
@@ -24392,17 +24556,19 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note,
   const DISENO_TARJETA_CREDITO_KEY = 'prestaya_diseno_tarjeta_credito';
   const DISENOS_TARJETA_CREDITO = [
     { clave:'actual',  nombre:'Actual',  detalle:'La tarjeta de siempre' },
-    { clave:'paneles', nombre:'Paneles', detalle:'Resumen en recuadros y detalles en filas' },
+    // v599: "Paneles" retirado a pedido (código conservado)
     { clave:'resumen', nombre:'Resumen', detalle:'Resumen financiero y de pagos, más limpio' },
-    { clave:'destacada', nombre:'Destacada', detalle:'Saldo grande en una banda de color y datos en recuadros' }, // v589
+    // v599: "Destacada" retirado a pedido (código conservado)
     { clave:'minimal', nombre:'Minimal', detalle:'Compacta: saldo, próximo pago y barra de progreso' },     // v589
     // v592: "Premium" retirado de la lista a pedido (su código queda, oculto)
-    { clave:'tabla', nombre:'Clásica', detalle:'Deuda total, datos en columnas, progreso numerado y tabla Pagado / Saldo' } // v592
+    { clave:'tabla', nombre:'Clásica', detalle:'Deuda total, datos en columnas, progreso numerado y tabla Pagado / Saldo' }, // v592
+    { clave:'moderna', nombre:'Moderna', detalle:'Saldo destacado, datos con íconos, pasos de cuotas y resumen en 3 columnas' } // v599
   ];
   function obtenerDisenoTarjetaCredito(){
     let v = 'actual';
     try{ v = localStorage.getItem(DISENO_TARJETA_CREDITO_KEY) || 'actual'; }catch(e){}
     if(v === 'premium') v = 'tabla'; // v592: Premium retirado → pasa al nuevo diseño
+    if(v === 'paneles' || v === 'destacada') v = 'moderna'; // v599: retirados → pasan al diseño Moderna
     return DISENOS_TARJETA_CREDITO.some(d => d.clave === v) ? v : 'actual';
   }
   function guardarDisenoTarjetaCredito(v){
@@ -24505,6 +24671,86 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-tabla .loan-note,
       ? `<b>${proxValor}</b><small>${proxFecha}</small>`
       : `<b class="ltd-tile-ok">${prestamo.estado === 'finalizado' ? 'Crédito pagado' : 'Sin pendientes'}</b>`;
     const cuotasTxt = prestamo.soloInteres ? 'Interés ' + formatearPesos(cuotaRealPrestamo(prestamo)) : (prestamo.cuotas || plan.length) + ' × ' + formatearPesos(cuotaRealPrestamo(prestamo));
+    if(diseno === 'moderna'){
+      // v599: diseño "Moderna" (a partir de la imagen de referencia, con mejoras visuales)
+      const ICONOS_LTM = {"logo": "<svg viewBox=\"0 0 40 36\" aria-hidden=\"true\"><path d=\"M20 2 L38 34 H26 L20 22 L14 34 H2 Z\" fill=\"#1F8A4C\"/><path d=\"M20 2 L29 18 C24 17 19 20 17 26 L14 34 H2 Z\" fill=\"#3FBF6E\"/><path d=\"M16 30 C17 24 22 21 28 22\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" stroke-linecap=\"round\"/></svg>", "monedas": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><ellipse cx=\"15\" cy=\"6\" rx=\"6\" ry=\"2.6\"/><path d=\"M9 6v3.5c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6V6\"/><path d=\"M21 9.5V13c0 1.4-2.7 2.6-6 2.6\"/><ellipse cx=\"9\" cy=\"13.5\" rx=\"6\" ry=\"2.6\"/><path d=\"M3 13.5V17c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6v-3.5\"/></svg>", "cal": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15.5\" rx=\"2.5\"/><path d=\"M8 3v4M16 3v4M3.5 10h17\"/><path d=\"M8 14h.01M12 14h.01M16 14h.01M8 17.2h.01M12 17.2h.01\"/></svg>", "bolsa": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 3h6l-1.6 3.2h-2.8z\"/><path d=\"M10.6 6.2C6.5 8.3 4.5 12 4.5 15.2c0 3.4 3 5.3 7.5 5.3s7.5-1.9 7.5-5.3c0-3.2-2-6.9-6.1-9\"/><path d=\"M13.6 11.2c-.4-.6-1-.9-1.7-.9-1 0-1.8.6-1.8 1.4 0 1.9 3.8 1 3.8 3 0 .8-.8 1.4-1.9 1.4-.8 0-1.5-.3-1.9-.9M12 9.5v1M12 16.2v1\"/></svg>", "tarjeta": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"5.5\" width=\"18\" height=\"13\" rx=\"2.5\"/><path d=\"M3 10h18M7 15h4\"/></svg>", "barras": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"currentColor\"><rect x=\"3\" y=\"13\" width=\"4.5\" height=\"8\" rx=\"1.2\"/><rect x=\"9.75\" y=\"8.5\" width=\"4.5\" height=\"12.5\" rx=\"1.2\"/><rect x=\"16.5\" y=\"3.5\" width=\"4.5\" height=\"17.5\" rx=\"1.2\"/></svg>", "billetera": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M18 7V5.5A1.5 1.5 0 0 0 16.5 4H5.5A2.5 2.5 0 0 0 3 6.5v11A2.5 2.5 0 0 0 5.5 20h13a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2H5.5A2.5 2.5 0 0 1 3 6.5\"/><path d=\"M16 13.5h.01\"/></svg>", "mano": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"13\" cy=\"6\" r=\"3.2\"/><path d=\"M2.5 14.5h3l3.2-1.6c.9-.4 1.9-.4 2.8 0l2.3 1c.8.4.8 1.6-.1 1.9l-3.2.9\"/><path d=\"M5.5 20.5l2.6-1.3c.7-.3 1.4-.4 2.1-.2l3.3.9c.7.2 1.4.1 2-.3l4.6-3.2c.8-.6.3-1.9-.7-1.8l-4.8 1.2\"/><path d=\"M2.5 13.5v8\"/></svg>", "cal2": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15.5\" rx=\"2.5\"/><path d=\"M8 3v4M16 3v4M3.5 10h17\"/><path d=\"M8 14h.01M12 14h.01M16 14h.01M8 17.2h.01M12 17.2h.01M16 17.2h.01\"/></svg>", "check": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"5 12.5 10 17.5 19 7\"/></svg>"};
+      const totalPagar = Number(prestamo.totalAPagar) || plan.reduce((a, c) => a + (Number(c.total) || 0), 0);
+      const pctCuotas = plan.length ? Math.round(pagadas / plan.length * 100) : 0;
+      const estadoTxt = estadoVisual === 'finalizado' ? 'PAGADO' : (estadoVisual === 'vencido' ? 'VENCIDO' : 'ACTIVO');
+      const fIni = new Date(prestamo.fecha + 'T00:00:00');
+      const MESES_M = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      const fechaIni = isNaN(fIni) ? '—' : fIni.getDate() + ' ' + MESES_M[fIni.getMonth()] + ' ' + fIni.getFullYear();
+      const cuotaTxt = formatearPesos(cuotaRealPrestamo(prestamo)) + ' / ' + frecuencia;
+      const estC = c => estaCuotaPagada(prestamo, c.numero) ? 'pagada' : (cuotaVencida(prestamo, c) ? 'vencida' : '');
+      let pasos;
+      if(plan.length && plan.length <= 12){
+        pasos = '<div class="ltm-pasos" style="--n:' + plan.length + '">' + plan.map((c, i) => {
+          const e = estC(c);
+          const linea = i < plan.length - 1 ? `<i class="ltm-linea${e === 'pagada' && estC(plan[i + 1]) === 'pagada' ? ' llena' : ''}"></i>` : '';
+          return `<span class="ltm-paso ${e}">${e === 'pagada' ? ICONOS_LTM.check : c.numero}</span>${linea}`;
+        }).join('') + '</div>';
+      }else{
+        pasos = '<div class="ltm-barra">' + (plan.length <= 60 ? plan.map(c => `<i class="${estC(c)}"></i>`).join('') : `<i class="pagada" style="flex:${pagadas}"></i><i style="flex:${Math.max(plan.length - pagadas, 0)}"></i>`) + '</div>';
+      }
+      const cardM = document.createElement('div');
+      cardM.className = 'card loan-card-full loan-card-' + estadoVisual + ' ltd ltd-moderna';
+      cardM.innerHTML = `
+        <div class="ltd-cab ltm-cab">
+          <!-- v601: se retiró el logo junto al nombre -->
+          <div class="ltm-nombre">${nombre}</div>
+          <div class="ltm-estado ltm-estado-${estadoVisual}" role="button" title="Ver ticket del crédito"><span class="ltm-signo">#</span> ${nCredito || 1}</div><!-- v601: solo el contador -->
+        </div>
+        <div class="ltm-top">
+          <div class="ltm-hero">
+            <span class="ltm-monedas-pila"><svg viewBox="0 0 84 70" aria-hidden="true"><path d="M39 52 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="52" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 43 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="43" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 34 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="34" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 25 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="25" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 16 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="16" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M10 58 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="27" cy="58" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M10 49 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="27" cy="49" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M10 40 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="27" cy="40" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/></svg></span><!-- v602: mismo ícono de pilas de monedas de "Próximo vencimiento" -->
+            <div class="ltm-hero-txt">
+              <div class="ltm-hero-lbl">Crédito otorgado</div><!-- v601: antes "Saldo pendiente" -->
+              <div class="ltm-hero-valor">${formatearPesos(prestamo.valor)}</div>
+              <div class="ltm-hero-de">Recuperado: <b class="ltm-recuperado">${formatearPesos(capitalRecuperadoPrestamo(prestamo))}</b></div>
+            </div>
+          </div>
+          <div class="ltm-datos">
+            <div class="ltm-dato"><span class="ltm-ico">${ICONOS_LTM.cal}</span><span class="ltm-k">Fecha inicio:</span><b>${fechaIni}</b></div>
+            <!-- v603: "Monto otorgado" → "Frecuencia de pago"; "Cuota" solo con el valor -->
+            <div class="ltm-dato"><span class="ltm-ico"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.2-5L4 8"/><path d="M4 3.5V8h4.5"/><path d="M4 13a8 8 0 0 0 14.2 5L20 16"/><path d="M20 20.5V16h-4.5"/></svg></span><span class="ltm-k">Frecuencia de pago:</span><b>${frecuencia}</b></div>
+            <div class="ltm-dato"><span class="ltm-ico">${ICONOS_LTM.tarjeta}</span><span class="ltm-k">Cuota:</span><b>${formatearPesos(cuotaRealPrestamo(prestamo))}</b></div>
+          </div>
+        </div>
+        <div class="ltm-prog" role="button" aria-label="Ver resumen del crédito">
+          <div class="ltm-prog-cab"><span class="ltm-prog-tit"><span class="ltm-barras">${ICONOS_LTM.barras}</span>Progreso</span><span class="ltm-prog-info">${pagadas} / ${plan.length} cuotas <i>•</i> <b>${pctCuotas}%</b></span></div>
+          ${pasos}
+        </div>
+        <div class="ltm-res">
+          <div><span class="ltm-ico">${ICONOS_LTM.billetera}</span><div><small>Total a pagar</small><b class="ltm-navy">${formatearPesos(totalPagar)}</b></div></div>
+          <div><span class="ltm-ico">${ICONOS_LTM.mano}</span><div><small>Ha pagado</small><b class="ltm-azul">${formatearPesos(abonado)}</b></div></div>
+          <div><span class="ltm-ico">${ICONOS_LTM.cal2}</span><div><small>Debe</small><b class="ltm-rojo">${formatearPesos(saldo)}</b></div></div>
+        </div>
+        <div class="ltd-nota-slot ltm-nota"><div class="loan-note"></div></div>`;
+      if(estadoVisual === 'vencido'){
+        const diasMoraAlerta = diasMoraYAnticipadoPrestamo(prestamo).mora;
+        if(diasMoraAlerta > 0){
+          const franja = document.createElement('div');
+          franja.className = 'loan-alerta-mora';
+          franja.innerHTML = '<div class="lam-titulo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 1.6 21h20.8z" fill="#D92D20"/><rect x="11" y="9" width="2" height="6.5" rx="1" fill="#fff"/><circle cx="12" cy="18" r="1.15" fill="#fff"/></svg><span>ATENCIÓN</span></div>'
+            + '<div class="lam-texto">Este crédito presenta <b>' + diasMoraAlerta + (diasMoraAlerta === 1 ? ' día' : ' días') + '</b> acumulados de mora.</div>';
+          cardM.querySelector('.ltd-cab').insertAdjacentElement('afterend', franja);
+        }
+      }
+      // si un valor no cabe en su espacio, se reduce solo su letra
+      requestAnimationFrame(()=> requestAnimationFrame(()=>{
+        cardM.querySelectorAll('.ltm-hero-valor, .ltm-res b, .ltm-dato b').forEach(v=>{
+          const cont = v.parentElement; let tam = parseFloat(getComputedStyle(v).fontSize), guard = 0;
+          while(v.scrollWidth > v.clientWidth + 0.5 && tam > 9 && guard++ < 40){ tam -= 0.5; v.style.setProperty('font-size', tam + 'px', 'important'); }
+        });
+      }));
+      cardM.querySelector('.ltm-prog').addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); });
+      cardM.querySelector('.ltm-estado').addEventListener('click', (e)=>{ e.stopPropagation(); abrirTicketPrestamo(prestamo); });
+      if(cliente && cliente.alertaRiesgo && estadoVisual === 'vencido'){
+        cardM.classList.add('con-sello-riesgo');
+        cardM.insertAdjacentHTML('beforeend', selloRiesgoHTML());
+      }
+      return cardM;
+    }
     if(diseno === 'tabla'){
       // v592: diseño "Clásica" — réplica de la imagen de referencia
       const MESES_TC = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
