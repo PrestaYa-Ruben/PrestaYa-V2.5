@@ -23347,13 +23347,14 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
     const dif = (b, txt) => {
       const d = hoy - b;
       const cls = d > 0 ? 'cmp-sube' : (d < 0 ? 'cmp-baja' : 'cmp-igual');
-      return '<span class="' + cls + '">' + (d > 0 ? '+' : (d < 0 ? '-' : '')) + formatearPesos(Math.abs(d)) + '</span> <small>(Vs ' + txt + ')</small>';
+      const frase = d > 0 ? 'más que ' + txt : (d < 0 ? 'menos que ' + txt : 'igual que ' + txt); // v618
+      return '<span class="' + cls + '">' + (d > 0 ? '+' : (d < 0 ? '-' : '')) + formatearPesos(Math.abs(d)) + '</span> <small>(' + frase + ')</small>';
     };
     const filas = [
       ['Hoy', fTxt(dHoy), hoy, '<span class="cmp-igual">-</span>'],
       ['Ayer', fTxt(dAyer), total(dAyer), null, 'ayer'],
-      ['Mes pasado', fTxt(dMes), total(dMes), null, 'mes pasado'],
-      ['Año pasado', fTxt(dAnio), total(dAnio), null, 'año pasado']
+      ['Mes pasado', fTxt(dMes), total(dMes), null, 'el mes pasado'],
+      ['Año pasado', fTxt(dAnio), total(dAnio), null, 'el año pasado']
     ].map(f => [f[0], f[1], f[2], f[3] || dif(f[2], f[4])]);
     return '<div class="cmp-ganancias">'
       + '<div class="np-rc-titulo">Comparativo</div>'
