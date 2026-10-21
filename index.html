@@ -8788,6 +8788,10 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
 #modal-resumen-credito-cliente .gpm-mejor-dot{ background:#1A9A4E; }
 #modal-resumen-credito-cliente .gpm-peor-dot{ background:#D93A37; }
 #modal-resumen-credito-cliente .gpd-fila .gpm-valor.gpm-mejor, #modal-resumen-credito-cliente .gpd-fila .gpm-valor.gpm-peor{ padding:0 5px; line-height:1.35; }
+
+
+/* v626: línea "Cuota" en la tarjeta del cliente */
+#screen-clientes .client-row-cliente .client-row-cuota{ margin-top:2px; }
 </style>
 
 </head>
@@ -18724,6 +18728,17 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
 
     info.appendChild(name);
     info.appendChild(phone);
+    // NUEVO (v626): valor de la cuota (si tiene varios créditos activos, una por crédito)
+    if(prestamosActivosCliente.length > 0){
+      const lineaCuota = document.createElement('div');
+      lineaCuota.className = 'phone client-row-cuota';
+      lineaCuota.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M14.8 9.2c-.5-.8-1.5-1.3-2.7-1.3-1.6 0-2.8.9-2.8 2.1 0 2.8 5.6 1.4 5.6 4.2 0 1.2-1.2 2.1-2.9 2.1-1.2 0-2.3-.5-2.8-1.4M12 6.5v1.4M12 16.1v1.4"></path></svg><span></span>';
+      const cuotas = prestamosActivosCliente
+        .slice().sort((a, b) => (a.fecha || '').localeCompare(b.fecha || '') || (a.id - b.id))
+        .map(p => formatearPesos(cuotaRealPrestamo(p)));
+      lineaCuota.querySelector('span').textContent = 'Cuota: ' + cuotas.join(' · ');
+      info.appendChild(lineaCuota);
+    }
 
     // NUEVO: a pedido — etiqueta con la ruta del cliente (si tiene una).
     if(tieneRuta){
