@@ -8814,6 +8814,35 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
 #recibo-termico-overlay{ background:linear-gradient(180deg,#c9c9c9,#a9a9a9) !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
 #recibo-termico-overlay .rt-caja{ max-width:340px !important; }
 #recibo-termico-overlay .rt-vista{ filter:drop-shadow(0 6px 14px rgba(0,0,0,.18)) !important; }
+
+/* ==========================================================
+   v635: Moderna — cabecera verde con degradado y hoja blanca encima
+   ========================================================== */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna{
+  --ltm-cab1:#145C34; --ltm-cab2:#1F8A4C; --ltm-cab3:#56C46E;
+  background:
+    linear-gradient(118deg, transparent 0 66%, rgba(255,255,255,.13) 66% 80%, transparent 80%) no-repeat left top / 100% 90px,
+    linear-gradient(100deg, var(--ltm-cab1) 0%, var(--ltm-cab2) 55%, var(--ltm-cab3) 100%) !important;
+  border:1px solid #4E9C84 !important; border-radius:22px !important;
+  padding:0 1px 1px 1px !important; /* v637: los tres bordes iguales y más delgados */
+  box-shadow:0 14px 30px rgba(18,60,40,.16), 0 2px 6px rgba(18,60,40,.08) !important;
+}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna.loan-card-vencido{ --ltm-cab1:#8E1F18; --ltm-cab2:#C2382F; --ltm-cab3:#EE7A6E; border-color:#B4574F !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna.loan-card-finalizado{ --ltm-cab1:#3F4858; --ltm-cab2:#5B6576; --ltm-cab3:#97A2B4; border-color:#7D8798 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .ltm-cab{ padding:13px 11px 11px 13px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .ltm-nombre{ color:#FFFFFF !important; text-shadow:0 1px 2px rgba(0,0,0,.18); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna .ltm-estado{ background:#FFFFFF !important; box-shadow:0 3px 8px rgba(0,0,0,.22), inset 0 -1px 0 rgba(0,0,0,.06) !important; color:var(--ltm-cab1) !important; } /* v638: cápsula blanca, resalta sobre la cabecera */
+.ltd-moderna .ltm-cuerpo{
+  background:linear-gradient(180deg,#FFFFFF 0%,#F8FBF9 100%);
+  border-radius:20px; padding:10px 12px 12px;
+  box-shadow:0 0 3px rgba(0,0,0,.08); /* v637: sombra pareja en los 3 lados */
+}
+.ltd-moderna .ltm-cuerpo > .ltm-top{ margin-top:0 !important; }
+html body #screen-detalle-cliente .ltd-moderna .ltm-cuerpo > .loan-alerta-mora{ margin:0 0 10px 0 !important; border-radius:14px !important; width:auto !important; }
+.ltd-moderna .ltm-prog{ background:rgba(31,138,76,.07) !important; border-color:rgba(31,138,76,.14) !important; }
+.ltd-moderna.loan-card-vencido .ltm-prog{ background:rgba(194,56,47,.06) !important; border-color:rgba(194,56,47,.13) !important; }
+.ltd-moderna.loan-card-finalizado .ltm-prog{ background:rgba(91,101,118,.07) !important; border-color:rgba(91,101,118,.14) !important; }
+.ltd-moderna .ltm-monedas-pila{ color:#1B2A4A !important; }
 </style>
 
 </head>
@@ -24998,6 +25027,7 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
           <div class="ltm-nombre">${nombre}</div>
           <div class="ltm-estado ltm-estado-${estadoVisual}" role="button" title="Ver ticket del crédito"><span class="ltm-signo">#</span> ${nCredito || 1}</div><!-- v601: solo el contador -->
         </div>
+        <div class="ltm-cuerpo"><!-- v635: hoja blanca sobre la cabecera verde -->
         <div class="ltm-top">
           <div class="ltm-hero">
             <span class="ltm-monedas-pila"><svg viewBox="0 0 84 70" aria-hidden="true"><path d="M39 52 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="52" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 43 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="43" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 34 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="34" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 25 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="25" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M39 16 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="56" cy="16" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M10 58 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="27" cy="58" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M10 49 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="27" cy="49" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/><path d="M10 40 v7.5 a17 5.5 0 0 0 34 0 v-7.5 z" fill="currentColor" stroke="#fff" stroke-width="1.6"/><ellipse cx="27" cy="40" rx="17" ry="5.5" fill="currentColor" stroke="#fff" stroke-width="1.6"/></svg></span><!-- v602: mismo ícono de pilas de monedas de "Próximo vencimiento" -->
@@ -25023,7 +25053,8 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
           <div><span class="ltm-ico">${ICONOS_LTM.mano}</span><div><small>Ha pagado</small><b class="ltm-azul">${formatearPesos(abonado)}</b></div></div>
           <div><span class="ltm-ico">${ICONOS_LTM.cal2}</span><div><small>Debe</small><b class="ltm-rojo">${formatearPesos(saldo)}</b></div></div>
         </div>
-        <div class="ltd-nota-slot ltm-nota"><div class="loan-note"></div></div>`;
+        <div class="ltd-nota-slot ltm-nota"><div class="loan-note"></div></div>
+        </div>`;
       if(estadoVisual === 'vencido'){
         const diasMoraAlerta = diasMoraYAnticipadoPrestamo(prestamo).mora;
         if(diasMoraAlerta > 0){
@@ -25031,7 +25062,7 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
           franja.className = 'loan-alerta-mora';
           franja.innerHTML = '<div class="lam-titulo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 1.6 21h20.8z" fill="#D92D20"/><rect x="11" y="9" width="2" height="6.5" rx="1" fill="#fff"/><circle cx="12" cy="18" r="1.15" fill="#fff"/></svg><span>ATENCIÓN</span></div>'
             + '<div class="lam-texto">Este crédito presenta <b>' + diasMoraAlerta + (diasMoraAlerta === 1 ? ' día' : ' días') + '</b> acumulados de mora.</div>';
-          cardM.querySelector('.ltd-cab').insertAdjacentElement('afterend', franja);
+          cardM.querySelector('.ltm-cuerpo').insertAdjacentElement('afterbegin', franja); // v635: dentro de la hoja blanca
         }
       }
       // si un valor no cabe en su espacio, se reduce solo su letra
