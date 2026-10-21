@@ -8730,6 +8730,52 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
 #modal-resumen-credito-cliente .cmp-tabla{ align-items:stretch !important; }
 #modal-resumen-credito-cliente .cmp-td{ display:flex; align-items:center; flex-wrap:wrap; column-gap:4px; }
 #modal-resumen-credito-cliente .cmp-td.cmp-periodo{ flex-direction:column; align-items:flex-start; justify-content:center; }
+
+/* v619: modal "Ganancias por mes" — lista compacta con barras */
+#tarjeta-comparativo-ganancias .icono-tocable-gpm{ cursor:pointer; -webkit-tap-highlight-color:transparent; transition:transform .15s ease; }
+#tarjeta-comparativo-ganancias .icono-tocable-gpm:active{ transform:scale(.9); }
+#modal-resumen-credito-cliente .gpm-fila{ display:grid; grid-template-columns:2.4em minmax(0,1fr) auto; align-items:center; column-gap:10px; padding:3.5px 0; font-size:13px; }
+#modal-resumen-credito-cliente .gpm-mes{ color:var(--text-secondary); font-weight:600; }
+#modal-resumen-credito-cliente .gpm-barra{ display:block; height:9px; border-radius:6px; background:rgba(120,130,150,.15); overflow:hidden; }
+#modal-resumen-credito-cliente .gpm-barra i{ display:block; height:100%; border-radius:6px; background:linear-gradient(90deg,#4CC27A,#1F8A4C); transition:width .5s ease; }
+#modal-resumen-credito-cliente .gpm-valor{ font-weight:600; color:var(--text); text-align:right; min-width:6.6em; white-space:nowrap; font-variant-numeric:tabular-nums; }
+#modal-resumen-credito-cliente .gpm-actual .gpm-mes, #modal-resumen-credito-cliente .gpm-actual .gpm-valor{ color:#1F8A4C; font-weight:800; }
+#modal-resumen-credito-cliente .gpm-futuro{ opacity:.45; }
+#modal-resumen-credito-cliente .gpm-total{ display:flex; justify-content:space-between; margin-top:6px; padding-top:7px; border-top:1px solid var(--border); font-size:13.5px; }
+#modal-resumen-credito-cliente .gpm-total span{ color:var(--text-secondary); font-weight:600; }
+#modal-resumen-credito-cliente .gpm-total b{ color:var(--text); font-weight:800; }
+
+/* v620: selector de año en "Ganancias por mes" */
+#modal-resumen-credito-cliente .gpm-cab{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 36px 6px 0; }
+#modal-resumen-credito-cliente .gpm-cab .np-rc-titulo{ margin:0 !important; }
+#modal-resumen-credito-cliente .gpm-anio{ display:inline-flex; align-items:center; gap:2px; background:rgba(31,138,76,.10); border-radius:999px; padding:2px; flex-shrink:0; }
+#modal-resumen-credito-cliente .gpm-anio button{ width:26px; height:26px; border:none; border-radius:50%; background:transparent; color:#1F8A4C; font-size:18px; font-weight:700; line-height:1; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+#modal-resumen-credito-cliente .gpm-anio button:active{ background:rgba(31,138,76,.18); }
+#modal-resumen-credito-cliente .gpm-anio button:disabled{ opacity:.3; cursor:default; }
+#modal-resumen-credito-cliente .gpm-anio select{ border:none; background:transparent; color:#1F8A4C; font-weight:800; font-size:14px; padding:0 2px; -webkit-appearance:none; appearance:none; text-align:center; cursor:pointer; font-family:inherit; }
+
+/* v621: "Ganancias por día" — filas más bajas; lista con desplazamiento propio si no cabe */
+#dashboard-ganancias.valor-tocable-gpd{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
+#dashboard-ganancias.valor-tocable-gpd:active{ opacity:.7; }
+#modal-resumen-credito-cliente .gpd-lista{ max-height:calc(100vh - 200px); overflow-y:auto; overscroll-behavior:contain; margin-right:-4px; padding-right:4px; }
+#modal-resumen-credito-cliente .gpd-fila{ padding:1.5px 0 !important; font-size:12.5px !important; grid-template-columns:1.8em minmax(0,1fr) auto !important; }
+#modal-resumen-credito-cliente .gpd-fila .gpm-barra{ height:7px; }
+#modal-resumen-credito-cliente .gpd .gpm-anio select{ min-width:5.6em; }
+
+#modal-resumen-credito-cliente .gpm .np-rc-titulo{ white-space:nowrap; font-size:15.5px !important; }
+
+/* v622: "Ganancias por día" más compacto — todos los días a la vista, modal más angosto y valores junto a las barras */
+#modal-resumen-credito-cliente .mrc-caja:has(.gpd){ max-width:320px; padding:10px 12px 6px !important; }
+#modal-resumen-credito-cliente .gpd .gpm-cab{ margin:0 30px 4px 0 !important; }
+#modal-resumen-credito-cliente .gpd .np-rc-titulo{ font-size:14px !important; }
+#modal-resumen-credito-cliente .gpd .gpm-anio button{ width:22px; height:22px; font-size:16px; }
+#modal-resumen-credito-cliente .gpd .gpm-anio select{ font-size:13px; min-width:5.2em; }
+#modal-resumen-credito-cliente .gpd-lista{ max-height:none !important; overflow:visible !important; margin:0 !important; padding:0 !important; }
+#modal-resumen-credito-cliente .gpd-fila{ grid-template-columns:1.5em minmax(0,1fr) 5.9em !important; column-gap:7px !important; padding:0 !important; height:clamp(14px, calc((100vh - 150px) / 31), 19px); font-size:11.5px !important; line-height:1; }
+#modal-resumen-credito-cliente .gpd-fila .gpm-barra{ height:6px !important; }
+#modal-resumen-credito-cliente .gpd-fila .gpm-valor{ text-align:left !important; min-width:0 !important; }
+#modal-resumen-credito-cliente .gpd .gpm-total{ margin-top:4px !important; padding-top:5px !important; font-size:12.5px !important; }
+#modal-resumen-credito-cliente .gpd .cmp-nota{ margin-top:3px !important; font-size:10.5px !important; }
 </style>
 
 </head>
@@ -23365,6 +23411,121 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
       + '<div class="cmp-nota">Hoy comparado con ayer, el mismo día del mes pasado y el mismo día del año pasado · Ganancias = interés + mora' + (rutasFiltroActivas ? ' · ruta filtrada' : '') + '</div>'
       + '</div>';
   }
+  // NUEVO (v619): ganancias por mes del año actual (lista compacta con barras)
+  // v620: años disponibles = desde el primer año con pagos hasta el actual
+  function aniosConGanancias(){
+    const actual = new Date().getFullYear();
+    let primero = actual;
+    prestamosGuardados.forEach(p => pagosDe(p).forEach(pg => { const y = new Date(pg.fecha).getFullYear(); if(!isNaN(y) && y < primero) primero = y; }));
+    const lista = []; for(let y = actual; y >= primero; y--) lista.push(y);
+    return lista;
+  }
+  function htmlGananciasPorMes(anioElegido){
+    const ahora = new Date(), anio = anioElegido || ahora.getFullYear();
+    const mesAct = anio === ahora.getFullYear() ? ahora.getMonth() : (anio < ahora.getFullYear() ? 12 : -1);
+    const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const vals = MESES.map((_, m) => gananciasEnRangoFechas(new Date(anio, m, 1).getTime(), new Date(anio, m + 1, 0, 23, 59, 59, 999).getTime()));
+    const max = Math.max(1, ...vals);
+    const total = vals.reduce((a, b) => a + b, 0);
+    const filas = vals.map((v, m) => {
+      const pct = v > 0 ? Math.max(2, Math.round(v / max * 100)) : 0;
+      const cls = m === mesAct ? ' gpm-actual' : (m > mesAct ? ' gpm-futuro' : '');
+      return '<div class="gpm-fila' + cls + '"><span class="gpm-mes">' + MESES[m] + '</span><span class="gpm-barra"><i style="width:' + pct + '%"></i></span><b class="gpm-valor">' + formatearPesos(v) + '</b></div>';
+    }).join('');
+    return '<div class="gpm">'
+      + (()=>{ const anios = aniosConGanancias(); const i = anios.indexOf(anio);
+          return '<div class="gpm-cab"><div class="np-rc-titulo">Ganancias por mes</div>'
+            + '<div class="gpm-anio" role="group" aria-label="Año">'
+            + '<button type="button" data-gpm-anio="' + (anio - 1) + '"' + (i === anios.length - 1 ? ' disabled' : '') + ' aria-label="Año anterior">‹</button>'
+            + '<select data-gpm-sel aria-label="Elegir año">' + anios.map(y => '<option value="' + y + '"' + (y === anio ? ' selected' : '') + '>' + y + '</option>').join('') + '</select>'
+            + '<button type="button" data-gpm-anio="' + (anio + 1) + '"' + (i <= 0 ? ' disabled' : '') + ' aria-label="Año siguiente">›</button>'
+            + '</div></div>'; })()
+      + filas
+      + '<div class="gpm-total"><span>Total ' + anio + '</span><b>' + formatearPesos(total) + '</b></div>'
+      + '<div class="cmp-nota">Ganancias = interés + mora' + (rutasFiltroActivas ? ' · ruta filtrada' : '') + '</div>'
+      + '</div>';
+  }
+  (function(){
+    const ico = document.querySelector('#tarjeta-comparativo-ganancias .comparativo-ganancias-icono');
+    if(!ico) return;
+    ico.setAttribute('role', 'button'); ico.setAttribute('aria-label', 'Ver ganancias por mes');
+    ico.classList.add('icono-tocable-gpm');
+    ico.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      try{ abrirModalResumenCreditoCliente(null, htmlGananciasPorMes()); }catch(err){ console.warn('[Ganancias por mes]', err); }
+    });
+    // v620: selector de año dentro del modal (flechas o lista)
+    const cambiarAnio = (y)=>{
+      const cuerpo = document.querySelector('#modal-resumen-credito-cliente .mrc-cuerpo');
+      if(cuerpo && y) cuerpo.innerHTML = htmlGananciasPorMes(Number(y));
+    };
+    document.addEventListener('click', (e)=>{
+      const b = e.target.closest && e.target.closest('#modal-resumen-credito-cliente [data-gpm-anio]');
+      if(b && !b.disabled){ e.stopPropagation(); cambiarAnio(b.dataset.gpmAnio); }
+    });
+    document.addEventListener('change', (e)=>{
+      if(e.target && e.target.matches && e.target.matches('#modal-resumen-credito-cliente [data-gpm-sel]')) cambiarAnio(e.target.value);
+    });
+  })();
+  // NUEVO (v621): ganancias por día del mes (mismo modal y estilo de "Ganancias por mes"), con filtro por mes
+  function mesesConGanancias(){
+    const ahora = new Date();
+    let primero = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
+    prestamosGuardados.forEach(p => pagosDe(p).forEach(pg => { const d = new Date(pg.fecha); if(!isNaN(d) && d < primero) primero = new Date(d.getFullYear(), d.getMonth(), 1); }));
+    const lista = [];
+    for(let d = new Date(ahora.getFullYear(), ahora.getMonth(), 1); d >= primero; d = new Date(d.getFullYear(), d.getMonth() - 1, 1)) lista.push(d.getFullYear() * 12 + d.getMonth());
+    return lista; // claves año*12+mes, del más reciente al más antiguo
+  }
+  function htmlGananciasPorDia(clave){
+    const ahora = new Date();
+    const claveAct = ahora.getFullYear() * 12 + ahora.getMonth();
+    const k = clave != null ? clave : claveAct;
+    const anio = Math.floor(k / 12), mes = k % 12;
+    const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const dias = new Date(anio, mes + 1, 0).getDate();
+    const vals = [];
+    for(let d = 1; d <= dias; d++) vals.push(gananciasEnRangoFechas(new Date(anio, mes, d).getTime(), new Date(anio, mes, d, 23, 59, 59, 999).getTime()));
+    const max = Math.max(1, ...vals), total = vals.reduce((a, b) => a + b, 0);
+    const diaHoy = k === claveAct ? ahora.getDate() : (k < claveAct ? 99 : 0);
+    const filas = vals.map((v, i) => {
+      const d = i + 1, pct = v > 0 ? Math.max(2, Math.round(v / max * 100)) : 0;
+      const cls = d === diaHoy ? ' gpm-actual' : (d > diaHoy ? ' gpm-futuro' : '');
+      return '<div class="gpm-fila gpd-fila' + cls + '"><span class="gpm-mes">' + d + '</span><span class="gpm-barra"><i style="width:' + pct + '%"></i></span><b class="gpm-valor">' + formatearPesos(v) + '</b></div>';
+    }).join('');
+    const claves = mesesConGanancias(), i = claves.indexOf(k);
+    return '<div class="gpm gpd">'
+      + '<div class="gpm-cab"><div class="np-rc-titulo">Ganancias por día</div>'
+      + '<div class="gpm-anio" role="group" aria-label="Mes">'
+      + '<button type="button" data-gpd-mes="' + (k - 1) + '"' + (i === claves.length - 1 ? ' disabled' : '') + ' aria-label="Mes anterior">‹</button>'
+      + '<select data-gpd-sel aria-label="Elegir mes">' + claves.map(c => '<option value="' + c + '"' + (c === k ? ' selected' : '') + '>' + MESES[c % 12] + ' ' + Math.floor(c / 12) + '</option>').join('') + '</select>'
+      + '<button type="button" data-gpd-mes="' + (k + 1) + '"' + (i <= 0 ? ' disabled' : '') + ' aria-label="Mes siguiente">›</button>'
+      + '</div></div>'
+      + '<div class="gpd-lista">' + filas + '</div>'
+      + '<div class="gpm-total"><span>Total ' + MESES[mes] + ' ' + anio + '</span><b>' + formatearPesos(total) + '</b></div>'
+      + '<div class="cmp-nota">Ganancias = interés + mora' + (rutasFiltroActivas ? ' · ruta filtrada' : '') + '</div>'
+      + '</div>';
+  }
+  (function(){
+    const val = document.getElementById('dashboard-ganancias');
+    if(!val) return;
+    val.setAttribute('role', 'button'); val.setAttribute('aria-label', 'Ver ganancias por día');
+    val.classList.add('valor-tocable-gpd');
+    val.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      try{ abrirModalResumenCreditoCliente(null, htmlGananciasPorDia()); }catch(err){ console.warn('[Ganancias por día]', err); }
+    });
+    const cambiar = (c)=>{
+      const cuerpo = document.querySelector('#modal-resumen-credito-cliente .mrc-cuerpo');
+      if(cuerpo && c !== '' && c != null) cuerpo.innerHTML = htmlGananciasPorDia(Number(c));
+    };
+    document.addEventListener('click', (e)=>{
+      const b = e.target.closest && e.target.closest('#modal-resumen-credito-cliente [data-gpd-mes]');
+      if(b && !b.disabled){ e.stopPropagation(); cambiar(b.dataset.gpdMes); }
+    });
+    document.addEventListener('change', (e)=>{
+      if(e.target && e.target.matches && e.target.matches('#modal-resumen-credito-cliente [data-gpd-sel]')) cambiar(e.target.value);
+    });
+  })();
   (function(){
     const ico = document.querySelector('#tarjeta-ganancias .icon-container');
     if(!ico) return;
