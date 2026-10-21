@@ -8776,6 +8776,18 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
 #modal-resumen-credito-cliente .gpd-fila .gpm-valor{ text-align:left !important; min-width:0 !important; }
 #modal-resumen-credito-cliente .gpd .gpm-total{ margin-top:4px !important; padding-top:5px !important; font-size:12.5px !important; }
 #modal-resumen-credito-cliente .gpd .cmp-nota{ margin-top:3px !important; font-size:10.5px !important; }
+
+/* v623: mejor y peor (día / mes) — resaltado solo en el valor */
+#modal-resumen-credito-cliente .gpm-valor.gpm-mejor{ color:#FFFFFF !important; background:linear-gradient(180deg,#22B05E,#14843F); border-radius:6px; padding:1px 6px; font-weight:800 !important; box-shadow:0 2px 5px rgba(20,132,63,.30); justify-self:start; }
+#modal-resumen-credito-cliente .gpm-valor.gpm-peor{ color:#FFFFFF !important; background:linear-gradient(180deg,#EF5350,#C62828); border-radius:6px; padding:1px 6px; font-weight:800 !important; box-shadow:0 2px 5px rgba(198,40,40,.30); justify-self:start; }
+#modal-resumen-credito-cliente .gpm-fila:not(.gpd-fila) .gpm-valor.gpm-mejor, #modal-resumen-credito-cliente .gpm-fila:not(.gpd-fila) .gpm-valor.gpm-peor{ justify-self:end; }
+#modal-resumen-credito-cliente .gpm-futuro .gpm-valor.gpm-mejor, #modal-resumen-credito-cliente .gpm-futuro .gpm-valor.gpm-peor{ opacity:1; }
+#modal-resumen-credito-cliente .gpm-leyenda{ display:flex; gap:14px; margin-top:4px; font-size:11px; color:var(--text-secondary); }
+#modal-resumen-credito-cliente .gpm-leyenda span{ display:inline-flex; align-items:center; gap:5px; }
+#modal-resumen-credito-cliente .gpm-leyenda i{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+#modal-resumen-credito-cliente .gpm-mejor-dot{ background:#1A9A4E; }
+#modal-resumen-credito-cliente .gpm-peor-dot{ background:#D93A37; }
+#modal-resumen-credito-cliente .gpd-fila .gpm-valor.gpm-mejor, #modal-resumen-credito-cliente .gpd-fila .gpm-valor.gpm-peor{ padding:0 5px; line-height:1.35; }
 </style>
 
 </head>
@@ -23427,10 +23439,15 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
     const vals = MESES.map((_, m) => gananciasEnRangoFechas(new Date(anio, m, 1).getTime(), new Date(anio, m + 1, 0, 23, 59, 59, 999).getTime()));
     const max = Math.max(1, ...vals);
     const total = vals.reduce((a, b) => a + b, 0);
+    // v623: mejor y peor mes (entre los meses con ganancias)
+    const conDatosM = vals.map((v, i) => [v, i]).filter(x => x[0] > 0);
+    const mejorM = conDatosM.length ? conDatosM.reduce((a, b) => b[0] > a[0] ? b : a)[1] : -1;
+    const peorM = conDatosM.length > 1 ? conDatosM.reduce((a, b) => b[0] < a[0] ? b : a)[1] : -1;
     const filas = vals.map((v, m) => {
       const pct = v > 0 ? Math.max(2, Math.round(v / max * 100)) : 0;
       const cls = m === mesAct ? ' gpm-actual' : (m > mesAct ? ' gpm-futuro' : '');
-      return '<div class="gpm-fila' + cls + '"><span class="gpm-mes">' + MESES[m] + '</span><span class="gpm-barra"><i style="width:' + pct + '%"></i></span><b class="gpm-valor">' + formatearPesos(v) + '</b></div>';
+      const vcls = m === mejorM ? ' gpm-mejor' : (m === peorM ? ' gpm-peor' : '');
+      return '<div class="gpm-fila' + cls + '"><span class="gpm-mes">' + MESES[m] + '</span><span class="gpm-barra"><i style="width:' + pct + '%"></i></span><b class="gpm-valor' + vcls + '">' + formatearPesos(v) + '</b></div>';
     }).join('');
     return '<div class="gpm">'
       + (()=>{ const anios = aniosConGanancias(); const i = anios.indexOf(anio);
@@ -23442,6 +23459,7 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
             + '</div></div>'; })()
       + filas
       + '<div class="gpm-total"><span>Total ' + anio + '</span><b>' + formatearPesos(total) + '</b></div>'
+      + (mejorM >= 0 ? '<div class="gpm-leyenda"><span><i class="gpm-mejor-dot"></i>Mejor mes</span>' + (peorM >= 0 ? '<span><i class="gpm-peor-dot"></i>Peor mes</span>' : '') + '</div>' : '')
       + '<div class="cmp-nota">Ganancias = interés + mora' + (rutasFiltroActivas ? ' · ruta filtrada' : '') + '</div>'
       + '</div>';
   }
@@ -23487,10 +23505,15 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
     for(let d = 1; d <= dias; d++) vals.push(gananciasEnRangoFechas(new Date(anio, mes, d).getTime(), new Date(anio, mes, d, 23, 59, 59, 999).getTime()));
     const max = Math.max(1, ...vals), total = vals.reduce((a, b) => a + b, 0);
     const diaHoy = k === claveAct ? ahora.getDate() : (k < claveAct ? 99 : 0);
+    // v623: mejor y peor día (entre los días con ganancias)
+    const conDatosD = vals.map((v, i) => [v, i]).filter(x => x[0] > 0);
+    const mejorD = conDatosD.length ? conDatosD.reduce((a, b) => b[0] > a[0] ? b : a)[1] : -1;
+    const peorD = conDatosD.length > 1 ? conDatosD.reduce((a, b) => b[0] < a[0] ? b : a)[1] : -1;
     const filas = vals.map((v, i) => {
       const d = i + 1, pct = v > 0 ? Math.max(2, Math.round(v / max * 100)) : 0;
       const cls = d === diaHoy ? ' gpm-actual' : (d > diaHoy ? ' gpm-futuro' : '');
-      return '<div class="gpm-fila gpd-fila' + cls + '"><span class="gpm-mes">' + d + '</span><span class="gpm-barra"><i style="width:' + pct + '%"></i></span><b class="gpm-valor">' + formatearPesos(v) + '</b></div>';
+      const vcls = i === mejorD ? ' gpm-mejor' : (i === peorD ? ' gpm-peor' : '');
+      return '<div class="gpm-fila gpd-fila' + cls + '"><span class="gpm-mes">' + d + '</span><span class="gpm-barra"><i style="width:' + pct + '%"></i></span><b class="gpm-valor' + vcls + '">' + formatearPesos(v) + '</b></div>';
     }).join('');
     const claves = mesesConGanancias(), i = claves.indexOf(k);
     return '<div class="gpm gpd">'
@@ -23502,6 +23525,7 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
       + '</div></div>'
       + '<div class="gpd-lista">' + filas + '</div>'
       + '<div class="gpm-total"><span>Total ' + MESES[mes] + ' ' + anio + '</span><b>' + formatearPesos(total) + '</b></div>'
+      + (mejorD >= 0 ? '<div class="gpm-leyenda"><span><i class="gpm-mejor-dot"></i>Mejor día</span>' + (peorD >= 0 ? '<span><i class="gpm-peor-dot"></i>Peor día</span>' : '') + '</div>' : '')
       + '<div class="cmp-nota">Ganancias = interés + mora' + (rutasFiltroActivas ? ' · ruta filtrada' : '') + '</div>'
       + '</div>';
   }
