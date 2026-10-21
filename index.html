@@ -8850,6 +8850,12 @@ html body #screen-detalle-cliente .ltd-moderna .ltm-paso:not(.pagada):not(.venci
   box-shadow:0 3px 6px rgba(22,33,62,.16), 0 1px 2px rgba(22,33,62,.12), inset 0 1px 0 #FFFFFF, inset 0 -2px 3px rgba(22,33,62,.08) !important;
   border:1px solid #D3DAE2; color:#3F4A5E !important;
 }
+
+/* v640: ruta del cliente debajo del nombre (Moderna) */
+.ltd-moderna .ltm-nombre-bloque{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.ltd-moderna .ltm-ruta{ display:inline-flex; align-items:center; gap:4px; font-size:12.5px; font-weight:600; color:rgba(255,255,255,.88); line-height:1.2; min-width:0; }
+.ltd-moderna .ltm-ruta svg{ width:13px; height:13px; flex-shrink:0; }
+.ltd-moderna .ltm-ruta span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 </style>
 
 </head>
@@ -25031,7 +25037,7 @@ html body #screen-detalle-cliente .ltd-moderna .ltm-paso:not(.pagada):not(.venci
       cardM.innerHTML = `
         <div class="ltd-cab ltm-cab">
           <!-- v601: se retiró el logo junto al nombre -->
-          <div class="ltm-nombre">${nombre}</div>
+          <div class="ltm-nombre-bloque"><div class="ltm-nombre">${nombre}</div>${(cliente && cliente.telefono && String(cliente.telefono).trim()) ? `<div class="ltm-ruta ltm-tel"><svg aria-hidden="true" stroke="currentColor" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg><span>${escaparHtml(String(cliente.telefono).trim())}</span></div>` : ''}<!-- v644: teléfono debajo del nombre -->${(cliente && cliente.ruta && String(cliente.ruta).trim()) ? `<div class="ltm-ruta"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.2 17.5 15.8 6.5"/></svg><span>${escaparHtml(String(cliente.ruta).trim())}</span></div>` : ''}</div><!-- v640: ruta debajo del nombre -->
           <div class="ltm-estado ltm-estado-${estadoVisual}" role="button" title="Ver ticket del crédito"><span class="ltm-signo">#</span> ${nCredito || 1}</div><!-- v601: solo el contador -->
         </div>
         <div class="ltm-cuerpo"><!-- v635: hoja blanca sobre la cabecera verde -->
