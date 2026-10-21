@@ -33,6 +33,7 @@
      estética distinta al resto de la app) — no afecta ninguna otra
      pantalla, que sigue usando Inter. -->
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"><!-- v628: recibo térmico -->
 
 <style>
 /* ==========================================================
@@ -8792,6 +8793,27 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
 
 /* v626: línea "Cuota" en la tarjeta del cliente */
 #screen-clientes .client-row-cliente .client-row-cuota{ margin-top:2px; }
+
+/* v627: recibo térmico del crédito (visor) */
+.monedas-tocables{ cursor:pointer; -webkit-tap-highlight-color:transparent; transition:transform .15s ease; }
+.monedas-tocables:active{ transform:scale(.92); }
+#recibo-termico-overlay{ z-index:9600; padding:16px; }
+#recibo-termico-overlay .rt-caja{ width:100%; max-width:360px; max-height:calc(100vh - 32px); display:flex; flex-direction:column; gap:10px; }
+#recibo-termico-overlay .rt-vista{ flex:1; min-height:0; overflow:auto; display:flex; justify-content:center; filter:drop-shadow(0 10px 22px rgba(0,0,0,.35)); }
+#recibo-termico-overlay .rt-vista img{ width:100%; height:auto; display:block; align-self:flex-start; cursor:zoom-in; }
+#recibo-termico-overlay .rt-acciones{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+#recibo-termico-overlay .rt-btn{ border:none; border-radius:12px; padding:12px 8px; font-weight:700; font-size:14.5px; font-family:inherit; cursor:pointer; }
+#recibo-termico-overlay .rt-ver{ background:#FFFFFF; color:#1F2F68; box-shadow:0 2px 6px rgba(0,0,0,.15); }
+#recibo-termico-overlay .rt-compartir{ background:#1F8A4C; color:#FFFFFF; box-shadow:0 3px 8px rgba(31,138,76,.35); }
+#recibo-termico-overlay .rt-cerrar{ border:none; background:rgba(255,255,255,.85); color:#1F2F68; border-radius:12px; padding:10px; font-weight:700; font-size:14px; font-family:inherit; cursor:pointer; }
+#recibo-termico-overlay .rt-full{ position:fixed; inset:0; z-index:2; background:rgba(10,12,20,.92); align-items:flex-start; justify-content:center; overflow:auto; padding:20px 10px; }
+#recibo-termico-overlay .rt-full img{ width:100%; max-width:560px; height:auto; display:block; }
+#recibo-termico-overlay .rt-full-cerrar{ position:fixed; top:12px; right:12px; width:40px; height:40px; border-radius:50%; border:none; background:rgba(255,255,255,.9); color:#1F2F68; font-size:26px; line-height:1; cursor:pointer; }
+
+/* v628: visor del recibo — fondo gris degradado (#c9c9c9 → #a9a9a9), papel con sombra suave, ancho máx. 380px */
+#recibo-termico-overlay{ background:linear-gradient(180deg,#c9c9c9,#a9a9a9) !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+#recibo-termico-overlay .rt-caja{ max-width:340px !important; }
+#recibo-termico-overlay .rt-vista{ filter:drop-shadow(0 6px 14px rgba(0,0,0,.18)) !important; }
 </style>
 
 </head>
@@ -10785,6 +10807,7 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
         <div class="rfa-fila"><span>Abono aplicado a</span><b id="rfa-aplicado">—</b></div><!-- v613 -->
         <div class="rfa-fila"><span>Número de cuota</span><b id="rfa-cuota">—</b></div>
         <div class="rfa-fila"><span>Método de pago</span><b id="rfa-metodo">—</b></div>
+        <div class="rfa-fila"><span>Próximo pago</span><b id="rfa-proximo">—</b></div><!-- v631 -->
       </div>
 
     </div>
@@ -25020,6 +25043,8 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
       }));
       cardM.querySelector('.ltm-prog-tit').addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); }); // v612: solo la palabra "Progreso"
       cardM.querySelector('.ltm-estado').addEventListener('click', (e)=>{ e.stopPropagation(); abrirTicketPrestamo(prestamo); });
+      const pilaM = cardM.querySelector('.ltm-monedas-pila'); // v627: monedas → recibo térmico
+      if(pilaM){ pilaM.setAttribute('role', 'button'); pilaM.setAttribute('aria-label', 'Ver recibo del crédito'); pilaM.classList.add('monedas-tocables'); pilaM.addEventListener('click', (e)=>{ e.stopPropagation(); abrirReciboTermico(prestamo); }); }
       if(cliente && cliente.alertaRiesgo && estadoVisual === 'vencido'){
         cardM.classList.add('con-sello-riesgo');
         cardM.insertAdjacentHTML('beforeend', selloRiesgoHTML());
@@ -25248,6 +25273,11 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
       anillo.classList.add('tocable'); anillo.setAttribute('role', 'button'); anillo.setAttribute('aria-label', 'Ver resumen del crédito');
       anillo.addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); });
     }
+    // v627: las monedas de "Próximo vencimiento" abren el recibo térmico
+    card.querySelectorAll('.ltd-vence-monedas').forEach(pila => {
+      pila.setAttribute('role', 'button'); pila.setAttribute('aria-label', 'Ver recibo del crédito'); pila.classList.add('monedas-tocables');
+      pila.addEventListener('click', (e)=>{ e.stopPropagation(); abrirReciboTermico(prestamo); });
+    });
     // La píldora de estado abre el "Ticket de Crédito" (igual que siempre)
     const badge = card.querySelector('.loan-badge');
     if(badge) badge.addEventListener('click', (e)=>{ e.stopPropagation(); abrirTicketPrestamo(prestamo); });
@@ -25257,6 +25287,154 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
       card.insertAdjacentHTML('beforeend', selloRiesgoHTML());
     }
     return card;
+  }
+
+  // ==========================================================
+  // NUEVO (v627): "Recibo térmico" del crédito — réplica de la imagen de
+  // referencia (papel con bordes troquelados arriba y abajo, letra de
+  // máquina, líneas punteadas y código de barras). Se genera al tocar el
+  // ícono de monedas de la tarjeta del crédito (diseños Moderna y Resumen).
+  // Sin margen externo: la imagen es solo el recibo.
+  // ==========================================================
+  function generarCanvasReciboTermico(prestamo){
+    // v628: ajustado a las especificaciones — ticket de 380px, papel #f3f3f3,
+    // dientes de 8px cada 26px arriba y abajo, fuente Courier Prime.
+    const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId) || {};
+    const W = 340, PAD = 22, X0 = PAD, X1 = W - PAD; // v630: más angosto (antes 380)
+    const MONO = "'Courier Prime', 'Courier New', Courier, monospace";
+    const TINTA = '#222222', GRIS = '#666666', PAPEL = '#F3F3F3';
+    const medir = document.createElement('canvas').getContext('2d');
+    const envolver = (txt, fuente, ancho) => {
+      medir.font = fuente; const pal = String(txt).split(/\s+/); const lineas = []; let l = '';
+      pal.forEach(w => { const t = l ? l + ' ' + w : w; if(medir.measureText(t).width > ancho && l){ lineas.push(l); l = w; } else l = t; });
+      if(l) lineas.push(l); return lineas;
+    };
+    const negocio = 'RESUMEN DEL CRÉDITO'; // v634: antes 'RECIBO DE PAGO'
+    const subtitulo = []; // v632: subtítulo retirado
+    const nombreLineas = envolver(cliente.nombre || '—', '14px ' + MONO, X1 - X0);
+    const mensaje = envolver('Mantenga su crédito al día y asegure su respaldo financiero cuando lo necesite.', '14px ' + MONO, W - 2 * PAD - 20);
+    const plan = prestamo.plan || [];
+    const nombresFrec = { diario:'Diario', semanal:'Semanal', quincenal:'Quincenal', mensual:'Mensual' };
+    const pesos = v => formatearPesos(v).replace('$', '$ ');
+    const fFecha = prestamo.fecha ? formatearFechaCorta(new Date(prestamo.fecha + 'T00:00:00')) : '—';
+    const filas = [
+      ['Fecha:', fFecha], // v630: con dos puntos
+      ['Monto:', pesos(prestamo.valor)],
+      ['Número de cuotas:', prestamo.soloInteres ? 'Sin plazo' : String(plan.length || prestamo.cuotas || 0)],
+      ['Valor por cuota:', pesos(cuotaRealPrestamo(prestamo))],
+      ['Frecuencia de pago:', (nombresFrec[prestamo.frecuencia] || prestamo.frecuencia || '—').toUpperCase()],
+      ['Número de crédito:', 'Crédito # ' + (numeroCreditoCliente(prestamo) || 1)]
+    ];
+    const tel = cliente.telefono ? String(cliente.telefono).trim() : '—';
+    const codigo = prestamo.codigo || ('PRE-' + prestamo.id);
+
+    let y = 0; const plano = [];
+    y += 30; plano.push(['guiones', y]);
+    y += 38; plano.push(['titulo', y]);
+    subtitulo.forEach((l, i) => { y += (i === 0 ? 24 : 17); plano.push(['sub', y, l]); });
+    y += 26; plano.push(['guiones', y]);
+    // v633: Cliente y nombre centrados; Cc y Tel retirados
+    y += 30; plano.push(['cen', y, 'Cliente:']);
+    nombreLineas.forEach(l => { y += 21; plano.push(['cen', y, l]); });
+    y += 24; plano.push(['puntos', y]);
+    filas.forEach((f, i) => { y += (i === 0 ? 26 : 22); plano.push(['fila', y, f[0], f[1]]); });
+    y += 22; plano.push(['puntos', y]);
+    y += 28; plano.push(['frase', y]);
+    mensaje.forEach((l, i) => { y += (i === 0 ? 24 : 20); plano.push(['msg', y, l]); });
+    y += 22; plano.push(['puntos', y]);
+    y += 16; plano.push(['barras', y]);
+    y += 46 + 18; plano.push(['codigo', y]); // v629: código de barras más corto
+    const H = Math.ceil(y + 34);
+
+    const canvas = document.createElement('canvas');
+    const ctx = prepararCanvasNitido(canvas, W, H, 3);
+    ctx.fillStyle = PAPEL; ctx.fillRect(0, 0, W, H);
+    // dientes: semicírculos de 8px cada 26px, recortados (transparentes) arriba y abajo
+    ctx.save(); ctx.globalCompositeOperation = 'destination-out';
+    for(let cx = 13; cx < W + 8; cx += 26){
+      ctx.beginPath(); ctx.arc(cx, 0, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, H, 8, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+
+    const guiones = yy => { ctx.fillStyle = TINTA; const L = 16, G = 8, n = Math.floor((W - 2 * PAD + G) / (L + G)), x0 = (W - (n * L + (n - 1) * G)) / 2; for(let i = 0; i < n; i++) ctx.fillRect(x0 + i * (L + G), yy - 1, L, 2); };
+    const puntos = yy => { ctx.fillStyle = TINTA; const L = 2, G = 4, n = Math.floor((W - 2 * PAD + G) / (L + G)), x0 = (W - (n * L + (n - 1) * G)) / 2; for(let i = 0; i < n; i++) ctx.fillRect(x0 + i * (L + G), yy - 1, L, 2); };
+    plano.forEach(e => {
+      const [t, yy] = e;
+      if(t === 'guiones') guiones(yy);
+      else if(t === 'puntos') puntos(yy);
+      else if(t === 'titulo'){ ctx.fillStyle = TINTA; ctx.font = 'bold 22px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(negocio, W / 2, yy, W - 2 * PAD); }
+      else if(t === 'sub'){ ctx.fillStyle = GRIS; ctx.font = '12.5px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(e[2], W / 2, yy); }
+      else if(t === 'cen'){ ctx.fillStyle = TINTA; ctx.font = '14px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(e[2], W / 2, yy, X1 - X0); }
+      else if(t === 'izq'){ ctx.fillStyle = TINTA; ctx.font = '14px ' + MONO; ctx.textAlign = 'left'; ctx.fillText(e[2], X0, yy, X1 - X0); }
+      else if(t === 'fila'){
+        ctx.fillStyle = TINTA; ctx.font = '14px ' + MONO;
+        ctx.textAlign = 'left'; ctx.fillText(e[2], X0, yy);
+        ctx.textAlign = 'right'; ctx.fillText(e[3], X1, yy, 160);
+      }
+      else if(t === 'frase'){ ctx.fillStyle = TINTA; ctx.font = 'bold 14px ' + MONO; ctx.textAlign = 'center'; ctx.fillText('¡Su puntualidad tiene valor!', W / 2, yy); }
+      else if(t === 'msg'){ ctx.fillStyle = TINTA; ctx.font = '14px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(e[2], W / 2, yy); }
+      else if(t === 'barras'){
+        // código de barras decorativo con semilla FIJA (siempre el mismo patrón)
+        let semilla = 20261020;
+        const azar = () => { semilla = (semilla * 1664525 + 1013904223) >>> 0; return semilla / 4294967296; };
+        const xA = 50, xB = W - 50; let x = xA;
+        ctx.fillStyle = TINTA;
+        while(x < xB){
+          const ancho = [1, 1, 1.5, 2, 3][Math.floor(azar() * 5)];
+          if(x + ancho > xB) break;
+          ctx.fillRect(x, yy, ancho, 46);
+          x += ancho + [1, 1.5, 2][Math.floor(azar() * 3)];
+        }
+      }
+      else if(t === 'codigo'){ ctx.fillStyle = TINTA; ctx.font = '13px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(codigo.split('').join(' '), W / 2, yy, W - 40); }
+    });
+    ctx.textAlign = 'left';
+    return canvas;
+  }
+
+  // Visor del recibo: vista previa + "Ver imagen" (pantalla completa) + "Compartir imagen"
+  async function abrirReciboTermico(prestamo){
+    // v628: espera la fuente Courier Prime (si no hay internet, usa Courier New)
+    try{ if(document.fonts && document.fonts.load){ await Promise.race([Promise.all([document.fonts.load("14px 'Courier Prime'"), document.fonts.load("bold 30px 'Courier Prime'")]), new Promise(r => setTimeout(r, 1500))]); } }catch(e){}
+    let canvas;
+    try{ canvas = generarCanvasReciboTermico(prestamo); }catch(err){ console.warn('[Recibo térmico]', err); return; }
+    const url = canvas.toDataURL('image/png');
+    let ov = document.getElementById('recibo-termico-overlay');
+    if(!ov){
+      ov = document.createElement('div');
+      ov.id = 'recibo-termico-overlay';
+      ov.className = 'confirm-modal-overlay';
+      ov.innerHTML = '<div class="rt-caja" role="dialog" aria-modal="true" aria-label="Recibo del crédito">'
+        + '<div class="rt-vista"><img alt="Recibo del crédito"></div>'
+        + '<div class="rt-acciones"><button type="button" class="rt-btn rt-ver">Ver imagen</button><button type="button" class="rt-btn rt-compartir">Compartir imagen</button></div>'
+        + '<button type="button" class="rt-cerrar">Cerrar</button></div>'
+        + '<div class="rt-full" style="display:none;"><img alt="Recibo del crédito"><button type="button" class="rt-full-cerrar" aria-label="Cerrar">×</button></div>';
+      document.body.appendChild(ov);
+      const cerrar = () => { ov.style.display = 'none'; ov.querySelector('.rt-full').style.display = 'none'; document.documentElement.classList.remove('bloqueo-fondo'); };
+      ov.addEventListener('click', e => { if(e.target === ov) cerrar(); });
+      ov.querySelector('.rt-cerrar').addEventListener('click', cerrar);
+      ov.querySelector('.rt-ver').addEventListener('click', () => { ov.querySelector('.rt-full').style.display = 'flex'; });
+      ov.querySelector('.rt-vista img').addEventListener('click', () => { ov.querySelector('.rt-full').style.display = 'flex'; });
+      ov.querySelector('.rt-full-cerrar').addEventListener('click', () => { ov.querySelector('.rt-full').style.display = 'none'; });
+      ov.querySelector('.rt-compartir').addEventListener('click', () => {
+        const c = ov._canvas, nombre = ov._nombre; if(!c) return;
+        c.toBlob(async (blob) => {
+          if(!blob) return;
+          const archivo = new File([blob], nombre, { type: 'image/png' });
+          if(navigator.share && navigator.canShare && navigator.canShare({ files: [archivo] })){
+            try{ await navigator.share({ files: [archivo], title: 'Recibo del crédito' }); }catch(err){ /* cancelado */ }
+          }else{
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
+          }
+        }, 'image/png');
+      });
+    }
+    ov._canvas = canvas; ov._nombre = 'recibo-' + (prestamo.codigo || prestamo.id) + '.png';
+    ov.querySelectorAll('img').forEach(im => { im.src = url; });
+    ov.querySelector('.rt-full').style.display = 'none';
+    ov.style.display = 'flex';
+    document.documentElement.classList.add('bloqueo-fondo');
   }
 
   // ---------- Ajustes → "Diseño tarjeta del crédito" ----------
@@ -26668,6 +26846,30 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
         else cuotaTxt = nums[0] + ' a ' + nums[nums.length - 1] + (total ? ' de ' + total : '');
       }
       document.getElementById('rfa-cuota').textContent = cuotaTxt;
+      // v631: "Próximo pago" = fecha de la primera cuota que seguiría pendiente después de este abono
+      const elProx = document.getElementById('rfa-proximo');
+      if(elProx){
+        let proxTxt = '—';
+        if(prestamoEnDetalle){
+          const modo = selectAplicarAbono.value;
+          const abonadoPorCuota = {};
+          if(modo !== 'mora' && valor > 0){
+            repartirAbonoEntreCuotas(prestamoEnDetalle, valor, modo).forEach(r => {
+              if(r.aplicarA === 'capital') return;
+              const n = (r.cuota && r.cuota.numero != null) ? r.cuota.numero : r.cuota;
+              abonadoPorCuota[n] = (abonadoPorCuota[n] || 0) + (Number(r.monto) || 0);
+            });
+          }
+          const sig = (prestamoEnDetalle.plan || []).find(c => (pendienteDeCuota(prestamoEnDetalle, c) - (abonadoPorCuota[c.numero] || 0)) > 1);
+          if(sig && sig.fechaISO){
+            const d = new Date(String(sig.fechaISO).length === 10 ? sig.fechaISO + 'T00:00:00' : sig.fechaISO);
+            proxTxt = isNaN(d) ? '—' : formatearFechaCorta(d) + ' · Cuota ' + sig.numero;
+          }else if((prestamoEnDetalle.plan || []).length){
+            proxTxt = 'Crédito pagado';
+          }
+        }
+        elProx.textContent = proxTxt;
+      }
     }catch(e){ console.warn('[Resumen del abono]', e); }
   }
   (function(){
