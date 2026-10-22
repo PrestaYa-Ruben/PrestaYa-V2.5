@@ -8939,6 +8939,22 @@ html body #screen-detalle-cliente .card.loan-card-full.loan-card-finalizado:not(
 /* v660: contador de créditos en verde oscuro (diseño Actual en Cliente) */
 html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credito{ background:linear-gradient(180deg,#178A47,#0B6B33) !important; color:#FFFFFF !important; border-color:#0A5C2C !important; box-shadow:0 2px 6px rgba(11,107,51,.30), inset 0 1px 0 rgba(255,255,255,.18) !important; }
 html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credito .loan-num-hash, html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credito .loan-num-valor{ color:#FFFFFF !important; }
+
+/* v662: contador de créditos más grande (diseño Actual en Cliente) */
+html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credito{ padding:6px 16px !important; font-size:16px !important; border-radius:999px !important; }
+html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credito .loan-num-hash{ font-size:15px !important; }
+html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credito .loan-num-valor{ font-size:19px !important; vertical-align:-1.5px; }
+
+/* v663: contador de créditos con efecto incrustado (hundido en la tarjeta) */
+html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credito{
+  background:linear-gradient(180deg,#0A5A2B 0%,#0E7038 100%) !important;
+  border:1px solid rgba(0,0,0,.18) !important;
+  box-shadow:inset 0 4px 8px rgba(0,0,0,.55), inset 0 2px 2px rgba(0,0,0,.35), inset 0 -2px 3px rgba(255,255,255,.14), 0 1px 0 rgba(255,255,255,.95), 0 -1px 0 rgba(0,0,0,.06) !important;
+  text-shadow:0 -1px 0 rgba(0,0,0,.35);
+}
+
+/* v664: contador de créditos un poco menos alto */
+html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credito{ padding-top:3px !important; padding-bottom:3px !important; line-height:1.15 !important; }
 </style>
 
 </head>
@@ -25532,8 +25548,8 @@ html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credi
       ['Monto:', pesos(prestamo.valor)],
       ['Número de cuotas:', prestamo.soloInteres ? 'Sin plazo' : String(plan.length || prestamo.cuotas || 0)],
       ['Valor por cuota:', pesos(cuotaRealPrestamo(prestamo))],
-      ['Frecuencia de pago:', (nombresFrec[prestamo.frecuencia] || prestamo.frecuencia || '—').toUpperCase()],
-      ['Número de crédito:', 'Crédito # ' + (numeroCreditoCliente(prestamo) || 1)]
+      ['Frecuencia de pago:', (nombresFrec[prestamo.frecuencia] || prestamo.frecuencia || '—').toUpperCase()]
+      // v661: se retiró la fila "Número de crédito"
     ];
     const tel = cliente.telefono ? String(cliente.telefono).trim() : '—';
     const codigo = prestamo.codigo || ('PRE-' + prestamo.id);
