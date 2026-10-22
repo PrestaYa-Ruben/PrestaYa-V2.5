@@ -8856,6 +8856,24 @@ html body #screen-detalle-cliente .ltd-moderna .ltm-paso:not(.pagada):not(.venci
 .ltd-moderna .ltm-ruta{ display:inline-flex; align-items:center; gap:4px; font-size:12.5px; font-weight:600; color:rgba(255,255,255,.88); line-height:1.2; min-width:0; }
 .ltd-moderna .ltm-ruta svg{ width:13px; height:13px; flex-shrink:0; }
 .ltd-moderna .ltm-ruta span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* v650: datos desplegados sin cajitas — solo los datos sobre el tapete */
+html body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-detail-grid{ gap:14px 14px; }
+html body #screen-detalle-prestamo .loan-detail-card .loan-detail-item{
+  background:none !important; box-shadow:none !important; border:none !important; padding:0 !important; border-radius:0 !important;
+}
+html body:not(.modo-oscuro) #screen-detalle-prestamo .loan-detail-card .loan-detail-value{ text-shadow:none; }
+
+/* v651: mora acumulada junto a "Más opciones" */
+.mora-acum-prestamo{ margin-right:auto; display:inline-flex; align-items:center; gap:6px; padding:7px 12px; border-radius:999px; background:#FDECEC; border:1px solid #F3C4C4; color:#9B2C2C; font-size:13px; font-weight:600; white-space:nowrap; }
+.mora-acum-prestamo svg{ width:15px; height:15px; flex-shrink:0; }
+.mora-acum-prestamo b{ font-weight:800; color:#D92D20; }
+body.modo-oscuro .mora-acum-prestamo{ background:rgba(239,68,68,.14); border-color:rgba(239,68,68,.35); color:#F4A4A4; }
+body.modo-oscuro .mora-acum-prestamo b{ color:#FCA5A5; }
+#btn-mas-opciones-comprobante{ white-space:nowrap; flex-shrink:0; }
+.mora-acum-prestamo{ min-width:0; flex-shrink:1; overflow:hidden; }
+.mora-acum-prestamo span{ overflow:hidden; text-overflow:ellipsis; }
+@media (max-width:380px){ .mora-acum-prestamo{ font-size:12px; padding:6px 10px; gap:5px; } .mora-acum-prestamo svg{ display:none; } }
 </style>
 
 </head>
@@ -10560,7 +10578,9 @@ html body #screen-detalle-cliente .ltd-moderna .ltm-paso:not(.pagada):not(.venci
          interruptores) se ocultó detrás de una píldora "Más opciones" que
          se abre/cierra tocándola, igual que ya hicimos con "Resumen
          Histórico" del cliente — misma animación fluida ya probada. -->
-    <div style="display:flex; justify-content:flex-end; margin-top:14px;">
+    <div style="display:flex; justify-content:flex-end; align-items:center; gap:10px; margin-top:14px;">
+      <!-- v651: mora acumulada del crédito (mismo dato de "Mora acumulada" de la tarjeta) -->
+      <div class="mora-acum-prestamo" id="mora-acum-prestamo" style="display:none;"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Mora acumulada: <b id="mora-acum-prestamo-valor">0 días</b></span></div>
       <button type="button" class="btn-mas-opciones-prestamo btn-mas-opciones-pildora" id="btn-mas-opciones-comprobante" aria-expanded="false">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle><circle cx="5" cy="12" r="1.5"></circle></svg>
         <span>Más opciones</span>
@@ -26463,6 +26483,13 @@ html body #screen-detalle-cliente .ltd-moderna .ltm-paso:not(.pagada):not(.venci
   }
 
   function actualizarTabsPrestamo(prestamo){
+    // v651: "Mora acumulada" junto a "Más opciones" (solo si hay mora)
+    try{
+      const cajaMora = document.getElementById('mora-acum-prestamo');
+      const moraDias = diasMoraYAnticipadoPrestamo(prestamo).mora;
+      document.getElementById('mora-acum-prestamo-valor').textContent = moraDias + (moraDias === 1 ? ' día' : ' días');
+      cajaMora.style.display = moraDias > 0 ? 'inline-flex' : 'none';
+    }catch(err){}
     document.getElementById('tab-cuotas-count').textContent = prestamo.cuotas;
     // NUEVO: a pedido — contador de la pestaña "Pendientes" (cuotas que
     // todavía no están 100% pagadas, sin importar si están vencidas o
