@@ -8874,6 +8874,19 @@ body.modo-oscuro .mora-acum-prestamo b{ color:#FCA5A5; }
 .mora-acum-prestamo{ min-width:0; flex-shrink:1; overflow:hidden; }
 .mora-acum-prestamo span{ overflow:hidden; text-overflow:ellipsis; }
 @media (max-width:380px){ .mora-acum-prestamo{ font-size:12px; padding:6px 10px; gap:5px; } .mora-acum-prestamo svg{ display:none; } }
+
+/* v652: globito de cada cuota (tarjeta del crédito) */
+.ltd-moderna .ltm-paso[data-cuota]{ cursor:pointer; -webkit-tap-highlight-color:transparent; transition:transform .12s ease; }
+.ltd-moderna .ltm-paso[data-cuota]:active{ transform:scale(.92); }
+.globo-cuota{ position:fixed; z-index:9000; min-width:96px; padding:9px 14px 10px; border-radius:14px; background:#FFFFFF; text-align:center; box-shadow:0 10px 26px rgba(20,30,60,.18), 0 2px 6px rgba(20,30,60,.10); opacity:0; transform:translateY(4px) scale(.96); transition:opacity .16s ease, transform .16s ease; pointer-events:auto; }
+.globo-cuota.visible{ opacity:1; transform:none; }
+.globo-cuota-fecha{ font-size:12.5px; font-weight:600; color:#6B7486; white-space:nowrap; }
+.globo-cuota-valor{ margin-top:2px; font-size:17px; font-weight:800; color:#16213E; letter-spacing:-.3px; white-space:nowrap; }
+.globo-cuota-pagada .globo-cuota-valor{ color:#1F8A4C; }
+.globo-cuota-vencida .globo-cuota-valor{ color:#D92D20; }
+.globo-cuota-flecha{ position:absolute; bottom:-6px; width:12px; height:12px; margin-left:-6px; background:#FFFFFF; transform:rotate(45deg); border-radius:2px; box-shadow:3px 3px 5px rgba(20,30,60,.06); }
+.globo-cuota.abajo .globo-cuota-flecha{ bottom:auto; top:-6px; box-shadow:-2px -2px 4px rgba(20,30,60,.05); }
+body.modo-oscuro .globo-cuota, body.modo-oscuro .globo-cuota-flecha{ background:#FFFFFF; }
 </style>
 
 </head>
@@ -24972,6 +24985,59 @@ body.modo-oscuro .mora-acum-prestamo b{ color:#FCA5A5; }
     return `<svg viewBox="0 0 100 100" aria-hidden="true">${segs}</svg>`;
   }
 
+  // v652: globito al tocar el botón de una cuota (tarjeta Moderna):
+  // pendiente → fecha de vencimiento y valor por pagar; pagada → fecha del pago y valor pagado.
+  let globoCuotaActual = null;
+  function cerrarGloboCuota(){
+    if(!globoCuotaActual) return;
+    const g = globoCuotaActual; globoCuotaActual = null;
+    g.el.classList.remove('visible'); setTimeout(()=> g.el.remove(), 160);
+    document.removeEventListener('pointerdown', g.fuera, true);
+    window.removeEventListener('scroll', cerrarGloboCuota, true);
+    window.removeEventListener('resize', cerrarGloboCuota);
+  }
+  function mostrarGloboCuota(ancla, prestamo, numero){
+    if(globoCuotaActual && globoCuotaActual.ancla === ancla){ cerrarGloboCuota(); return; }
+    cerrarGloboCuota();
+    const cuota = (prestamo.plan || []).find(c => c.numero === numero);
+    if(!cuota) return;
+    const MES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const fCorta = f => { const d = new Date(f); return isNaN(d) ? '—' : d.getDate() + '-' + MES[d.getMonth()]; };
+    const pagada = estaCuotaPagada(prestamo, numero);
+    let etiqueta, valor, clase;
+    if(pagada){
+      const pagos = pagosDeCuota(prestamo, numero).filter(p => !isNaN(new Date(p.fecha)));
+      const ultima = pagos.reduce((m, p) => Math.max(m, new Date(p.fecha).getTime()), 0);
+      etiqueta = 'Pagada: ' + (ultima ? fCorta(ultima) : '—');
+      valor = sumaAbonadaCuota(prestamo, numero);
+      clase = 'pagada';
+    }else{
+      etiqueta = 'Pagar: ' + fCorta(cuota.fechaISO);
+      valor = pendienteDeCuota(prestamo, cuota);
+      clase = cuotaVencida(prestamo, cuota) ? 'vencida' : 'pendiente';
+    }
+    const el = document.createElement('div');
+    el.className = 'globo-cuota globo-cuota-' + clase;
+    el.innerHTML = '<div class="globo-cuota-fecha"></div><div class="globo-cuota-valor"></div><i class="globo-cuota-flecha"></i>';
+    el.querySelector('.globo-cuota-fecha').textContent = etiqueta;
+    el.querySelector('.globo-cuota-valor').textContent = formatearPesos(valor);
+    document.body.appendChild(el);
+    const r = ancla.getBoundingClientRect(), gw = el.offsetWidth, gh = el.offsetHeight, M = 8;
+    let x = r.left + r.width / 2 - gw / 2;
+    x = Math.max(M, Math.min(x, window.innerWidth - gw - M));
+    let y = r.top - gh - 10, abajo = false;
+    if(y < M){ y = r.bottom + 10; abajo = true; }
+    el.style.left = x + 'px'; el.style.top = y + 'px';
+    el.classList.toggle('abajo', abajo);
+    el.querySelector('.globo-cuota-flecha').style.left = (r.left + r.width / 2 - x) + 'px';
+    requestAnimationFrame(()=> el.classList.add('visible'));
+    const fuera = ev => { if(!el.contains(ev.target) && ev.target !== ancla && !ancla.contains(ev.target)) cerrarGloboCuota(); };
+    globoCuotaActual = { el, ancla, fuera };
+    document.addEventListener('pointerdown', fuera, true);
+    window.addEventListener('scroll', cerrarGloboCuota, true);
+    window.addEventListener('resize', cerrarGloboCuota);
+  }
+
   function crearTarjetaPrestamoDiseno(prestamo, diseno){
     const estadoVisual = estadoVisualPrestamo(prestamo);
     const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId);
@@ -25047,7 +25113,7 @@ body.modo-oscuro .mora-acum-prestamo b{ color:#FCA5A5; }
         pasos = '<div class="ltm-pasos" style="--n:' + plan.length + '">' + plan.map((c, i) => {
           const e = estC(c);
           const linea = i < plan.length - 1 ? `<i class="ltm-linea${e === 'pagada' && estC(plan[i + 1]) === 'pagada' ? ' llena' : ''}"></i>` : '';
-          return `<span class="ltm-paso ${e}">${e === 'pagada' ? ICONOS_LTM.check : c.numero}</span>${linea}`;
+          return `<span class="ltm-paso ${e}" data-cuota="${c.numero}" role="button" aria-label="Cuota ${c.numero}">${e === 'pagada' ? ICONOS_LTM.check : c.numero}</span>${linea}`; // v652: data-cuota para el globito
         }).join('') + '</div>';
       }else{
         pasos = '<div class="ltm-barra">' + (plan.length <= 60 ? plan.map(c => `<i class="${estC(c)}"></i>`).join('') : `<i class="pagada" style="flex:${pagadas}"></i><i style="flex:${Math.max(plan.length - pagadas, 0)}"></i>`) + '</div>';
@@ -25107,6 +25173,7 @@ body.modo-oscuro .mora-acum-prestamo b{ color:#FCA5A5; }
       }));
       cardM.querySelector('.ltm-prog-tit').addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); }); // v612: solo la palabra "Progreso"
       cardM.querySelector('.ltm-estado').addEventListener('click', (e)=>{ e.stopPropagation(); abrirTicketPrestamo(prestamo); });
+      cardM.querySelectorAll('.ltm-paso[data-cuota]').forEach(paso => paso.addEventListener('click', (e)=>{ e.stopPropagation(); mostrarGloboCuota(paso, prestamo, Number(paso.dataset.cuota)); })); // v652
       const pilaM = cardM.querySelector('.ltm-monedas-pila'); // v627: monedas → recibo térmico
       if(pilaM){ pilaM.setAttribute('role', 'button'); pilaM.setAttribute('aria-label', 'Ver recibo del crédito'); pilaM.classList.add('monedas-tocables'); pilaM.addEventListener('click', (e)=>{ e.stopPropagation(); abrirReciboTermico(prestamo); }); }
       if(cliente && cliente.alertaRiesgo && estadoVisual === 'vencido'){
