@@ -8955,6 +8955,17 @@ html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credi
 
 /* v664: contador de créditos un poco menos alto */
 html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credito{ padding-top:3px !important; padding-bottom:3px !important; line-height:1.15 !important; }
+
+/* v667: Ajustes — ocultos a pedido (se conservan para no romper sus manejadores) */
+#screen-ajustes #item-control-caja, #screen-ajustes #item-estadisticas, #screen-ajustes #item-ranking-clientes, #screen-ajustes #item-cuotas-vencidas{ display:none !important; }
+
+/* v668: valor por cobrar en cada día del carrusel de Pagan Hoy */
+#pagan-hoy-dias-strip .dia-card{ padding-bottom:12px; }
+#pagan-hoy-dias-strip .dia-monto{ margin-top:2px; font-size:12.5px; font-weight:800; color:#0B6B33; background:#E7F5EC; border-radius:999px; padding:2px 8px; white-space:nowrap; letter-spacing:-.2px; }
+#pagan-hoy-dias-strip .dia-monto.vacio{ background:transparent; color:var(--text-secondary); font-weight:500; opacity:.6; }
+#pagan-hoy-dias-strip .dia-card.active .dia-monto{ background:rgba(255,255,255,.22); color:#fff; }
+#pagan-hoy-dias-strip .dia-card.active .dia-monto.vacio{ background:transparent; color:rgba(255,255,255,.8); }
+body.modo-oscuro #pagan-hoy-dias-strip .dia-monto{ background:rgba(52,209,120,.15); color:#5BE09A; }
 </style>
 
 </head>
@@ -9048,11 +9059,11 @@ html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credi
       <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M12 18v-6"></path><path d="M9.5 14.5 12 12l2.5 2.5"></path></svg></div>
       <span>Préstamos</span>
     </div>
-    <div class="menu-lateral-item" id="menu-lateral-pagos">
+    <div class="menu-lateral-item" id="menu-lateral-pagos" style="display:none;"><!-- v665: oculto a pedido (se conserva para no romper sus manejadores) -->
       <div class="icon-container green"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"></path><path d="M17 14h.01"></path><path d="M3 8h18v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"></path></svg></div>
       <span>Pagos</span>
     </div>
-    <div class="menu-lateral-item" id="menu-lateral-reportes">
+    <div class="menu-lateral-item" id="menu-lateral-reportes" style="display:none;"><!-- v665: oculto a pedido (se conserva para no romper sus manejadores) -->
       <div class="icon-container orange"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></div>
       <span>Reportes</span>
     </div>
@@ -9071,16 +9082,16 @@ html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credi
 
     <hr class="loan-divider" style="margin:10px 0;">
 
-    <div class="menu-lateral-item" id="menu-lateral-estadisticas">
+    <div class="menu-lateral-item" id="menu-lateral-estadisticas" style="display:none;"><!-- v665: oculto a pedido (se conserva para no romper sus manejadores) -->
       <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg></div>
       <span>Estadísticas</span>
     </div>
     <!-- NUEVO: a pedido — Comparativas de Ganancias -->
-    <div class="menu-lateral-item" id="menu-lateral-comparativas">
+    <div class="menu-lateral-item" id="menu-lateral-comparativas" style="display:none;"><!-- v665: oculto a pedido (se conserva para no romper sus manejadores) -->
       <div class="icon-container green"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>
       <span>Comparativas de Ganancias</span>
     </div>
-    <div class="menu-lateral-item" id="menu-lateral-ranking">
+    <div class="menu-lateral-item" id="menu-lateral-ranking" style="display:none;"><!-- v665: oculto a pedido (se conserva para no romper sus manejadores) -->
       <div class="icon-container orange"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v6a5 5 0 0 1-10 0V4Z"></path><path d="M17 5h3a2 2 0 0 1 0 4h-1"></path><path d="M7 5H4a2 2 0 0 0 0 4h1"></path></svg></div>
       <span>Ranking de Clientes</span>
     </div>
@@ -9846,6 +9857,8 @@ html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credi
 
   <!-- Filtro por fecha (fecha de inicio del préstamo) — mismo patrón que ya usa Reportes -->
   <div class="tabs" id="tabs-prestamos-periodo" style="padding-top:0;">
+    <button type="button" class="tab-button" data-periodo="hoy">Hoy</button><!-- v666 -->
+    <button type="button" class="tab-button" data-periodo="ayer">Ayer</button><!-- v666 -->
     <button type="button" class="tab-button active" data-periodo="mes">Este mes</button>
     <button type="button" class="tab-button" data-periodo="mesAnterior">Mes anterior</button>
     <button type="button" class="tab-button" data-periodo="todo">Todo</button>
@@ -31274,6 +31287,7 @@ html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credi
   // visible en la tira).
   function contarClientesPaganHoyPorFecha(){
     const mapa = new Map();
+    montosPaganHoyPorFecha = new Map(); // v668
     prestamosGuardados.filter(p => p.estado === 'activo' && clienteEstaActivo(p.clienteId)).forEach(prestamo=>{
       (prestamo.plan || []).forEach(cuota=>{
         if(estaCuotaPagada(prestamo, cuota.numero)) return;
@@ -31283,9 +31297,18 @@ html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credi
         if(rutasFiltroActivas && !rutasFiltroActivas.has(cliente.ruta || '')) return;
         const clave = claveFechaLocal(new Date(cuota.fechaISO));
         mapa.set(clave, (mapa.get(clave) || 0) + 1);
+        // v668: también el valor real por cobrar de ese día (lo que falta de cada cuota)
+        montosPaganHoyPorFecha.set(clave, (montosPaganHoyPorFecha.get(clave) || 0) + pendienteDeCuota(prestamo, cuota));
       });
     });
     return mapa;
+  }
+  let montosPaganHoyPorFecha = new Map(); // v668
+  function montoCompactoPaganHoy(v){
+    v = Math.round(Number(v) || 0);
+    if(v >= 1000000){ const m = v / 1000000; return '$' + (m >= 10 ? Math.round(m) : m.toFixed(1).replace('.0', '').replace('.', ',')) + 'M'; }
+    if(v >= 1000) return '$' + Math.round(v / 1000) + 'K';
+    return '$' + v;
   }
 
   // NUEVO: día único seleccionado en el carrusel de "Pagan Hoy" (mismo
@@ -31333,6 +31356,7 @@ html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credi
         <span class="dia-mes">${MESES_ABREV_MIN[d.getMonth()]}</span>
         <span class="dia-numero">${d.getDate()}</span>
         <span class="dia-semana">${DIAS_ABREV_COBROS[d.getDay()]}</span>
+        <span class="dia-monto${cantidad > 0 ? '' : ' vacio'}">${cantidad > 0 ? montoCompactoPaganHoy(montosPaganHoyPorFecha.get(clave) || 0) : '—'}</span><!-- v668: valor real por cobrar ese día -->
         ${cantidad > 0 ? `<span class="dia-card-badge">${cantidad > 99 ? '99+' : cantidad}</span>` : ''}
       `;
       btn.addEventListener('click', ()=>{
