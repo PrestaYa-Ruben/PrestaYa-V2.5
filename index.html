@@ -8989,6 +8989,120 @@ html body #menu-cuota-pendiente-overlay .action-sheet-item .icon-container.red s
 html body #menu-cuota-pendiente-overlay .action-sheet-item span{ font-size:17.7px !important; font-weight:500 !important; color:#151A28 !important; letter-spacing:-.1px; }
 html body #menu-cuota-pendiente-overlay .action-sheet-cancelar .action-sheet-item{ min-height:53px; padding:0 18px !important; justify-content:center; }
 html body #menu-cuota-pendiente-overlay .action-sheet-cancelar .action-sheet-item span{ font-size:17px !important; font-weight:600 !important; color:#1E2C66 !important; }
+
+/* v670: cápsula selectora de mes en Medios de Pago y Ganancias (Inicio) */
+.mdp-cab-v670{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px; }
+.cg-cab-der-v670{ display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0; }
+.selector-mes-tarjeta button:disabled{ opacity:.35; cursor:default; }
+body.modo-oscuro .selector-mes-tarjeta span{ color:#A9C1FF !important; }
+@media (max-width:380px){ .selector-mes-tarjeta span{ min-width:72px !important; font-size:11.5px !important; } }
+
+/* v671: Resumen del período con cápsula de mes */
+#tarjeta-total-prestado-recaudado::before{ display:none !important; content:none !important; }
+.rp-cab-v671{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin:-4px 0 12px; }
+.rp-tit-v671{ display:flex; align-items:center; gap:6px; min-width:0; font-size:17px; font-weight:800; color:#1F2F68; letter-spacing:-0.2px; line-height:1.2; }
+html body #tarjeta-total-prestado-recaudado .rp-tit-v671 .info-tarjeta-btn{ position:static !important; top:auto !important; right:auto !important; flex-shrink:0; }
+
+/* v672: cápsula de mes plana con un leve relieve (reemplaza la placa de v671) */
+html body #screen-inicio .grafico-ganancias-selector-mes{
+  background:#EEF2F8 !important;
+  border:1px solid #DDE3EC !important;
+  box-shadow:0 1px 2px rgba(20,30,60,.08) !important;
+}
+html body #screen-inicio .grafico-ganancias-selector-mes button{
+  background:#FFFFFF !important;
+  box-shadow:0 1px 2px rgba(20,30,60,.10) !important;
+}
+html body.modo-oscuro #screen-inicio .grafico-ganancias-selector-mes{
+  background:#2A303C !important;
+  border:1px solid #3A4252 !important;
+  box-shadow:0 1px 2px rgba(0,0,0,.30) !important;
+}
+html body.modo-oscuro #screen-inicio .grafico-ganancias-selector-mes button{
+  background:#1E232D !important;
+  box-shadow:0 1px 2px rgba(0,0,0,.35) !important;
+}
+
+/* v673: cápsula de mes siempre del mismo tamaño */
+html body #screen-inicio .selector-mes-tarjeta span{ min-width:0 !important; width:66px; text-align:center; font-variant-numeric:tabular-nums; font-size:12.5px !important; }
+
+/* v674: cada cápsula de mes con el color de su tarjeta, un poco más intenso */
+html body #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes{ background:#D9E3F7 !important; border-color:#BFCDEC !important; }
+html body #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes span{ color:#1F2F68 !important; }
+html body #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes button svg{ stroke:#3B5BA9 !important; }
+html body #screen-inicio #tarjeta-comparativo-ganancias .grafico-ganancias-selector-mes{ background:#CFEAD6 !important; border-color:#ABD9B7 !important; }
+html body #screen-inicio #tarjeta-comparativo-ganancias .grafico-ganancias-selector-mes span{ color:#17663A !important; }
+html body #screen-inicio #tarjeta-comparativo-ganancias .grafico-ganancias-selector-mes button svg{ stroke:#2E8B57 !important; }
+html body #screen-inicio #tarjeta-medios-pago-inicio .grafico-ganancias-selector-mes{ background:#E0D7F6 !important; border-color:#C8B9EE !important; }
+html body #screen-inicio #tarjeta-medios-pago-inicio .grafico-ganancias-selector-mes span{ color:#4B2E9A !important; }
+html body #screen-inicio #tarjeta-medios-pago-inicio .grafico-ganancias-selector-mes button svg{ stroke:#6D4BC7 !important; }
+html body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes button{ background:#FFFFFF !important; box-shadow:0 1px 2px rgba(20,30,60,.10) !important; }
+html body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes{ box-shadow:0 1px 2px rgba(20,30,60,.08) !important; }
+html body.modo-oscuro #screen-inicio #tarjeta-comparativo-ganancias .grafico-ganancias-selector-mes{ background:rgba(46,139,87,.28) !important; border-color:rgba(46,139,87,.5) !important; }
+html body.modo-oscuro #screen-inicio #tarjeta-comparativo-ganancias .grafico-ganancias-selector-mes span{ color:#7FE0A6 !important; }
+html body.modo-oscuro #screen-inicio #tarjeta-comparativo-ganancias .grafico-ganancias-selector-mes button svg{ stroke:#7FE0A6 !important; }
+html body.modo-oscuro #screen-inicio #tarjeta-medios-pago-inicio .grafico-ganancias-selector-mes{ background:rgba(124,92,214,.30) !important; border-color:rgba(124,92,214,.55) !important; }
+html body.modo-oscuro #screen-inicio #tarjeta-medios-pago-inicio .grafico-ganancias-selector-mes span{ color:#C9B8FF !important; }
+html body.modo-oscuro #screen-inicio #tarjeta-medios-pago-inicio .grafico-ganancias-selector-mes button svg{ stroke:#C9B8FF !important; }
+
+/* v675: efecto de relieve (elevado) en los contadores de créditos */
+html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credito{
+  background:linear-gradient(180deg,#22A35A 0%,#14843F 55%,#0B6B33 100%) !important;
+  border:1px solid #0A5C2C !important;
+  box-shadow:0 2px 0 #074A24, 0 4px 9px rgba(11,107,51,.35), inset 0 1px 0 rgba(255,255,255,.35), inset 0 -1px 0 rgba(0,0,0,.15) !important;
+  text-shadow:0 1px 1px rgba(0,0,0,.30) !important;
+}
+html body #screen-clientes .client-row.client-row-cliente .client-row-badge{
+  background:linear-gradient(180deg,#FFD95C 0%,#F8BD21 55%,#E9A90E 100%) !important;
+  border:1px solid #D39A0A !important;
+  box-shadow:0 2px 0 #B98507, 0 3px 7px rgba(150,100,0,.35), inset 0 1px 0 rgba(255,255,255,.65) !important;
+  text-shadow:0 1px 0 rgba(255,255,255,.45);
+}
+
+/* v676: relieve muy sutil en los contadores de créditos (suaviza v675) */
+html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-num-credito{
+  background:linear-gradient(180deg,#178C47 0%,#0E7339 100%) !important;
+  border:1px solid #0C6532 !important;
+  box-shadow:0 1px 0 #0A5A2C, 0 1px 3px rgba(11,107,51,.20), inset 0 1px 0 rgba(255,255,255,.15) !important;
+  text-shadow:none !important;
+}
+html body #screen-clientes .client-row.client-row-cliente .client-row-badge{
+  background:linear-gradient(180deg,#FBC838 0%,#F5B81C 100%) !important;
+  border:1px solid #DDA510 !important;
+  box-shadow:0 1px 0 #CC9608, 0 1px 3px rgba(150,100,0,.18), inset 0 1px 0 rgba(255,255,255,.35) !important;
+  text-shadow:none;
+}
+
+/* v677: cápsulas de filtro de Inicio con relieve de lámina delgada */
+html body #screen-inicio #tabs-rango-fechas, html body #screen-inicio #chips-rutas-inicio{ padding-bottom:6px !important; }
+html body #screen-inicio #tabs-rango-fechas .tab-button, html body #screen-inicio #chips-rutas-inicio .tab-button{
+  background:linear-gradient(180deg,#FFFFFF 0%,#F7F9FC 100%) !important;
+  border:1px solid #D6DDE8 !important;
+  box-shadow:0 1.5px 0 #C9D1DE, 0 2px 4px rgba(20,30,60,.07), inset 0 1px 0 #FFFFFF !important;
+}
+html body #screen-inicio #tabs-rango-fechas .tab-button.active, html body #screen-inicio #chips-rutas-inicio .tab-button.active{
+  background:linear-gradient(180deg,#2A3A7C 0%,#1F2F68 100%) !important;
+  border:1px solid #1A285A !important;
+  box-shadow:0 1.5px 0 #121C45, 0 2px 5px rgba(20,30,80,.22), inset 0 1px 0 rgba(255,255,255,.14) !important;
+}
+html body.modo-oscuro #screen-inicio #tabs-rango-fechas .tab-button:not(.active), html body.modo-oscuro #screen-inicio #chips-rutas-inicio .tab-button:not(.active){
+  background:linear-gradient(180deg,#262C38 0%,#20252F 100%) !important;
+  border:1px solid #363E4D !important;
+  box-shadow:0 1.5px 0 #12161E, 0 2px 4px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+
+/* v678: relieve de lámina delgada en TODAS las cápsulas de filtro del sistema
+   (conserva el color propio de cada cápsula; solo agrega canto fino, brillo y sombra suave) */
+html body .tabs .tab-button, html body .cg-chips .cg-chip{
+  box-shadow:0 1.5px 0 rgba(20,30,60,.16), 0 2px 4px rgba(20,30,60,.07), inset 0 1px 0 rgba(255,255,255,.75) !important;
+}
+html body .tabs .tab-button.active, html body .cg-chips .cg-chip.active{
+  box-shadow:0 1.5px 0 rgba(0,0,0,.28), 0 2px 5px rgba(20,30,80,.20), inset 0 1px 0 rgba(255,255,255,.16) !important;
+}
+html body.modo-oscuro .tabs .tab-button:not(.active), html body.modo-oscuro .cg-chips .cg-chip:not(.active){
+  box-shadow:0 1.5px 0 rgba(0,0,0,.55), 0 2px 4px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+.cg-chips{ padding-bottom:3px; }
 </style>
 
 </head>
@@ -9283,9 +9397,9 @@ html body #menu-cuota-pendiente-overlay .action-sheet-cancelar .action-sheet-ite
   <!-- NUEVO (a pedido, v506b): título de sección entre las 4 tarjetas y "Resumen del período" -->
   <div class="section-title titulo-estadisticas-inicio">Estadísticas</div>
   <div class="card" id="tarjeta-total-prestado-recaudado" style="padding:20px 18px; margin:0 14px; position:relative;">
-    <button type="button" class="info-tarjeta-btn" data-info-titulo="Total Prestado y Recaudado" data-info-texto="Total Prestado: la suma de los créditos nuevos otorgados en el período seleccionado (tocá el monto para ver a quién se le prestó). Total Recaudado: la suma de todos los abonos cobrados (efectivo + transferencia) en ese mismo período. Balance: Total Recaudado menos Total Prestado — en verde si recaudaste más de lo que prestaste en el período, en rojo si prestaste más de lo que recaudaste.">
+    <div class="rp-cab-v671"><div class="rp-tit-v671"><span>Resumen del período</span><button type="button" class="info-tarjeta-btn" data-info-titulo="Total Prestado y Recaudado" data-info-texto="Total Prestado: la suma de los créditos nuevos otorgados en el período seleccionado (tocá el monto para ver a quién se le prestó). Total Recaudado: la suma de todos los abonos cobrados (efectivo + transferencia) en ese mismo período. Balance: Total Recaudado menos Total Prestado — en verde si recaudaste más de lo que prestaste en el período, en rojo si prestaste más de lo que recaudaste.">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-    </button>
+    </button></div><div class="grafico-ganancias-selector-mes selector-mes-tarjeta"><button type="button" id="btn-rp-mes-anterior" aria-label="Mes anterior"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button><span id="rp-mes-actual">—</span><button type="button" id="btn-rp-mes-siguiente" aria-label="Mes siguiente"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button></div></div><!-- v671 -->
     <div class="loan-detail-grid" style="grid-template-columns:1fr 1fr;">
       <div class="loan-detail-item" id="item-total-prestado-periodo" role="button" aria-label="Ver a quién se le prestó en este período" style="cursor:pointer;">
         <div class="loan-detail-label">Total Prestado</div>
@@ -9323,23 +9437,25 @@ html body #menu-cuota-pendiente-overlay .action-sheet-cancelar .action-sheet-ite
         </div>
         <div>
           <div class="section-title" style="margin:0;">Ganancias</div>
-          <div class="comparativo-ganancias-subtitulo">Este mes vs. mes pasado</div>
+          <div class="comparativo-ganancias-subtitulo" id="comparativo-ganancias-subtitulo">Este mes vs. mes pasado</div>
         </div>
       </div>
+      <div class="cg-cab-der-v670"><div class="grafico-ganancias-selector-mes selector-mes-tarjeta"><button type="button" id="btn-cgm-mes-anterior" aria-label="Mes anterior"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button><span id="cgm-mes-actual">—</span><button type="button" id="btn-cgm-mes-siguiente" aria-label="Mes siguiente"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button></div><!-- v670: selector de mes -->
       <div class="comparativo-ganancias-badge" id="comparativo-ganancias-badge">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="comparativo-ganancias-badge-flecha"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
         <span id="comparativo-ganancias-badge-texto">0,00%</span>
+      </div>
       </div>
     </div>
 
     <div class="comparativo-ganancias-columnas">
       <div class="comparativo-ganancias-col">
-        <div class="comparativo-ganancias-col-label">Este mes</div>
+        <div class="comparativo-ganancias-col-label" id="comparativo-ganancias-label-a">Este mes</div>
         <div class="comparativo-ganancias-col-valor" id="comparativo-ganancias-este-mes">$0</div>
         <div class="comparativo-ganancias-barra-track"><div class="comparativo-ganancias-barra-fill verde" id="comparativo-ganancias-barra-este" style="width:0%;"></div></div>
       </div>
       <div class="comparativo-ganancias-col">
-        <div class="comparativo-ganancias-col-label">Mes pasado</div>
+        <div class="comparativo-ganancias-col-label" id="comparativo-ganancias-label-b">Mes pasado</div>
         <div class="comparativo-ganancias-col-valor" id="comparativo-ganancias-mes-pasado">$0</div>
         <div class="comparativo-ganancias-barra-track"><div class="comparativo-ganancias-barra-fill azul" id="comparativo-ganancias-barra-pasado" style="width:0%;"></div></div>
       </div>
@@ -9362,7 +9478,7 @@ html body #menu-cuota-pendiente-overlay .action-sheet-cancelar .action-sheet-ite
        clases propias "mdp-*" y paddings reducidos para que quede lo más
        compacta posible. -->
   <div class="card" id="tarjeta-medios-pago-inicio" style="padding:14px 16px; margin:9px 14px 0;">
-    <div class="section-title" style="margin-bottom:6px;">Medios de Pago</div>
+    <div class="mdp-cab-v670"><div class="section-title" style="margin:0;">Medios de Pago</div><div class="grafico-ganancias-selector-mes selector-mes-tarjeta"><button type="button" id="btn-mdp-mes-anterior" aria-label="Mes anterior"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button><span id="mdp-mes-actual">—</span><button type="button" id="btn-mdp-mes-siguiente" aria-label="Mes siguiente"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button></div></div><!-- v670: selector de mes -->
     <div class="mdp-fila">
       <div class="mdp-icono verde">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="3"></circle></svg>
@@ -9393,7 +9509,7 @@ html body #menu-cuota-pendiente-overlay .action-sheet-cancelar .action-sheet-ite
        cobrada) y respeta el mismo filtro de ruta activo en Inicio. Sin
        librerías externas.
        ========================================================== -->
-  <div class="card" id="tarjeta-grafico-ganancias" style="padding:16px 16px 16px;">
+  <div class="card" id="tarjeta-grafico-ganancias" style="padding:16px 16px 16px; display:none;"><!-- v670: oculta a pedido -->
     <div class="grafico-ganancias-header">
       <div style="display:flex; align-items:flex-start; gap:10px; min-width:0;">
         <div class="ggm-icono">
@@ -24023,16 +24139,36 @@ html body #menu-cuota-pendiente-overlay .action-sheet-cancelar .action-sheet-ite
     window.scrollTo(0, 0);
   });
 
+  // v673: texto corto y de ancho fijo para la cápsula de mes ("oct 2026")
+  function mesCortoCapsula(d){ return ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][d.getMonth()] + ' ' + d.getFullYear(); }
+  var cgmOffsetMes = 0; // v670 (var: puede usarse antes de esta línea)
+  document.getElementById('btn-cgm-mes-anterior').addEventListener('click', (e)=>{ e.stopPropagation(); cgmOffsetMes -= 1; renderizarComparativoGananciasMensual(); });
+  document.getElementById('btn-cgm-mes-siguiente').addEventListener('click', (e)=>{ e.stopPropagation(); if(cgmOffsetMes < 0){ cgmOffsetMes += 1; renderizarComparativoGananciasMensual(); } });
   function renderizarComparativoGananciasMensual(){
     const elEsteMes = document.getElementById('comparativo-ganancias-este-mes');
     if(!elEsteMes) return; // pantalla todavía no montada
 
+    // v670: mes elegido en la cápsula (0 = mes actual, -1 = anterior…) vs. el mes anterior a ese
     const ahora = new Date();
-    const inicioEsteMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1, 0, 0, 0, 0).getTime();
-    const inicioMesPasado = new Date(ahora.getFullYear(), ahora.getMonth() - 1, 1, 0, 0, 0, 0).getTime();
-    const finMesPasado = new Date(ahora.getFullYear(), ahora.getMonth(), 0, 23, 59, 59, 999).getTime(); // día 0 del mes actual = último día del mes anterior
+    const MESES_V670 = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const off = cgmOffsetMes || 0;
+    const baseMes = new Date(ahora.getFullYear(), ahora.getMonth() + off, 1);
+    const inicioEsteMes = baseMes.getTime();
+    const finEsteMes = off === 0 ? ahora.getTime() : new Date(baseMes.getFullYear(), baseMes.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
+    const inicioMesPasado = new Date(baseMes.getFullYear(), baseMes.getMonth() - 1, 1, 0, 0, 0, 0).getTime();
+    const finMesPasado = new Date(baseMes.getFullYear(), baseMes.getMonth(), 0, 23, 59, 59, 999).getTime();
+    const mesPrev = new Date(baseMes.getFullYear(), baseMes.getMonth() - 1, 1);
+    const elMesCgm = document.getElementById('cgm-mes-actual');
+    if(elMesCgm) elMesCgm.textContent = mesCortoCapsula(baseMes); // v673
+    const btnSigCgm = document.getElementById('btn-cgm-mes-siguiente');
+    if(btnSigCgm) btnSigCgm.disabled = off >= 0;
+    const etA = off === 0 ? 'Este mes' : MESES_V670[baseMes.getMonth()];
+    const etB = off === 0 ? 'Mes pasado' : MESES_V670[mesPrev.getMonth()];
+    const elLa = document.getElementById('comparativo-ganancias-label-a'); if(elLa) elLa.textContent = etA;
+    const elLb = document.getElementById('comparativo-ganancias-label-b'); if(elLb) elLb.textContent = etB;
+    const elSub = document.getElementById('comparativo-ganancias-subtitulo'); if(elSub) elSub.textContent = off === 0 ? 'Este mes vs. mes pasado' : (MESES_V670[baseMes.getMonth()] + ' vs. ' + MESES_V670[mesPrev.getMonth()]);
 
-    const esteMes = gananciasEnRangoFechas(inicioEsteMes, ahora.getTime());
+    const esteMes = gananciasEnRangoFechas(inicioEsteMes, finEsteMes);
     const mesPasado = gananciasEnRangoFechas(inicioMesPasado, finMesPasado);
     const diferencia = esteMes - mesPasado;
 
@@ -24062,7 +24198,7 @@ html body #menu-cuota-pendiente-overlay .action-sheet-cancelar .action-sheet-ite
       // mes pasado no tiene datos con los que comparar.
       clase = 'neutra';
       textoPct = 'Sin comparación';
-      textoResumen = esteMes > 0 ? 'No hay datos del mes pasado para comparar' : 'Todavía no hay ganancias registradas';
+      textoResumen = esteMes > 0 ? (off === 0 ? 'No hay datos del mes pasado para comparar' : ('No hay datos de ' + MESES_V670[mesPrev.getMonth()] + ' para comparar')) : 'Todavía no hay ganancias registradas';
       flechaSvg = FLECHA_ARRIBA;
     }else{
       const pct = (diferencia / mesPasado) * 100;
@@ -24075,12 +24211,12 @@ html body #menu-cuota-pendiente-overlay .action-sheet-cancelar .action-sheet-ite
       }else if(pct > 0){
         clase = 'positiva';
         textoPct = '+' + pctRedondeado.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + '%';
-        textoResumen = 'Mayor ganancia que el mes pasado';
+        textoResumen = off === 0 ? 'Mayor ganancia que el mes pasado' : ('Mayor ganancia que ' + MESES_V670[mesPrev.getMonth()]);
         flechaSvg = FLECHA_ARRIBA;
       }else{
         clase = 'negativa';
         textoPct = pctRedondeado.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + '%';
-        textoResumen = 'Menor ganancia que el mes pasado';
+        textoResumen = off === 0 ? 'Menor ganancia que el mes pasado' : ('Menor ganancia que ' + MESES_V670[mesPrev.getMonth()]);
         flechaSvg = FLECHA_ABAJO;
       }
     }
@@ -24131,15 +24267,32 @@ html body #menu-cuota-pendiente-overlay .action-sheet-cancelar .action-sheet-ite
   // ==========================================================
   // NUEVO: préstamos otorgados dentro del período/ruta seleccionados —
   // reutilizada tanto para el total como para el modal de "Total Prestado".
+  // v671: "Resumen del período" usa el mes elegido en su cápsula
+  var rpOffsetMes = 0;
+  function rangoMesResumenPeriodo(){
+    const ahora = new Date();
+    const base = new Date(ahora.getFullYear(), ahora.getMonth() + (rpOffsetMes || 0), 1);
+    return { ini: base.getTime(), fin: new Date(base.getFullYear(), base.getMonth() + 1, 0, 23, 59, 59, 999).getTime(), base };
+  }
+  function textoMesResumenPeriodo(){
+    const M = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const b = rangoMesResumenPeriodo().base;
+    return M[b.getMonth()] + ' ' + b.getFullYear();
+  }
   function prestamosOtorgadosPeriodo(){
+    const rRp = rangoMesResumenPeriodo();
     return prestamosGuardados.filter(prestamo=>{
-      if(!fechaEnRangoSeleccionado(prestamo.fecha + 'T00:00:00')) return false;
+      const tRp = new Date(prestamo.fecha + 'T00:00:00').getTime();
+      if(!(tRp >= rRp.ini && tRp <= rRp.fin)) return false;
       const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId);
       if(rutasFiltroActivas && !(cliente && rutasFiltroActivas.has(cliente.ruta || ''))) return false;
       return true;
     }).map(prestamo => ({ prestamo, cliente: clientesGuardados.find(c => c.id === prestamo.clienteId) }));
   }
 
+  var mdpOffsetMes = 0; // v670 (var: puede usarse antes de esta línea)
+  document.getElementById('btn-mdp-mes-anterior').addEventListener('click', (e)=>{ e.stopPropagation(); mdpOffsetMes -= 1; actualizarMediosPagoDashboard(); });
+  document.getElementById('btn-mdp-mes-siguiente').addEventListener('click', (e)=>{ e.stopPropagation(); if(mdpOffsetMes < 0){ mdpOffsetMes += 1; actualizarMediosPagoDashboard(); } });
   function actualizarMediosPagoDashboard(){
     const elTransferencia = document.getElementById('dashboard-medio-transferencia');
     const elEfectivo = document.getElementById('dashboard-medio-efectivo');
@@ -24150,22 +24303,45 @@ html body #menu-cuota-pendiente-overlay .action-sheet-cancelar .action-sheet-ite
     if(!elTransferencia || !elEfectivo || !elTotal) return;
 
     let efectivo = 0, transferencia = 0;
+    // v670: Medios de Pago usa el mes elegido en su cápsula; Total Recaudado sigue el período del dashboard
+    const ahoraMdp = new Date();
+    const baseMdp = new Date(ahoraMdp.getFullYear(), ahoraMdp.getMonth() + (mdpOffsetMes || 0), 1);
+    const iniMdp = baseMdp.getTime();
+    const finMdp = new Date(baseMdp.getFullYear(), baseMdp.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
+    const MESES_MDP = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const elMesMdp = document.getElementById('mdp-mes-actual');
+    if(elMesMdp) elMesMdp.textContent = mesCortoCapsula(baseMdp); // v673
+    const btnSigMdp = document.getElementById('btn-mdp-mes-siguiente');
+    if(btnSigMdp) btnSigMdp.disabled = (mdpOffsetMes || 0) >= 0;
+    let efMes = 0, trMes = 0;
     prestamosGuardados.forEach(prestamo=>{
-      pagosDe(prestamo)
-        .filter(p => fechaEnRangoSeleccionado(p.fecha))
-        .forEach(pago=>{
-          const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId);
-          if(rutasFiltroActivas && !(cliente && rutasFiltroActivas.has(cliente.ruta || ''))) return;
-          if(pago.metodoPago === 'efectivo') efectivo += (pago.monto || 0);
-          else transferencia += (pago.monto || 0); // transferencia + cualquier método antiguo ya retirado
-        });
+      const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId);
+      if(rutasFiltroActivas && !(cliente && rutasFiltroActivas.has(cliente.ruta || ''))) return;
+      pagosDe(prestamo).forEach(pago=>{
+        const enPeriodo = fechaEnRangoSeleccionado(pago.fecha);
+        const t = new Date(pago.fecha).getTime();
+        const enMes = t >= iniMdp && t <= finMdp;
+        if(pago.metodoPago === 'efectivo'){ if(enPeriodo) efectivo += (pago.monto || 0); if(enMes) efMes += (pago.monto || 0); }
+        else { if(enPeriodo) transferencia += (pago.monto || 0); if(enMes) trMes += (pago.monto || 0); } // transferencia + cualquier método antiguo ya retirado
+      });
     });
 
-    animarValorPesos(elTransferencia, transferencia);
-    animarValorPesos(elEfectivo, efectivo);
-    animarValorPesos(elTotal, efectivo + transferencia);
+    animarValorPesos(elTransferencia, trMes);
+    animarValorPesos(elEfectivo, efMes);
+    animarValorPesos(elTotal, efMes + trMes);
 
-    const totalRecaudado = efectivo + transferencia;
+    // v671: Total Recaudado del mes elegido en "Resumen del período"
+    const rRp2 = rangoMesResumenPeriodo();
+    let totalRecaudado = 0;
+    prestamosGuardados.forEach(prestamo=>{
+      const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId);
+      if(rutasFiltroActivas && !(cliente && rutasFiltroActivas.has(cliente.ruta || ''))) return;
+      pagosDe(prestamo).forEach(pago=>{ const t = new Date(pago.fecha).getTime(); if(t >= rRp2.ini && t <= rRp2.fin) totalRecaudado += (pago.monto || 0); });
+    });
+    const elMesRp = document.getElementById('rp-mes-actual');
+    if(elMesRp) elMesRp.textContent = mesCortoCapsula(rangoMesResumenPeriodo().base); // v673
+    const btnSigRp = document.getElementById('btn-rp-mes-siguiente');
+    if(btnSigRp) btnSigRp.disabled = (rpOffsetMes || 0) >= 0;
     if(elTotalRecaudado) animarValorPesos(elTotalRecaudado, totalRecaudado);
 
     const totalPrestado = prestamosOtorgadosPeriodo().reduce((s, item) => s + (item.prestamo.valor || 0), 0);
@@ -24182,6 +24358,8 @@ html body #menu-cuota-pendiente-overlay .action-sheet-cancelar .action-sheet-ite
     }
   }
 
+  document.getElementById('btn-rp-mes-anterior').addEventListener('click', (e)=>{ e.stopPropagation(); rpOffsetMes -= 1; actualizarMediosPagoDashboard(); });
+  document.getElementById('btn-rp-mes-siguiente').addEventListener('click', (e)=>{ e.stopPropagation(); if(rpOffsetMes < 0){ rpOffsetMes += 1; actualizarMediosPagoDashboard(); } });
   // ---------- NUEVO: Modal "Total Prestado" (se abre al tocar el bloque) ----------
   const totalPrestadoHoyOverlay = document.getElementById('total-prestado-hoy-overlay');
   const totalPrestadoHoyCard = document.getElementById('total-prestado-hoy-card');
@@ -24191,7 +24369,7 @@ html body #menu-cuota-pendiente-overlay .action-sheet-cancelar .action-sheet-ite
     const items = prestamosOtorgadosPeriodo();
     totalPrestadoHoyLista.innerHTML = '';
     const tituloEl = totalPrestadoHoyCard.querySelector('.confirm-modal-title');
-    if(tituloEl) tituloEl.textContent = 'Total Prestado — ' + textoPeriodoDashboard();
+    if(tituloEl) tituloEl.textContent = 'Total Prestado — ' + textoMesResumenPeriodo(); // v671
 
     if(items.length === 0){
       totalPrestadoHoyLista.innerHTML = '<div class="mora-hoy-vacio">No se otorgaron créditos nuevos en este período.</div>';
