@@ -9103,6 +9103,63 @@ html body.modo-oscuro .tabs .tab-button:not(.active), html body.modo-oscuro .cg-
   box-shadow:0 1.5px 0 rgba(0,0,0,.55), 0 2px 4px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.06) !important;
 }
 .cg-chips{ padding-bottom:3px; }
+
+/* v679: relieve de lámina delgada en los 6 botones del préstamo y en las tarjetas de cuotas */
+html body #screen-detalle-prestamo .fila-acciones-prestamo .btn-accion-prestamo,
+html body #acciones-prestamo-en-menu .btn-accion-prestamo{
+  box-shadow:0 1.5px 0 rgba(20,30,60,.20), 0 2px 5px rgba(20,30,60,.08), inset 0 1px 0 rgba(255,255,255,.35) !important;
+}
+html body #screen-detalle-prestamo .fila-acciones-prestamo .btn-accion-prestamo:active{ transform:translateY(1px); box-shadow:0 0.5px 0 rgba(20,30,60,.20), inset 0 1px 0 rgba(255,255,255,.25) !important; }
+html body #screen-detalle-prestamo #cuotas-lista .cuota-item,
+html body #screen-detalle-prestamo #pendientes-lista .cuota-item,
+html body #screen-detalle-prestamo #pagos-lista .pago-item{
+  box-shadow:0 1.5px 0 rgba(20,30,60,.13), 0 2px 5px rgba(20,30,60,.06), inset 0 1px 0 rgba(255,255,255,.7) !important;
+}
+html body.modo-oscuro #screen-detalle-prestamo #cuotas-lista .cuota-item,
+html body.modo-oscuro #screen-detalle-prestamo #pendientes-lista .cuota-item,
+html body.modo-oscuro #screen-detalle-prestamo #pagos-lista .pago-item,
+html body.modo-oscuro #screen-detalle-prestamo .fila-acciones-prestamo .btn-accion-prestamo{
+  box-shadow:0 1.5px 0 rgba(0,0,0,.55), 0 2px 5px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+/* v680: relieve de lámina delgada en las tarjetas de clientes y en las tarjetas del crédito */
+html body #screen-clientes .card.client-row{
+  box-shadow:0 1.5px 0 rgba(20,30,60,.14), 0 2px 6px rgba(20,30,60,.07), inset 0 1px 0 rgba(255,255,255,.7) !important;
+}
+html body #screen-detalle-cliente .card.loan-card-full,
+html body #screen-detalle-cliente .card.loan-card-full.ltd,
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna{
+  box-shadow:0 1.5px 0 rgba(20,30,60,.16), 0 3px 8px rgba(20,30,60,.08), inset 0 1px 0 rgba(255,255,255,.6) !important;
+}
+html body.modo-oscuro #screen-clientes .card.client-row,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-moderna{
+  box-shadow:0 1.5px 0 rgba(0,0,0,.55), 0 3px 8px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+/* v681: mismo espacio arriba y abajo que a los lados entre las cuotas y el tapete */
+html body #screen-detalle-prestamo .cuotas-pagos-card{ padding-top:8px !important; padding-bottom:24px !important; } /* v683: un poco de espacio arriba, más abajo */
+
+/* v684: valores más grandes en Ganancias y Medios de Pago (Inicio) */
+html body #tarjeta-comparativo-ganancias .comparativo-ganancias-col-valor{ font-size:clamp(18px, 5.4vw, 22px) !important; letter-spacing:-0.5px; }
+html body #tarjeta-comparativo-ganancias .comparativo-ganancias-resumen-cifras{ font-size:clamp(16px, 4.6vw, 18px) !important; }
+html body #tarjeta-comparativo-ganancias .comparativo-ganancias-resumen-cifras svg{ width:17px; height:17px; }
+html body #tarjeta-medios-pago-inicio .mdp-valor{ font-size:clamp(17px, 4.9vw, 20px) !important; letter-spacing:-0.3px; }
+html body #tarjeta-medios-pago-inicio .mdp-total span:last-child{ font-size:clamp(17px, 4.9vw, 20px) !important; letter-spacing:-0.3px; }
+
+/* v685: tarjetas de clientes y del crédito — sin sombra ni canto; solo efecto de lámina, más sólida
+   (id doble para ganarle a las reglas de "ficha de dominó" de v531/v533) */
+#screen-clientes#screen-clientes .card.client-row,
+#screen-clientes#screen-clientes .card.client-row:active,
+#screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full{
+  box-shadow:0 0 0 1px rgba(20,30,60,.10), inset 0 1.5px 0 rgba(255,255,255,.9), inset 0 -1.5px 0 rgba(20,30,60,.07) !important;
+}
+#screen-clientes#screen-clientes .card.client-row:active{ transform:none !important; }
+body.modo-oscuro #screen-clientes#screen-clientes .card.client-row,
+body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full{
+  box-shadow:0 0 0 1px rgba(255,255,255,.06), inset 0 1.5px 0 rgba(255,255,255,.10), inset 0 -1.5px 0 rgba(0,0,0,.25) !important;
+}
 </style>
 
 </head>
