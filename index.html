@@ -9162,6 +9162,10 @@ body.modo-oscuro #screen-clientes#screen-clientes .card.client-row,
 body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full{
   box-shadow:0 1.5px 0 rgba(0,0,0,.55), 0 2px 5px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.08) !important;
 }
+
+/* v687: el texto de la cápsula se toca para cambiar entre Mes y Día */
+html body #screen-inicio .selector-mes-tarjeta span{ cursor:pointer; -webkit-tap-highlight-color:transparent; border-radius:8px; transition:background .15s ease; }
+html body #screen-inicio .selector-mes-tarjeta span:active{ background:rgba(255,255,255,.55); }
 </style>
 
 </head>
@@ -24200,7 +24204,26 @@ body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-
 
   // v673: texto corto y de ancho fijo para la cápsula de mes ("oct 2026")
   function mesCortoCapsula(d){ return ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][d.getMonth()] + ' ' + d.getFullYear(); }
+  // v687: cada cápsula tiene modo 'mes' o 'dia' (se cambia tocando el texto de la cápsula)
+  function diaCortoCapsula(d){ return d.getDate() + ' ' + ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][d.getMonth()]; }
+  function textoCapsula(modo, d){ return modo === 'dia' ? diaCortoCapsula(d) : mesCortoCapsula(d); }
+  function rangoCapsula(modo, off){
+    const ahora = new Date();
+    off = off || 0;
+    if(modo === 'dia'){
+      const base = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate() + off);
+      const prev = new Date(base.getFullYear(), base.getMonth(), base.getDate() - 1);
+      return { base, ini: base.getTime(), fin: new Date(base.getFullYear(), base.getMonth(), base.getDate(), 23, 59, 59, 999).getTime(),
+               prev, prevIni: prev.getTime(), prevFin: new Date(prev.getFullYear(), prev.getMonth(), prev.getDate(), 23, 59, 59, 999).getTime() };
+    }
+    const base = new Date(ahora.getFullYear(), ahora.getMonth() + off, 1);
+    const prev = new Date(base.getFullYear(), base.getMonth() - 1, 1);
+    return { base, ini: base.getTime(), fin: new Date(base.getFullYear(), base.getMonth() + 1, 0, 23, 59, 59, 999).getTime(),
+             prev, prevIni: prev.getTime(), prevFin: new Date(base.getFullYear(), base.getMonth(), 0, 23, 59, 59, 999).getTime() };
+  }
+  var cgmModo = 'mes', rpModo = 'mes', mdpModo = 'mes'; // v687
   var cgmOffsetMes = 0; // v670 (var: puede usarse antes de esta línea)
+  document.getElementById('cgm-mes-actual').addEventListener('click', (e)=>{ e.stopPropagation(); cgmModo = cgmModo === 'mes' ? 'dia' : 'mes'; cgmOffsetMes = 0; renderizarComparativoGananciasMensual(); });
   document.getElementById('btn-cgm-mes-anterior').addEventListener('click', (e)=>{ e.stopPropagation(); cgmOffsetMes -= 1; renderizarComparativoGananciasMensual(); });
   document.getElementById('btn-cgm-mes-siguiente').addEventListener('click', (e)=>{ e.stopPropagation(); if(cgmOffsetMes < 0){ cgmOffsetMes += 1; renderizarComparativoGananciasMensual(); } });
   function renderizarComparativoGananciasMensual(){
@@ -24211,21 +24234,26 @@ body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-
     const ahora = new Date();
     const MESES_V670 = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
     const off = cgmOffsetMes || 0;
-    const baseMes = new Date(ahora.getFullYear(), ahora.getMonth() + off, 1);
-    const inicioEsteMes = baseMes.getTime();
-    const finEsteMes = off === 0 ? ahora.getTime() : new Date(baseMes.getFullYear(), baseMes.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
-    const inicioMesPasado = new Date(baseMes.getFullYear(), baseMes.getMonth() - 1, 1, 0, 0, 0, 0).getTime();
-    const finMesPasado = new Date(baseMes.getFullYear(), baseMes.getMonth(), 0, 23, 59, 59, 999).getTime();
-    const mesPrev = new Date(baseMes.getFullYear(), baseMes.getMonth() - 1, 1);
+    const esDia = cgmModo === 'dia'; // v687
+    const rCg = rangoCapsula(cgmModo, off);
+    const baseMes = rCg.base;
+    const inicioEsteMes = rCg.ini;
+    const finEsteMes = off === 0 ? ahora.getTime() : rCg.fin;
+    const inicioMesPasado = rCg.prevIni;
+    const finMesPasado = rCg.prevFin;
+    const mesPrev = rCg.prev;
     const elMesCgm = document.getElementById('cgm-mes-actual');
-    if(elMesCgm) elMesCgm.textContent = mesCortoCapsula(baseMes); // v673
+    if(elMesCgm) elMesCgm.textContent = textoCapsula(cgmModo, baseMes); // v687
     const btnSigCgm = document.getElementById('btn-cgm-mes-siguiente');
     if(btnSigCgm) btnSigCgm.disabled = off >= 0;
-    const etA = off === 0 ? 'Este mes' : MESES_V670[baseMes.getMonth()];
-    const etB = off === 0 ? 'Mes pasado' : MESES_V670[mesPrev.getMonth()];
+    const nomA = esDia ? diaCortoCapsula(baseMes) : MESES_V670[baseMes.getMonth()];
+    const nomB = esDia ? diaCortoCapsula(mesPrev) : MESES_V670[mesPrev.getMonth()];
+    const etA = off === 0 ? (esDia ? 'Hoy' : 'Este mes') : nomA;
+    const etB = off === 0 ? (esDia ? 'Ayer' : 'Mes pasado') : nomB;
+    const refB = off === 0 ? (esDia ? 'ayer' : 'el mes pasado') : (esDia ? 'el ' + nomB : nomB); // para las frases de abajo
     const elLa = document.getElementById('comparativo-ganancias-label-a'); if(elLa) elLa.textContent = etA;
     const elLb = document.getElementById('comparativo-ganancias-label-b'); if(elLb) elLb.textContent = etB;
-    const elSub = document.getElementById('comparativo-ganancias-subtitulo'); if(elSub) elSub.textContent = off === 0 ? 'Este mes vs. mes pasado' : (MESES_V670[baseMes.getMonth()] + ' vs. ' + MESES_V670[mesPrev.getMonth()]);
+    const elSub = document.getElementById('comparativo-ganancias-subtitulo'); if(elSub) elSub.textContent = off === 0 ? (esDia ? 'Hoy vs. ayer' : 'Este mes vs. mes pasado') : (nomA + ' vs. ' + nomB);
 
     const esteMes = gananciasEnRangoFechas(inicioEsteMes, finEsteMes);
     const mesPasado = gananciasEnRangoFechas(inicioMesPasado, finMesPasado);
@@ -24257,7 +24285,7 @@ body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-
       // mes pasado no tiene datos con los que comparar.
       clase = 'neutra';
       textoPct = 'Sin comparación';
-      textoResumen = esteMes > 0 ? (off === 0 ? 'No hay datos del mes pasado para comparar' : ('No hay datos de ' + MESES_V670[mesPrev.getMonth()] + ' para comparar')) : 'Todavía no hay ganancias registradas';
+      textoResumen = esteMes > 0 ? ('No hay datos ' + (off === 0 ? (esDia ? 'de ayer' : 'del mes pasado') : (esDia ? 'del ' + nomB : 'de ' + nomB)) + ' para comparar') : (esDia ? 'No hay ganancias registradas este día' : 'Todavía no hay ganancias registradas');
       flechaSvg = FLECHA_ARRIBA;
     }else{
       const pct = (diferencia / mesPasado) * 100;
@@ -24270,12 +24298,12 @@ body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-
       }else if(pct > 0){
         clase = 'positiva';
         textoPct = '+' + pctRedondeado.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + '%';
-        textoResumen = off === 0 ? 'Mayor ganancia que el mes pasado' : ('Mayor ganancia que ' + MESES_V670[mesPrev.getMonth()]);
+        textoResumen = 'Mayor ganancia que ' + refB;
         flechaSvg = FLECHA_ARRIBA;
       }else{
         clase = 'negativa';
         textoPct = pctRedondeado.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + '%';
-        textoResumen = off === 0 ? 'Menor ganancia que el mes pasado' : ('Menor ganancia que ' + MESES_V670[mesPrev.getMonth()]);
+        textoResumen = 'Menor ganancia que ' + refB;
         flechaSvg = FLECHA_ABAJO;
       }
     }
@@ -24329,14 +24357,12 @@ body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-
   // v671: "Resumen del período" usa el mes elegido en su cápsula
   var rpOffsetMes = 0;
   function rangoMesResumenPeriodo(){
-    const ahora = new Date();
-    const base = new Date(ahora.getFullYear(), ahora.getMonth() + (rpOffsetMes || 0), 1);
-    return { ini: base.getTime(), fin: new Date(base.getFullYear(), base.getMonth() + 1, 0, 23, 59, 59, 999).getTime(), base };
+    return rangoCapsula(rpModo, rpOffsetMes); // v687: mes o día
   }
   function textoMesResumenPeriodo(){
     const M = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
     const b = rangoMesResumenPeriodo().base;
-    return M[b.getMonth()] + ' ' + b.getFullYear();
+    return (rpModo === 'dia' ? b.getDate() + ' ' : '') + M[b.getMonth()] + ' ' + b.getFullYear();
   }
   function prestamosOtorgadosPeriodo(){
     const rRp = rangoMesResumenPeriodo();
@@ -24350,6 +24376,7 @@ body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-
   }
 
   var mdpOffsetMes = 0; // v670 (var: puede usarse antes de esta línea)
+  document.getElementById('mdp-mes-actual').addEventListener('click', (e)=>{ e.stopPropagation(); mdpModo = mdpModo === 'mes' ? 'dia' : 'mes'; mdpOffsetMes = 0; actualizarMediosPagoDashboard(); }); // v687
   document.getElementById('btn-mdp-mes-anterior').addEventListener('click', (e)=>{ e.stopPropagation(); mdpOffsetMes -= 1; actualizarMediosPagoDashboard(); });
   document.getElementById('btn-mdp-mes-siguiente').addEventListener('click', (e)=>{ e.stopPropagation(); if(mdpOffsetMes < 0){ mdpOffsetMes += 1; actualizarMediosPagoDashboard(); } });
   function actualizarMediosPagoDashboard(){
@@ -24364,12 +24391,13 @@ body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-
     let efectivo = 0, transferencia = 0;
     // v670: Medios de Pago usa el mes elegido en su cápsula; Total Recaudado sigue el período del dashboard
     const ahoraMdp = new Date();
-    const baseMdp = new Date(ahoraMdp.getFullYear(), ahoraMdp.getMonth() + (mdpOffsetMes || 0), 1);
-    const iniMdp = baseMdp.getTime();
-    const finMdp = new Date(baseMdp.getFullYear(), baseMdp.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
+    const rMdp = rangoCapsula(mdpModo, mdpOffsetMes); // v687: mes o día
+    const baseMdp = rMdp.base;
+    const iniMdp = rMdp.ini;
+    const finMdp = rMdp.fin;
     const MESES_MDP = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
     const elMesMdp = document.getElementById('mdp-mes-actual');
-    if(elMesMdp) elMesMdp.textContent = mesCortoCapsula(baseMdp); // v673
+    if(elMesMdp) elMesMdp.textContent = textoCapsula(mdpModo, baseMdp); // v687
     const btnSigMdp = document.getElementById('btn-mdp-mes-siguiente');
     if(btnSigMdp) btnSigMdp.disabled = (mdpOffsetMes || 0) >= 0;
     let efMes = 0, trMes = 0;
@@ -24398,7 +24426,7 @@ body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-
       pagosDe(prestamo).forEach(pago=>{ const t = new Date(pago.fecha).getTime(); if(t >= rRp2.ini && t <= rRp2.fin) totalRecaudado += (pago.monto || 0); });
     });
     const elMesRp = document.getElementById('rp-mes-actual');
-    if(elMesRp) elMesRp.textContent = mesCortoCapsula(rangoMesResumenPeriodo().base); // v673
+    if(elMesRp) elMesRp.textContent = textoCapsula(rpModo, rangoMesResumenPeriodo().base); // v687
     const btnSigRp = document.getElementById('btn-rp-mes-siguiente');
     if(btnSigRp) btnSigRp.disabled = (rpOffsetMes || 0) >= 0;
     if(elTotalRecaudado) animarValorPesos(elTotalRecaudado, totalRecaudado);
@@ -24417,6 +24445,7 @@ body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-
     }
   }
 
+  document.getElementById('rp-mes-actual').addEventListener('click', (e)=>{ e.stopPropagation(); rpModo = rpModo === 'mes' ? 'dia' : 'mes'; rpOffsetMes = 0; actualizarMediosPagoDashboard(); }); // v687
   document.getElementById('btn-rp-mes-anterior').addEventListener('click', (e)=>{ e.stopPropagation(); rpOffsetMes -= 1; actualizarMediosPagoDashboard(); });
   document.getElementById('btn-rp-mes-siguiente').addEventListener('click', (e)=>{ e.stopPropagation(); if(rpOffsetMes < 0){ rpOffsetMes += 1; actualizarMediosPagoDashboard(); } });
   // ---------- NUEVO: Modal "Total Prestado" (se abre al tocar el bloque) ----------
