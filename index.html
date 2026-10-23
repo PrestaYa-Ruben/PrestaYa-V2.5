@@ -21315,6 +21315,14 @@ body.modo-oscuro .globo-cuota{ background:#1F2A5C !important; }
     }
   }
 
+  // v690: fecha de cada cuota en el plan de pagos como "Sáb 3, octubre 2026"
+  function fechaLargaPlanPagos(cuota){
+    const d = new Date(cuota.fechaISO);
+    if(isNaN(d)) return cuota.fechaTexto || '';
+    const DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']; // v690: día abreviado
+    const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    return DIAS[d.getDay()] + ' ' + d.getDate() + ', ' + MESES[d.getMonth()] + ' ' + d.getFullYear();
+  }
   function renderizarPlanPagos(plan){
     renderizarResumenCredito(plan);
     planPagosLista.innerHTML = '';
@@ -21341,7 +21349,7 @@ body.modo-oscuro .globo-cuota{ background:#1F2A5C !important; }
                 <div class="plan-label">Interés</div>
                 <div class="plan-val plan-val-interes">${formatearPesos(cuota.interes)}</div>
               </div>
-              <div class="plan-date">${iconoCalendarioMini()}<span>${cuota.fechaTexto}</span></div>
+              <div class="plan-date">${iconoCalendarioMini()}<span>${fechaLargaPlanPagos(cuota)}</span></div><!-- v690: "Sáb 3, octubre 2026" -->
             </div>
           </div>
         </div>
