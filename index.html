@@ -9148,17 +9148,19 @@ html body #tarjeta-comparativo-ganancias .comparativo-ganancias-resumen-cifras s
 html body #tarjeta-medios-pago-inicio .mdp-valor{ font-size:clamp(17px, 4.9vw, 20px) !important; letter-spacing:-0.3px; }
 html body #tarjeta-medios-pago-inicio .mdp-total span:last-child{ font-size:clamp(17px, 4.9vw, 20px) !important; letter-spacing:-0.3px; }
 
-/* v685: tarjetas de clientes y del crédito — sin sombra ni canto; solo efecto de lámina, más sólida
-   (id doble para ganarle a las reglas de "ficha de dominó" de v531/v533) */
+/* v686: tarjetas de clientes y del crédito con EXACTAMENTE el mismo realce de las tarjetas de cuotas (v679):
+   borde limpio + canto fino inferior + sombra mínima → sensación de grosor
+   (id doble para ganarle a las reglas antiguas de "ficha de dominó" v531/v533) */
 #screen-clientes#screen-clientes .card.client-row,
-#screen-clientes#screen-clientes .card.client-row:active,
 #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full{
-  box-shadow:0 0 0 1px rgba(20,30,60,.10), inset 0 1.5px 0 rgba(255,255,255,.9), inset 0 -1.5px 0 rgba(20,30,60,.07) !important;
+  box-shadow:0 1.5px 0 rgba(20,30,60,.13), 0 2px 5px rgba(20,30,60,.06), inset 0 1px 0 rgba(255,255,255,.7) !important;
 }
-#screen-clientes#screen-clientes .card.client-row:active{ transform:none !important; }
+#screen-clientes#screen-clientes .card.client-row,
+#screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna){ border-top-width:1px !important; border-right-width:1px !important; border-bottom-width:1px !important; }
+#screen-clientes#screen-clientes .card.client-row:active{ transform:none !important; box-shadow:0 1.5px 0 rgba(20,30,60,.13), 0 2px 5px rgba(20,30,60,.06), inset 0 1px 0 rgba(255,255,255,.7) !important; }
 body.modo-oscuro #screen-clientes#screen-clientes .card.client-row,
 body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full{
-  box-shadow:0 0 0 1px rgba(255,255,255,.06), inset 0 1.5px 0 rgba(255,255,255,.10), inset 0 -1.5px 0 rgba(0,0,0,.25) !important;
+  box-shadow:0 1.5px 0 rgba(0,0,0,.55), 0 2px 5px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.08) !important;
 }
 </style>
 
