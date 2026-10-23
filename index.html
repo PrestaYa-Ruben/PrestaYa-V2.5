@@ -9166,6 +9166,17 @@ body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-
 /* v687: el texto de la cápsula se toca para cambiar entre Mes y Día */
 html body #screen-inicio .selector-mes-tarjeta span{ cursor:pointer; -webkit-tap-highlight-color:transparent; border-radius:8px; transition:background .15s ease; }
 html body #screen-inicio .selector-mes-tarjeta span:active{ background:rgba(255,255,255,.55); }
+
+/* v688: globito de cuota oscuro (réplica de la referencia) */
+.globo-cuota{ background:#1F2A5C !important; text-align:left !important; padding:10px 15px 11px !important; border-radius:13px !important; min-width:118px !important; box-shadow:0 8px 20px rgba(20,30,70,.28), 0 2px 5px rgba(20,30,70,.18) !important; }
+.globo-cuota .globo-cuota-tit{ font-size:12.5px; font-weight:500; color:#C5CDEA; line-height:1.25; white-space:nowrap; }
+.globo-cuota .globo-cuota-valor{ margin-top:2px !important; font-size:17px !important; font-weight:800 !important; color:#FFFFFF !important; letter-spacing:-.3px; line-height:1.2; white-space:nowrap; }
+.globo-cuota .globo-cuota-fecha{ margin-top:3px; font-size:13.5px !important; font-weight:600 !important; color:#F2BE63 !important; line-height:1.25; white-space:nowrap; }
+.globo-cuota.globo-cuota-pagada .globo-cuota-fecha{ color:#7FDCA4 !important; }
+.globo-cuota.globo-cuota-vencida .globo-cuota-fecha{ color:#FF9B93 !important; }
+.globo-cuota.globo-cuota-pagada .globo-cuota-valor, .globo-cuota.globo-cuota-vencida .globo-cuota-valor{ color:#FFFFFF !important; }
+.globo-cuota .globo-cuota-flecha, body.modo-oscuro .globo-cuota .globo-cuota-flecha{ background:#1F2A5C !important; box-shadow:none !important; }
+body.modo-oscuro .globo-cuota{ background:#1F2A5C !important; }
 </style>
 
 </head>
@@ -25410,17 +25421,19 @@ html body #screen-inicio .selector-mes-tarjeta span:active{ background:rgba(255,
     if(pagada){
       const pagos = pagosDeCuota(prestamo, numero).filter(p => !isNaN(new Date(p.fecha)));
       const ultima = pagos.reduce((m, p) => Math.max(m, new Date(p.fecha).getTime()), 0);
-      etiqueta = 'Pagada: ' + (ultima ? fCorta(ultima) : '—');
+      etiqueta = 'Pagado el ' + (ultima ? fCorta(ultima) : '—'); // v688
       valor = sumaAbonadaCuota(prestamo, numero);
       clase = 'pagada';
     }else{
-      etiqueta = 'Pagar: ' + fCorta(cuota.fechaISO);
       valor = pendienteDeCuota(prestamo, cuota);
       clase = cuotaVencida(prestamo, cuota) ? 'vencida' : 'pendiente';
+      etiqueta = (clase === 'vencida' ? 'Venció el ' : 'Pagar el ') + fCorta(cuota.fechaISO); // v688
     }
     const el = document.createElement('div');
     el.className = 'globo-cuota globo-cuota-' + clase;
-    el.innerHTML = '<div class="globo-cuota-fecha"></div><div class="globo-cuota-valor"></div><i class="globo-cuota-flecha"></i>';
+    // v688: diseño del globito según la referencia — "Cuota N", valor y la fecha en color
+    el.innerHTML = '<div class="globo-cuota-tit"></div><div class="globo-cuota-valor"></div><div class="globo-cuota-fecha"></div><i class="globo-cuota-flecha"></i>';
+    el.querySelector('.globo-cuota-tit').textContent = 'Cuota ' + numero;
     el.querySelector('.globo-cuota-fecha').textContent = etiqueta;
     el.querySelector('.globo-cuota-valor').textContent = formatearPesos(valor);
     document.body.appendChild(el);
