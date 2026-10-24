@@ -25853,6 +25853,8 @@ body.modo-oscuro .globo-cuota{ background:#1F2A5C !important; }
   // ícono de monedas de la tarjeta del crédito (diseños Moderna y Resumen).
   // Sin margen externo: la imagen es solo el recibo.
   // ==========================================================
+  // v691: interés de mora por cuota que se informa en el recibo (dato fijo, la app no lo guarda por crédito)
+  const RECIBO_INTERES_MORA_PCT = 10;
   function generarCanvasReciboTermico(prestamo){
     // v628: ajustado a las especificaciones — ticket de 380px, papel #f3f3f3,
     // dientes de 8px cada 26px arriba y abajo, fuente Courier Prime.
@@ -25874,13 +25876,29 @@ body.modo-oscuro .globo-cuota{ background:#1F2A5C !important; }
     const nombresFrec = { diario:'Diario', semanal:'Semanal', quincenal:'Quincenal', mensual:'Mensual' };
     const pesos = v => formatearPesos(v).replace('$', '$ ');
     const fFecha = prestamo.fecha ? formatearFechaCorta(new Date(prestamo.fecha + 'T00:00:00')) : '—';
+    // v691: nuevas filas pedidas; el 3er elemento (true) = valor en negrita
+    const MES_RT = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const fGuion = f => { const d = new Date(f); return isNaN(d) ? '—' : String(d.getDate()).padStart(2, '0') + '-' + MES_RT[d.getMonth()] + '-' + d.getFullYear(); };
+    const fIni = prestamo.fecha ? prestamo.fecha + 'T00:00:00' : null;
+    const ultimaCuota = plan.length ? plan[plan.length - 1] : null;
+    // Tasa de interés mensual = interés total ÷ capital ÷ meses del plazo (días entre el inicio y la última cuota ÷ 30)
+    const totalPlan = plan.reduce((a, c) => a + (Number(c.total) || 0), 0);
+    const diasPlazo = (fIni && ultimaCuota) ? Math.max(1, Math.round((new Date(ultimaCuota.fechaISO) - new Date(fIni)) / 86400000)) : 0;
+    let tasaMensualTxt = '—';
+    if(prestamo.soloInteres){ tasaMensualTxt = (Number(prestamo.tasa) || 0) + '%'; }
+    else if((Number(prestamo.valor) || 0) > 0 && diasPlazo > 0){
+      const t = ((totalPlan - Number(prestamo.valor)) / Number(prestamo.valor)) * 100 / (diasPlazo / 30);
+      tasaMensualTxt = (Math.round(t * 100) / 100).toLocaleString('es-CO', { maximumFractionDigits: 2 }) + '%';
+    }
     const filas = [
-      ['Fecha:', fFecha], // v630: con dos puntos
-      ['Monto:', pesos(prestamo.valor)],
-      ['Número de cuotas:', prestamo.soloInteres ? 'Sin plazo' : String(plan.length || prestamo.cuotas || 0)],
-      ['Valor por cuota:', pesos(cuotaRealPrestamo(prestamo))],
-      ['Frecuencia de pago:', (nombresFrec[prestamo.frecuencia] || prestamo.frecuencia || '—').toUpperCase()]
-      // v661: se retiró la fila "Número de crédito"
+      ['Fecha de préstamo:', fIni ? fGuion(fIni) : '—'],
+      ['Monto otorgado:', pesos(prestamo.valor), true],
+      ['Tasa interés mensual:', '10%'], // v693: fijo en 10% a pedido (antes calculado: tasaMensualTxt)
+      ['Número de cuotas:', prestamo.soloInteres ? 'Sin plazo' : String(plan.length || prestamo.cuotas || 0), true],
+      ['Frecuencia de pago:', (nombresFrec[prestamo.frecuencia] || prestamo.frecuencia || '—').toUpperCase(), true],
+      ['Valor por cuota:', pesos(cuotaRealPrestamo(prestamo)), true],
+      ['Fecha de vencimiento:', ultimaCuota && !prestamo.soloInteres ? fGuion(ultimaCuota.fechaISO) : '—'],
+      ['Interés mora por cuota:', RECIBO_INTERES_MORA_PCT + '%']
     ];
     const tel = cliente.telefono ? String(cliente.telefono).trim() : '—';
     const codigo = prestamo.codigo || ('PRE-' + prestamo.id);
@@ -25893,8 +25911,12 @@ body.modo-oscuro .globo-cuota{ background:#1F2A5C !important; }
     // v633: Cliente y nombre centrados; Cc y Tel retirados
     y += 30; plano.push(['cen', y, 'Cliente:']);
     nombreLineas.forEach(l => { y += 21; plano.push(['cen', y, l]); });
+    // v692: cédula debajo del nombre ("Cc 94 462 769") o "Cc ********" si no tiene
+    const docDigitos = String(cliente.documento || '').replace(/\D/g, '');
+    const docTxt = docDigitos ? docDigitos.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : '********';
+    y += 21; plano.push(['cen', y, 'Cc ' + docTxt]);
     y += 24; plano.push(['puntos', y]);
-    filas.forEach((f, i) => { y += (i === 0 ? 26 : 22); plano.push(['fila', y, f[0], f[1]]); });
+    filas.forEach((f, i) => { y += (i === 0 ? 26 : 22); plano.push(['fila', y, f[0], f[1], !!f[2]]); });
     y += 22; plano.push(['puntos', y]);
     y += 28; plano.push(['frase', y]);
     mensaje.forEach((l, i) => { y += (i === 0 ? 24 : 20); plano.push(['msg', y, l]); });
@@ -25908,13 +25930,17 @@ body.modo-oscuro .globo-cuota{ background:#1F2A5C !important; }
     ctx.fillStyle = PAPEL; ctx.fillRect(0, 0, W, H);
     // dientes: semicírculos de 8px cada 26px, recortados (transparentes) arriba y abajo
     ctx.save(); ctx.globalCompositeOperation = 'destination-out';
-    for(let cx = 13; cx < W + 8; cx += 26){
-      ctx.beginPath(); ctx.arc(cx, 0, 8, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx, H, 8, 0, Math.PI * 2); ctx.fill();
-    }
+    // v692: dientes pequeños en zigzag, como el corte de una impresora de tickets
+    const DZ = 6, DH = 3; // ancho y alto de cada diente
+    ctx.beginPath(); ctx.moveTo(0, 0);
+    for(let x = 0; x <= W; x += DZ){ ctx.lineTo(x + DZ / 2, DH); ctx.lineTo(x + DZ, 0); }
+    ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(0, H);
+    for(let x = 0; x <= W; x += DZ){ ctx.lineTo(x + DZ / 2, H - DH); ctx.lineTo(x + DZ, H); }
+    ctx.closePath(); ctx.fill();
     ctx.restore();
 
-    const guiones = yy => { ctx.fillStyle = TINTA; const L = 16, G = 8, n = Math.floor((W - 2 * PAD + G) / (L + G)), x0 = (W - (n * L + (n - 1) * G)) / 2; for(let i = 0; i < n; i++) ctx.fillRect(x0 + i * (L + G), yy - 1, L, 2); };
+    const guiones = yy => { ctx.fillStyle = '#A3A3A3'; const L = 10, G = 6, /* v694: más claras y rayitas más cortas */ n = Math.floor((W - 2 * PAD + G) / (L + G)), x0 = (W - (n * L + (n - 1) * G)) / 2; for(let i = 0; i < n; i++) ctx.fillRect(x0 + i * (L + G), yy - 1, L, 2); };
     const puntos = yy => { ctx.fillStyle = TINTA; const L = 2, G = 4, n = Math.floor((W - 2 * PAD + G) / (L + G)), x0 = (W - (n * L + (n - 1) * G)) / 2; for(let i = 0; i < n; i++) ctx.fillRect(x0 + i * (L + G), yy - 1, L, 2); };
     plano.forEach(e => {
       const [t, yy] = e;
@@ -25927,7 +25953,8 @@ body.modo-oscuro .globo-cuota{ background:#1F2A5C !important; }
       else if(t === 'fila'){
         ctx.fillStyle = TINTA; ctx.font = '14px ' + MONO;
         ctx.textAlign = 'left'; ctx.fillText(e[2], X0, yy);
-        ctx.textAlign = 'right'; ctx.fillText(e[3], X1, yy, 160);
+        if(e[4]) ctx.font = 'bold 14px ' + MONO; // v691: valores destacados en negrita
+        ctx.textAlign = 'right'; ctx.fillText(e[3], X1, yy, 150);
       }
       else if(t === 'frase'){ ctx.fillStyle = TINTA; ctx.font = 'bold 14px ' + MONO; ctx.textAlign = 'center'; ctx.fillText('¡Su puntualidad tiene valor!', W / 2, yy); }
       else if(t === 'msg'){ ctx.fillStyle = TINTA; ctx.font = '14px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(e[2], W / 2, yy); }
