@@ -9230,13 +9230,12 @@ body.modo-oscuro .stepper:has(#btn-cuota-anterior) .stepper-value{ color:#F2F4F8
 body.modo-oscuro #btn-cuota-anterior{ background:rgba(200,66,59,.18) !important; }
 body.modo-oscuro #btn-cuota-siguiente{ background:rgba(63,154,78,.18) !important; }
 
-/* v699: contador tipo surtidor de gasolina */
-.odo{ font-variant-numeric:tabular-nums; white-space:nowrap; }
-.odo .odo-col{ display:inline-block; height:1.15em; line-height:1.15em; overflow:hidden; vertical-align:top;
-  -webkit-mask-image:linear-gradient(180deg, transparent 0, #000 18%, #000 82%, transparent 100%); mask-image:linear-gradient(180deg, transparent 0, #000 18%, #000 82%, transparent 100%); }
+/* v699/v708: contador tipo surtidor de gasolina — mismas medidas que el texto normal */
+.odo{ white-space:nowrap; }
+.odo .odo-col{ display:inline-block; overflow:hidden; vertical-align:top; text-align:left;
+  -webkit-mask-image:linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent 100%); mask-image:linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent 100%); }
 .odo .odo-tira{ display:block; will-change:transform; }
-.odo .odo-tira > span{ display:block; height:1.15em; line-height:1.15em; text-align:center; }
-.odo .odo-sim{ display:inline-block; height:1.15em; line-height:1.15em; vertical-align:top; }
+.odo .odo-tira > span{ display:block; text-align:left; white-space:pre; }
 
 /* v700: transición suave al entrar a cualquier pantalla (fundido + leve subida) */
 @keyframes v700-entrada{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:none; } }
@@ -9258,30 +9257,11 @@ body.modo-oscuro #btn-cuota-siguiente{ background:rgba(63,154,78,.18) !important
   #clientes-lista .client-row.rodillo-entra{ animation:none; }
 }
 
-/* v702: chips de rutas plegables — se despliegan en horizontal al tocar "Todas" */
-.rutas-plegables .chip-ruta-plegable{ max-width:0; opacity:0; padding-left:0 !important; padding-right:0 !important; margin-left:-10px; border-width:0 !important; overflow:hidden; white-space:nowrap; pointer-events:none; box-shadow:none !important;
-  transition:max-width .35s cubic-bezier(.22,.8,.3,1), opacity .25s ease, padding .35s ease, margin .35s ease; }
-.rutas-plegables.rutas-desplegadas .chip-ruta-plegable{ max-width:220px; opacity:1; padding-left:14px !important; padding-right:14px !important; margin-left:0; border-width:1px !important; pointer-events:auto;
-  transition-delay:calc(var(--i, 1) * 35ms); }
-.rutas-plegables .chip-rutas-todas{ display:inline-flex; align-items:center; gap:4px; }
-.rutas-plegables .chip-rutas-flecha{ width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; transition:transform .3s ease; }
-.rutas-plegables.rutas-desplegadas .chip-rutas-flecha{ transform:rotate(180deg); }
-
-/* v703: las rutas desplegadas muestran su nombre completo (no se encogen; la fila se desliza si no caben) */
-html body .rutas-plegables > button{ flex-shrink:0 !important; }
-html body .rutas-plegables.rutas-desplegadas .chip-ruta-plegable{ max-width:none !important; overflow:visible !important; text-overflow:clip !important; white-space:nowrap !important; min-width:max-content !important; }
-html body .rutas-plegables{ overflow-x:auto !important; flex-wrap:nowrap !important; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
-html body .rutas-plegables::-webkit-scrollbar{ display:none; }
-
-/* v704: las rutas se despliegan y se ocultan en cascada */
-html body .rutas-plegables .chip-ruta-plegable{ display:none !important; }
-html body .rutas-plegables.rutas-desplegadas .chip-ruta-plegable{ display:inline-flex !important; align-items:center; max-width:none !important; opacity:1; padding-left:14px !important; padding-right:14px !important; margin-left:0 !important; border-width:1px !important; pointer-events:auto; transition:none !important;
-  animation:chipRutaEntra .32s cubic-bezier(.22,.8,.3,1) both; animation-delay:calc((var(--i, 1) - 1) * 55ms); }
-html body .rutas-plegables.rutas-desplegadas .chip-ruta-plegable.chip-sale{ animation:chipRutaSale .22s ease-in both; pointer-events:none; }
-@keyframes chipRutaEntra{ from{ opacity:0; transform:translateX(-14px) scale(.85); } to{ opacity:1; transform:none; } }
-@keyframes chipRutaSale{ from{ opacity:1; transform:none; } to{ opacity:0; transform:translateX(-14px) scale(.85); } }
-.rutas-plegables.rutas-plegando .chip-rutas-flecha{ transform:rotate(0deg) !important; }
-@media (prefers-reduced-motion: reduce){ html body .rutas-plegables.rutas-desplegadas .chip-ruta-plegable{ animation:none !important; } }
+/* v707: "Período seleccionado" y "Buscar cliente" con alto fijo — la pantalla no se mueve al cambiar de fecha */
+html body #screen-inicio .periodo-y-buscador{ grid-auto-rows:58px !important; align-items:stretch !important; }
+html body #screen-inicio .periodo-y-buscador > *{ height:58px !important; min-height:58px !important; max-height:58px !important; box-sizing:border-box !important; margin:0 !important; overflow:hidden; }
+html body #screen-inicio .periodo-y-buscador .periodo-seleccionado{ justify-content:center !important; }
+html body #screen-inicio .periodo-y-buscador .periodo-seleccionado-valor{ display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; }
 </style>
 
 </head>
@@ -20541,15 +20521,26 @@ html body .rutas-plegables.rutas-desplegadas .chip-ruta-plegable.chip-sale{ anim
   // también las próximas actualizaciones (no solo la primera vez) partiendo
   // de ahí, no de 0. Se combina con un pequeño rebote en la tarjeta que lo
   // contiene, para que el cambio se note incluso de reojo.
-  // v699: contador estilo surtidor de gasolina (rodillos de dígitos que giran)
+  // v699/v708: contador estilo surtidor de gasolina (rodillos de dígitos que giran).
+  // v708: cada rodillo mide exactamente lo mismo que el texto normal (alto de línea y ancho
+  // de cada dígito), así que al terminar de girar y volver a texto normal no hay ningún ajuste.
   function animarRodilloDigitos(elemento, textoInicial, textoFinal, valorFinal, duracionMs){
     const token = (Number(elemento.dataset.odoToken) || 0) + 1;
     elemento.dataset.odoToken = String(token);
     const reducir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(reducir){ elemento.textContent = textoFinal; elemento.dataset.valorAnimado = String(valorFinal); return; }
+    if(reducir || !elemento.isConnected || !elemento.offsetParent){ elemento.textContent = textoFinal; elemento.dataset.valorAnimado = String(valorFinal); return; }
     const viejo = String(textoInicial), nuevo = String(textoFinal);
-    elemento.classList.add('odo');
+    // medidas reales del texto en este elemento
     elemento.textContent = '';
+    const sonda = document.createElement('span');
+    sonda.style.cssText = 'display:inline-block;visibility:hidden;white-space:pre;';
+    elemento.appendChild(sonda);
+    sonda.textContent = '0';
+    const alto = sonda.getBoundingClientRect().height || 20;
+    const anchos = {};
+    for(let d = 0; d <= 9; d++){ sonda.textContent = String(d); anchos[d] = sonda.getBoundingClientRect().width; }
+    sonda.remove();
+    elemento.classList.add('odo');
     const frag = document.createDocumentFragment();
     const tiras = [];
     let digitoDesdeDerecha = 0;
@@ -20559,38 +20550,44 @@ html body .rutas-plegables.rutas-desplegadas .chip-ruta-plegable.chip-sale{ anim
         const chViejo = viejo[viejo.length - (nuevo.length - k)];
         const ini = /\d/.test(chViejo || '') ? Number(chViejo) : 0;
         const fin = Number(ch);
-        // como en el surtidor: el dígito de la derecha gira más vueltas que los de la izquierda
-        const vueltas = digitoDesdeDerecha === 0 ? 2 : (digitoDesdeDerecha === 1 ? 1 : 0);
+        const vueltas = digitoDesdeDerecha <= 1 ? 1 : 0;
         const pasos = vueltas * 10 + ((fin - ini + 10) % 10);
         const col = document.createElement('span'); col.className = 'odo-col';
+        col.style.height = alto + 'px'; col.style.width = anchos[ini] + 'px';
         const tira = document.createElement('span'); tira.className = 'odo-tira';
-        for(let n = 0; n <= pasos; n++){ const d = document.createElement('span'); d.textContent = String((ini + n) % 10); tira.appendChild(d); }
+        for(let n = 0; n <= pasos; n++){ const d = document.createElement('span'); d.textContent = String((ini + n) % 10); d.style.height = alto + 'px'; d.style.lineHeight = alto + 'px'; tira.appendChild(d); }
         col.appendChild(tira);
         frag.insertBefore(col, frag.firstChild);
-        tiras.push({ tira, pasos, demora: digitoDesdeDerecha });
+        tiras.push({ col, tira, pasos, anchoFin: anchos[fin], demora: Math.min(digitoDesdeDerecha * 25, 150) });
         digitoDesdeDerecha++;
       }else{
-        const sp = document.createElement('span'); sp.className = 'odo-sim'; sp.textContent = ch;
-        frag.insertBefore(sp, frag.firstChild);
+        frag.insertBefore(document.createTextNode(ch), frag.firstChild);
       }
     }
     elemento.appendChild(frag);
     void elemento.offsetWidth;
+    const curva = 'cubic-bezier(.2,.6,.45,.9)'; // v709: termina con decisión (sin la cola lenta que se veía como un ajuste)
+    // v709: cada rodillo dura según lo que tiene que girar y TODOS terminan al mismo tiempo
+    // (antes un dígito que solo avanzaba un paso se arrastraba lento hasta el final)
     tiras.forEach(t => {
-      t.tira.style.transition = 'transform ' + duracionMs + 'ms cubic-bezier(.2,.75,.25,1) ' + Math.min(t.demora * 25, 150) + 'ms';
-      t.tira.style.transform = 'translateY(' + (-t.pasos * 1.15) + 'em)';
+      const dur = Math.max(260, Math.min(duracionMs, 240 + t.pasos * 45));
+      const dem = duracionMs - dur;
+      t.tira.style.transition = 'transform ' + dur + 'ms ' + curva + ' ' + dem + 'ms';
+      t.tira.style.transform = 'translateY(' + (-t.pasos * alto) + 'px)';
+      t.col.style.transition = 'width ' + dur + 'ms ' + curva + ' ' + dem + 'ms';
+      t.col.style.width = t.anchoFin + 'px';
     });
     setTimeout(()=>{
       if(elemento.dataset.odoToken !== String(token)) return;
       elemento.textContent = nuevo;
       elemento.classList.remove('odo');
       elemento.dataset.valorAnimado = String(valorFinal);
-    }, duracionMs + 200);
+    }, duracionMs + 140);
   }
 
   function animarValorPesos(elemento, valorFinal, duracionMs){
     if(!elemento) return;
-    duracionMs = duracionMs || 1100; // v699
+    duracionMs = duracionMs || 950; // v709
     const valorInicial = Number(elemento.dataset.valorAnimado) || 0;
     if(valorInicial === valorFinal){
       elemento.textContent = formatearPesos(valorFinal);
@@ -20611,7 +20608,7 @@ html body .rutas-plegables.rutas-desplegadas .chip-ruta-plegable.chip-sale{ anim
   // (sin "$"), ej. "Total Préstamos".
   function animarValorEntero(elemento, valorFinal, duracionMs){
     if(!elemento) return;
-    duracionMs = duracionMs || 1100; // v699
+    duracionMs = duracionMs || 950; // v709
     const valorInicial = Number(elemento.dataset.valorAnimado) || 0;
     if(valorInicial === valorFinal){
       elemento.textContent = String(valorFinal);
@@ -33374,45 +33371,18 @@ html body .rutas-plegables.rutas-desplegadas .chip-ruta-plegable.chip-sale{ anim
       if(!contenedor) return;
       contenedor.innerHTML = '';
 
-      // v702: las rutas quedan plegadas; solo se ve "Todas" (y la ruta elegida, si hay una).
-      // Tocar "Todas" con las rutas plegadas las despliega en horizontal; tocarla desplegadas
-      // la selecciona y las vuelve a plegar. Elegir una ruta también las pliega.
-      contenedor.classList.add('rutas-plegables');
-      contenedor.classList.toggle('rutas-desplegadas', false);
-      opciones.forEach((opcion, idx)=>{
+      opciones.forEach(opcion=>{
         const activa = opcion.valor === null ? !rutasFiltroActivas : (rutasFiltroActivas && rutasFiltroActivas.has(opcion.valor));
         const chip = document.createElement('button');
         chip.type = 'button';
-        chip.className = 'tab-button tab-pequeno' + (activa ? ' active' : '') + (opcion.valor === null ? ' chip-rutas-todas' : (activa ? '' : ' chip-ruta-plegable'));
-        if(opcion.valor === null){
-          chip.innerHTML = '<span></span><svg class="chip-rutas-flecha" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>';
-          chip.querySelector('span').textContent = opcion.nombre;
-          chip.setAttribute('aria-expanded', 'false');
-        }else{
-          chip.textContent = opcion.nombre;
-          chip.style.setProperty('--i', idx);
-        }
+        chip.className = 'tab-button tab-pequeno' + (activa ? ' active' : '');
+        chip.textContent = opcion.nombre;
         chip.addEventListener('click', ()=>{
-          if(opcion.valor === null && !contenedor.classList.contains('rutas-desplegadas') && rutasGuardadas.length){
-            contenedor.classList.add('rutas-desplegadas');
-            chip.setAttribute('aria-expanded', 'true');
-            return;
-          }
-          const aplicar = ()=> mantenerScrollAlFiltrar(()=>{
+          mantenerScrollAlFiltrar(()=>{
             rutasFiltroActivas = opcion.valor === null ? null : new Set([opcion.valor]);
             renderizarChipsRutas();
             refrescarVistasConFiltroRutas();
           });
-          // v704: si están desplegadas, se ocultan en cascada (de derecha a izquierda) antes de aplicar
-          if(contenedor.classList.contains('rutas-desplegadas')){
-            const salen = Array.from(contenedor.querySelectorAll('.chip-ruta-plegable')).filter(c => c !== chip);
-            salen.reverse().forEach((c, k) => { c.style.animationDelay = (k * 45) + 'ms'; c.classList.add('chip-sale'); });
-            contenedor.classList.add('rutas-plegando');
-            const todasBtn = contenedor.querySelector('.chip-rutas-todas'); if(todasBtn) todasBtn.setAttribute('aria-expanded', 'false');
-            setTimeout(aplicar, salen.length * 45 + 230);
-            return;
-          }
-          aplicar();
         });
         contenedor.appendChild(chip);
       });
