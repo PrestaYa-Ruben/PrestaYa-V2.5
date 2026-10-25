@@ -19372,7 +19372,7 @@ html body .rutas-plegables.rutas-desplegadas .chip-ruta-plegable.chip-sale{ anim
             esp.style.width = choque + 'px';
           }
         };
-        setTimeout(ajustarNombreRuta, 0);
+        Promise.resolve().then(ajustarNombreRuta); // v705: antes de pintar (evita que el nombre "salte")
       }
       else info.appendChild(filaRutaSaldo);
       filaRutaSaldo.appendChild(grupoChips);
@@ -19837,8 +19837,31 @@ html body .rutas-plegables.rutas-desplegadas .chip-ruta-plegable.chip-sale{ anim
   if(buscadorClientes){
     // NUEVO: ahora también respeta el filtro de ruta activo (ver clientesFiltrados
     // más abajo) — el filtrado por texto en sí no cambió.
+    // v705: al escribir ya no se reconstruyen todas las tarjetas (eso hacía "saltar" textos y
+    // tarjetas): si los clientes que coinciden ya están dibujados, solo se muestran/ocultan.
     buscadorClientes.addEventListener('input', ()=>{
-      renderizarClientes(clientesFiltrados());
+      const lista = clientesFiltrados();
+      const filas = Array.from(listaClientes.querySelectorAll(':scope > .client-row[data-id]'));
+      const dibujados = new Set(filas.map(f => String(f.dataset.id)));
+      const hayVacioBase = !!listaClientes.querySelector(':scope > .empty-state:not(.busqueda-sin-resultados)');
+      if(!hayVacioBase && filas.length && lista.every(c => dibujados.has(String(c.id)))){
+        const ids = new Set(lista.map(c => String(c.id)));
+        filas.forEach(f => { const ver = ids.has(String(f.dataset.id)); if((f.style.display !== 'none') !== ver) f.style.display = ver ? '' : 'none'; });
+        // mientras se busca, las tarjetas aparecen quietas (sin el efecto rodillo)
+        filas.forEach(f => {
+          if(!f.classList.contains('rodillo-pendiente') && !f.classList.contains('rodillo-entra')) return;
+          f.style.transition = 'none'; f.classList.remove('rodillo-pendiente', 'rodillo-entra'); void f.offsetWidth;
+          requestAnimationFrame(() => { f.style.transition = ''; });
+        });
+        let sinRes = listaClientes.querySelector(':scope > .busqueda-sin-resultados');
+        if(!lista.length){
+          if(!sinRes){ sinRes = document.createElement('div'); sinRes.className = 'empty-state busqueda-sin-resultados'; sinRes.innerHTML = '<p>No hay clientes que coincidan con la búsqueda.</p>'; listaClientes.appendChild(sinRes); }
+        }else if(sinRes){ sinRes.remove(); }
+        try{ actualizarContadoresFiltroClientes(); }catch(err){}
+        contadorClientes.textContent = lista.length + (lista.length === 1 ? ' cliente' : ' clientes');
+        return;
+      }
+      renderizarClientes(lista);
     });
   }
 
