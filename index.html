@@ -9266,6 +9266,22 @@ body.modo-oscuro #btn-cuota-siguiente{ background:rgba(63,154,78,.18) !important
 .rutas-plegables .chip-rutas-todas{ display:inline-flex; align-items:center; gap:4px; }
 .rutas-plegables .chip-rutas-flecha{ width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; transition:transform .3s ease; }
 .rutas-plegables.rutas-desplegadas .chip-rutas-flecha{ transform:rotate(180deg); }
+
+/* v703: las rutas desplegadas muestran su nombre completo (no se encogen; la fila se desliza si no caben) */
+html body .rutas-plegables > button{ flex-shrink:0 !important; }
+html body .rutas-plegables.rutas-desplegadas .chip-ruta-plegable{ max-width:none !important; overflow:visible !important; text-overflow:clip !important; white-space:nowrap !important; min-width:max-content !important; }
+html body .rutas-plegables{ overflow-x:auto !important; flex-wrap:nowrap !important; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+html body .rutas-plegables::-webkit-scrollbar{ display:none; }
+
+/* v704: las rutas se despliegan y se ocultan en cascada */
+html body .rutas-plegables .chip-ruta-plegable{ display:none !important; }
+html body .rutas-plegables.rutas-desplegadas .chip-ruta-plegable{ display:inline-flex !important; align-items:center; max-width:none !important; opacity:1; padding-left:14px !important; padding-right:14px !important; margin-left:0 !important; border-width:1px !important; pointer-events:auto; transition:none !important;
+  animation:chipRutaEntra .32s cubic-bezier(.22,.8,.3,1) both; animation-delay:calc((var(--i, 1) - 1) * 55ms); }
+html body .rutas-plegables.rutas-desplegadas .chip-ruta-plegable.chip-sale{ animation:chipRutaSale .22s ease-in both; pointer-events:none; }
+@keyframes chipRutaEntra{ from{ opacity:0; transform:translateX(-14px) scale(.85); } to{ opacity:1; transform:none; } }
+@keyframes chipRutaSale{ from{ opacity:1; transform:none; } to{ opacity:0; transform:translateX(-14px) scale(.85); } }
+.rutas-plegables.rutas-plegando .chip-rutas-flecha{ transform:rotate(0deg) !important; }
+@media (prefers-reduced-motion: reduce){ html body .rutas-plegables.rutas-desplegadas .chip-ruta-plegable{ animation:none !important; } }
 </style>
 
 </head>
@@ -33359,11 +33375,21 @@ body.modo-oscuro #btn-cuota-siguiente{ background:rgba(63,154,78,.18) !important
             chip.setAttribute('aria-expanded', 'true');
             return;
           }
-          mantenerScrollAlFiltrar(()=>{
+          const aplicar = ()=> mantenerScrollAlFiltrar(()=>{
             rutasFiltroActivas = opcion.valor === null ? null : new Set([opcion.valor]);
             renderizarChipsRutas();
             refrescarVistasConFiltroRutas();
           });
+          // v704: si están desplegadas, se ocultan en cascada (de derecha a izquierda) antes de aplicar
+          if(contenedor.classList.contains('rutas-desplegadas')){
+            const salen = Array.from(contenedor.querySelectorAll('.chip-ruta-plegable')).filter(c => c !== chip);
+            salen.reverse().forEach((c, k) => { c.style.animationDelay = (k * 45) + 'ms'; c.classList.add('chip-sale'); });
+            contenedor.classList.add('rutas-plegando');
+            const todasBtn = contenedor.querySelector('.chip-rutas-todas'); if(todasBtn) todasBtn.setAttribute('aria-expanded', 'false');
+            setTimeout(aplicar, salen.length * 45 + 230);
+            return;
+          }
+          aplicar();
         });
         contenedor.appendChild(chip);
       });
