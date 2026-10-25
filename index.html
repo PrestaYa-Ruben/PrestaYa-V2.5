@@ -9257,6 +9257,15 @@ body.modo-oscuro #btn-cuota-siguiente{ background:rgba(63,154,78,.18) !important
   #clientes-lista .client-row.rodillo-pendiente{ opacity:1; transform:none; }
   #clientes-lista .client-row.rodillo-entra{ animation:none; }
 }
+
+/* v702: chips de rutas plegables — se despliegan en horizontal al tocar "Todas" */
+.rutas-plegables .chip-ruta-plegable{ max-width:0; opacity:0; padding-left:0 !important; padding-right:0 !important; margin-left:-10px; border-width:0 !important; overflow:hidden; white-space:nowrap; pointer-events:none; box-shadow:none !important;
+  transition:max-width .35s cubic-bezier(.22,.8,.3,1), opacity .25s ease, padding .35s ease, margin .35s ease; }
+.rutas-plegables.rutas-desplegadas .chip-ruta-plegable{ max-width:220px; opacity:1; padding-left:14px !important; padding-right:14px !important; margin-left:0; border-width:1px !important; pointer-events:auto;
+  transition-delay:calc(var(--i, 1) * 35ms); }
+.rutas-plegables .chip-rutas-todas{ display:inline-flex; align-items:center; gap:4px; }
+.rutas-plegables .chip-rutas-flecha{ width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; transition:transform .3s ease; }
+.rutas-plegables.rutas-desplegadas .chip-rutas-flecha{ transform:rotate(180deg); }
 </style>
 
 </head>
@@ -19371,7 +19380,9 @@ body.modo-oscuro #btn-cuota-siguiente{ background:rgba(63,154,78,.18) !important
         cuotasTexto.setAttribute('aria-label', 'Préstamo a solo interés');
         lateral.style.display = 'none';
       }
-      phone.appendChild(cuotasTexto);
+      // v702: "N de M cuotas" en la línea de "Cuota: $…" (antes en la de "Otorgado")
+      const lineaCuotaV702 = info.querySelector('.client-row-cuota');
+      (lineaCuotaV702 || phone).appendChild(cuotasTexto);
       filaRutaSaldo.insertAdjacentHTML('beforeend', `<div class="crs-saldo"><span class="crs-saldo-etiqueta">Saldo pendiente</span><span class="crs-saldo-valor">${formatearPesos(saldoTotal)}</span></div>`);
       // NUEVO (a pedido): fecha de la próxima cuota — la cuota sin pagar más
       // antigua entre los créditos activos del cliente. Solo lectura
@@ -33324,13 +33335,30 @@ body.modo-oscuro #btn-cuota-siguiente{ background:rgba(63,154,78,.18) !important
       if(!contenedor) return;
       contenedor.innerHTML = '';
 
-      opciones.forEach(opcion=>{
+      // v702: las rutas quedan plegadas; solo se ve "Todas" (y la ruta elegida, si hay una).
+      // Tocar "Todas" con las rutas plegadas las despliega en horizontal; tocarla desplegadas
+      // la selecciona y las vuelve a plegar. Elegir una ruta también las pliega.
+      contenedor.classList.add('rutas-plegables');
+      contenedor.classList.toggle('rutas-desplegadas', false);
+      opciones.forEach((opcion, idx)=>{
         const activa = opcion.valor === null ? !rutasFiltroActivas : (rutasFiltroActivas && rutasFiltroActivas.has(opcion.valor));
         const chip = document.createElement('button');
         chip.type = 'button';
-        chip.className = 'tab-button tab-pequeno' + (activa ? ' active' : '');
-        chip.textContent = opcion.nombre;
+        chip.className = 'tab-button tab-pequeno' + (activa ? ' active' : '') + (opcion.valor === null ? ' chip-rutas-todas' : (activa ? '' : ' chip-ruta-plegable'));
+        if(opcion.valor === null){
+          chip.innerHTML = '<span></span><svg class="chip-rutas-flecha" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>';
+          chip.querySelector('span').textContent = opcion.nombre;
+          chip.setAttribute('aria-expanded', 'false');
+        }else{
+          chip.textContent = opcion.nombre;
+          chip.style.setProperty('--i', idx);
+        }
         chip.addEventListener('click', ()=>{
+          if(opcion.valor === null && !contenedor.classList.contains('rutas-desplegadas') && rutasGuardadas.length){
+            contenedor.classList.add('rutas-desplegadas');
+            chip.setAttribute('aria-expanded', 'true');
+            return;
+          }
           mantenerScrollAlFiltrar(()=>{
             rutasFiltroActivas = opcion.valor === null ? null : new Set([opcion.valor]);
             renderizarChipsRutas();
