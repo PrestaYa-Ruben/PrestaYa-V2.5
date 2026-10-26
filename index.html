@@ -36703,7 +36703,7 @@ body.modo-oscuro #copia-tabla-cancelar span{ color:#C9D3F2; }
     const COLS = [
       { t:'#', w:5 }, { t:'Nombre', w:34 }, { t:'Fecha de préstamo', w:13 },
       { t:'Monto de préstamo', w:15 }, { t:'Número de cuotas', w:11 }, { t:'Valor cuota', w:13 },
-      { t:'Cuotas pagadas', w:10 }, { t:'Cuotas pendientes', w:12 }, { t:'Ruta', w:16 }
+      { t:'Cuotas pagadas', w:10 }, { t:'Cuotas pendientes', w:12 }, { t:'Total pendiente (Capital e Interés)', w:17 }, { t:'Ruta', w:16 }
     ];
 
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -36732,6 +36732,7 @@ body.modo-oscuro #copia-tabla-cancelar span{ color:#C9D3F2; }
           valorCuota: Math.round(cuotaRealPrestamo(p) || 0),
           pagadas,
           pendientes: Math.max(0, total - pagadas),
+          totalPendiente: Math.round(saldoPendientePrestamo(p) || 0), // v716: capital + interés que falta (sin mora)
           ruta: (c && c.ruta) ? c.ruta : 'Sin asignar'
         };
       });
@@ -36777,29 +36778,32 @@ body.modo-oscuro #copia-tabla-cancelar span{ color:#C9D3F2; }
     }
 
     function construirXlsx(filas, ahora){
-      const L = 'ABCDEFGHI';
+      const L = 'ABCDEFGHIJ';
       const txt = (ref, s, st) => `<c r="${ref}" t="inlineStr" s="${st}"><is><t xml:space="preserve">${xmlEsc(s)}</t></is></c>`;
       const num = (ref, n, st) => `<c r="${ref}" s="${st}"><v>${n}</v></c>`;
       const filasXml = [];
       filasXml.push(`<row r="1" ht="22" customHeight="1">${txt('A1', 'PrestaYa — Copia de préstamos activos', 1)}</row>`);
       filasXml.push(`<row r="2">${txt('A2', 'Descargado: ' + fechaHoraTexto(ahora), 2)}</row>`);
-      filasXml.push(`<row r="4" ht="32" customHeight="1">${COLS.map((c, i) => txt(L[i] + '4', c.t === '#' ? '' : c.t, 3)).join('')}</row>`);
+      filasXml.push(`<row r="4" ht="46" customHeight="1">${COLS.map((c, i) => txt(L[i] + '4', c.t === '#' ? '' : c.t, 3)).join('')}</row>`);
       filas.forEach((f, i)=>{
         const r = 5 + i, ser = serialExcel(f.fecha);
         filasXml.push(`<row r="${r}">` +
           num('A'+r, i+1, 5) + txt('B'+r, f.nombre, 4) +
           (ser !== null ? num('C'+r, ser, 7) : txt('C'+r, '', 4)) +
           num('D'+r, f.monto, 6) + num('E'+r, f.cuotas, 5) + num('F'+r, f.valorCuota, 6) +
-          num('G'+r, f.pagadas, 5) + num('H'+r, f.pendientes, 5) + txt('I'+r, f.ruta, 4) + '</row>');
+          num('G'+r, f.pagadas, 5) + num('H'+r, f.pendientes, 5) + num('I'+r, f.totalPendiente, 6) + txt('J'+r, f.ruta, 4) + '</row>');
       });
       const rt = 5 + filas.length, ult = rt - 1;
       const suma = filas.reduce((s, f) => s + f.monto, 0);
       const sumaF = filas.length ? `<f>SUM(D5:D${ult})</f>` : '';
+      const sumaP = filas.reduce((s, f) => s + f.totalPendiente, 0);
+      const sumaPF = filas.length ? `<f>SUM(I5:I${ult})</f>` : '';
       filasXml.push(`<row r="${rt}">` + txt('A'+rt, '', 8) + txt('B'+rt, 'Total (' + filas.length + (filas.length === 1 ? ' préstamo)' : ' préstamos)'), 8) + txt('C'+rt, '', 8) +
-        `<c r="D${rt}" s="9">${sumaF}<v>${suma}</v></c>` + ['E','F','G','H','I'].map(l => txt(l+rt, '', 8)).join('') + '</row>');
+        `<c r="D${rt}" s="9">${sumaF}<v>${suma}</v></c>` + ['E','F','G','H'].map(l => txt(l+rt, '', 8)).join('') + `<c r="I${rt}" s="9">${sumaPF}<v>${sumaP}</v></c>` + txt('J'+rt, '', 8) + '</row>');
 
       const hoja = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<sheetPr><pageSetUpPr fitToPage="1"/></sheetPr>
 <sheetViews><sheetView workbookViewId="0"><pane ySplit="4" topLeftCell="A5" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
 <sheetFormatPr defaultRowHeight="16"/>
 <cols>${COLS.map((c, i) => `<col min="${i+1}" max="${i+1}" width="${c.w}" customWidth="1"/>`).join('')}</cols>
@@ -36850,14 +36854,15 @@ body.modo-oscuro #copia-tabla-cancelar span{ color:#C9D3F2; }
       const PW = 842, PH = 595, M = 32, ESC = 2.5;
       const fuente = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
       try{ if(document.fonts && document.fonts.ready) await document.fonts.ready; }catch(e){}
-      const anchos = [26, 190, 74, 86, 62, 78, 60, 70, 0];
-      anchos[8] = PW - 2*M - anchos.slice(0, 8).reduce((s, a) => s + a, 0);
-      const alin = ['c','l','c','r','c','r','c','c','l'];
-      const ALTO_CAB = 64, ALTO_TH = 30, ALTO_F = 19, PIE = 24;
+      const anchos = [26, 160, 66, 80, 54, 72, 54, 62, 90, 0];
+      anchos[9] = PW - 2*M - anchos.slice(0, 9).reduce((s, a) => s + a, 0);
+      const alin = ['c','l','c','r','c','r','c','c','r','l'];
+      const ALTO_CAB = 64, ALTO_TH = 40, ALTO_F = 19, PIE = 24;
       const porPagina = Math.floor((PH - M - ALTO_CAB - ALTO_TH - PIE - M) / ALTO_F) - 1;
       const paginas = [];
       for(let i = 0; i < Math.max(1, filas.length); i += porPagina) paginas.push(filas.slice(i, i + porPagina));
       const suma = filas.reduce((s, f) => s + f.monto, 0);
+      const sumaP = filas.reduce((s, f) => s + f.totalPendiente, 0);
       const jpegs = [];
       for(let pi = 0; pi < paginas.length; pi++){
         const cv = document.createElement('canvas'); cv.width = Math.round(PW*ESC); cv.height = Math.round(PH*ESC);
@@ -36886,25 +36891,28 @@ body.modo-oscuro #copia-tabla-cancelar span{ color:#C9D3F2; }
             const tx = a === 'l' ? x + 5 : a === 'r' ? x + w - 5 : x + w/2;
             lineas.forEach((ln, k)=>{
               let s = String(ln);
-              while(s.length > 1 && g.measureText(s).width > w - 9) s = s.slice(0, -2) + '…';
+              g.font = opts.font;
+              const mt = /(\d+(?:\.\d+)?)px/.exec(opts.font); let tam = mt ? parseFloat(mt[1]) : 10.5;
+              while(tam > 8 && g.measureText(s).width > w - 8){ tam -= 0.5; g.font = opts.font.replace(/\d+(?:\.\d+)?px/, tam + 'px'); }
+              while(s.length > 1 && g.measureText(s).width > w - 8) s = s.slice(0, -2) + '…';
               g.fillText(s, tx, y + alto/2 + (k - (lineas.length - 1)/2) * 12);
             });
             x += w;
           });
           g.textAlign = 'left'; y += alto;
         };
-        celdas([['#'], ['Nombre'], ['Fecha de','préstamo'], ['Monto de','préstamo'], ['Número','de cuotas'], ['Valor','cuota'], ['Cuotas','pagadas'], ['Cuotas','pendientes'], ['Ruta']],
+        celdas([['#'], ['Nombre'], ['Fecha de','préstamo'], ['Monto de','préstamo'], ['Número','de cuotas'], ['Valor','cuota'], ['Cuotas','pagadas'], ['Cuotas','pendientes'], ['Total pendiente','(Capital e','Interés)'], ['Ruta']],
           ALTO_TH, { fondo:'#E9EDF8', font:`700 10.5px ${fuente}` });
         const base = pi * porPagina;
         paginas[pi].forEach((f, i)=>{
-          celdas([String(base + i + 1), f.nombre, fechaPrestamoTexto(f.fecha), pesos(f.monto), String(f.cuotas), pesos(f.valorCuota), String(f.pagadas), String(f.pendientes), f.ruta],
+          celdas([String(base + i + 1), f.nombre, fechaPrestamoTexto(f.fecha), pesos(f.monto), String(f.cuotas), pesos(f.valorCuota), String(f.pagadas), String(f.pendientes), pesos(f.totalPendiente), f.ruta],
             ALTO_F, { font:`500 10.5px ${fuente}`, alin, fondo: (i % 2) ? '#FAFBFD' : null });
         });
         if(!filas.length){
           g.fillStyle = '#6B7280'; g.font = `500 11px ${fuente}`; g.fillText('No hay préstamos activos.', M + 6, y + 14); y += ALTO_F;
         }
         if(pi === paginas.length - 1 && filas.length){
-          celdas(['', 'Total (' + filas.length + (filas.length === 1 ? ' préstamo)' : ' préstamos)'), '', pesos(suma), '', '', '', '', ''],
+          celdas(['', 'Total (' + filas.length + (filas.length === 1 ? ' préstamo)' : ' préstamos)'), '', pesos(suma), '', '', '', '', pesos(sumaP), ''],
             ALTO_F, { fondo:'#E9EDF8', font:`700 10.5px ${fuente}`, alin });
         }
         g.fillStyle = '#A0A6B4'; g.font = `500 9.5px ${fuente}`; g.textAlign = 'center';
