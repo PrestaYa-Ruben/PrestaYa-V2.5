@@ -9281,6 +9281,28 @@ html body .sac-img:has(.avatar-img-ref){ border-radius:12px !important; aspect-r
 html body .client-row-avatar-ilustrado:has(.avatar-img-ref){ width:54px !important; height:72px !important; }
 @media (max-width:380px){ html body .client-row-avatar-ilustrado:has(.avatar-img-ref){ width:50px !important; height:66px !important; } }
 html body #detalle-avatar:has(.avatar-img-ref){ width:68px !important; height:90px !important; }
+
+/* v714: Descargar copia */
+.copia-tabla-cab{ padding:14px 18px 8px; }
+.copia-tabla-titulo{ font-size:16px; font-weight:800; color:var(--text); }
+.copia-tabla-resumen{ font-size:12.5px; color:var(--text-secondary); margin-top:3px; }
+.copia-tabla-generando{ display:none; padding:10px 18px 14px; font-size:13px; font-weight:600; color:var(--text-secondary); text-align:center; }
+#copia-tabla-overlay.generando .copia-tabla-generando{ display:block; }
+#copia-tabla-overlay.generando .copia-tabla-btn{ opacity:.45; pointer-events:none; }
+.copia-tabla-formato{ padding:11px 14px 13px; border-top:1px solid var(--border); }
+.copia-tabla-formato-cab{ display:flex; align-items:center; gap:11px; }
+.copia-tabla-formato-cab .icon-container{ width:32px; height:32px; flex-shrink:0; }
+.copia-tabla-formato-nombre{ font-size:15px; font-weight:700; color:var(--text); }
+.copia-tabla-formato-desc{ font-size:12px; color:var(--text-secondary); margin-top:1px; }
+.copia-tabla-botones{ display:flex; gap:10px; margin-top:10px; }
+.copia-tabla-btn{ flex:1 1 0; min-width:0; height:42px; display:flex; align-items:center; justify-content:center; gap:7px; border-radius:12px; font-size:14px; font-weight:700; background:#23305F; color:#fff; transition:transform .12s ease, opacity .15s; }
+.copia-tabla-btn.compartir{ background:#22A06B; }
+.copia-tabla-btn:active{ transform:scale(.96); }
+.copia-tabla-btn svg{ width:17px; height:17px; stroke:currentColor; flex-shrink:0; }
+body.modo-oscuro .copia-tabla-btn:not(.compartir){ background:#3A4A86; }
+body.modo-oscuro #copia-tabla-cancelar span{ color:#C9D3F2; }
+.copia-tabla-aviso{ position:fixed; left:50%; bottom:calc(96px + env(safe-area-inset-bottom)); transform:translate(-50%,12px); background:#23305F; color:#fff; font-size:13.5px; font-weight:600; padding:10px 16px; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.22); opacity:0; transition:opacity .25s, transform .25s; z-index:400; pointer-events:none; width:max-content; max-width:calc(100vw - 32px); text-align:center; }
+.copia-tabla-aviso.visible{ opacity:1; transform:translate(-50%,0); }
 </style>
 
 </head>
@@ -9432,6 +9454,12 @@ html body #detalle-avatar:has(.avatar-img-ref){ width:68px !important; height:90
     <div class="menu-lateral-item" id="menu-lateral-ajustes">
       <div class="icon-container gris"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>
       <span>Ajustes</span>
+    </div>
+
+    <!-- v714: "Descargar copia" — tabla de préstamos en Excel o PDF -->
+    <div class="menu-lateral-item" id="menu-lateral-descargar-copia">
+      <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="9" x2="9" y2="21"></line></svg></div>
+      <span>Descargar copia</span>
     </div>
 
     <!-- NUEVO: a pedido — acceso directo a exportar la copia de
@@ -36624,5 +36652,409 @@ html body #detalle-avatar:has(.avatar-img-ref){ width:68px !important; height:90
   ov.addEventListener('click', (e) => { if(e.target === ov) cerrar(); });
 })();
 </script>
+<!-- v714: selector de formato de "Descargar copia" -->
+<div id="copia-tabla-overlay" class="action-sheet-overlay" style="display:none;">
+  <div class="action-sheet-wrap">
+    <div class="action-sheet-card">
+      <div class="copia-tabla-cab">
+        <div class="copia-tabla-titulo">Descargar o compartir copia</div>
+        <div class="copia-tabla-resumen" id="copia-tabla-resumen"></div>
+      </div>
+      <div class="copia-tabla-formato" id="copia-tabla-xlsx">
+        <div class="copia-tabla-formato-cab">
+          <div class="icon-container green"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="12" x2="16" y2="18"></line><line x1="16" y1="12" x2="8" y2="18"></line></svg></div>
+          <div><div class="copia-tabla-formato-nombre">Excel (.xlsx)</div><div class="copia-tabla-formato-desc">Para editar, sumar y filtrar</div></div>
+        </div>
+        <div class="copia-tabla-botones">
+          <button type="button" class="copia-tabla-btn" data-formato="xlsx" data-accion="descargar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg><span>Descargar</span></button>
+          <button type="button" class="copia-tabla-btn compartir" data-formato="xlsx" data-accion="compartir"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg><span>Compartir</span></button>
+        </div>
+      </div>
+      <div class="copia-tabla-formato" id="copia-tabla-pdf">
+        <div class="copia-tabla-formato-cab">
+          <div class="icon-container red"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line></svg></div>
+          <div><div class="copia-tabla-formato-nombre">PDF</div><div class="copia-tabla-formato-desc">Para ver, imprimir o enviar</div></div>
+        </div>
+        <div class="copia-tabla-botones">
+          <button type="button" class="copia-tabla-btn" data-formato="pdf" data-accion="descargar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg><span>Descargar</span></button>
+          <button type="button" class="copia-tabla-btn compartir" data-formato="pdf" data-accion="compartir"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg><span>Compartir</span></button>
+        </div>
+      </div>
+      <div class="copia-tabla-generando">Generando archivo…</div>
+    </div>
+    <div class="action-sheet-card action-sheet-cancelar">
+      <div class="action-sheet-item centrado" id="copia-tabla-cancelar"><span>Cancelar</span></div>
+    </div>
+  </div>
+</div>
+<script>
+  // ==========================================================
+  // v714: "Descargar copia" (menú lateral) — tabla de préstamos activos
+  // con datos reales, en Excel (.xlsx) o PDF, con fecha y hora de
+  // descarga. Solo LEE los datos guardados; no cambia nada ni ninguna
+  // fórmula. Se genera todo en el teléfono, sin internet ni librerías.
+  // ==========================================================
+  (function(){
+    const overlay = document.getElementById('copia-tabla-overlay');
+    const itemMenu = document.getElementById('menu-lateral-descargar-copia');
+    if(!overlay || !itemMenu) return;
+    const resumenEl = document.getElementById('copia-tabla-resumen');
+
+    const COLS = [
+      { t:'#', w:5 }, { t:'Nombre', w:34 }, { t:'Fecha de préstamo', w:13 },
+      { t:'Monto de préstamo', w:15 }, { t:'Número de cuotas', w:11 }, { t:'Valor cuota', w:13 },
+      { t:'Cuotas pagadas', w:10 }, { t:'Cuotas pendientes', w:12 }, { t:'Ruta', w:16 }
+    ];
+
+    function pad(n){ return String(n).padStart(2, '0'); }
+    function fechaHoraTexto(d){
+      let h = d.getHours(); const ap = h < 12 ? 'a. m.' : 'p. m.'; h = h % 12 || 12;
+      return pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear() + ' ' + h + ':' + pad(d.getMinutes()) + ' ' + ap;
+    }
+    function fechaPrestamoTexto(iso){
+      const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+      return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+    }
+    function pesos(n){ return '$' + Math.round(n || 0).toLocaleString('en-US'); }
+
+    function filasCopia(){
+      const lista = (typeof prestamosGuardados !== 'undefined' ? prestamosGuardados : []).filter(p => p && p.estado === 'activo');
+      const filas = lista.map(p=>{
+        const c = clientesGuardados.find(x => x.id === p.clienteId);
+        const total = (p.plan && p.plan.length) ? p.plan.length : (Number(p.cuotas) || 0);
+        const pagadas = cuotasPagadasPrestamo(p);
+        return {
+          clienteId: p.clienteId,
+          nombre: c ? (c.nombre || '') : 'Cliente eliminado',
+          fecha: p.fecha || '',
+          monto: Number(p.valor) || 0,
+          cuotas: total,
+          valorCuota: Math.round(cuotaRealPrestamo(p) || 0),
+          pagadas,
+          pendientes: Math.max(0, total - pagadas),
+          ruta: (c && c.ruta) ? c.ruta : 'Sin asignar'
+        };
+      });
+      const cmp = (a, b) => a.localeCompare(b, 'es', { sensitivity:'base' });
+      filas.sort((a, b) => cmp(a.ruta, b.ruta) || cmp(a.nombre, b.nombre) || (a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : 0));
+      return filas;
+    }
+
+    // ---------- ZIP (sin compresión) para el .xlsx ----------
+    const CRC_T = (()=>{ const t = new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[n]=c>>>0; } return t; })();
+    function crc32(b){ let c = 0xFFFFFFFF; for(let i=0;i<b.length;i++) c = CRC_T[(c ^ b[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+    function zipStore(archivos, fecha){
+      const enc = new TextEncoder();
+      const dosT = (fecha.getHours() << 11) | (fecha.getMinutes() << 5) | (fecha.getSeconds() >> 1);
+      const dosD = ((fecha.getFullYear() - 1980) << 9) | ((fecha.getMonth()+1) << 5) | fecha.getDate();
+      const partes = [], central = []; let off = 0;
+      archivos.forEach(f=>{
+        const nombre = enc.encode(f.nombre), datos = enc.encode(f.texto), crc = crc32(datos);
+        const lh = new DataView(new ArrayBuffer(30));
+        lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+        lh.setUint16(10, dosT, true); lh.setUint16(12, dosD, true); lh.setUint32(14, crc, true);
+        lh.setUint32(18, datos.length, true); lh.setUint32(22, datos.length, true); lh.setUint16(26, nombre.length, true); lh.setUint16(28, 0, true);
+        partes.push(new Uint8Array(lh.buffer), nombre, datos);
+        const ch = new DataView(new ArrayBuffer(46));
+        ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true);
+        ch.setUint16(12, dosT, true); ch.setUint16(14, dosD, true); ch.setUint32(16, crc, true);
+        ch.setUint32(20, datos.length, true); ch.setUint32(24, datos.length, true); ch.setUint16(28, nombre.length, true);
+        ch.setUint32(42, off, true);
+        central.push(new Uint8Array(ch.buffer), nombre);
+        off += 30 + nombre.length + datos.length;
+      });
+      const tamCentral = central.reduce((s, a) => s + a.length, 0);
+      const fin = new DataView(new ArrayBuffer(22));
+      fin.setUint32(0, 0x06054b50, true); fin.setUint16(8, archivos.length, true); fin.setUint16(10, archivos.length, true);
+      fin.setUint32(12, tamCentral, true); fin.setUint32(16, off, true);
+      return new Blob([...partes, ...central, new Uint8Array(fin.buffer)], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    }
+
+    function xmlEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function serialExcel(iso){
+      const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ''); if(!m) return null;
+      return (Date.UTC(+m[1], +m[2]-1, +m[3]) - Date.UTC(1899, 11, 30)) / 86400000;
+    }
+
+    function construirXlsx(filas, ahora){
+      const L = 'ABCDEFGHI';
+      const txt = (ref, s, st) => `<c r="${ref}" t="inlineStr" s="${st}"><is><t xml:space="preserve">${xmlEsc(s)}</t></is></c>`;
+      const num = (ref, n, st) => `<c r="${ref}" s="${st}"><v>${n}</v></c>`;
+      const filasXml = [];
+      filasXml.push(`<row r="1" ht="22" customHeight="1">${txt('A1', 'PrestaYa — Copia de préstamos activos', 1)}</row>`);
+      filasXml.push(`<row r="2">${txt('A2', 'Descargado: ' + fechaHoraTexto(ahora), 2)}</row>`);
+      filasXml.push(`<row r="4" ht="32" customHeight="1">${COLS.map((c, i) => txt(L[i] + '4', c.t === '#' ? '' : c.t, 3)).join('')}</row>`);
+      filas.forEach((f, i)=>{
+        const r = 5 + i, ser = serialExcel(f.fecha);
+        filasXml.push(`<row r="${r}">` +
+          num('A'+r, i+1, 5) + txt('B'+r, f.nombre, 4) +
+          (ser !== null ? num('C'+r, ser, 7) : txt('C'+r, '', 4)) +
+          num('D'+r, f.monto, 6) + num('E'+r, f.cuotas, 5) + num('F'+r, f.valorCuota, 6) +
+          num('G'+r, f.pagadas, 5) + num('H'+r, f.pendientes, 5) + txt('I'+r, f.ruta, 4) + '</row>');
+      });
+      const rt = 5 + filas.length, ult = rt - 1;
+      const suma = filas.reduce((s, f) => s + f.monto, 0);
+      const sumaF = filas.length ? `<f>SUM(D5:D${ult})</f>` : '';
+      filasXml.push(`<row r="${rt}">` + txt('A'+rt, '', 8) + txt('B'+rt, 'Total (' + filas.length + (filas.length === 1 ? ' préstamo)' : ' préstamos)'), 8) + txt('C'+rt, '', 8) +
+        `<c r="D${rt}" s="9">${sumaF}<v>${suma}</v></c>` + ['E','F','G','H','I'].map(l => txt(l+rt, '', 8)).join('') + '</row>');
+
+      const hoja = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<sheetViews><sheetView workbookViewId="0"><pane ySplit="4" topLeftCell="A5" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
+<sheetFormatPr defaultRowHeight="16"/>
+<cols>${COLS.map((c, i) => `<col min="${i+1}" max="${i+1}" width="${c.w}" customWidth="1"/>`).join('')}</cols>
+<sheetData>${filasXml.join('')}</sheetData>
+<pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/>
+<pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0"/>
+</worksheet>`;
+      const estilos = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<numFmts count="2"><numFmt numFmtId="164" formatCode="&quot;$&quot;#,##0"/><numFmt numFmtId="165" formatCode="dd/mm/yyyy"/></numFmts>
+<fonts count="4"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="14"/><color rgb="FF23305F"/><name val="Calibri"/></font><font><i/><sz val="10"/><color rgb="FF6B7280"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts>
+<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE9EDF8"/><bgColor indexed="64"/></patternFill></fill></fills>
+<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFB4B4B4"/></left><right style="thin"><color rgb="FFB4B4B4"/></right><top style="thin"><color rgb="FFB4B4B4"/></top><bottom style="thin"><color rgb="FFB4B4B4"/></bottom><diagonal/></border></borders>
+<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+<cellXfs count="10">
+<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
+<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>
+<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>
+<xf numFmtId="0" fontId="3" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
+<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"/>
+<xf numFmtId="1" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center"/></xf>
+<xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>
+<xf numFmtId="165" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center"/></xf>
+<xf numFmtId="0" fontId="3" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>
+<xf numFmtId="164" fontId="3" fillId="2" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/>
+</cellXfs>
+<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`;
+      const iso = ahora.toISOString().replace(/\.\d+Z$/, 'Z');
+      return zipStore([
+        { nombre:'[Content_Types].xml', texto:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>` },
+        { nombre:'_rels/.rels', texto:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/></Relationships>` },
+        { nombre:'docProps/core.xml', texto:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>PrestaYa — Copia de préstamos</dc:title><dc:creator>PrestaYa</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${iso}</dcterms:created></cp:coreProperties>` },
+        { nombre:'xl/workbook.xml', texto:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Préstamos" sheetId="1" r:id="rId1"/></sheets><definedNames><definedName name="_xlnm.Print_Titles" localSheetId="0">'Préstamos'!$4:$4</definedName></definedNames></workbook>` },
+        { nombre:'xl/_rels/workbook.xml.rels', texto:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>` },
+        { nombre:'xl/worksheets/sheet1.xml', texto:hoja },
+        { nombre:'xl/styles.xml', texto:estilos }
+      ], ahora);
+    }
+
+    // ---------- PDF (A4 horizontal; cada página se dibuja en un canvas) ----------
+    async function construirPdf(filas, ahora){
+      const PW = 842, PH = 595, M = 32, ESC = 2.5;
+      const fuente = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+      try{ if(document.fonts && document.fonts.ready) await document.fonts.ready; }catch(e){}
+      const anchos = [26, 190, 74, 86, 62, 78, 60, 70, 0];
+      anchos[8] = PW - 2*M - anchos.slice(0, 8).reduce((s, a) => s + a, 0);
+      const alin = ['c','l','c','r','c','r','c','c','l'];
+      const ALTO_CAB = 64, ALTO_TH = 30, ALTO_F = 19, PIE = 24;
+      const porPagina = Math.floor((PH - M - ALTO_CAB - ALTO_TH - PIE - M) / ALTO_F) - 1;
+      const paginas = [];
+      for(let i = 0; i < Math.max(1, filas.length); i += porPagina) paginas.push(filas.slice(i, i + porPagina));
+      const suma = filas.reduce((s, f) => s + f.monto, 0);
+      const jpegs = [];
+      for(let pi = 0; pi < paginas.length; pi++){
+        const cv = document.createElement('canvas'); cv.width = Math.round(PW*ESC); cv.height = Math.round(PH*ESC);
+        const g = cv.getContext('2d'); g.scale(ESC, ESC);
+        g.fillStyle = '#fff'; g.fillRect(0, 0, PW, PH); g.textBaseline = 'middle';
+        // Encabezado
+        g.fillStyle = '#23305F'; g.font = `800 20px ${fuente}`; g.fillText('Presta', M, M + 12);
+        const wP = g.measureText('Presta').width; g.fillStyle = '#22A06B'; g.fillText('Ya', M + wP, M + 12);
+        g.fillStyle = '#151A2D'; g.font = `600 13px ${fuente}`; g.fillText('Copia de préstamos activos', M, M + 36);
+        g.textAlign = 'right'; g.fillStyle = '#6B7280'; g.font = `500 11px ${fuente}`;
+        g.fillText('Descargado: ' + fechaHoraTexto(ahora), PW - M, M + 12);
+        g.fillText(filas.length + (filas.length === 1 ? ' préstamo' : ' préstamos'), PW - M, M + 36);
+        g.textAlign = 'left';
+        // Tabla
+        let y = M + ALTO_CAB;
+        const celdas = (vals, alto, opts) => {
+          let x = M;
+          if(opts.fondo){ g.fillStyle = opts.fondo; g.fillRect(M, y, PW - 2*M, alto); }
+          vals.forEach((v, i)=>{
+            const w = anchos[i];
+            g.strokeStyle = '#B4B4B4'; g.lineWidth = 0.6; g.strokeRect(x, y, w, alto);
+            g.fillStyle = opts.color || '#151A2D'; g.font = opts.font;
+            const lineas = Array.isArray(v) ? v : [v];
+            const a = opts.alin ? opts.alin[i] : 'c';
+            g.textAlign = a === 'l' ? 'left' : a === 'r' ? 'right' : 'center';
+            const tx = a === 'l' ? x + 5 : a === 'r' ? x + w - 5 : x + w/2;
+            lineas.forEach((ln, k)=>{
+              let s = String(ln);
+              while(s.length > 1 && g.measureText(s).width > w - 9) s = s.slice(0, -2) + '…';
+              g.fillText(s, tx, y + alto/2 + (k - (lineas.length - 1)/2) * 12);
+            });
+            x += w;
+          });
+          g.textAlign = 'left'; y += alto;
+        };
+        celdas([['#'], ['Nombre'], ['Fecha de','préstamo'], ['Monto de','préstamo'], ['Número','de cuotas'], ['Valor','cuota'], ['Cuotas','pagadas'], ['Cuotas','pendientes'], ['Ruta']],
+          ALTO_TH, { fondo:'#E9EDF8', font:`700 10.5px ${fuente}` });
+        const base = pi * porPagina;
+        paginas[pi].forEach((f, i)=>{
+          celdas([String(base + i + 1), f.nombre, fechaPrestamoTexto(f.fecha), pesos(f.monto), String(f.cuotas), pesos(f.valorCuota), String(f.pagadas), String(f.pendientes), f.ruta],
+            ALTO_F, { font:`500 10.5px ${fuente}`, alin, fondo: (i % 2) ? '#FAFBFD' : null });
+        });
+        if(!filas.length){
+          g.fillStyle = '#6B7280'; g.font = `500 11px ${fuente}`; g.fillText('No hay préstamos activos.', M + 6, y + 14); y += ALTO_F;
+        }
+        if(pi === paginas.length - 1 && filas.length){
+          celdas(['', 'Total (' + filas.length + (filas.length === 1 ? ' préstamo)' : ' préstamos)'), '', pesos(suma), '', '', '', '', ''],
+            ALTO_F, { fondo:'#E9EDF8', font:`700 10.5px ${fuente}`, alin });
+        }
+        g.fillStyle = '#A0A6B4'; g.font = `500 9.5px ${fuente}`; g.textAlign = 'center';
+        g.fillText('Página ' + (pi + 1) + ' de ' + paginas.length, PW/2, PH - M + 8);
+        const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.92));
+        jpegs.push({ bytes: new Uint8Array(await blob.arrayBuffer()), w: cv.width, h: cv.height });
+      }
+      // Ensamblado del PDF
+      const enc = new TextEncoder(); const partes = []; const offs = []; let pos = 0;
+      const put = x => { const b = typeof x === 'string' ? enc.encode(x) : x; partes.push(b); pos += b.length; };
+      const n = jpegs.length; // objetos: 1 catálogo, 2 páginas, 3 info, luego por página: página, contenido, imagen
+      const idPag = i => 4 + i*3;
+      put('%PDF-1.4\n');
+      const obj = (id, cuerpo) => { offs[id] = pos; put(id + ' 0 obj\n'); cuerpo(); put('\nendobj\n'); };
+      obj(1, () => put('<< /Type /Catalog /Pages 2 0 R >>'));
+      obj(2, () => put('<< /Type /Pages /Count ' + n + ' /Kids [' + jpegs.map((_, i) => idPag(i) + ' 0 R').join(' ') + '] >>'));
+      const d = ahora, fechaPdf = 'D:' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
+      obj(3, () => put('<< /Title (PrestaYa - Copia de prestamos) /Creator (PrestaYa) /CreationDate (' + fechaPdf + ') >>'));
+      jpegs.forEach((j, i)=>{
+        const p = idPag(i), c = p + 1, im = p + 2;
+        obj(p, () => put(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im${i} ${im} 0 R >> >> /Contents ${c} 0 R >>`));
+        const flujo = `q ${PW} 0 0 ${PH} 0 0 cm /Im${i} Do Q`;
+        obj(c, () => { put(`<< /Length ${flujo.length} >>\nstream\n`); put(flujo); put('\nendstream'); });
+        obj(im, () => { put(`<< /Type /XObject /Subtype /Image /Width ${j.w} /Height ${j.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${j.bytes.length} >>\nstream\n`); put(j.bytes); put('\nendstream'); });
+      });
+      const total = 4 + n*3, xref = pos;
+      let tabla = 'xref\n0 ' + total + '\n0000000000 65535 f \n';
+      for(let i = 1; i < total; i++) tabla += String(offs[i]).padStart(10, '0') + ' 00000 n \n';
+      put(tabla + 'trailer\n<< /Size ' + total + ' /Root 1 0 R /Info 3 0 R >>\nstartxref\n' + xref + '\n%%EOF');
+      return new Blob(partes, { type:'application/pdf' });
+    }
+
+    // ---------- Compartir (v715) ----------
+    function blobABase64(blob){
+      return new Promise((res, rej)=>{ const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = () => rej(r.error); r.readAsDataURL(blob); });
+    }
+    // Devuelve 'ok' | 'cancelado' | 'no-soportado'
+    async function compartirArchivo(blob, nombre, tipo){
+      const archivo = new File([blob], nombre, { type: tipo });
+      if(navigator.share && navigator.canShare && navigator.canShare({ files:[archivo] })){
+        try{ await navigator.share({ files:[archivo], title:'Copia PrestaYa', text:'Copia de préstamos — PrestaYa' }); return 'ok'; }
+        catch(err){ if(err && err.name === 'AbortError') return 'cancelado'; console.warn('navigator.share falló:', err); }
+      }
+      // APK (Capacitor): se escribe el archivo en caché y se comparte con el plugin nativo
+      const P = window.Capacitor && window.Capacitor.Plugins;
+      if(P && P.Share && P.Filesystem){
+        try{
+          const escrito = await P.Filesystem.writeFile({ path: nombre, data: await blobABase64(blob), directory: 'CACHE' });
+          const uri = (escrito && escrito.uri) || (await P.Filesystem.getUri({ path: nombre, directory: 'CACHE' })).uri;
+          try{ await P.Share.share({ title:'Copia PrestaYa', files:[uri], dialogTitle:'Compartir copia' }); }
+          catch(e1){
+            if(e1 && /cancel/i.test(String(e1.message || e1))) return 'cancelado';
+            await P.Share.share({ title:'Copia PrestaYa', url: uri, dialogTitle:'Compartir copia' });
+          }
+          return 'ok';
+        }catch(err){
+          if(err && /cancel/i.test(String(err.message || err))) return 'cancelado';
+          console.warn('Compartir nativo falló:', err);
+        }
+      }
+      return 'no-soportado';
+    }
+
+    // ---------- Entrega del archivo ----------
+    async function entregar(blob, nombre, tipo){
+      const enApk = typeof usaPuenteNativoRespaldos === 'function' && usaPuenteNativoRespaldos();
+      if(enApk){
+        const archivo = new File([blob], nombre, { type: tipo });
+        if(navigator.share && navigator.canShare && navigator.canShare({ files:[archivo] })){
+          try{ await navigator.share({ files:[archivo], title:'Copia PrestaYa' }); return true; }
+          catch(err){ if(err && err.name === 'AbortError') return false; }
+        }
+      }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = nombre;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      return true;
+    }
+
+    function aviso(texto){
+      const t = document.createElement('div'); t.className = 'copia-tabla-aviso'; t.textContent = texto;
+      document.body.appendChild(t);
+      requestAnimationFrame(() => t.classList.add('visible'));
+      setTimeout(()=>{ t.classList.remove('visible'); setTimeout(() => t.remove(), 300); }, 2600);
+    }
+
+    function abrir(){
+      const filas = filasCopia();
+      const clientes = new Set(filas.map(f => f.clienteId)).size;
+      resumenEl.textContent = filas.length
+        ? filas.length + (filas.length === 1 ? ' préstamo activo' : ' préstamos activos') + ' · ' + clientes + (clientes === 1 ? ' cliente' : ' clientes')
+        : 'No hay préstamos activos para descargar';
+      overlay.style.display = 'flex';
+      preparar();
+    }
+    function cerrar(){ overlay.style.display = 'none'; overlay.classList.remove('generando'); preparados = null; }
+
+    // v715: los dos archivos se preparan apenas se abre el panel, para que
+    // "Compartir" abra el menú del teléfono al instante (el navegador solo
+    // lo permite justo después del toque).
+    let preparados = null;
+    function preparar(){
+      const filas = filasCopia(), ahora = new Date();
+      const sello = ahora.getFullYear() + '-' + pad(ahora.getMonth()+1) + '-' + pad(ahora.getDate()) + '_' + pad(ahora.getHours()) + '-' + pad(ahora.getMinutes());
+      const base = 'PrestaYa_Copia_' + sello;
+      const xlsx = Promise.resolve().then(()=>{ const b = construirXlsx(filas, ahora); return { blob:b, nombre: base + '.xlsx', tipo: b.type }; });
+      const pdf = construirPdf(filas, ahora).then(b => ({ blob:b, nombre: base + '.pdf', tipo:'application/pdf' }));
+      xlsx.catch(()=>{}); pdf.catch(()=>{});
+      preparados = { xlsx, pdf, listo:{} };
+      xlsx.then(r => { if(preparados) preparados.listo.xlsx = r; }, ()=>{});
+      pdf.then(r => { if(preparados) preparados.listo.pdf = r; }, ()=>{});
+    }
+
+    let ocupado = false;
+    async function accion(formato, tipoAccion){
+      if(ocupado) return; ocupado = true;
+      try{
+        if(!preparados) preparar();
+        let arch = preparados.listo[formato];
+        if(!arch){ overlay.classList.add('generando'); arch = await preparados[formato]; overlay.classList.remove('generando'); }
+        const etiqueta = formato === 'xlsx' ? 'Excel' : 'PDF';
+        if(tipoAccion === 'compartir'){
+          const r = await compartirArchivo(arch.blob, arch.nombre, arch.tipo);
+          if(r === 'ok'){ cerrar(); }
+          else if(r === 'no-soportado'){
+            cerrar();
+            await entregar(arch.blob, arch.nombre, arch.tipo);
+            aviso('No se pudo abrir Compartir; el ' + etiqueta + ' se descargó');
+          }
+          return;
+        }
+        cerrar();
+        const ok = await entregar(arch.blob, arch.nombre, arch.tipo);
+        if(ok) aviso(etiqueta + ' descargado');
+      }catch(err){
+        console.warn('No se pudo generar la copia:', err);
+        cerrar(); alert('No se pudo generar el archivo. Intenta de nuevo.');
+      }finally{ ocupado = false; }
+    }
+
+    itemMenu.addEventListener('click', ()=>{ if(typeof cerrarMenuLateral === 'function') cerrarMenuLateral(); abrir(); });
+    overlay.querySelectorAll('.copia-tabla-btn').forEach(b => b.addEventListener('click', () => accion(b.dataset.formato, b.dataset.accion)));
+    document.getElementById('copia-tabla-cancelar').addEventListener('click', cerrar);
+    overlay.addEventListener('click', e => { if(e.target === overlay) cerrar(); });
+
+    // Para pruebas internas
+    window.__copiaTabla = { filasCopia, construirXlsx, construirPdf };
+  })();
+</script>
+
 </body>
 </html>
