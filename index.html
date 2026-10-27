@@ -9303,6 +9303,24 @@ body.modo-oscuro .copia-tabla-btn:not(.compartir){ background:#3A4A86; }
 body.modo-oscuro #copia-tabla-cancelar span{ color:#C9D3F2; }
 .copia-tabla-aviso{ position:fixed; left:50%; bottom:calc(96px + env(safe-area-inset-bottom)); transform:translate(-50%,12px); background:#23305F; color:#fff; font-size:13.5px; font-weight:600; padding:10px 16px; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.22); opacity:0; transition:opacity .25s, transform .25s; z-index:400; pointer-events:none; width:max-content; max-width:calc(100vw - 32px); text-align:center; }
 .copia-tabla-aviso.visible{ opacity:1; transform:translate(-50%,0); }
+
+/* v717: a pedido — sin avatar en las tarjetas de Clientes; el texto usa toda la tarjeta */
+html body #screen-clientes#screen-clientes .client-row-avatar-ilustrado{ display:none !important; }
+
+/* v718: "N de M cuotas" y "Saldo pendiente" bajan hasta alinearse con "Próxima cuota" */
+html body #screen-clientes#screen-clientes .client-row-cliente > .info{ position:relative !important; }
+html body #screen-clientes#screen-clientes .client-row-cliente > .info .crs-saldo{ position:absolute !important; right:0 !important; bottom:0 !important; margin:0 !important; }
+html body #screen-clientes#screen-clientes .client-row-cliente > .info .crs-cuotas{ position:absolute !important; right:0 !important; bottom:39px !important; margin:0 !important; }
+
+/* v719: píldora de ruta y contador de créditos bajan para alinearse con el nombre */
+html body #screen-clientes#screen-clientes .client-row.client-row-cliente > .client-row-badge{ top:12.5px !important; }
+html body #screen-clientes#screen-clientes .client-row .client-row-ruta.client-row-ruta-arriba{ top:12.5px !important; }
+
+/* v720: a pedido — sin avatar en Nuevo/Editar cliente ni en la ficha del cliente (solo oculto) */
+html body #selector-avatar-cliente{ display:none !important; }
+html body #screen-detalle-cliente #detalle-avatar{ display:none !important; }
+html body #screen-detalle-cliente #profile-card-cliente > div:has(> #cliente-estado-badge){ text-align:left !important; display:flex !important; align-items:center; flex-wrap:wrap; gap:6px 10px; justify-content:flex-start !important; padding-left:0 !important; margin-left:0 !important; }
+html body #screen-detalle-cliente #profile-card-cliente > div:has(> #cliente-estado-badge) > *{ margin-left:0 !important; }
 </style>
 
 </head>
