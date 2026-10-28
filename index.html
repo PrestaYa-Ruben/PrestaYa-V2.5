@@ -26323,6 +26323,9 @@ html body #screen-busqueda#screen-busqueda .client-row .client-row-ruta.client-r
     let y = 0; const plano = [];
     y += 30; plano.push(['guiones', y]);
     y += 38; plano.push(['titulo', y]);
+    // v724: número del crédito cuando el cliente tiene más de uno activo (mismo "# N" del contador)
+    const numCreditoRT = numeroCreditoCliente(prestamo);
+    if(numCreditoRT){ y += 26; plano.push(['credn', y, 'Crédito # ' + numCreditoRT]); }
     subtitulo.forEach((l, i) => { y += (i === 0 ? 24 : 17); plano.push(['sub', y, l]); });
     y += 26; plano.push(['guiones', y]);
     // v633: Cliente y nombre centrados; Cc y Tel retirados
@@ -26364,6 +26367,7 @@ html body #screen-busqueda#screen-busqueda .client-row .client-row-ruta.client-r
       if(t === 'guiones') guiones(yy);
       else if(t === 'puntos') puntos(yy);
       else if(t === 'titulo'){ ctx.fillStyle = TINTA; ctx.font = 'bold 22px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(negocio, W / 2, yy, W - 2 * PAD); }
+      else if(t === 'credn'){ ctx.fillStyle = TINTA; ctx.font = 'bold 17px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(e[2], W / 2, yy); }
       else if(t === 'sub'){ ctx.fillStyle = GRIS; ctx.font = '12.5px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(e[2], W / 2, yy); }
       else if(t === 'cen'){ ctx.fillStyle = TINTA; ctx.font = '14px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(e[2], W / 2, yy, X1 - X0); }
       else if(t === 'izq'){ ctx.fillStyle = TINTA; ctx.font = '14px ' + MONO; ctx.textAlign = 'left'; ctx.fillText(e[2], X0, yy, X1 - X0); }
