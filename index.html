@@ -9321,6 +9321,92 @@ html body #selector-avatar-cliente{ display:none !important; }
 html body #screen-detalle-cliente #detalle-avatar{ display:none !important; }
 html body #screen-detalle-cliente #profile-card-cliente > div:has(> #cliente-estado-badge){ text-align:left !important; display:flex !important; align-items:center; flex-wrap:wrap; gap:6px 10px; justify-content:flex-start !important; padding-left:0 !important; margin-left:0 !important; }
 html body #screen-detalle-cliente #profile-card-cliente > div:has(> #cliente-estado-badge) > *{ margin-left:0 !important; }
+
+/* v721: las tarjetas de cliente en "Buscar" usan el mismo diseño que en Clientes (copia de las reglas de #screen-clientes) */
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente{border-width:1.5px; border-left-width:6px;
+  box-shadow:0 6px 12px rgba(35,45,80,0.12), 0 2px 3px rgba(35,45,80,0.08), inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -3px 4px rgba(0,0,0,0.06);}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-al-dia{background:linear-gradient(160deg,#F1F9EF 0%,#E0F1DC 100%); border-color:#B5DCB1; border-left-color:#2FAE5F;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-mora{background:linear-gradient(160deg,#FDF0F0 0%,#F8DEDE 100%); border-color:#E8B2B2; border-left-color:#E0111F;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-sin-credito{background:linear-gradient(160deg,#E7EEFA 0%,#D3DFF4 100%); border-color:#A9BFE6;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-inhabilitado{background:linear-gradient(160deg,#F2F3F6 0%,#E1E4EA 100%); border-color:#C9CED8; border-left-color:#9AA2AE;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente::before{content:''; position:absolute; top:0; right:0; bottom:0; width:58%; opacity:0.45;
+  border-radius:0 12px 12px 0; pointer-events:none; z-index:0;
+  background-repeat:no-repeat; background-position:right bottom; background-size:cover;
+  -webkit-mask-image:linear-gradient(to right, transparent 0, #000 55%); mask-image:linear-gradient(to right, transparent 0, #000 55%);
+  filter:drop-shadow(0 1.2px 0 rgba(255,255,255,0.85)) drop-shadow(0 -1px 0 rgba(40,40,60,0.12));}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-al-dia::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax slice'%3E%3Cg fill='none' stroke='%238FC48B' stroke-width='1'%3E%3Cpath d='M-5 104 C10 80 35 75 25 50 S30 15 50 -4'/%3E%3Cpath d='M13 104 C28 80 53 75 43 50 S48 15 68 -4'/%3E%3Cpath d='M22 104 C37 80 62 75 52 50 S57 15 77 -4'/%3E%3Cpath d='M40 104 C55 80 80 75 70 50 S75 15 95 -4'/%3E%3Cpath d='M49 104 C64 80 89 75 79 50 S84 15 104 -4'/%3E%3Cpath d='M67 104 C82 80 107 75 97 50 S102 15 122 -4'/%3E%3Cpath d='M76 104 C91 80 116 75 106 50 S111 15 131 -4'/%3E%3Cpath d='M94 104 C109 80 134 75 124 50 S129 15 149 -4'/%3E%3Cpath d='M103 104 C118 80 143 75 133 50 S138 15 158 -4'/%3E%3Cpath d='M121 104 C136 80 161 75 151 50 S156 15 176 -4'/%3E%3C/g%3E%3C/svg%3E");}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-mora::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax meet'%3E%3Cg fill='%23DB9494'%3E%3Ccircle cx='114' cy='94' r='2.3'/%3E%3Ccircle cx='104' cy='94' r='2.3'/%3E%3Ccircle cx='94' cy='94' r='2.3'/%3E%3Ccircle cx='84' cy='94' r='2.3'/%3E%3Ccircle cx='74' cy='94' r='2.3'/%3E%3Ccircle cx='64' cy='94' r='2.3'/%3E%3Ccircle cx='54' cy='94' r='2.3'/%3E%3Ccircle cx='44' cy='94' r='2.3'/%3E%3Ccircle cx='34' cy='94' r='2.3'/%3E%3Ccircle cx='114' cy='84' r='2.3'/%3E%3Ccircle cx='104' cy='84' r='2.3'/%3E%3Ccircle cx='94' cy='84' r='2.3'/%3E%3Ccircle cx='84' cy='84' r='2.3'/%3E%3Ccircle cx='74' cy='84' r='2.3'/%3E%3Ccircle cx='64' cy='84' r='2.3'/%3E%3Ccircle cx='54' cy='84' r='2.3'/%3E%3Ccircle cx='44' cy='84' r='2.3'/%3E%3Ccircle cx='34' cy='84' r='2.3'/%3E%3Ccircle cx='114' cy='74' r='2.3'/%3E%3Ccircle cx='104' cy='74' r='2.3'/%3E%3Ccircle cx='94' cy='74' r='2.3'/%3E%3Ccircle cx='84' cy='74' r='2.3'/%3E%3Ccircle cx='74' cy='74' r='2.3'/%3E%3Ccircle cx='64' cy='74' r='2.3'/%3E%3Ccircle cx='54' cy='74' r='2.3'/%3E%3Ccircle cx='44' cy='74' r='2.3'/%3E%3Ccircle cx='34' cy='74' r='2.3'/%3E%3Ccircle cx='114' cy='64' r='2.3'/%3E%3Ccircle cx='104' cy='64' r='2.3'/%3E%3Ccircle cx='94' cy='64' r='2.3'/%3E%3Ccircle cx='84' cy='64' r='2.3'/%3E%3Ccircle cx='74' cy='64' r='2.3'/%3E%3Ccircle cx='64' cy='64' r='2.3'/%3E%3Ccircle cx='54' cy='64' r='2.3'/%3E%3Ccircle cx='44' cy='64' r='2.3'/%3E%3Ccircle cx='114' cy='54' r='2.3'/%3E%3Ccircle cx='104' cy='54' r='2.3'/%3E%3Ccircle cx='94' cy='54' r='2.3'/%3E%3Ccircle cx='84' cy='54' r='2.3'/%3E%3Ccircle cx='74' cy='54' r='2.3'/%3E%3Ccircle cx='64' cy='54' r='2.3'/%3E%3Ccircle cx='54' cy='54' r='2.3'/%3E%3Ccircle cx='114' cy='44' r='2.3'/%3E%3Ccircle cx='104' cy='44' r='2.3'/%3E%3Ccircle cx='94' cy='44' r='2.3'/%3E%3Ccircle cx='84' cy='44' r='2.3'/%3E%3Ccircle cx='74' cy='44' r='2.3'/%3E%3Ccircle cx='64' cy='44' r='2.3'/%3E%3Ccircle cx='114' cy='34' r='2.3'/%3E%3Ccircle cx='104' cy='34' r='2.3'/%3E%3Ccircle cx='94' cy='34' r='2.3'/%3E%3Ccircle cx='84' cy='34' r='2.3'/%3E%3Ccircle cx='74' cy='34' r='2.3'/%3E%3Ccircle cx='114' cy='24' r='2.3'/%3E%3Ccircle cx='104' cy='24' r='2.3'/%3E%3Ccircle cx='94' cy='24' r='2.3'/%3E%3Ccircle cx='114' cy='14' r='2.3'/%3E%3C/g%3E%3C/svg%3E"); width:34%; background-size:contain;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-sin-credito::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100' preserveAspectRatio='xMaxYMax slice'%3E%3Cg fill='none' stroke='%23A7BDE5' stroke-linecap='round' opacity='0.9'%3E%3Cpath d='M-20 104 C10 70 25 40 58 -6' stroke-width='1.6'/%3E%3Cpath d='M-3 104 C27 70 42 40 75 -6' stroke-width='1.6'/%3E%3Cpath d='M14 104 C44 70 59 40 92 -6' stroke-width='1.6'/%3E%3Cpath d='M31 104 C61 70 76 40 109 -6' stroke-width='1.6'/%3E%3Cpath d='M48 104 C78 70 93 40 126 -6' stroke-width='1.6'/%3E%3Cpath d='M65 104 C95 70 110 40 143 -6' stroke-width='1.6'/%3E%3Cpath d='M82 104 C112 70 127 40 160 -6' stroke-width='1.6'/%3E%3Cpath d='M99 104 C129 70 144 40 177 -6' stroke-width='1.6'/%3E%3C/g%3E%3C/svg%3E");}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-inhabilitado::before{display:none;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente > .info, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente > .client-row-avatar-ilustrado{position:relative; z-index:1;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente > .client-row-badge{z-index:2;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente .info .name{text-shadow:0 1px 0 rgba(255,255,255,0.75);}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente .crs-saldo-valor{text-shadow:0 1px 0 rgba(255,255,255,0.75), 0 2px 3px rgba(30,40,80,0.15);}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente .client-row-badge{box-shadow:0 2px 4px rgba(35,45,80,0.18), inset 0 1px 0 rgba(255,255,255,0.6);}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente{box-shadow:inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -3px 4px rgba(0,0,0,0.06) !important;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-al-dia{background:linear-gradient(160deg,#F7FCF6 0%,#ECF7EA 100%); border-color:#CBE6C8; border-left-color:#2FAE5F;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-mora{background:linear-gradient(160deg,#FEF7F7 0%,#FAECEC 100%); border-color:#F0CDCD; border-left-color:#E0111F;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-sin-credito{background:linear-gradient(160deg,#F5F8FD 0%,#E9EFF9 100%); border-color:#C9D6EE;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente::before{opacity:0.32;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-mora{background:linear-gradient(160deg,#FDEDEA 0%,#F8D8D2 100%); border-color:#E9A9A0; border-left-color:#E0111F;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-al-dia, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-mora, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-sin-credito, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-inhabilitado{background:linear-gradient(160deg,#FCFCFA 0%,#F6F7F5 100%) !important; border-color:#DCE1E7 !important;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-al-dia{border-left-color:#2FAE5F !important;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-mora{border-left-color:#E0111F !important;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-inhabilitado{border-left-color:#9AA2AE !important;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-sin-credito{border-left-color:#AEB5C0 !important;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-al-dia, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-mora, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-sin-credito, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-inhabilitado{border-top-color:#C3CBD6 !important; border-right-color:#C3CBD6 !important; border-bottom-color:#C3CBD6 !important;
+  border-top-width:2px !important; border-right-width:2px !important; border-bottom-width:2px !important; box-shadow:none !important;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente::before{filter:none !important;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente .info .name, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente .crs-saldo-valor, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente .client-row-badge{text-shadow:none !important;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente .client-row-badge{box-shadow:none !important;}
+#screen-busqueda .client-row.client-row-cliente .crs-saldo-valor{color:#DA7375 !important;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-con-alerta::before{bottom:28px;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-al-dia, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-mora, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-sin-credito, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-inhabilitado{box-shadow:0 2px 4px rgba(20,30,60,0.05), 0 4px 10px rgba(20,30,60,0.05) !important;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-al-dia, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-mora, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-sin-credito, body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente.client-row-inhabilitado{box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.95),
+    inset 0 -2px 3px rgba(20,30,60,0.06),
+    0 2px 0 #DEE3EA,
+    0 3px 0 #D2D8E0,
+    0 6px 11px rgba(20,30,60,0.09) !important; 
+  transition:transform .12s ease, box-shadow .12s ease;}
+body:not(.modo-oscuro) #screen-busqueda .client-row.client-row-cliente:active{transform:translateY(2px);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,0.95), 0 1px 0 #D2D8E0, 0 3px 6px rgba(20,30,60,0.08) !important;}
+#screen-busqueda .client-row-cliente .sello-riesgo{display:block !important; position:absolute !important; z-index:6; pointer-events:none;
+  right:4%; left:auto; top:50%; width:min(62%, 250px); margin:0 !important; padding:0 !important;
+  transform:translateY(-50%) rotate(-14deg);
+  opacity:.74; color:#9B1B22;}
+#screen-busqueda .client-row-cliente.con-sello-riesgo{position:relative;}
+#screen-busqueda .client-row-cliente .sello-riesgo{left:19% !important; right:auto !important; top:47% !important; width:min(37%, 155px) !important; transform:translateY(-50%) rotate(-12deg) !important;}
+#screen-busqueda .client-row-cliente .client-row-cuota{margin-top:2px;}
+html body #screen-busqueda .client-row.client-row-cliente .client-row-badge{background:linear-gradient(180deg,#FFD95C 0%,#F8BD21 55%,#E9A90E 100%) !important;
+  border:1px solid #D39A0A !important;
+  box-shadow:0 2px 0 #B98507, 0 3px 7px rgba(150,100,0,.35), inset 0 1px 0 rgba(255,255,255,.65) !important;
+  text-shadow:0 1px 0 rgba(255,255,255,.45);}
+html body #screen-busqueda .client-row.client-row-cliente .client-row-badge{background:linear-gradient(180deg,#FBC838 0%,#F5B81C 100%) !important;
+  border:1px solid #DDA510 !important;
+  box-shadow:0 1px 0 #CC9608, 0 1px 3px rgba(150,100,0,.18), inset 0 1px 0 rgba(255,255,255,.35) !important;
+  text-shadow:none;}
+html body #screen-busqueda .card.client-row{box-shadow:0 1.5px 0 rgba(20,30,60,.14), 0 2px 6px rgba(20,30,60,.07), inset 0 1px 0 rgba(255,255,255,.7) !important;}
+html body.modo-oscuro #screen-busqueda .card.client-row{box-shadow:0 1.5px 0 rgba(0,0,0,.55), 0 3px 8px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.08) !important;}
+#screen-busqueda#screen-busqueda .card.client-row{box-shadow:0 1.5px 0 rgba(20,30,60,.13), 0 2px 5px rgba(20,30,60,.06), inset 0 1px 0 rgba(255,255,255,.7) !important;}
+#screen-busqueda#screen-busqueda .card.client-row{border-top-width:1px !important; border-right-width:1px !important; border-bottom-width:1px !important;}
+#screen-busqueda#screen-busqueda .card.client-row:active{transform:none !important; box-shadow:0 1.5px 0 rgba(20,30,60,.13), 0 2px 5px rgba(20,30,60,.06), inset 0 1px 0 rgba(255,255,255,.7) !important;}
+body.modo-oscuro #screen-busqueda#screen-busqueda .card.client-row{box-shadow:0 1.5px 0 rgba(0,0,0,.55), 0 2px 5px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.08) !important;}
+#screen-busqueda .client-row .client-row-ruta.client-row-ruta-arriba{position:absolute; top:5px; right:34px; margin:0 !important; max-width:45%; z-index:2; font-size:12px; padding:2px 8px; white-space:nowrap; overflow:hidden;}
+#screen-busqueda .client-row .client-row-ruta.client-row-ruta-arriba span{overflow:hidden; text-overflow:ellipsis;}
+#screen-busqueda .client-row .client-row-ruta.client-row-ruta-arriba svg{width:12px; height:12px; flex-shrink:0;}
+html body #screen-busqueda .crs-frecuencia.crs-frec-diario{background:#FFF714 !important; border-color:#E0D800 !important; color:#3A3600 !important;}
+html body #screen-busqueda .crs-frecuencia.crs-frec-semanal{background:#92D050 !important; border-color:#7CB83E !important; color:#1E3A0A !important;}
+html body #screen-busqueda .crs-frecuencia.crs-frec-quincenal{background:#0068B3 !important; border-color:#005A9B !important; color:#FFFFFF !important;}
+html body #screen-busqueda .crs-frecuencia.crs-frec-mensual{background:#6E2F9D !important; border-color:#5E2687 !important; color:#FFFFFF !important;}
+html body #screen-busqueda .client-row .info .name.nombre-con-ruta-arriba{white-space:normal !important; overflow:hidden !important; text-overflow:clip !important; line-height:1.2; max-height:2.4em;}
+#screen-busqueda .client-row .info .name .nombre-espacio-ruta{float:right; height:1.2em;}
+html body #screen-busqueda#screen-busqueda .client-row-avatar-ilustrado{display:none !important;}
+html body #screen-busqueda#screen-busqueda .client-row-cliente > .info{position:relative !important;}
+html body #screen-busqueda#screen-busqueda .client-row-cliente > .info .crs-saldo{position:absolute !important; right:0 !important; bottom:0 !important; margin:0 !important;}
+html body #screen-busqueda#screen-busqueda .client-row-cliente > .info .crs-cuotas{position:absolute !important; right:0 !important; bottom:39px !important; margin:0 !important;}
+html body #screen-busqueda#screen-busqueda .client-row.client-row-cliente > .client-row-badge{top:12.5px !important;}
+html body #screen-busqueda#screen-busqueda .client-row .client-row-ruta.client-row-ruta-arriba{top:12.5px !important;}
 </style>
 
 </head>
@@ -19767,6 +19853,19 @@ html body #screen-detalle-cliente #profile-card-cliente > div:has(> #cliente-est
     const notasCreditos = prestamosGuardados.filter(p => p.clienteId === c.id).map(p => p.nota || '').join(' ');
     return quitarAcentos(((c.notas || '') + ' ' + notasCreditos).toLowerCase());
   }
+  // v722: prioridad del resultado — primero quien coincide por NOMBRE (empieza por lo
+  // buscado > alguna palabra empieza por lo buscado > lo contiene), luego teléfono /
+  // ruta / N° de crédito y de último quien solo coincide por NOTAS (personas referidas).
+  function prioridadBusquedaCliente(c, tSA, idsPorCredito){
+    if(!tSA) return 0;
+    const nombre = quitarAcentos((c.nombre || '').toLowerCase()).replace(/\s+/g, ' ').trim();
+    if(nombre.startsWith(tSA)) return 0;
+    if((' ' + nombre).includes(' ' + tSA)) return 1;
+    if(nombre.includes(tSA)) return 2;
+    if(quitarAcentos((c.telefono || '').toLowerCase()).includes(tSA) || quitarAcentos((c.ruta || '').toLowerCase()).includes(tSA) || (idsPorCredito && idsPorCredito.has(c.id))) return 3;
+    return 4;
+  }
+
   function buscarClientesGlobal(termino){
     const t = quitarAcentos(termino.trim().toLowerCase());
     if(!t) return [];
@@ -19778,13 +19877,17 @@ html body #screen-detalle-cliente #profile-card-cliente > div:has(> #cliente-est
         .map(p => p.clienteId)
     );
 
+    const tN = t.replace(/\s+/g, ' ');
     return clientesGuardados.filter(c =>
       quitarAcentos((c.nombre || '').toLowerCase()).includes(t) ||
+      quitarAcentos((c.nombre || '').toLowerCase()).replace(/\s+/g, ' ').includes(tN) ||
       quitarAcentos((c.telefono || '').toLowerCase()).includes(t) ||
       quitarAcentos((c.ruta || '').toLowerCase()).includes(t) ||
       textoNotasClienteBusqueda(c).includes(t) || // v698: también por notas
       clientesPorCredito.has(c.id)
-    );
+    ).map((c, i) => ({ c, i, p: prioridadBusquedaCliente(c, tN, clientesPorCredito) }))
+     .sort((a, b) => (a.p - b.p) || (a.i - b.i)) // v722: nombre primero, notas al final
+     .map(x => x.c);
   }
 
   function renderizarResultadosBusqueda(){
@@ -19928,6 +20031,16 @@ html body #screen-detalle-cliente #profile-card-cliente > div:has(> #cliente-est
       if(!hayVacioBase && filas.length && lista.every(c => dibujados.has(String(c.id)))){
         const ids = new Set(lista.map(c => String(c.id)));
         filas.forEach(f => { const ver = ids.has(String(f.dataset.id)); if((f.style.display !== 'none') !== ver) f.style.display = ver ? '' : 'none'; });
+        // v722: las tarjetas visibles siguen el orden de la búsqueda (nombre primero, notas al final)
+        const porId = new Map(filas.map(f => [String(f.dataset.id), f]));
+        const deseado = lista.map(c => porId.get(String(c.id))).concat(filas.filter(f => !ids.has(String(f.dataset.id))));
+        if(deseado.some((f, i) => f !== filas[i])){
+          const ancla = filas[0].previousSibling;
+          const frag = document.createDocumentFragment();
+          deseado.forEach(f => frag.appendChild(f));
+          if(ancla && ancla.parentNode === listaClientes) listaClientes.insertBefore(frag, ancla.nextSibling);
+          else listaClientes.insertBefore(frag, listaClientes.firstChild);
+        }
         let sinRes = listaClientes.querySelector(':scope > .busqueda-sin-resultados');
         if(!lista.length){
           if(!sinRes){ sinRes = document.createElement('div'); sinRes.className = 'empty-state busqueda-sin-resultados'; sinRes.innerHTML = '<p>No hay clientes que coincidan con la búsqueda.</p>'; listaClientes.appendChild(sinRes); }
@@ -33375,6 +33488,12 @@ html body #screen-detalle-cliente #profile-card-cliente > div:has(> #cliente-est
         }
         return true; // 'todos'
       }).sort((a, b) => {
+        // v722: con texto en el buscador, primero quien coincide por nombre y al final quien solo coincide por notas
+        if(termino){
+          const tP = quitarAcentos(termino).replace(/\s+/g, ' ');
+          const dp = prioridadBusquedaCliente(a, tP) - prioridadBusquedaCliente(b, tP);
+          if(dp) return dp;
+        }
         // CAMBIO: a pedido — 4 formas de ordenar (ver menú de la píldora de
         // orden). "Recientes/antiguos" usa la fecha de registro del cliente
         // (su id es la marca de tiempo de creación, la misma que muestra
