@@ -22746,11 +22746,28 @@ html body #screen-busqueda#screen-busqueda .client-row .client-row-ruta.client-r
 
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 33px Arial, sans-serif';
-    ctx.fillText(obtenerNombreNegocio(), cardX + 25, cardY + 48);
+    const anchoNombreResumen = anchoCard - 50 - (numeroCreditoCliente(prestamo) ? 185 : 0); // v723: deja sitio a la píldora del N° de crédito
+    ctx.fillText(obtenerNombreNegocio(), cardX + 25, cardY + 48, anchoNombreResumen);
     ctx.font = '18px Arial, sans-serif';
     ctx.globalAlpha = 0.85;
     ctx.fillText('Resumen de crédito', cardX + 25, cardY + 78);
     ctx.globalAlpha = 1;
+
+    // v723: si el cliente tiene más de un crédito activo, se muestra cuál es (mismo número del contador "# N")
+    const numCreditoResumen = numeroCreditoCliente(prestamo);
+    if(numCreditoResumen){
+      const txtN = 'Crédito # ' + numCreditoResumen;
+      ctx.font = 'bold 20px Arial, sans-serif';
+      const anchoPildora = ctx.measureText(txtN).width + 30, altoPildora = 38;
+      const pxP = cardX + anchoCard - 25 - anchoPildora, pyP = cardY + (alturaHeader - altoPildora) / 2;
+      ctx.fillStyle = '#FFFFFF';
+      trazarRectRedondeado(ctx, pxP, pyP, anchoPildora, altoPildora, altoPildora / 2);
+      ctx.fill();
+      ctx.fillStyle = '#007A36';
+      ctx.textAlign = 'center';
+      ctx.fillText(txtN, pxP + anchoPildora / 2, pyP + altoPildora / 2 + 7);
+      ctx.textAlign = 'left';
+    }
 
     // A pedido: se quitó el isotipo "P" con su círculo de la esquina
     // superior derecha; esa zona del encabezado queda limpia.
