@@ -9411,6 +9411,29 @@ html body #screen-busqueda#screen-busqueda .client-row .client-row-ruta.client-r
 /* v726: nombre del cliente un poco más grande en las tarjetas (Clientes y Buscar) */
 html body #screen-clientes#screen-clientes .client-row.client-row-cliente .info .name,
 html body #screen-busqueda#screen-busqueda .client-row.client-row-cliente .info .name{ font-size:17.5px !important; line-height:1.2 !important; }
+
+/* v729: Capital en la calle — selector de ruta arriba; "Circulando" + ojito junto al monto */
+#tarjeta-capital-calle .card-body{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px 10px; }
+#tarjeta-capital-calle .cc-estado{ display:flex; align-items:center; gap:8px; margin-left:auto; flex-shrink:0; }
+html body #screen-inicio #tarjeta-capital-calle .cc-selector-ruta span{ width:auto !important; min-width:58px !important; max-width:96px; padding:0 2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12.5px !important; }
+@media (max-width:380px){ html body #screen-inicio #tarjeta-capital-calle .cc-selector-ruta span{ max-width:78px; font-size:12px !important; } }
+/* v729: la tarjeta Capital en la calle sigue clara en modo oscuro → su píldora también */
+html body.modo-oscuro #screen-inicio #tarjeta-capital-calle .cc-selector-ruta{ background:#EEF2F8 !important; border:1px solid #DDE3EC !important; box-shadow:0 1px 2px rgba(20,30,60,.08) !important; }
+html body.modo-oscuro #screen-inicio #tarjeta-capital-calle .cc-selector-ruta span{ color:#1F2F68 !important; }
+html body.modo-oscuro #screen-inicio #tarjeta-capital-calle .cc-selector-ruta button{ background:#FFFFFF !important; box-shadow:0 1px 2px rgba(20,30,60,.1) !important; }
+html body.modo-oscuro #screen-inicio #tarjeta-capital-calle .cc-selector-ruta button svg{ stroke:#7A8494 !important; }
+
+/* v730: sin "Circulando" (solo el ojito) y el monto nunca baja de línea → la tarjeta no cambia de tamaño;
+   la píldora de rutas queda alineada con el título "CAPITAL EN LA CALLE" */
+#tarjeta-capital-calle .cc-estado .status-badge{ display:none !important; }
+#tarjeta-capital-calle .card-body{ flex-wrap:nowrap !important; }
+#tarjeta-capital-calle .card-body .amount-container{ min-width:0; flex:1 1 auto; white-space:nowrap; }
+#tarjeta-capital-calle .card-header{ align-items:flex-start !important; }
+#tarjeta-capital-calle .card-header .header-right{ margin-top:-6px; }
+#tarjeta-capital-calle .card-body .amount-container{ flex-wrap:nowrap !important; overflow:hidden; }
+#tarjeta-capital-calle .card-body .amount-container > *{ flex-shrink:0; }
+#tarjeta-capital-calle .card-body .amount-container{ height:48px; align-items:center !important; }
+#tarjeta-capital-calle #capital-calle-monto{ line-height:48px !important; }
 </style>
 
 </head>
@@ -9929,14 +9952,9 @@ html body #screen-busqueda#screen-busqueda .client-row.client-row-cliente .info 
         </div>
       </div>
 
+      <!-- v729: selector de ruta (mismo diseño que los selectores de fecha); "Circulando" y el ojito bajan junto al monto -->
       <div class="header-right">
-        <span class="status-badge">
-          <span class="pulse-dot"></span>
-          Circulando
-        </span>
-        <button type="button" class="capital-calle-ojo" id="btn-capital-calle-ojo" aria-label="Mostrar el monto">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-        </button>
+        <div class="grafico-ganancias-selector-mes selector-mes-tarjeta cc-selector-ruta"><button type="button" id="btn-cc-ruta-anterior" aria-label="Ruta anterior"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button><span id="cc-ruta-actual" role="button" aria-label="Cambiar de ruta">Todas</span><button type="button" id="btn-cc-ruta-siguiente" aria-label="Ruta siguiente"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button></div>
       </div>
     </div>
 
@@ -9945,6 +9963,15 @@ html body #screen-busqueda#screen-busqueda .client-row.client-row-cliente .info 
         <span class="currency-symbol">$</span>
         <span class="amount-number" id="capital-calle-monto">••••••</span>
         <span class="currency-code">COP</span>
+      </div>
+      <div class="cc-estado">
+        <span class="status-badge">
+          <span class="pulse-dot"></span>
+          Circulando
+        </span>
+        <button type="button" class="capital-calle-ojo" id="btn-capital-calle-ojo" aria-label="Mostrar el monto">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+        </button>
       </div>
     </div>
 
@@ -17292,8 +17319,22 @@ html body #screen-busqueda#screen-busqueda .client-row.client-row-cliente .info 
     const btnOjo = document.getElementById('btn-capital-calle-ojo');
     if(!elMonto) return;
 
-    const { capitalTotal } = calcularCarteraPorRuta();
-    const creditosVigentes = prestamosGuardados.filter(p => p.estado === 'activo').length;
+    let { capitalTotal } = calcularCarteraPorRuta();
+    let creditosVigentes = prestamosGuardados.filter(p => p.estado === 'activo').length;
+    // v729: ruta elegida en la píldora (null = Todas)
+    const opcionesRuta = rutasCapitalCalle();
+    if(ccRutaElegida !== null && !opcionesRuta.includes(ccRutaElegida)) ccRutaElegida = null;
+    const elRuta = document.getElementById('cc-ruta-actual');
+    if(elRuta){ elRuta.textContent = ccRutaElegida === null ? 'Todas' : (ccRutaElegida === '' ? 'Sin asignar' : ccRutaElegida); elRuta.title = elRuta.textContent; }
+    if(ccRutaElegida !== null){
+      const deRuta = prestamosGuardados.filter(p => {
+        if(p.estado !== 'activo' || !clienteEstaActivo(p.clienteId)) return false;
+        const c = clientesGuardados.find(x => x.id === p.clienteId);
+        return ((c && c.ruta) ? c.ruta : '') === ccRutaElegida;
+      });
+      capitalTotal = deRuta.reduce((s, p) => s + carteraPendientePrestamo(p), 0);
+      creditosVigentes = deRuta.length;
+    }
     const promedio = creditosVigentes > 0 ? capitalTotal / creditosVigentes : 0;
 
     // El símbolo "$" ya está fijo en el HTML (currency-symbol), así que
@@ -17301,11 +17342,39 @@ html body #screen-busqueda#screen-busqueda .client-row.client-row-cliente .info 
     elMonto.textContent = capitalCalleOculto ? '••••••' : formatearPesos(capitalTotal).replace('$', '');
     if(elCreditos) elCreditos.textContent = creditosVigentes;
     if(elPromedio) elPromedio.textContent = capitalCalleOculto ? '••••' : formatearPesos(Math.round(promedio)); // CORREGIDO: antes formatearMontoCompacto (ej. $15,3M) — a pedido, ahora el valor completo
+    // v730: si el monto no cabe en una línea, se achica la letra (la tarjeta nunca cambia de alto)
+    try{
+      const contMonto = elMonto.closest('.amount-container');
+      elMonto.style.fontSize = '';
+      if(contMonto && contMonto.clientWidth){
+        let tam = parseFloat(getComputedStyle(elMonto).fontSize) || 40;
+        while(contMonto.scrollWidth > contMonto.clientWidth + 0.5 && tam > 20){ tam -= 1; elMonto.style.fontSize = tam + 'px'; }
+      }
+    }catch(e){}
     if(btnOjo){
       btnOjo.innerHTML = capitalCalleOculto ? ICONO_OJO_CERRADO : ICONO_OJO_ABIERTO;
       btnOjo.setAttribute('aria-label', capitalCalleOculto ? 'Mostrar el monto' : 'Ocultar el monto');
     }
   }
+
+  // v729: rutas para la píldora de Capital en la calle (Todas, rutas guardadas, y "Sin asignar" si hay créditos sin ruta)
+  let ccRutaElegida = null;
+  function rutasCapitalCalle(){
+    const lista = (Array.isArray(rutasGuardadas) ? rutasGuardadas : []).filter(r => r);
+    const conCredito = new Set(prestamosGuardados.filter(p => p.estado === 'activo' && clienteEstaActivo(p.clienteId)).map(p => { const c = clientesGuardados.find(x => x.id === p.clienteId); return (c && c.ruta) ? c.ruta : ''; }));
+    conCredito.forEach(r => { if(r && !lista.includes(r)) lista.push(r); });
+    if(conCredito.has('')) lista.push('');
+    return lista;
+  }
+  function moverRutaCapitalCalle(paso){
+    const ops = [null].concat(rutasCapitalCalle());
+    let i = ops.indexOf(ccRutaElegida); if(i < 0) i = 0;
+    ccRutaElegida = ops[(i + paso + ops.length) % ops.length];
+    renderizarCapitalEnCalle();
+  }
+  document.getElementById('btn-cc-ruta-anterior').addEventListener('click', (e)=>{ e.stopPropagation(); moverRutaCapitalCalle(-1); });
+  document.getElementById('btn-cc-ruta-siguiente').addEventListener('click', (e)=>{ e.stopPropagation(); moverRutaCapitalCalle(1); });
+  document.getElementById('cc-ruta-actual').addEventListener('click', (e)=>{ e.stopPropagation(); moverRutaCapitalCalle(1); });
 
   document.getElementById('btn-capital-calle-ojo').addEventListener('click', ()=>{
     capitalCalleOculto = !capitalCalleOculto;
