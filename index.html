@@ -25416,6 +25416,16 @@ html.desplazando .bottom-nav .nav-cristal, html.desplazando #screen-nuevo-presta
     return (prestamo.plan || []).filter(c => estaCuotaPagada(prestamo, c.numero)).length;
   }
 
+  // v738: número de cuota que va en el recibo de UN pago: la cuota que ese pago dejó saldada
+  // (ej. el recibo de la cuota 3 dice "3 de 8" aunque el cliente ya vaya en la 5). Si el pago
+  // cubrió varias cuotas, la última que quedó completa. Si solo fue un abono parcial que no
+  // completó ninguna, se mantiene lo de antes: cuántas cuotas van pagadas.
+  function numeroCuotaReciboPago(prestamo, numeros){
+    const completas = (numeros || []).filter(n => n !== undefined && n !== null && estaCuotaPagada(prestamo, n));
+    if(completas.length) return Math.max.apply(null, completas);
+    return cuotasPagadasPrestamo(prestamo);
+  }
+
   // NUEVO: primera cuota del plan que todavía no está pagada (null si el
   // préstamo ya está completamente saldado). La usan los interruptores de
   // "Fecha próximo pago" del recibo.
@@ -29351,7 +29361,7 @@ html.desplazando .bottom-nav .nav-cristal, html.desplazando #screen-nuevo-presta
       // total, sin importar el número específico de cuota tocada por
       // este abono (así un abono que sobra hacia la siguiente cuota, sin
       // completarla, no la cuenta todavía).
-      ['Cuota', cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas],
+      ['Cuota', numeroCuotaReciboPago(prestamo, numerosCuota.length ? numerosCuota : [cuota.numero]) + ' de ' + prestamo.cuotas], // v738: la cuota de ESTE pago
       // NUEVO: a pedido — el comprobante normal también puede mostrar el
       // método de pago (se oculta con el interruptor "Método de pago").
       ['Método de pago', metodo],
@@ -30292,7 +30302,7 @@ html.desplazando .bottom-nav .nav-cristal, html.desplazando #screen-nuevo-presta
       // siempre muestra cuántas cuotas quedaron 100% pagadas sobre el
       // total (mismo dato que ya usaba el caso de mora), sin importar el
       // número específico de cuota tocada por este abono.
-      const textoCuota = esAbono ? 'Abono' : cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas;
+      const textoCuota = esAbono ? 'Abono' : (esRecargoMora ? cuotasPagadasPrestamo(prestamo) : numeroCuotaReciboPago(prestamo, [pago.cuota !== undefined ? pago.cuota : cuota.numero])) + ' de ' + prestamo.cuotas; // v738
       if(prestamo.soloInteres && !esRecargoMora) filas.push(['Concepto', conceptoAbono(pago) || conceptoReciboSoloInteres(prestamo, pago)]); // v528: sin "Cuota"
       else filas.push(['Cuota', textoCuota]);
     }
