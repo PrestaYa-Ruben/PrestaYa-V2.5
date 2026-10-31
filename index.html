@@ -9438,6 +9438,10 @@ html body.modo-oscuro #screen-inicio #tarjeta-capital-calle .cc-selector-ruta bu
 /* v734: botón flotante de Tareas = solo un ícono de calendario de hoja (sin recuadro), del mismo tamaño que el botón */
 html body .tareas-fab{ background:none !important; box-shadow:none !important; border:none !important; border-radius:0 !important; padding:0 !important; }
 html body .tareas-fab svg.tareas-fab-cal{ width:100% !important; height:100% !important; stroke:none !important; overflow:visible; filter:drop-shadow(0 4px 6px rgba(20,30,60,.28)) drop-shadow(0 1px 1.5px rgba(20,30,60,.20)); }
+
+/* v736: botón flotante "Agregar cliente" con el mismo estilo y tamaño del de Tareas (solo ícono, sin recuadro) */
+html body #btn-agregar-cliente-fab.agregar-cliente-fab{ width:50px !important; height:50px !important; background:none !important; background-image:none !important; box-shadow:none !important; border:none !important; border-radius:0 !important; padding:0 !important; }
+html body #btn-agregar-cliente-fab svg.agregar-cliente-fab-ico{ width:100% !important; height:100% !important; stroke:none !important; overflow:visible; filter:drop-shadow(0 4px 6px rgba(20,30,60,.28)) drop-shadow(0 1px 1.5px rgba(20,30,60,.20)); }
 </style>
 
 </head>
@@ -10115,7 +10119,21 @@ html body .tareas-fab svg.tareas-fab-cal{ width:100% !important; height:100% !im
   <!-- NUEVO: botón flotante "Agregar cliente" — mismo patrón que el FAB
        "Pagar" de Detalle del Préstamo, con degradado verde. -->
   <button type="button" class="agregar-cliente-fab" id="btn-agregar-cliente-fab" aria-label="Agregar cliente">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="17" y1="11" x2="23" y2="11"></line></svg>
+    <!-- v736: mismo estilo que el botón de Tareas — tablero verde con argollas, persona y "+" (sin recuadro) -->
+    <svg class="agregar-cliente-fab-ico" viewBox="0 0 100 100" aria-hidden="true">
+      <rect x="9" y="15" width="82" height="78" rx="15" fill="#25874C"/>
+      <rect x="9" y="15" width="82" height="78" rx="15" fill="none" stroke="#1C6B3B" stroke-width="2.5"/>
+      <rect x="12" y="18" width="76" height="20" rx="12" fill="#FFFFFF" opacity=".08"/>
+      <circle cx="27" cy="16" r="4.2" fill="#1C6B3B"/>
+      <circle cx="73" cy="16" r="4.2" fill="#1C6B3B"/>
+      <rect x="25" y="5" width="4" height="14" rx="2" fill="#C9CED6" stroke="#8D949E" stroke-width=".8"/>
+      <rect x="71" y="5" width="4" height="14" rx="2" fill="#C9CED6" stroke="#8D949E" stroke-width=".8"/>
+      <path d="M50 32c-8 0-13.5 5.8-13.5 13.6 0 8.6 5.6 16 13.5 16s13.5-7.4 13.5-16C63.5 37.8 58 32 50 32z" fill="#F4F6F5"/>
+      <path d="M36.6 44.2c2.5-5.2 7.6-7.6 13.4-7.6 3.4 0 6.4.9 8.8 2.7-2.1 2.3-6 3.6-10.6 3.6-4.3 0-8.2.5-11.6 1.3z" fill="#25874C" opacity=".0"/>
+      <path d="M28 82c0-11.4 9.4-18.6 22-18.6 6.3 0 11.8 1.8 15.6 5.1A14 14 0 0 0 61.5 82z" fill="#F4F6F5"/>
+      <circle cx="68.5" cy="72.5" r="11.8" fill="#25874C" stroke="#F4F6F5" stroke-width="3"/>
+      <path d="M68.5 66.2v12.6M62.2 72.5h12.6" stroke="#F4F6F5" stroke-width="3.6" stroke-linecap="round"/>
+    </svg>
     <!-- CAMBIO (a pedido): solo el ícono, sin texto -->
   </button>
 
