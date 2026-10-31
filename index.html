@@ -9442,6 +9442,13 @@ html body .tareas-fab svg.tareas-fab-cal{ width:100% !important; height:100% !im
 /* v736: botón flotante "Agregar cliente" con el mismo estilo y tamaño del de Tareas (solo ícono, sin recuadro) */
 html body #btn-agregar-cliente-fab.agregar-cliente-fab{ width:50px !important; height:50px !important; background:none !important; background-image:none !important; box-shadow:none !important; border:none !important; border-radius:0 !important; padding:0 !important; }
 html body #btn-agregar-cliente-fab svg.agregar-cliente-fab-ico{ width:100% !important; height:100% !important; stroke:none !important; overflow:visible; filter:drop-shadow(0 4px 6px rgba(20,30,60,.28)) drop-shadow(0 1px 1.5px rgba(20,30,60,.20)); }
+
+/* v737: scroll más fluido */
+/* 1) durante el scroll, sin desenfoque en la burbuja del menú inferior ni en encabezados con vidrio */
+html.desplazando .bottom-nav .nav-cristal, html.desplazando #screen-nuevo-prestamo .header{ -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+/* 2) listas largas de clientes: el teléfono no dibuja las tarjetas que están fuera de la pantalla
+      (recuerda su alto real para que la barra de scroll no salte) */
+#screen-clientes .client-row.client-row-cliente, #screen-busqueda .client-row.client-row-cliente{ content-visibility:auto; contain-intrinsic-size:auto 168px; }
 </style>
 
 </head>
@@ -36751,9 +36758,23 @@ html body #btn-agregar-cliente-fab svg.agregar-cliente-fab-ico{ width:100% !impo
       });
     }
     let pendiente = false;
+    // v737: el bloqueo de toques solo se escucha MIENTRAS hay un modal abierto. Antes quedaba
+    // puesto todo el tiempo en modo "no pasivo", y el navegador tenía que esperar a este código
+    // en cada movimiento del dedo antes de mover la pantalla (scroll menos fluido).
+    let escuchandoBloqueo = false;
     function revisar(){
       pendiente = false;
-      document.documentElement.classList.toggle('bloqueo-fondo', modalesAbiertos().length > 0);
+      const hay = modalesAbiertos().length > 0;
+      document.documentElement.classList.toggle('bloqueo-fondo', hay);
+      if(hay && !escuchandoBloqueo){
+        document.addEventListener('touchmove', bloquearSiFuera, { passive:false });
+        document.addEventListener('wheel', bloquearSiFuera, { passive:false });
+        escuchandoBloqueo = true;
+      }else if(!hay && escuchandoBloqueo){
+        document.removeEventListener('touchmove', bloquearSiFuera, { passive:false });
+        document.removeEventListener('wheel', bloquearSiFuera, { passive:false });
+        escuchandoBloqueo = false;
+      }
     }
     function programar(){ if(!pendiente){ pendiente = true; requestAnimationFrame(revisar); } }
     new MutationObserver(programar).observe(document.body, { subtree:true, childList:true, attributes:true, attributeFilter:['style','class'] });
@@ -36765,8 +36786,19 @@ html body #btn-agregar-cliente-fab svg.agregar-cliente-fab-ico{ width:100% !impo
       if(abiertos.some(m => m.contains(e.target))) return; // dentro del modal: permitido
       if(e.cancelable) e.preventDefault();
     }
-    document.addEventListener('touchmove', bloquearSiFuera, { passive:false });
-    document.addEventListener('wheel', bloquearSiFuera, { passive:false });
+    revisar(); // v737: los escuchadores se ponen/quitan desde revisar()
+  })();
+
+  // v737: mientras la pantalla se desliza, se apaga el desenfoque tipo vidrio de la burbuja de la
+  // barra inferior (se recalculaba en cada cuadro del scroll). Vuelve apenas se detiene el scroll.
+  (function(){
+    let t = null;
+    const raiz = document.documentElement;
+    window.addEventListener('scroll', ()=>{
+      if(!raiz.classList.contains('desplazando')) raiz.classList.add('desplazando');
+      clearTimeout(t);
+      t = setTimeout(()=> raiz.classList.remove('desplazando'), 160);
+    }, { passive:true, capture:true });
   })();
 </script>
 
