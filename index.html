@@ -9510,6 +9510,111 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
 .ruta-admin-tasa:focus-within{ border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-light); }
 #administrar-rutas-card #input-nueva-ruta{ min-width:0; flex:1 1 auto; } /* v747: el botón + ya no se sale del recuadro en pantallas angostas */
 .ruta-admin-tasa-ayuda{ font-size:12.5px; line-height:1.4; color:var(--text-secondary); text-align:left; margin:-4px 2px 12px; }
+
+/* v748: "Seleccionar nueva fecha" con más protagonismo */
+html body #screen-editar-fecha-cuota #btn-seleccionar-nueva-fecha{ background:linear-gradient(180deg,#2A3A7C 0%,#1F2F68 100%) !important; color:#FFFFFF !important; border:1px solid #1A285A !important; border-radius:14px !important; padding:13px 14px !important; font-size:15.5px !important; font-weight:800 !important; box-shadow:0 4px 12px rgba(31,47,104,.28), inset 0 1px 0 rgba(255,255,255,.14) !important; display:flex; align-items:center; justify-content:center; gap:9px; width:100%; }
+html body #screen-editar-fecha-cuota #btn-seleccionar-nueva-fecha svg{ width:20px !important; height:20px !important; stroke:#FFFFFF !important; }
+html body #screen-editar-fecha-cuota #btn-seleccionar-nueva-fecha:active{ transform:scale(.98); }
+html body #screen-editar-fecha-cuota #fila-nueva-fecha{ font-size:15px !important; border:1.5px solid rgba(34,165,89,.55) !important; box-shadow:0 2px 8px rgba(34,165,89,.15) !important; }
+html body #screen-editar-fecha-cuota #fila-nueva-fecha strong{ font-size:16px; font-weight:800; }
+html body #screen-editar-fecha-cuota .efc-fecha-actual{ opacity:.9; }
+body.modo-oscuro #screen-editar-fecha-cuota #btn-seleccionar-nueva-fecha{ background:linear-gradient(180deg,#3A4E9C 0%,#2C3D82 100%) !important; border-color:#4A5EA8 !important; }
+
+/* v749: diseño de tarjeta "Cristal" (Ajustes → Diseño tarjeta del crédito) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{
+  --ltg-ac:#1F8A4C; --ltg-navy:#1F3556; --ltg-sub:#5F6B7E; --ltg-linea:#DDE3EA; --ltg-seg:#8F98A8; --ltg-tag:#DDE2E9; --ltg-tag-t:#5F6B7E;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 120'%3E%3Cg fill='none' stroke='%23C9D2DD' stroke-width='1' opacity='.75'%3E%3Cpath d='M200 6 L90 40M200 14 L90 46M200 22 L90 52M200 30 L90 58M200 38 L90 64'/%3E%3C/g%3E%3C/svg%3E") no-repeat right top / 52% auto, linear-gradient(180deg,#F4F5F2 0%,#ECEEEA 100%) !important;
+  border:2px solid #B4BCC8 !important; border-radius:20px !important;
+  box-shadow:0 12px 26px rgba(30,45,75,.12), 0 2px 6px rgba(30,45,75,.08), inset 0 1px 0 rgba(255,255,255,.7) !important;
+  padding:12px 12px 10px !important; color:var(--ltg-navy); container-type:inline-size;
+}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-vencido{ --ltg-ac:#C2382F; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-finalizado{ --ltg-ac:#5B6576; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal::before, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal::after{ display:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-cab{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin:0 !important; padding:0 !important; border:0 !important; background:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nombre{ flex:1; min-width:0; font-size:clamp(16px, 4.7vw, 19px); font-weight:600; color:var(--ltg-navy); letter-spacing:-.4px; line-height:1.15; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ flex-shrink:0; display:inline-flex; align-items:center; gap:1px; padding:3px 12px; border-radius:999px; background:linear-gradient(180deg,#E6E9EE,#D3D8E0); color:#4A5568; font-size:14.5px; font-weight:700; box-shadow:0 3px 8px rgba(40,55,80,.16), inset 0 1px 0 rgba(255,255,255,.7); cursor:pointer; -webkit-tap-highlight-color:transparent; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-signo{ margin-right:1px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:linear-gradient(180deg,#F7D9D6,#EDB9B4); color:#A12A22; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto-fila{ display:flex; align-items:flex-end; justify-content:space-between; gap:10px; margin-top:0; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto{ flex-shrink:1; min-width:0; font-size:clamp(27px, 8.4vw, 33px); font-weight:500; line-height:1.08; letter-spacing:-1px; color:var(--ltg-ac); text-shadow:0 0 18px color-mix(in srgb, var(--ltg-ac) 38%, transparent); white-space:nowrap; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup{ flex-shrink:0; font-size:12.5px; font-weight:500; color:var(--ltg-sub); padding-bottom:4px; white-space:nowrap; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup b{ font-weight:600; color:var(--ltg-sub); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-datos{ display:grid; grid-template-columns:repeat(3,auto); justify-content:space-between; gap:6px; margin-top:10px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato{ display:flex; align-items:center; gap:6px; min-width:0; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato > div{ display:flex; flex-direction:column; min-width:0; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ico{ width:clamp(22px, 6.4vw, 27px); height:clamp(22px, 6.4vw, 27px); flex-shrink:0; color:var(--ltg-navy); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ico svg{ width:100%; height:100%; display:block; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-k{ font-size:clamp(9.5px, 2.8vw, 11px); font-weight:500; color:var(--ltg-navy); line-height:1.1; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato b{ font-size:clamp(12px, 3.5vw, 14px); font-weight:600; color:var(--ltg-navy); line-height:1.15; white-space:nowrap; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog{ margin-top:10px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-cab{ display:flex; align-items:center; gap:8px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-ico{ width:26px; height:23px; flex-shrink:0; color:var(--ltg-navy); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-ico svg{ width:100%; height:100%; display:block; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-tit{ font-size:clamp(16px, 4.6vw, 18px); font-weight:600; color:var(--ltg-navy); line-height:1.1; cursor:pointer; display:inline-block; -webkit-tap-highlight-color:transparent; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-sub{ font-size:12px; font-weight:500; color:var(--ltg-sub); margin-top:0; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-segs{ display:flex; margin-top:19px; padding-right:5px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg{ position:relative; flex:1 1 0; min-width:0; height:clamp(20px, 5.8vw, 24px); margin-left:-5px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg:first-child{ margin-left:0; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg:last-child{ margin-right:-5px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-fill{ position:absolute; inset:0; display:block; background:var(--ltg-seg); clip-path:polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%, 8px 50%); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg:first-child .ltg-fill{ clip-path:polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%); border-radius:8px 0 0 8px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg:last-child .ltg-fill{ clip-path:polygon(0 0, 100% 0, 100% 100%, 0 100%, 8px 50%); border-radius:0 8px 8px 0; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg:first-child:last-child{ margin-right:-5px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg:first-child:last-child .ltg-fill{ clip-path:none; border-radius:8px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{ background:linear-gradient(180deg,#34B26A,#1F8A4C); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.vencida .ltg-fill{ background:linear-gradient(180deg,#EE6A63,#C2382F); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ok{ position:absolute; right:12px; top:50%; transform:translateY(-50%); width:13px; height:13px; color:#fff; opacity:.95; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ok svg{ width:100%; height:100%; display:block; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra{ display:flex; gap:3px; height:12px; margin-top:16px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra i{ flex:1; border-radius:6px; background:var(--ltg-seg); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra i.pagada{ background:#1F8A4C; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra i.vencida{ background:#C2382F; }
+/* etiqueta numerada sobre cada tramo (se dibuja fuera del recorte con un hijo que no se recorta) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-segs{ position:relative; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag{ position:absolute; left:10px; top:-15px; min-width:18px; height:16px; padding:0 4px; border-radius:5px; background:var(--ltg-tag); color:var(--ltg-tag-t); font-style:normal; font-size:11px; font-weight:600; line-height:16px; text-align:center; box-shadow:0 2px 4px rgba(30,45,75,.18); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag::after{ content:''; position:absolute; left:50%; bottom:-4px; width:8px; height:8px; margin-left:-4px; background:inherit; transform:rotate(45deg); border-radius:0 0 2px 0; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); margin-top:8px; padding:6px 4px; border-radius:14px; background:#E3E6E2; border:1px solid #C3CAD4; box-shadow:inset 0 2px 4px rgba(20,30,50,.18), inset 0 -1px 0 rgba(255,255,255,.75); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div{ display:flex; flex-direction:column; align-items:center; gap:0; padding:1px 4px; min-width:0; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1.5px solid #D3DAE2; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res small{ font-size:clamp(11px, 3.1vw, 12.5px); font-weight:500; color:var(--ltg-navy); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b{ max-width:100%; font-size:clamp(13.5px, 4.1vw, 16.5px); font-weight:600; letter-spacing:-.3px; white-space:nowrap; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-navy{ color:var(--ltg-navy); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-verde{ color:#1F7A44; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-rojo{ color:#B42318; text-shadow:0 0 12px rgba(180,35,24,.22); }
+/* nota: botón "+ Agregar nota" ancho y con borde, como la referencia */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota{ margin-top:8px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia{ display:flex !important; justify-content:center; align-items:center; padding:8px 12px !important; border-radius:12px !important; background:#E3E6E2 !important; border:1.5px solid var(--ltg-navy) !important; box-shadow:inset 0 2px 4px rgba(20,30,50,.18), inset 0 -1px 0 rgba(255,255,255,.75) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia .loan-note-icono{ display:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia .loan-note-contenido{ flex:0 1 auto; text-align:center; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia .loan-note-agregar{ font-size:clamp(15px, 4.4vw, 17px); font-weight:500; color:var(--ltg-navy) !important; opacity:1 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note:not(.loan-note-vacia){ border-radius:14px !important; background:#E3E6E2 !important; border:1px solid #C3CAD4 !important; box-shadow:inset 0 2px 4px rgba(20,30,50,.18), inset 0 -1px 0 rgba(255,255,255,.75) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note-titulo{ color:var(--ltg-ac) !important; text-shadow:none !important; font-weight:700; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note-contenido span{ color:var(--ltg-navy) !important; text-shadow:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .loan-alerta-mora{ margin:10px 0 8px; }
+/* modo oscuro: misma estructura, solo paleta */
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{
+  --ltg-navy:#E6EBF5; --ltg-sub:#9AA6BC; --ltg-seg:#4A5366; --ltg-tag:#3A4358; --ltg-tag-t:#C9D2E3;
+  background:linear-gradient(180deg,var(--surface) 0%,var(--surface) 100%) !important; border-color:rgba(255,255,255,.08) !important;
+  box-shadow:0 1.5px 0 rgba(0,0,0,.55), 0 3px 8px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.08) !important; color:var(--ltg-navy);
+}
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-vencido{ --ltg-ac:#F07A72; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-activo,html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-al-dia{ --ltg-ac:#4CCB82; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-finalizado{ --ltg-ac:#9AA6BC; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ background:linear-gradient(180deg,#3A4358,#2E3648); color:#DCE3F0; box-shadow:0 3px 8px rgba(0,0,0,.35); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:linear-gradient(180deg,#6A2E2A,#4E211E); color:#FFC9C4; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ background:rgba(0,0,0,.20); border-color:rgba(255,255,255,.07); box-shadow:inset 0 2px 5px rgba(0,0,0,.5), inset 0 -1px 0 rgba(255,255,255,.06); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left-color:rgba(255,255,255,.14); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-verde{ color:#4CCB82; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-rojo{ color:#F07A72; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia{ background:rgba(0,0,0,.20) !important; border-color:rgba(255,255,255,.35) !important; box-shadow:inset 0 2px 5px rgba(0,0,0,.5), inset 0 -1px 0 rgba(255,255,255,.06) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note:not(.loan-note-vacia){ background:rgba(0,0,0,.20) !important; border-color:rgba(255,255,255,.07) !important; box-shadow:inset 0 2px 5px rgba(0,0,0,.5), inset 0 -1px 0 rgba(255,255,255,.06) !important; }
+/* vista previa en Ajustes */
+.dtp.dtp-cristal{ background:#fff; }
+.dtp.dtp-cristal .dtp-segs{ display:flex; gap:2px; margin:6px 0 3px; }
+.dtp.dtp-cristal .dtp-segs > i{ flex:1; height:6px; border-radius:2px; background:#8F98A8; display:block; }
+.dtp.dtp-cristal .dtp-segs > i:first-child{ background:#2C9E5A; }
+.dtp.dtp-cristal .dtp-nota{ background:#fff; border-color:#1F3556; }
 </style>
 
 </head>
@@ -11744,13 +11849,7 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
 
   <form class="form-section" id="form-editar-fecha-cuota">
 
-    <div class="card fecha-info-row">
-      <div class="icon-container blue">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-      </div>
-      <div>Fecha actual: <strong id="fecha-actual-cuota">—</strong></div>
-    </div>
-
+    <!-- v748: primero "Seleccionar nueva fecha" (destacado) y debajo "Fecha actual" -->
     <button type="button" class="btn-outline-share" id="btn-seleccionar-nueva-fecha">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><line x1="12" y1="14" x2="12" y2="18"></line><line x1="10" y1="16" x2="14" y2="16"></line></svg>
       Seleccionar nueva fecha
@@ -11762,6 +11861,13 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><polyline points="9 15 11 17 15 13"></polyline></svg>
       </div>
       <div>Nueva fecha: <strong id="nueva-fecha-cuota-texto">—</strong></div>
+    </div>
+
+    <div class="card fecha-info-row efc-fecha-actual">
+      <div class="icon-container blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+      </div>
+      <div>Fecha actual: <strong id="fecha-actual-cuota">—</strong></div>
     </div>
 
     <div class="mora-toggle-row">
@@ -14504,6 +14610,7 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
       <button type="button" class="dt-opcion" style="display:none;" aria-hidden="true" tabindex="-1" data-diseno="premium" role="radio"><div class="dtp dtp-premium"><i class="dtp-l blanco w55"></i><i class="dtp-pill"></i><div class="dtp-2" style="grid-template-columns:1fr auto; align-items:center; margin-top:4px;"><div><i class="dtp-l w40"></i><i class="dtp-l big oro w80"></i><i class="dtp-l w60"></i></div><i class="dtp-anillo dtp-anillo-oro"></i></div><div class="dtp-chips dtp-chips-glass"><i></i><i></i><i></i></div><i class="dtp-nota"></i></div><span class="dt-nombre">Premium</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
       <button type="button" class="dt-opcion" data-diseno="tabla" role="radio"><div class="dtp dtp-tabla"><i class="dtp-franja"></i><i class="dtp-pill dtp-pill-osc"></i><i class="dtp-l big verde w60"></i><i class="dtp-l big w80"></i><div class="dtp-4"><i></i><i></i><i></i><i></i></div><i class="dtp-barra dtp-barra-num"></i><i class="dtp-l azul w40"></i><i class="dtp-l rojo w55"></i><i class="dtp-nota"></i></div><span class="dt-nombre">Clásica</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
       <button type="button" class="dt-opcion" data-diseno="moderna" role="radio"><div class="dtp dtp-moderna"><i class="dtp-franja"></i><i class="dtp-l w55" style="background:#1B2A4E;"></i><i class="dtp-pill"></i><div class="dtp-2"><i class="dtp-caja dtp-caja-verde"><i class="dtp-l big rojo w80"></i></i><div><i class="dtp-l w90"></i><i class="dtp-l w90"></i><i class="dtp-l w90"></i></div></div><i class="dtp-pasos"><i></i><i></i><i></i><i></i></i><div class="dtp-3"><i class="dtp-l w70" style="background:#1B2A4E;"></i><i class="dtp-l azul w40"></i><i class="dtp-l rojo w70"></i></div><i class="dtp-nota"></i></div><span class="dt-nombre">Moderna</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      <button type="button" class="dt-opcion" data-diseno="cristal" role="radio"><div class="dtp dtp-cristal"><i class="dtp-l w40" style="background:#1F3556;"></i><i class="dtp-l big verde w60"></i><div class="dtp-3"><i class="dtp-l w70"></i><i class="dtp-l w70"></i><i class="dtp-l w70"></i></div><i class="dtp-segs"><i></i><i></i><i></i><i></i></i><div class="dtp-3"><i class="dtp-l w70" style="background:#1B2A4E;"></i><i class="dtp-l azul w40"></i><i class="dtp-l rojo w70"></i></div><i class="dtp-nota"></i></div><span class="dt-nombre">Cristal</span><span class="dt-check" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
     </div>
     <button type="button" class="btn-outline-share" id="btn-cerrar-diseno-tarjeta" style="width:100%; margin:14px 0 0;">Listo</button>
   </div>
@@ -26119,7 +26226,8 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
     { clave:'minimal', nombre:'Minimal', detalle:'Compacta: saldo, próximo pago y barra de progreso' },     // v589
     // v592: "Premium" retirado de la lista a pedido (su código queda, oculto)
     { clave:'tabla', nombre:'Clásica', detalle:'Deuda total, datos en columnas, progreso numerado y tabla Pagado / Saldo' }, // v592
-    { clave:'moderna', nombre:'Moderna', detalle:'Saldo destacado, datos con íconos, pasos de cuotas y resumen en 3 columnas' } // v599
+    { clave:'moderna', nombre:'Moderna', detalle:'Saldo destacado, datos con íconos, pasos de cuotas y resumen en 3 columnas' }, // v599
+    { clave:'cristal', nombre:'Cristal', detalle:'Monto en verde, datos con íconos, barra de cuotas numerada y resumen en 3 columnas' } // v749
   ];
   function obtenerDisenoTarjetaCredito(){
     let v = 'actual';
@@ -26287,6 +26395,84 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
       ? `<b>${proxValor}</b><small>${proxFecha}</small>`
       : `<b class="ltd-tile-ok">${prestamo.estado === 'finalizado' ? 'Crédito pagado' : 'Sin pendientes'}</b>`;
     const cuotasTxt = prestamo.soloInteres ? 'Interés ' + formatearPesos(cuotaRealPrestamo(prestamo)) : (prestamo.cuotas || plan.length) + ' × ' + formatearPesos(cuotaRealPrestamo(prestamo));
+    if(diseno === 'cristal'){
+      // v749: diseño "Cristal" (a partir de la imagen de referencia). Mismos datos y mismas funciones que "Moderna".
+      const totalPagar = Number(prestamo.totalAPagar) || plan.reduce((a, c) => a + (Number(c.total) || 0), 0);
+      const pctCuotas = plan.length ? Math.round(pagadas / plan.length * 100) : 0;
+      const fIni = new Date(prestamo.fecha + 'T00:00:00');
+      const MESES_G = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      const fechaIni = isNaN(fIni) ? '—' : fIni.getDate() + ' ' + MESES_G[fIni.getMonth()] + ' ' + fIni.getFullYear();
+      const IG = {
+        cal:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2.6"/><path d="M7.5 2.8v3.4M16.5 2.8v3.4M3 9.3h18"/><path d="M7.4 13h.01M12 13h.01M16.6 13h.01M7.4 17h.01M12 17h.01" stroke-width="2.2"/></svg>',
+        freq:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 10.5A7.7 7.7 0 0 0 5.6 7.2"/><path d="M5.2 3.6v3.9h3.9"/><path d="M4.5 13.5a7.7 7.7 0 0 0 13.9 3.3"/><path d="M18.8 20.4v-3.9h-3.9"/></svg>',
+        cuota:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="6.2" r="4"/><path d="M15 4.4v3.6M16.2 5.2h-2.2a.8.8 0 0 0 0 1.6h.9a.8.8 0 0 1 0 1.6h-2.2"/><path d="M2 14.5h3.2l3.2-1.6h4.4a1.5 1.5 0 0 1 0 3h-3M12.8 14.9l5.6-2.4a1.6 1.6 0 0 1 1.9 2.5L13 19.6H8.6L5.2 18H2z"/></svg>',
+        prog:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 11.5 8 7 12 10 18 3.8"/><circle cx="8" cy="7" r="1.1"/><circle cx="12" cy="10" r="1.1"/><circle cx="18" cy="3.8" r="1.1"/><rect x="2.5" y="15" width="19" height="5" rx="2.5"/><path d="M6 17.5l1.6-.9M9.4 17.5L11 16.6"/></svg>',
+        check:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 17.5 19 7"/></svg>'
+      };
+      const estG = c => estaCuotaPagada(prestamo, c.numero) ? 'pagada' : (cuotaVencida(prestamo, c) ? 'vencida' : '');
+      let segs;
+      if(plan.length && plan.length <= 12){
+        segs = '<div class="ltg-segs" style="--n:' + plan.length + '">' + plan.map(c => {
+          const e = estG(c);
+          return `<span class="ltg-seg ${e}" data-cuota="${c.numero}" role="button" aria-label="Cuota ${c.numero}"><em class="ltg-tag">${c.numero}</em><b class="ltg-fill">${e === 'pagada' ? '<i class="ltg-ok">' + IG.check + '</i>' : ''}</b></span>`;
+        }).join('') + '</div>';
+      }else{
+        segs = '<div class="ltg-barra">' + (plan.length <= 60 ? plan.map(c => `<i class="${estG(c)}"></i>`).join('') : `<i class="pagada" style="flex:${pagadas}"></i><i style="flex:${Math.max(plan.length - pagadas, 0)}"></i>`) + '</div>';
+      }
+      const cardG = document.createElement('div');
+      cardG.className = 'card loan-card-full loan-card-' + estadoVisual + ' ltd ltd-cristal';
+      cardG.innerHTML = `
+        <div class="ltd-cab ltg-cab">
+          <div class="ltg-nombre">${nombre}</div>
+          <div class="ltg-estado ltg-estado-${estadoVisual}" role="button" title="Ver ticket del crédito"><span class="ltg-signo">#</span>${nCredito || 1}</div>
+        </div>
+        <div class="ltg-monto-fila">
+          <div class="ltg-monto" role="button" aria-label="Ver recibo del crédito">${formatearPesos(prestamo.valor)}</div>
+          <div class="ltg-recup">Recuperado: <b>${formatearPesos(capitalRecuperadoPrestamo(prestamo))}</b></div>
+        </div>
+        <div class="ltg-datos">
+          <div class="ltg-dato"><span class="ltg-ico">${IG.cal}</span><div><span class="ltg-k">Fecha inicio:</span><b>${fechaIni}</b></div></div>
+          <div class="ltg-dato"><span class="ltg-ico">${IG.freq}</span><div><span class="ltg-k">Frecuencia de pago:</span><b>${frecuencia}</b></div></div>
+          <div class="ltg-dato"><span class="ltg-ico">${IG.cuota}</span><div><span class="ltg-k">Cuota:</span><b>${formatearPesos(cuotaRealPrestamo(prestamo))}</b></div></div>
+        </div>
+        <div class="ltg-prog">
+          <div class="ltg-prog-cab"><span class="ltg-prog-ico">${IG.prog}</span><div class="ltg-prog-txt"><div class="ltg-prog-tit" role="button" aria-label="Ver resumen del crédito">Progreso</div><div class="ltg-prog-sub">${pagadas} / ${plan.length} cuotas · ${pctCuotas}%</div></div></div>
+          ${segs}
+        </div>
+        <div class="ltg-res">
+          <div><small>Total a pagar</small><b class="ltg-navy">${formatearPesos(totalPagar)}</b></div>
+          <div><small>Ha pagado</small><b class="ltg-verde">${formatearPesos(abonado)}</b></div>
+          <div><small>Debe</small><b class="ltg-rojo">${formatearPesos(saldo)}</b></div>
+        </div>
+        <div class="ltd-nota-slot ltg-nota"><div class="loan-note"></div></div>`;
+      if(estadoVisual === 'vencido'){
+        const diasMoraAlerta = diasMoraYAnticipadoPrestamo(prestamo).mora;
+        if(diasMoraAlerta > 0){
+          const franja = document.createElement('div');
+          franja.className = 'loan-alerta-mora';
+          franja.innerHTML = '<div class="lam-titulo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 1.6 21h20.8z" fill="#D92D20"/><rect x="11" y="9" width="2" height="6.5" rx="1" fill="#fff"/><circle cx="12" cy="18" r="1.15" fill="#fff"/></svg><span>ATENCIÓN</span></div>'
+            + '<div class="lam-texto">Este crédito presenta <b>' + diasMoraAlerta + (diasMoraAlerta === 1 ? ' día' : ' días') + '</b> acumulados de mora.</div>';
+          cardG.querySelector('.ltg-cab').insertAdjacentElement('afterend', franja);
+        }
+      }
+      // si un valor no cabe en su espacio, se reduce solo su letra
+      requestAnimationFrame(()=> requestAnimationFrame(()=>{
+        cardG.querySelectorAll('.ltg-monto, .ltg-res b, .ltg-dato b, .ltg-recup').forEach(v=>{
+          let tam = parseFloat(getComputedStyle(v).fontSize), guard = 0;
+          while(v.scrollWidth > v.clientWidth + 0.5 && tam > 9 && guard++ < 40){ tam -= 0.5; v.style.setProperty('font-size', tam + 'px', 'important'); }
+        });
+      }));
+      // Mismas funciones que "Moderna": # → ticket · monto → recibo · "Progreso" → resumen · cuota → globito
+      cardG.querySelector('.ltg-estado').addEventListener('click', (e)=>{ e.stopPropagation(); abrirTicketPrestamo(prestamo); });
+      cardG.querySelector('.ltg-monto').addEventListener('click', (e)=>{ e.stopPropagation(); abrirReciboTermico(prestamo); });
+      cardG.querySelector('.ltg-prog-tit').addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); });
+      cardG.querySelectorAll('.ltg-seg[data-cuota]').forEach(sg => sg.addEventListener('click', (e)=>{ e.stopPropagation(); mostrarGloboCuota(sg, prestamo, Number(sg.dataset.cuota)); }));
+      if(cliente && cliente.alertaRiesgo && estadoVisual === 'vencido'){
+        cardG.classList.add('con-sello-riesgo');
+        cardG.insertAdjacentHTML('beforeend', selloRiesgoHTML());
+      }
+      return cardG;
+    }
     if(diseno === 'moderna'){
       // v599: diseño "Moderna" (a partir de la imagen de referencia, con mejoras visuales)
       const ICONOS_LTM = {"logo": "<svg viewBox=\"0 0 40 36\" aria-hidden=\"true\"><path d=\"M20 2 L38 34 H26 L20 22 L14 34 H2 Z\" fill=\"#1F8A4C\"/><path d=\"M20 2 L29 18 C24 17 19 20 17 26 L14 34 H2 Z\" fill=\"#3FBF6E\"/><path d=\"M16 30 C17 24 22 21 28 22\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" stroke-linecap=\"round\"/></svg>", "monedas": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><ellipse cx=\"15\" cy=\"6\" rx=\"6\" ry=\"2.6\"/><path d=\"M9 6v3.5c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6V6\"/><path d=\"M21 9.5V13c0 1.4-2.7 2.6-6 2.6\"/><ellipse cx=\"9\" cy=\"13.5\" rx=\"6\" ry=\"2.6\"/><path d=\"M3 13.5V17c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6v-3.5\"/></svg>", "cal": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15.5\" rx=\"2.5\"/><path d=\"M8 3v4M16 3v4M3.5 10h17\"/><path d=\"M8 14h.01M12 14h.01M16 14h.01M8 17.2h.01M12 17.2h.01\"/></svg>", "bolsa": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 3h6l-1.6 3.2h-2.8z\"/><path d=\"M10.6 6.2C6.5 8.3 4.5 12 4.5 15.2c0 3.4 3 5.3 7.5 5.3s7.5-1.9 7.5-5.3c0-3.2-2-6.9-6.1-9\"/><path d=\"M13.6 11.2c-.4-.6-1-.9-1.7-.9-1 0-1.8.6-1.8 1.4 0 1.9 3.8 1 3.8 3 0 .8-.8 1.4-1.9 1.4-.8 0-1.5-.3-1.9-.9M12 9.5v1M12 16.2v1\"/></svg>", "tarjeta": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"5.5\" width=\"18\" height=\"13\" rx=\"2.5\"/><path d=\"M3 10h18M7 15h4\"/></svg>", "barras": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"currentColor\"><rect x=\"3\" y=\"13\" width=\"4.5\" height=\"8\" rx=\"1.2\"/><rect x=\"9.75\" y=\"8.5\" width=\"4.5\" height=\"12.5\" rx=\"1.2\"/><rect x=\"16.5\" y=\"3.5\" width=\"4.5\" height=\"17.5\" rx=\"1.2\"/></svg>", "billetera": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M18 7V5.5A1.5 1.5 0 0 0 16.5 4H5.5A2.5 2.5 0 0 0 3 6.5v11A2.5 2.5 0 0 0 5.5 20h13a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2H5.5A2.5 2.5 0 0 1 3 6.5\"/><path d=\"M16 13.5h.01\"/></svg>", "mano": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"13\" cy=\"6\" r=\"3.2\"/><path d=\"M2.5 14.5h3l3.2-1.6c.9-.4 1.9-.4 2.8 0l2.3 1c.8.4.8 1.6-.1 1.9l-3.2.9\"/><path d=\"M5.5 20.5l2.6-1.3c.7-.3 1.4-.4 2.1-.2l3.3.9c.7.2 1.4.1 2-.3l4.6-3.2c.8-.6.3-1.9-.7-1.8l-4.8 1.2\"/><path d=\"M2.5 13.5v8\"/></svg>", "cal2": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15.5\" rx=\"2.5\"/><path d=\"M8 3v4M16 3v4M3.5 10h17\"/><path d=\"M8 14h.01M12 14h.01M16 14h.01M8 17.2h.01M12 17.2h.01M16 17.2h.01\"/></svg>", "check": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"5 12.5 10 17.5 19 7\"/></svg>"};
