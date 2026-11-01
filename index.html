@@ -3970,7 +3970,7 @@ body.modo-oscuro #screen-simulador .sim-campo-caja input{ color:var(--text); }
 .confirm-modal-overlay{ background:rgba(15,23,42,0.22); }
 /* NUEVO (a pedido): mientras haya un modal o el menú lateral abierto, lo de
    atrás no se puede desplazar ni usar — solo se manipula el modal/menú. */
-html.bloqueo-fondo, html.bloqueo-fondo body{ overflow:hidden !important; overscroll-behavior:none; }
+html.bloqueo-fondo, html.bloqueo-fondo body{ overscroll-behavior:none; } /* v745: sin overflow:hidden — en el teléfono devolvía la pantalla de fondo al inicio; el bloqueo de toques ya lo hace el código */
 .confirm-modal-overlay, .action-sheet-overlay, .menu-lateral-overlay, .menu-orden-overlay{ overscroll-behavior:contain; }
 .confirm-modal-overlay *, .action-sheet-overlay *, .menu-lateral-overlay *{ overscroll-behavior:contain; }
 .confirm-modal-card{
@@ -9476,9 +9476,11 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-etq, body.modo-oscuro #tarjeta-
 body.modo-oscuro #tarjeta-top-rutas-capital .trt-valor{ color:#E8F5EC; }
 /* despliegue del resto de rutas */
 #tarjeta-top-rutas-capital.top-rutas-plegable{ cursor:pointer; }
-#tarjeta-top-rutas-capital .top-rutas-extra{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .35s cubic-bezier(.22,1,.36,1); }
-#tarjeta-top-rutas-capital .top-rutas-extra.abierto{ grid-template-rows:1fr; }
-#tarjeta-top-rutas-capital .top-rutas-extra-interior{ overflow:hidden; min-height:0; }
+#tarjeta-top-rutas-capital .top-rutas-extra{ overflow:hidden; height:0; transition:height .55s cubic-bezier(.4,0,.2,1); will-change:height; } /* v746: altura animada desde JS */
+#tarjeta-top-rutas-capital .top-rutas-extra-interior{ min-height:0; }
+#tarjeta-top-rutas-capital .top-rutas-extra .top-ruta-item{ opacity:0; transform:translateY(-8px); transition:opacity .28s ease, transform .3s ease; transition-delay:0s; }
+#tarjeta-top-rutas-capital .top-rutas-extra.abierto .top-ruta-item{ opacity:1; transform:none; transition:opacity .4s ease, transform .45s cubic-bezier(.22,1,.36,1); transition-delay:calc(.06s + var(--i, 0) * .06s); }
+@media (prefers-reduced-motion: reduce){ #tarjeta-top-rutas-capital .top-rutas-extra, #tarjeta-top-rutas-capital .top-rutas-extra .top-ruta-item{ transition:none !important; } }
 #tarjeta-top-rutas-capital .top-rutas-extra-interior > .top-ruta-item{ border-top:1px solid var(--border); }
 #tarjeta-top-rutas-capital .top-rutas-toggle{ display:flex; align-items:center; justify-content:center; gap:6px; width:100%; margin-top:6px; padding:9px 0 2px; background:none; border:none; border-top:1px dashed var(--border); color:var(--primary); font-weight:700; font-size:13.5px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
 #tarjeta-top-rutas-capital .top-rutas-toggle svg{ width:16px; height:16px; stroke:currentColor; transition:transform .3s ease; }
@@ -9500,6 +9502,14 @@ body.modo-oscuro #screen-inicio .quick-item .icon-container.naranja{ background:
 #tarjeta-top-rutas-capital .trt-ojo svg{ width:20px; height:20px; stroke:currentColor; }
 body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,255,.06); border-color:rgba(47,174,95,.35); color:#8FD9AE; box-shadow:none; }
 #tarjeta-top-rutas-capital .trt-valor{ padding-right:46px; }
+
+/* v747: % de interés por ruta en Administrar Rutas */
+.ruta-admin-tasa{ display:flex; align-items:center; gap:2px; flex-shrink:0; height:32px; padding:0 8px 0 6px; border:1.5px solid var(--border); border-radius:10px; background:var(--surface); margin-right:6px; }
+.ruta-admin-tasa input{ width:34px; border:none; outline:none; background:transparent; text-align:right; font-size:14.5px; font-weight:800; color:var(--text); padding:0; font-family:inherit; }
+.ruta-admin-tasa span{ font-size:13px; font-weight:700; color:var(--text-secondary); }
+.ruta-admin-tasa:focus-within{ border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-light); }
+#administrar-rutas-card #input-nueva-ruta{ min-width:0; flex:1 1 auto; } /* v747: el botón + ya no se sale del recuadro en pantallas angostas */
+.ruta-admin-tasa-ayuda{ font-size:12.5px; line-height:1.4; color:var(--text-secondary); text-align:left; margin:-4px 2px 12px; }
 </style>
 
 </head>
@@ -14854,6 +14864,7 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
       </button>
     </div>
+    <div class="ruta-admin-tasa-ayuda">El <b>%</b> de cada ruta es el interés que se propone al crear un crédito, por cada mes (2 quincenas, 4 semanas o 24 días). Siempre puedes cambiarlo en el formulario. Clientes sin ruta: 10%.</div>
     <div id="lista-administrar-rutas" style="text-align:left; max-height:280px; overflow-y:auto; -webkit-overflow-scrolling:touch;"></div>
     <button type="button" class="confirm-modal-btn cancelar" id="btn-cerrar-administrar-rutas" style="width:100%; margin-top:16px;">Cerrar</button>
   </div>
@@ -17386,9 +17397,10 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
     if(resto.length){
       const envoltura = document.createElement('div');
       envoltura.className = 'top-rutas-extra' + (topRutasExpandido ? ' abierto' : '');
+      envoltura.style.height = topRutasExpandido ? 'auto' : '0px'; // v746: altura animada desde JS
       const interior = document.createElement('div');
       interior.className = 'top-rutas-extra-interior';
-      resto.forEach((ruta, i)=> interior.appendChild(crearItem(ruta, i + 1)));
+      resto.forEach((ruta, i)=>{ const it = crearItem(ruta, i + 1); it.style.setProperty('--i', i); interior.appendChild(it); });
       envoltura.appendChild(interior);
       lista.appendChild(envoltura);
 
@@ -17420,6 +17432,23 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
     const btn = tarjeta.querySelector('.top-rutas-toggle');
     if(!env || !btn) return;
     topRutasExpandido = !topRutasExpandido;
+    // v746: despliegue/plegado suave — se anima la altura real (px) y las rutas aparecen una tras otra
+    const reducir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const alFinal = (e)=>{ if(e && e.target !== env) return; env.removeEventListener('transitionend', alFinal); if(topRutasExpandido) env.style.height = 'auto'; };
+    env.removeEventListener('transitionend', env._alFinal || (()=>{}));
+    env._alFinal = alFinal;
+    if(reducir){
+      env.style.height = topRutasExpandido ? 'auto' : '0px';
+    }else if(topRutasExpandido){
+      env.style.height = '0px';
+      void env.offsetHeight;
+      env.style.height = env.scrollHeight + 'px';
+      env.addEventListener('transitionend', alFinal);
+    }else{
+      env.style.height = env.scrollHeight + 'px';
+      void env.offsetHeight;
+      env.style.height = '0px';
+    }
     env.classList.toggle('abierto', topRutasExpandido);
     btn.classList.toggle('abierto', topRutasExpandido);
     btn.querySelector('span').textContent = topRutasExpandido ? 'Ver menos' : btn.dataset.textoVer;
@@ -20219,6 +20248,29 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
   // llave de localStorage). El listado propio de nombres de ruta se
   // guarda aparte, en su propia llave de localStorage.
   // ==========================================================
+  // ==========================================================
+  // v747: % de interés por bloque de cada ruta (Administrar Rutas). Es el % que se
+  // propone al crear un crédito (por cada mes / 2 quincenas / 4 semanas / 24 días);
+  // siempre se puede editar a mano. Rubén 10%, las demás rutas 7%, sin ruta 10%.
+  // ==========================================================
+  const TASA_RUTAS_KEY = 'prestaya_tasa_rutas';
+  const normRutaTasa = r => String(r || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+  function tasaRutaPorDefecto(ruta){
+    if(!ruta) return 10;                       // "Sin asignar"
+    return normRutaTasa(ruta) === 'ruben' ? 10 : 7;
+  }
+  function cargarTasasRutas(){
+    try{ const g = JSON.parse(localStorage.getItem(TASA_RUTAS_KEY) || 'null'); return (g && typeof g === 'object') ? g : null; }catch(e){ return null; }
+  }
+  let tasasRutas = cargarTasasRutas() || {};
+  function guardarTasasRutas(){
+    try{ localStorage.setItem(TASA_RUTAS_KEY, JSON.stringify(tasasRutas)); }catch(e){}
+  }
+  function tasaBaseRuta(ruta){
+    if(!ruta) return 10;
+    const v = Number(tasasRutas[ruta]);
+    return (isFinite(v) && v >= 0 && tasasRutas[ruta] !== '' && tasasRutas[ruta] !== null && tasasRutas[ruta] !== undefined) ? v : tasaRutaPorDefecto(ruta);
+  }
   const RUTAS_KEY = 'prestapp_rutas';
   let rutasEnMemoria = null;
 
@@ -21354,10 +21406,11 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
   // campo Interés y llama a sincronizarInteresCuota() ya existente para
   // que la Cuota deseada se recalcule con la MISMA fórmula de siempre.
   const BLOQUE_INTERES_POR_FRECUENCIA = { diario:24, semanal:4, quincenal:2, mensual:1 };
-  function calcularInteresAutomaticoPorBloque(cuotas, frecuencia){
+  function calcularInteresAutomaticoPorBloque(cuotas, frecuencia, porcentajeBloque){
     const bloque = BLOQUE_INTERES_POR_FRECUENCIA[frecuencia];
     if(!bloque || !cuotas || cuotas <= 0) return null;
-    return Math.ceil(cuotas / bloque) * 10;
+    const base = (typeof porcentajeBloque === 'number' && porcentajeBloque >= 0) ? porcentajeBloque : 10; // v747: % por bloque según la ruta
+    return Math.round(Math.ceil(cuotas / bloque) * base * 100) / 100;
   }
   function autocompletarInteresPorBloque(){
     // Solo aplica en Modo 1 (% Interés como dato de entrada) — en Modo 2
@@ -21366,7 +21419,7 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
     if(!modoInteresActivo) return;
     if(formularioSoloInteres) return; // NUEVO (v527): en solo intereses el % lo escribe el usuario
     const cuotas = parseInt(inputCuotasPrestamo.value, 10) || 0;
-    const porcentaje = calcularInteresAutomaticoPorBloque(cuotas, selectFrecuencia.value);
+    const porcentaje = calcularInteresAutomaticoPorBloque(cuotas, selectFrecuencia.value, tasaBaseRuta(clienteEnDetalle ? (clienteEnDetalle.ruta || '') : '')); // v747
     if(porcentaje === null) return;
     inputTasaInteres.value = textoTasaSinCeros(porcentaje);
     interesEditadoManualmente = false; // se acaba de autocompletar: no es una edición manual del usuario
@@ -22269,6 +22322,14 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
 
   function cerrarNuevoPrestamo(){
     screenNuevoPrestamo.style.display = 'none';
+    // v745: si se abrió desde Acciones Rápidas (Inicio), regresa a Inicio (al mismo punto)
+    if(origenFormularioPrestamo === 'inicio'){
+      origenFormularioPrestamo = 'detalleCliente';
+      screenDetalleCliente.style.display = 'none';
+      screenInicio.style.display = 'block';
+      bottomNav.style.display = 'flex';
+      return;
+    }
     if(origenFormularioPrestamo === 'detallePrestamo' && prestamoEditandoId !== null){
       const actualizado = prestamosGuardados.find(p => p.id === prestamoEditandoId);
       if(actualizado){ abrirDetallePrestamo(actualizado); }
@@ -23326,6 +23387,7 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
         plan,
         pagos: [],
         totalAPagar,
+        tasaBaseBloque: tasaBaseRuta(clienteEnDetalle.ruta || ''), // v747: % por bloque de la ruta al crear (lo muestra el recibo)
         renovadoDesdeId: renovacionPrestamoOrigenId || null // NUEVO: a pedido — deja huella de "Renovar crédito"
       });
 
@@ -26595,7 +26657,7 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
     const filas = [
       ['Fecha de préstamo:', fIni ? fGuion(fIni) : '—'],
       ['Monto otorgado:', pesos(prestamo.valor), true],
-      ['Tasa interés mensual:', '10%'], // v693: fijo en 10% a pedido (antes calculado: tasaMensualTxt)
+      ['Tasa interés mensual:', (typeof prestamo.tasaBaseBloque === 'number' ? textoTasaSinCeros(prestamo.tasaBaseBloque) : '10') + '%'], // v693: fijo 10% · v747: % de la ruta al crear (7% en rutas ≠ Rubén)
       ['Número de cuotas:', prestamo.soloInteres ? 'Sin plazo' : String(plan.length || prestamo.cuotas || 0), true],
       ['Frecuencia de pago:', (nombresFrec[prestamo.frecuencia] || prestamo.frecuencia || '—').toUpperCase(), true],
       ['Valor por cuota:', pesos(cuotaRealPrestamo(prestamo)), true],
@@ -33984,11 +34046,24 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
       fila.innerHTML = `
         <button type="button" class="ruta-admin-color" aria-label="Cambiar color de la ruta" style="background:${colorActualRuta}"></button>
         <span class="ruta-admin-nombre">${ruta}</span>
+        <label class="ruta-admin-tasa" title="% de interés por bloque al crear un crédito"><input type="text" inputmode="decimal" maxlength="5" value="${textoTasaSinCeros(tasaBaseRuta(ruta))}" aria-label="Porcentaje de interés de la ruta"><span>%</span></label>
         <button type="button" class="ruta-admin-eliminar" aria-label="Eliminar ruta">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
         </button>
       `;
       fila.querySelector('.ruta-admin-eliminar').addEventListener('click', ()=> eliminarRuta(ruta));
+      // v747: % de interés por bloque de esta ruta
+      const inpTasa = fila.querySelector('.ruta-admin-tasa input');
+      const guardarTasa = ()=>{
+        const v = parseFloat(String(inpTasa.value).replace(',', '.'));
+        if(!isFinite(v) || v < 0 || v > 100){ inpTasa.value = textoTasaSinCeros(tasaBaseRuta(ruta)); return; }
+        tasasRutas = Object.assign({}, tasasRutas, { [ruta]: Math.round(v * 100) / 100 });
+        guardarTasasRutas();
+        inpTasa.value = textoTasaSinCeros(tasasRutas[ruta]);
+      };
+      inpTasa.addEventListener('change', guardarTasa);
+      inpTasa.addEventListener('blur', guardarTasa);
+      inpTasa.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); inpTasa.blur(); } });
       listaAdministrarRutas.appendChild(fila);
 
       // NUEVO: paleta de colores de la ruta — se despliega bajo la fila al
@@ -34035,6 +34110,7 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
         rutasGuardadas.forEach(r=>{ if(r !== ruta) coloresFijados[r] = colorDeRuta(r); });
         rutasGuardadas = rutasGuardadas.filter(r => r !== ruta);
         guardarRutasStorage(rutasGuardadas);
+        if(tasasRutas[ruta] !== undefined){ const t = Object.assign({}, tasasRutas); delete t[ruta]; tasasRutas = t; guardarTasasRutas(); } // v747
         coloresRutas = coloresFijados;
         guardarColoresRutas(coloresRutas);
 
@@ -37589,6 +37665,9 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
           abrirDetalleCliente(cliente);
           const btnNuevo = document.getElementById('btn-nuevo-prestamo-cliente');
           if(btnNuevo) btnNuevo.click();
+          // v745: si el formulario sí se abrió, al cerrarlo (o al guardar) se vuelve a Inicio
+          const form = document.getElementById('screen-nuevo-prestamo');
+          if(form && form.style.display === 'block') origenFormularioPrestamo = 'inicio';
         });
         lista.appendChild(fila);
       });
@@ -37601,6 +37680,34 @@ body.modo-oscuro #tarjeta-top-rutas-capital .trt-ojo{ background:rgba(255,255,25
     buscador.addEventListener('input', pintar);
     document.getElementById('btn-cerrar-selector-cliente-prestamo').addEventListener('click', ()=>{ ov.style.display = 'none'; });
     ov.addEventListener('click', e => { if(e.target === ov) ov.style.display = 'none'; });
+  })();
+</script>
+
+<script>
+  // ==========================================================
+  // v745: memoria de posición en Inicio. Al salir de Inicio (Acciones Rápidas,
+  // Préstamo, Finanzas, etc.) y volver, la pantalla regresa al mismo punto
+  // donde estabas, en vez de saltar arriba del todo.
+  // ==========================================================
+  (function(){
+    const inicio = document.getElementById('screen-inicio');
+    if(!inicio) return;
+    const visible = () => inicio.style.display !== 'none' && getComputedStyle(inicio).display !== 'none';
+    let yInicio = 0;
+    let estabaVisible = visible();
+    window.addEventListener('scroll', ()=>{ if(visible()) yInicio = window.scrollY; }, { passive:true });
+    new MutationObserver(()=>{
+      const ahora = visible();
+      if(ahora && !estabaVisible){
+        const objetivo = yInicio;
+        if(objetivo > 0){
+          const ir = () => { if(visible()) window.scrollTo(0, objetivo); };
+          requestAnimationFrame(()=>{ ir(); requestAnimationFrame(ir); });
+          setTimeout(ir, 80);
+        }
+      }
+      estabaVisible = ahora;
+    }).observe(inicio, { attributes:true, attributeFilter:['style','class'] });
   })();
 </script>
 </body>
