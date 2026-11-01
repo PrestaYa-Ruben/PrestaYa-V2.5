@@ -9449,6 +9449,20 @@ html.desplazando .bottom-nav .nav-cristal, html.desplazando #screen-nuevo-presta
 /* 2) listas largas de clientes: el teléfono no dibuja las tarjetas que están fuera de la pantalla
       (recuerda su alto real para que la barra de scroll no salte) */
 #screen-clientes .client-row.client-row-cliente, #screen-busqueda .client-row.client-row-cliente{ content-visibility:auto; contain-intrinsic-size:auto 168px; }
+
+/* v739: más protagonismo a "Cuota: $valor" en las tarjetas de Clientes y Buscar */
+html body #screen-clientes#screen-clientes .client-row-cliente .info .client-row-cuota > span,
+html body #screen-busqueda#screen-busqueda .client-row-cliente .info .client-row-cuota > span{ font-size:15.5px !important; color:#1F2A44 !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:calc(100% - 26px); }
+html body #screen-clientes#screen-clientes .client-row-cuota .crc-etq,
+html body #screen-busqueda#screen-busqueda .client-row-cuota .crc-etq{ font-weight:600; color:#3A4560; }
+html body #screen-clientes#screen-clientes .client-row-cuota .crc-valor,
+html body #screen-busqueda#screen-busqueda .client-row-cuota .crc-valor{ font-weight:800; font-size:16.5px; color:#1F2F68; letter-spacing:-.2px; }
+html body #screen-clientes#screen-clientes .client-row-cliente .info .client-row-cuota > svg,
+html body #screen-busqueda#screen-busqueda .client-row-cliente .info .client-row-cuota > svg{ width:17px !important; height:17px !important; stroke:#1F2F68 !important; }
+@media (max-width:380px){
+  html body #screen-clientes#screen-clientes .client-row-cliente .info .client-row-cuota > span, html body #screen-busqueda#screen-busqueda .client-row-cliente .info .client-row-cuota > span{ font-size:14.5px !important; }
+  html body #screen-clientes#screen-clientes .client-row-cuota .crc-valor, html body #screen-busqueda#screen-busqueda .client-row-cuota .crc-valor{ font-size:15.5px; }
+}
 </style>
 
 </head>
@@ -19526,7 +19540,8 @@ html.desplazando .bottom-nav .nav-cristal, html.desplazando #screen-nuevo-presta
       const cuotas = prestamosActivosCliente
         .slice().sort((a, b) => (a.fecha || '').localeCompare(b.fecha || '') || (a.id - b.id))
         .map(p => formatearPesos(cuotaRealPrestamo(p)));
-      lineaCuota.querySelector('span').textContent = 'Cuota: ' + cuotas.join(' · ');
+      // v739: etiqueta y valor por separado para poder destacar el valor
+      lineaCuota.querySelector('span').innerHTML = '<span class="crc-etq">Cuota:</span> <b class="crc-valor">' + cuotas.join(' · ') + '</b>';
       info.appendChild(lineaCuota);
     }
 
