@@ -9684,6 +9684,367 @@ html body #screen-busqueda#screen-busqueda .card.client-row::after{ content:''; 
 html body.modo-oscuro #screen-busqueda#screen-busqueda .card.client-row{ box-shadow:0 1px 0 rgba(255,255,255,.06), 0 7px 14px rgba(0,0,0,.50), 0 2px 4px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.07), inset 0 2px 3px rgba(255,255,255,.10), inset 0 -3px 6px rgba(0,0,0,.35) !important; }
 html body.modo-oscuro #screen-busqueda#screen-busqueda .card.client-row::after{ background:radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) 5px 5px / 7px 7px no-repeat, radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) calc(100% - 5px) 5px / 7px 7px no-repeat, radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) 5px calc(100% - 5px) / 7px 7px no-repeat, radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) calc(100% - 5px) calc(100% - 5px) / 7px 7px no-repeat, repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 1px, rgba(0,0,0,.04) 1px 3px); }
 html body #screen-clientes#screen-clientes .card.client-row:active, html body #screen-busqueda#screen-busqueda .card.client-row:active{ transform:none !important; }
+
+/* v758: tarjeta Cristal con el color y el diseño exactos de la imagen de referencia: placa azul grisáceo suave, tornillos plateados, etiquetas pegadas a la barra y cajones sobrios */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{
+  --ltg-navy:#1E3558; --ltg-ac:#2E9E5B; --ltg-sub:#33465F; --ltg-seg:#C7DAE0; --ltg-tag:#DCE9ED; --ltg-tag-t:#4B5D78;
+  background:radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) 8px 8px / 11px 11px no-repeat, radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) calc(100% - 8px) 8px / 11px 11px no-repeat, radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) 8px calc(100% - 8px) / 11px 11px no-repeat, radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) calc(100% - 8px) calc(100% - 8px) / 11px 11px no-repeat, linear-gradient(180deg,#D9EBF0 0%,#CFE3E9 100%) !important;
+  border:1px solid #BCD3DB !important; border-radius:22px !important;
+  box-shadow:0 10px 20px rgba(40,70,90,.18), 0 2px 4px rgba(40,70,90,.14), inset 0 1px 0 rgba(255,255,255,.75), inset 0 -2px 4px rgba(40,70,90,.08) !important;
+  padding:16px 17px 14px !important;
+}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-vencido{ --ltg-ac:#C2382F; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-finalizado{ --ltg-ac:#5B6576; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto{ text-shadow:none; font-weight:500; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup{ color:#33465F; font-size:13px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup b{ color:#33465F; font-weight:600; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ background:linear-gradient(180deg,#E8F1F4,#D6E6EB) !important; color:#1E3558; padding:5px 15px; font-size:16px; box-shadow:0 3px 6px rgba(40,70,90,.18), inset 0 1px 0 rgba(255,255,255,.9) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:linear-gradient(180deg,#F7E1DF,#EFC9C5) !important; color:#A12A22; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag{ top:-15px; height:16px; line-height:16px; min-width:24px; padding:0 8px; border-radius:6px 6px 0 0; background:var(--ltg-tag); box-shadow:none; font-size:12px; font-weight:600; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag::after{ display:none; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-fill{ box-shadow:inset 0 3px 5px rgba(40,70,90,.30), inset 0 -1px 1px rgba(255,255,255,.6) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{ background:linear-gradient(180deg,#38AE68,#269A56); box-shadow:inset 0 2px 3px rgba(0,50,25,.30), inset 0 -1px 1px rgba(255,255,255,.3) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-segs{ filter:none; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ margin:9px 0 0 !important; background:rgba(255,255,255,.14) !important; border:1px solid #B2CAD3 !important; border-radius:16px !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55) !important; padding:9px 4px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1px solid #B2CAD3; box-shadow:none; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res small, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b.ltg-rojo{ text-shadow:none; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-verde{ color:#2E9E5B; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-rojo{ color:#B42A2E; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota{ margin-top:9px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia{ background:linear-gradient(180deg,#E6F1F4,#DCEAEF) !important; border:1.5px solid #1E3558 !important; border-radius:15px !important; box-shadow:0 1px 0 rgba(255,255,255,.6) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note:not(.loan-note-vacia){ background:rgba(255,255,255,.28) !important; border:1px solid #B2CAD3 !important; box-shadow:none !important; border-radius:14px !important; }
+
+/* v759: bordes más definidos y valor del crédito en alto relieve, estilo número grabado de tarjeta de crédito */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{ border:2px solid #8DA9B6 !important;
+  box-shadow:0 10px 20px rgba(40,70,90,.20), 0 2px 4px rgba(40,70,90,.18), 0 0 0 1px rgba(255,255,255,.55), inset 0 0 0 1px rgba(255,255,255,.60), inset 0 2px 2px rgba(255,255,255,.80), inset 0 -3px 5px rgba(40,70,90,.12) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ border:1.5px solid #8DA9B6 !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 1px 0 rgba(255,255,255,.55) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1.5px solid #8DA9B6; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia{ border:2px solid #1E3558 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note:not(.loan-note-vacia){ border:1.5px solid #8DA9B6 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto{ font-weight:700; letter-spacing:.5px; font-variant-numeric:tabular-nums; padding:0 3px 3px 0;
+  text-shadow:-1px -1px 0 rgba(255,255,255,.95), 1px 1px 0 rgba(0,0,0,.28), 2px 2px 0 rgba(0,0,0,.20), 3px 3px 2px rgba(0,0,0,.20), 4px 5px 6px rgba(20,50,40,.18); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto{ text-shadow:-1px -1px 0 rgba(255,255,255,.35), 1px 1px 0 rgba(0,0,0,.6), 2px 2px 0 rgba(0,0,0,.45), 3px 3px 3px rgba(0,0,0,.4); }
+
+/* v760: barra de progreso y números de cuota en alto relieve sutil (sobresalen de la tarjeta) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{ --ltg-seg:#D9E8EC; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-segs{ filter:drop-shadow(0 2px 1.5px rgba(40,70,90,.30)) drop-shadow(0 -1px 0 rgba(255,255,255,.75)); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-fill{ box-shadow:inset 0 1.5px 0 rgba(255,255,255,.80), inset 0 -2px 3px rgba(40,70,90,.16) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{ box-shadow:inset 0 1.5px 0 rgba(255,255,255,.45), inset 0 -2px 3px rgba(0,50,25,.28) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.vencida .ltg-fill{ box-shadow:inset 0 1.5px 0 rgba(255,255,255,.40), inset 0 -2px 3px rgba(60,10,5,.28) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag{ box-shadow:inset 0 1px 0 rgba(255,255,255,.85), inset 0 -1px 1px rgba(40,70,90,.10); text-shadow:0 1px 0 rgba(255,255,255,.85); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ok{ filter:drop-shadow(0 1px 0 rgba(0,50,25,.35)); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra i{ box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 1.5px rgba(40,70,90,.25); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{ --ltg-seg:#3B4358; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-segs{ filter:drop-shadow(0 2px 1.5px rgba(0,0,0,.55)) drop-shadow(0 -1px 0 rgba(255,255,255,.10)); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-fill{ box-shadow:inset 0 1.5px 0 rgba(255,255,255,.14), inset 0 -2px 3px rgba(0,0,0,.35) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.vencida .ltg-fill{ box-shadow:inset 0 1.5px 0 rgba(255,255,255,.30), inset 0 -2px 3px rgba(0,0,0,.35) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag{ box-shadow:inset 0 1px 0 rgba(255,255,255,.12); text-shadow:0 1px 0 rgba(0,0,0,.5); }
+
+/* v760: ajuste modo oscuro (píldora y "Recuperado") tras el rediseño claro */
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ background:linear-gradient(180deg,#3A4358,#2E3648) !important; color:#DCE3F0 !important; box-shadow:0 3px 8px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.10) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:linear-gradient(180deg,#6A2E2A,#4E211E) !important; color:#FFC9C4 !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup b{ color:#9AA6BC; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia{ background:rgba(0,0,0,.20) !important; border:2px solid rgba(255,255,255,.35) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res small, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b.ltg-navy{ color:#E6EBF5; }
+
+/* v761: nombre del cliente y botón contador de créditos (#) en alto relieve sutil */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nombre{ font-weight:700; text-shadow:-.5px -.5px 0 rgba(255,255,255,.75), 0 1px 0 rgba(255,255,255,.9), 1px 1.5px 1px rgba(40,70,90,.30); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ box-shadow:0 4px 6px rgba(40,70,90,.26), 0 1px 0 rgba(255,255,255,.85), inset 0 1.5px 0 rgba(255,255,255,.95), inset 0 -2px 3px rgba(40,70,90,.15) !important; border:1px solid rgba(40,70,90,.14); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ text-shadow:-.5px -.5px 0 rgba(255,255,255,.8), 1px 1.5px 1px rgba(40,70,90,.30); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado:active{ box-shadow:0 1px 2px rgba(40,70,90,.25), inset 0 2px 3px rgba(40,70,90,.18) !important; transform:translateY(1px); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nombre{ text-shadow:-.5px -.5px 0 rgba(255,255,255,.18), 1px 1.5px 1px rgba(0,0,0,.55); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ box-shadow:0 4px 6px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.06), inset 0 1.5px 0 rgba(255,255,255,.14), inset 0 -2px 3px rgba(0,0,0,.30) !important; border:1px solid rgba(0,0,0,.4); text-shadow:0 1px 1px rgba(0,0,0,.5); }
+
+/* v762: botón contador de créditos (#) incrustado en la tarjeta (bajo relieve) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:#C6DAE1 !important; border:1px solid rgba(40,70,90,.12) !important;
+  box-shadow:inset 2px 3px 5px rgba(40,70,90,.34), inset -1px -1px 3px rgba(255,255,255,.55), 0 1px 0 rgba(255,255,255,.85) !important; text-shadow:0 1px 0 rgba(255,255,255,.7); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:#E6C6C3 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado:active{ transform:none; box-shadow:inset 2px 3px 6px rgba(40,70,90,.42), inset -1px -1px 3px rgba(255,255,255,.55), 0 1px 0 rgba(255,255,255,.85) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ background:#1B202D !important; border:1px solid rgba(0,0,0,.35) !important; box-shadow:inset 2px 3px 6px rgba(0,0,0,.70), inset -1px -1px 2px rgba(255,255,255,.06), 0 1px 0 rgba(255,255,255,.08) !important; text-shadow:0 1px 0 rgba(0,0,0,.6); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:#3A1A18 !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado:active{ transform:none; }
+
+/* v763: tarjeta Cristal en blanco hueso muy sutil (modo claro) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{ --ltg-seg:#E7E6DF; --ltg-tag:#F0EFE9; --ltg-tag-t:#586070;
+  background:radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) 8px 8px / 11px 11px no-repeat, radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) calc(100% - 8px) 8px / 11px 11px no-repeat, radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) 8px calc(100% - 8px) / 11px 11px no-repeat, radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) calc(100% - 8px) calc(100% - 8px) / 11px 11px no-repeat, linear-gradient(180deg,#F9F8F4 0%,#F1F0EA 100%) !important;
+  border:2px solid #BAB8AE !important;
+  box-shadow:0 10px 20px rgba(70,62,40,.17), 0 2px 4px rgba(70,62,40,.15), 0 0 0 1px rgba(255,255,255,.65), inset 0 0 0 1px rgba(255,255,255,.75), inset 0 2px 2px rgba(255,255,255,.85), inset 0 -3px 5px rgba(70,62,40,.08) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:#E4E3DB !important; border:1px solid rgba(70,62,40,.12) !important;
+  box-shadow:inset 2px 3px 5px rgba(70,62,40,.28), inset -1px -1px 3px rgba(255,255,255,.7), 0 1px 0 rgba(255,255,255,.9) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:#EBD2CE !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado:active{ box-shadow:inset 2px 3px 6px rgba(70,62,40,.36), inset -1px -1px 3px rgba(255,255,255,.7), 0 1px 0 rgba(255,255,255,.9) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nombre{ text-shadow:-.5px -.5px 0 rgba(255,255,255,.9), 0 1px 0 rgba(255,255,255,.95), 1px 1.5px 1px rgba(70,62,40,.28); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-segs{ filter:drop-shadow(0 2px 1.5px rgba(70,62,40,.28)) drop-shadow(0 -1px 0 rgba(255,255,255,.85)); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-fill{ box-shadow:inset 0 1.5px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(70,62,40,.14) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{ box-shadow:inset 0 1.5px 0 rgba(255,255,255,.45), inset 0 -2px 3px rgba(0,50,25,.28) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.vencida .ltg-fill{ box-shadow:inset 0 1.5px 0 rgba(255,255,255,.40), inset 0 -2px 3px rgba(60,10,5,.28) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag{ box-shadow:inset 0 1px 0 rgba(255,255,255,.95), inset 0 -1px 1px rgba(70,62,40,.10); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ background:rgba(255,255,255,.40) !important; border:1.5px solid #BDBBB1 !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 1px 0 rgba(255,255,255,.7) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1.5px solid #BDBBB1; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia{ background:linear-gradient(180deg,#FCFBF8,#F4F3ED) !important; border:2px solid #1E3558 !important; box-shadow:0 1px 0 rgba(255,255,255,.8) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note:not(.loan-note-vacia){ background:rgba(255,255,255,.55) !important; border:1.5px solid #BDBBB1 !important; }
+
+/* v764: paleta nueva (modo claro): títulos #1E293B · monto y cuotas pagadas #1D4ED8 · textos secundarios #475569 */
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{ --ltg-navy:#1E293B; --ltg-sub:#475569; --ltg-ac:#1D4ED8; --ltg-tag-t:#475569; }
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-vencido{ --ltg-ac:#C2382F; }
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-finalizado{ --ltg-ac:#5B6576; }
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup, html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup b{ color:#475569; }
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-k, html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-sub{ color:#475569; }
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ color:#1E293B; }
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ color:#A12A22; }
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res small, html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b.ltg-navy{ color:#1E293B; }
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-verde{ color:#1D4ED8; }
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{ background:linear-gradient(180deg,#3B6CE6,#1D4ED8); box-shadow:inset 0 1.5px 0 rgba(255,255,255,.40), inset 0 -2px 3px rgba(10,30,100,.32) !important; }
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra i.pagada{ background:#1D4ED8; }
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ok{ filter:drop-shadow(0 1px 0 rgba(10,30,100,.35)); }
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia{ border-color:#1E293B !important; }
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note-titulo{ color:#1D4ED8 !important; }
+
+/* v765: sin efecto de alto relieve en el valor del crédito ni en el nombre del cliente */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto,
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nombre,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nombre{ text-shadow:none !important; }
+
+/* v766: en modo oscuro la tarjeta Cristal conserva su aspecto claro (blanco hueso) con la misma paleta, como las demás tarjetas de la app */
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{
+  --ltg-ac:#1F8A4C; --ltg-navy:#1F3556; --ltg-sub:#5F6B7E; --ltg-linea:#DDE3EA; --ltg-seg:#8F98A8; --ltg-tag:#DDE2E9; --ltg-tag-t:#5F6B7E;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 120'%3E%3Cg fill='none' stroke='%23C9D2DD' stroke-width='1' opacity='.75'%3E%3Cpath d='M200 6 L90 40M200 14 L90 46M200 22 L90 52M200 30 L90 58M200 38 L90 64'/%3E%3C/g%3E%3C/svg%3E") no-repeat right top / 52% auto, linear-gradient(180deg,#F4F5F2 0%,#ECEEEA 100%) !important;
+  border:2px solid #B4BCC8 !important; border-radius:20px !important;
+  box-shadow:0 12px 26px rgba(30,45,75,.12), 0 2px 6px rgba(30,45,75,.08), inset 0 1px 0 rgba(255,255,255,.7) !important;
+  padding:12px 12px 10px !important; color:var(--ltg-navy); container-type:inline-size;
+}
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-vencido{ --ltg-ac:#C2382F; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-finalizado{ --ltg-ac:#5B6576; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal::before, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal::after{ display:none !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-cab{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin:0 !important; padding:0 !important; border:0 !important; background:none !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nombre{ flex:1; min-width:0; font-size:clamp(16px, 4.7vw, 19px); font-weight:600; color:var(--ltg-navy); letter-spacing:-.4px; line-height:1.15; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ flex-shrink:0; display:inline-flex; align-items:center; gap:1px; padding:3px 12px; border-radius:999px; background:linear-gradient(180deg,#E6E9EE,#D3D8E0); color:#4A5568; font-size:14.5px; font-weight:700; box-shadow:0 3px 8px rgba(40,55,80,.16), inset 0 1px 0 rgba(255,255,255,.7); cursor:pointer; -webkit-tap-highlight-color:transparent; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-signo{ margin-right:1px; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:linear-gradient(180deg,#F7D9D6,#EDB9B4); color:#A12A22; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto-fila{ display:flex; align-items:flex-end; justify-content:space-between; gap:10px; margin-top:0; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto{ flex-shrink:1; min-width:0; font-size:clamp(27px, 8.4vw, 33px); font-weight:500; line-height:1.08; letter-spacing:-1px; color:var(--ltg-ac); text-shadow:0 0 18px color-mix(in srgb, var(--ltg-ac) 38%, transparent); white-space:nowrap; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup{ flex-shrink:0; font-size:12.5px; font-weight:500; color:var(--ltg-sub); padding-bottom:4px; white-space:nowrap; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup b{ font-weight:600; color:var(--ltg-sub); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-datos{ display:grid; grid-template-columns:repeat(3,auto); justify-content:space-between; gap:6px; margin-top:10px; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato{ display:flex; align-items:center; gap:6px; min-width:0; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato > div{ display:flex; flex-direction:column; min-width:0; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ico{ width:clamp(22px, 6.4vw, 27px); height:clamp(22px, 6.4vw, 27px); flex-shrink:0; color:var(--ltg-navy); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ico svg{ width:100%; height:100%; display:block; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-k{ font-size:clamp(9.5px, 2.8vw, 11px); font-weight:500; color:var(--ltg-navy); line-height:1.1; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato b{ font-size:clamp(12px, 3.5vw, 14px); font-weight:600; color:var(--ltg-navy); line-height:1.15; white-space:nowrap; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog{ margin-top:10px; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-cab{ display:flex; align-items:center; gap:8px; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-ico{ width:26px; height:23px; flex-shrink:0; color:var(--ltg-navy); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-ico svg{ width:100%; height:100%; display:block; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-tit{ font-size:clamp(16px, 4.6vw, 18px); font-weight:600; color:var(--ltg-navy); line-height:1.1; cursor:pointer; display:inline-block; -webkit-tap-highlight-color:transparent; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-sub{ font-size:12px; font-weight:500; color:var(--ltg-sub); margin-top:0; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-segs{ display:flex; margin-top:19px; padding-right:5px; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg{ position:relative; flex:1 1 0; min-width:0; height:clamp(20px, 5.8vw, 24px); margin-left:-5px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg:first-child{ margin-left:0; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg:last-child{ margin-right:-5px; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-fill{ position:absolute; inset:0; display:block; background:var(--ltg-seg); clip-path:polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%, 8px 50%); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg:first-child .ltg-fill{ clip-path:polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%); border-radius:8px 0 0 8px; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg:last-child .ltg-fill{ clip-path:polygon(0 0, 100% 0, 100% 100%, 0 100%, 8px 50%); border-radius:0 8px 8px 0; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg:first-child:last-child{ margin-right:-5px; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg:first-child:last-child .ltg-fill{ clip-path:none; border-radius:8px; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{ background:linear-gradient(180deg,#34B26A,#1F8A4C); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.vencida .ltg-fill{ background:linear-gradient(180deg,#EE6A63,#C2382F); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ok{ position:absolute; right:12px; top:50%; transform:translateY(-50%); width:13px; height:13px; color:#fff; opacity:.95; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ok svg{ width:100%; height:100%; display:block; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra{ display:flex; gap:3px; height:12px; margin-top:16px; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra i{ flex:1; border-radius:6px; background:var(--ltg-seg); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra i.pagada{ background:#1F8A4C; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra i.vencida{ background:#C2382F; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-segs{ position:relative; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag{ position:absolute; left:10px; top:-15px; min-width:18px; height:16px; padding:0 4px; border-radius:5px; background:var(--ltg-tag); color:var(--ltg-tag-t); font-style:normal; font-size:11px; font-weight:600; line-height:16px; text-align:center; box-shadow:0 2px 4px rgba(30,45,75,.18); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag::after{ content:''; position:absolute; left:50%; bottom:-4px; width:8px; height:8px; margin-left:-4px; background:inherit; transform:rotate(45deg); border-radius:0 0 2px 0; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); margin-top:8px; padding:6px 4px; border-radius:14px; background:#E3E6E2; border:1px solid #C3CAD4; box-shadow:inset 0 2px 4px rgba(20,30,50,.18), inset 0 -1px 0 rgba(255,255,255,.75); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div{ display:flex; flex-direction:column; align-items:center; gap:0; padding:1px 4px; min-width:0; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1.5px solid #D3DAE2; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res small{ font-size:clamp(11px, 3.1vw, 12.5px); font-weight:500; color:var(--ltg-navy); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b{ max-width:100%; font-size:clamp(13.5px, 4.1vw, 16.5px); font-weight:600; letter-spacing:-.3px; white-space:nowrap; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-navy{ color:var(--ltg-navy); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-verde{ color:#1F7A44; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-rojo{ color:#B42318; text-shadow:0 0 12px rgba(180,35,24,.22); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota{ margin-top:8px; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia{ display:flex !important; justify-content:center; align-items:center; padding:8px 12px !important; border-radius:12px !important; background:#E3E6E2 !important; border:1.5px solid var(--ltg-navy) !important; box-shadow:inset 0 2px 4px rgba(20,30,50,.18), inset 0 -1px 0 rgba(255,255,255,.75) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia .loan-note-icono{ display:none !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia .loan-note-contenido{ flex:0 1 auto; text-align:center; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia .loan-note-agregar{ font-size:clamp(15px, 4.4vw, 17px); font-weight:500; color:var(--ltg-navy) !important; opacity:1 !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note:not(.loan-note-vacia){ border-radius:14px !important; background:#E3E6E2 !important; border:1px solid #C3CAD4 !important; box-shadow:inset 0 2px 4px rgba(20,30,50,.18), inset 0 -1px 0 rgba(255,255,255,.75) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note-titulo{ color:var(--ltg-ac) !important; text-shadow:none !important; font-weight:700; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note-contenido span{ color:var(--ltg-navy) !important; text-shadow:none !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .loan-alerta-mora{ margin:10px 0 8px; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{ --ltg-seg:#D3D7D3; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ background:#E4E6E2 !important; border:0 !important; box-shadow:inset 2px 3px 6px rgba(20,30,50,.30), inset -2px -2px 4px rgba(255,255,255,.80), 0 1px 0 rgba(255,255,255,.95) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1px solid rgba(20,30,50,.20); box-shadow:-1px 0 0 rgba(255,255,255,.75); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-segs{ filter:drop-shadow(0 1px 0 rgba(255,255,255,.95)); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-fill{ box-shadow:inset 0 3px 5px rgba(20,30,50,.40), inset 0 -1px 1px rgba(255,255,255,.55) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{ box-shadow:inset 0 3px 5px rgba(0,40,20,.50), inset 0 -1px 1px rgba(255,255,255,.35) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.vencida .ltg-fill{ box-shadow:inset 0 3px 5px rgba(60,10,5,.50), inset 0 -1px 1px rgba(255,255,255,.35) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra i{ box-shadow:inset 0 2px 3px rgba(20,30,50,.35); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ background:linear-gradient(180deg,#F3F4F1,#E6E8E4) !important; border:0 !important; box-shadow:-3px -3px 6px rgba(255,255,255,.95), 3px 4px 8px rgba(20,30,50,.24), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -1px 0 rgba(20,30,50,.08) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1px solid rgba(255,255,255,.9); box-shadow:-1px 0 0 rgba(20,30,50,.14); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ margin:11px 5px 5px !important; background:linear-gradient(180deg,#F4F5F2 0%,#E9EBE7 55%,#DFE2DE 100%) !important; border:1px solid rgba(20,30,50,.20) !important; border-radius:12px !important;
+  box-shadow:0 0 0 2px #E9EBE7, 0 0 0 3px rgba(20,30,50,.20), 0 0 0 4px rgba(255,255,255,.95), 0 5px 9px rgba(20,30,50,.16), inset 0 1px 0 rgba(255,255,255,.95), inset 0 -2px 3px rgba(20,30,50,.10) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1px solid rgba(20,30,50,.20); box-shadow:inset 1px 0 0 rgba(255,255,255,.9); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res small, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b{ text-shadow:0 1px 0 rgba(255,255,255,.85); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b.ltg-rojo{ text-shadow:0 1px 0 rgba(255,255,255,.85), 0 0 10px rgba(180,35,24,.18); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{
+  background:radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) 5px 5px / 7px 7px no-repeat, radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) calc(100% - 5px) 5px / 7px 7px no-repeat, radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) 5px calc(100% - 5px) / 7px 7px no-repeat, radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) calc(100% - 5px) calc(100% - 5px) / 7px 7px no-repeat, repeating-linear-gradient(90deg, rgba(255,255,255,.12) 0 1px, rgba(20,30,50,.010) 1px 3px), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 120'%3E%3Cg fill='none' stroke='%23C9D2DD' stroke-width='1' opacity='.75'%3E%3Cpath d='M200 6 L90 40M200 14 L90 46M200 22 L90 52M200 30 L90 58M200 38 L90 64'/%3E%3C/g%3E%3C/svg%3E") no-repeat right top / 52% auto, linear-gradient(180deg,#F6F7F4 0%,#EAECE8 55%,#E0E3DF 100%) !important;
+  border:2px solid #A9B2BF !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.95), 0 9px 18px rgba(30,45,75,.17), 0 2px 4px rgba(30,45,75,.14), inset 0 0 0 1px rgba(255,255,255,.80), inset 0 2px 3px rgba(255,255,255,.95), inset 0 -3px 6px rgba(20,30,50,.10) !important;
+}
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{
+  --ltg-navy:#1E3558; --ltg-ac:#2E9E5B; --ltg-sub:#33465F; --ltg-seg:#C7DAE0; --ltg-tag:#DCE9ED; --ltg-tag-t:#4B5D78;
+  background:radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) 8px 8px / 11px 11px no-repeat, radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) calc(100% - 8px) 8px / 11px 11px no-repeat, radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) 8px calc(100% - 8px) / 11px 11px no-repeat, radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) calc(100% - 8px) calc(100% - 8px) / 11px 11px no-repeat, linear-gradient(180deg,#D9EBF0 0%,#CFE3E9 100%) !important;
+  border:1px solid #BCD3DB !important; border-radius:22px !important;
+  box-shadow:0 10px 20px rgba(40,70,90,.18), 0 2px 4px rgba(40,70,90,.14), inset 0 1px 0 rgba(255,255,255,.75), inset 0 -2px 4px rgba(40,70,90,.08) !important;
+  padding:16px 17px 14px !important;
+}
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-vencido{ --ltg-ac:#C2382F; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-finalizado{ --ltg-ac:#5B6576; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto{ text-shadow:none; font-weight:500; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup{ color:#33465F; font-size:13px; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup b{ color:#33465F; font-weight:600; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ background:linear-gradient(180deg,#E8F1F4,#D6E6EB) !important; color:#1E3558; padding:5px 15px; font-size:16px; box-shadow:0 3px 6px rgba(40,70,90,.18), inset 0 1px 0 rgba(255,255,255,.9) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:linear-gradient(180deg,#F7E1DF,#EFC9C5) !important; color:#A12A22; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag{ top:-15px; height:16px; line-height:16px; min-width:24px; padding:0 8px; border-radius:6px 6px 0 0; background:var(--ltg-tag); box-shadow:none; font-size:12px; font-weight:600; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag::after{ display:none; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-fill{ box-shadow:inset 0 3px 5px rgba(40,70,90,.30), inset 0 -1px 1px rgba(255,255,255,.6) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{ background:linear-gradient(180deg,#38AE68,#269A56); box-shadow:inset 0 2px 3px rgba(0,50,25,.30), inset 0 -1px 1px rgba(255,255,255,.3) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-segs{ filter:none; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ margin:9px 0 0 !important; background:rgba(255,255,255,.14) !important; border:1px solid #B2CAD3 !important; border-radius:16px !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55) !important; padding:9px 4px !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1px solid #B2CAD3; box-shadow:none; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res small, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b.ltg-rojo{ text-shadow:none; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-verde{ color:#2E9E5B; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-rojo{ color:#B42A2E; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota{ margin-top:9px; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia{ background:linear-gradient(180deg,#E6F1F4,#DCEAEF) !important; border:1.5px solid #1E3558 !important; border-radius:15px !important; box-shadow:0 1px 0 rgba(255,255,255,.6) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note:not(.loan-note-vacia){ background:rgba(255,255,255,.28) !important; border:1px solid #B2CAD3 !important; box-shadow:none !important; border-radius:14px !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{ border:2px solid #8DA9B6 !important;
+  box-shadow:0 10px 20px rgba(40,70,90,.20), 0 2px 4px rgba(40,70,90,.18), 0 0 0 1px rgba(255,255,255,.55), inset 0 0 0 1px rgba(255,255,255,.60), inset 0 2px 2px rgba(255,255,255,.80), inset 0 -3px 5px rgba(40,70,90,.12) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ border:1.5px solid #8DA9B6 !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 1px 0 rgba(255,255,255,.55) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1.5px solid #8DA9B6; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia{ border:2px solid #1E3558 !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note:not(.loan-note-vacia){ border:1.5px solid #8DA9B6 !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto{ font-weight:700; letter-spacing:.5px; font-variant-numeric:tabular-nums; padding:0 3px 3px 0;
+  text-shadow:-1px -1px 0 rgba(255,255,255,.95), 1px 1px 0 rgba(0,0,0,.28), 2px 2px 0 rgba(0,0,0,.20), 3px 3px 2px rgba(0,0,0,.20), 4px 5px 6px rgba(20,50,40,.18); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{ --ltg-seg:#D9E8EC; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-segs{ filter:drop-shadow(0 2px 1.5px rgba(40,70,90,.30)) drop-shadow(0 -1px 0 rgba(255,255,255,.75)); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-fill{ box-shadow:inset 0 1.5px 0 rgba(255,255,255,.80), inset 0 -2px 3px rgba(40,70,90,.16) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{ box-shadow:inset 0 1.5px 0 rgba(255,255,255,.45), inset 0 -2px 3px rgba(0,50,25,.28) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.vencida .ltg-fill{ box-shadow:inset 0 1.5px 0 rgba(255,255,255,.40), inset 0 -2px 3px rgba(60,10,5,.28) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag{ box-shadow:inset 0 1px 0 rgba(255,255,255,.85), inset 0 -1px 1px rgba(40,70,90,.10); text-shadow:0 1px 0 rgba(255,255,255,.85); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ok{ filter:drop-shadow(0 1px 0 rgba(0,50,25,.35)); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra i{ box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 1.5px rgba(40,70,90,.25); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nombre{ font-weight:700; text-shadow:-.5px -.5px 0 rgba(255,255,255,.75), 0 1px 0 rgba(255,255,255,.9), 1px 1.5px 1px rgba(40,70,90,.30); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ box-shadow:0 4px 6px rgba(40,70,90,.26), 0 1px 0 rgba(255,255,255,.85), inset 0 1.5px 0 rgba(255,255,255,.95), inset 0 -2px 3px rgba(40,70,90,.15) !important; border:1px solid rgba(40,70,90,.14); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ text-shadow:-.5px -.5px 0 rgba(255,255,255,.8), 1px 1.5px 1px rgba(40,70,90,.30); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado:active{ box-shadow:0 1px 2px rgba(40,70,90,.25), inset 0 2px 3px rgba(40,70,90,.18) !important; transform:translateY(1px); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:#C6DAE1 !important; border:1px solid rgba(40,70,90,.12) !important;
+  box-shadow:inset 2px 3px 5px rgba(40,70,90,.34), inset -1px -1px 3px rgba(255,255,255,.55), 0 1px 0 rgba(255,255,255,.85) !important; text-shadow:0 1px 0 rgba(255,255,255,.7); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:#E6C6C3 !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado:active{ transform:none; box-shadow:inset 2px 3px 6px rgba(40,70,90,.42), inset -1px -1px 3px rgba(255,255,255,.55), 0 1px 0 rgba(255,255,255,.85) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{ --ltg-seg:#E7E6DF; --ltg-tag:#F0EFE9; --ltg-tag-t:#586070;
+  background:radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) 8px 8px / 11px 11px no-repeat, radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) calc(100% - 8px) 8px / 11px 11px no-repeat, radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) 8px calc(100% - 8px) / 11px 11px no-repeat, radial-gradient(circle closest-side at 50% 50%, #F4F6F8 0, #D3D8DF 40%, #8A94A3 82%, rgba(60,70,85,.6) 90%, transparent 100%) calc(100% - 8px) calc(100% - 8px) / 11px 11px no-repeat, linear-gradient(180deg,#F9F8F4 0%,#F1F0EA 100%) !important;
+  border:2px solid #BAB8AE !important;
+  box-shadow:0 10px 20px rgba(70,62,40,.17), 0 2px 4px rgba(70,62,40,.15), 0 0 0 1px rgba(255,255,255,.65), inset 0 0 0 1px rgba(255,255,255,.75), inset 0 2px 2px rgba(255,255,255,.85), inset 0 -3px 5px rgba(70,62,40,.08) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:#E4E3DB !important; border:1px solid rgba(70,62,40,.12) !important;
+  box-shadow:inset 2px 3px 5px rgba(70,62,40,.28), inset -1px -1px 3px rgba(255,255,255,.7), 0 1px 0 rgba(255,255,255,.9) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ background:#EBD2CE !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado:active{ box-shadow:inset 2px 3px 6px rgba(70,62,40,.36), inset -1px -1px 3px rgba(255,255,255,.7), 0 1px 0 rgba(255,255,255,.9) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nombre{ text-shadow:-.5px -.5px 0 rgba(255,255,255,.9), 0 1px 0 rgba(255,255,255,.95), 1px 1.5px 1px rgba(70,62,40,.28); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-segs{ filter:drop-shadow(0 2px 1.5px rgba(70,62,40,.28)) drop-shadow(0 -1px 0 rgba(255,255,255,.85)); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-fill{ box-shadow:inset 0 1.5px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(70,62,40,.14) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{ box-shadow:inset 0 1.5px 0 rgba(255,255,255,.45), inset 0 -2px 3px rgba(0,50,25,.28) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.vencida .ltg-fill{ box-shadow:inset 0 1.5px 0 rgba(255,255,255,.40), inset 0 -2px 3px rgba(60,10,5,.28) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag{ box-shadow:inset 0 1px 0 rgba(255,255,255,.95), inset 0 -1px 1px rgba(70,62,40,.10); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ background:rgba(255,255,255,.40) !important; border:1.5px solid #BDBBB1 !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 1px 0 rgba(255,255,255,.7) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1.5px solid #BDBBB1; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia{ background:linear-gradient(180deg,#FCFBF8,#F4F3ED) !important; border:2px solid #1E3558 !important; box-shadow:0 1px 0 rgba(255,255,255,.8) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note:not(.loan-note-vacia){ background:rgba(255,255,255,.55) !important; border:1.5px solid #BDBBB1 !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{ --ltg-navy:#1E293B; --ltg-sub:#475569; --ltg-ac:#1D4ED8; --ltg-tag-t:#475569; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-vencido{ --ltg-ac:#C2382F; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-finalizado{ --ltg-ac:#5B6576; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup b{ color:#475569; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-k, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-sub{ color:#475569; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ color:#1E293B; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ color:#A12A22; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res small, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b.ltg-navy{ color:#1E293B; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-verde{ color:#1D4ED8; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{ background:linear-gradient(180deg,#3B6CE6,#1D4ED8); box-shadow:inset 0 1.5px 0 rgba(255,255,255,.40), inset 0 -2px 3px rgba(10,30,100,.32) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra i.pagada{ background:#1D4ED8; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ok{ filter:drop-shadow(0 1px 0 rgba(10,30,100,.35)); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia{ border-color:#1E293B !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note-titulo{ color:#1D4ED8 !important; }
+
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-activo, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-al-dia{ --ltg-ac:#1D4ED8; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-vencido{ --ltg-ac:#C2382F; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal.loan-card-finalizado{ --ltg-ac:#5B6576; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado{ color:#1E293B !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-estado-vencido{ color:#A12A22 !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-verde{ color:#1D4ED8 !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-rojo{ color:#B42A2E !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b.ltg-navy, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res small{ color:#1E293B !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup b, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-k, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-sub{ color:#475569 !important; }
+
+/* v767: monto principal siempre #1D4ED8 (también en mora o finalizado); los estados se indican con la franja, la píldora y los tramos */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto{ color:#1D4ED8 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{ background:linear-gradient(180deg,#3B6CE6,#1D4ED8) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-k,
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-sub,
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup,
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup b{ color:#475569 !important; }
+
+/* v768: #104390 en nombre del cliente, valor del crédito, barras de progreso pagadas, título "Notas" y valor "Ha pagado" */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nombre,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nombre, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-verde,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-verde, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note-titulo,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note-titulo{ color:#104390 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{ background:linear-gradient(180deg,#1E5CB5,#104390) !important; box-shadow:inset 0 1.5px 0 rgba(255,255,255,.35), inset 0 -2px 3px rgba(5,20,60,.35) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra i.pagada,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra i.pagada{ background:#104390 !important; }
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note-titulo{ color:#104390 !important; }
+
+/* v769: #3E3A34 en Recuperado, datos (fecha, frecuencia, cuota) con sus íconos y valores, Progreso, etiquetas Total a pagar / Ha pagado / Debe y fondo de los números de cuota */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup,
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup b,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup b,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-recup b,
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-k,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-k,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-k,
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato b,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato b,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato b,
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ico,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ico,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-ico,
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-ico,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-ico,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-ico,
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-tit,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-tit,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-tit,
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-sub,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-sub,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-prog-sub,
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res small,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res small,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res small{ color:#3E3A34 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-tag{ background:#3E3A34 !important; color:#F4F2EC !important; text-shadow:0 1px 0 rgba(0,0,0,.45) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.18), inset 0 -1px 1px rgba(0,0,0,.25) !important; }
 </style>
 
 </head>
