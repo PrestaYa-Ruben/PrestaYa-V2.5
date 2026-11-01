@@ -9615,6 +9615,75 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-crist
 .dtp.dtp-cristal .dtp-segs > i{ flex:1; height:6px; border-radius:2px; background:#8F98A8; display:block; }
 .dtp.dtp-cristal .dtp-segs > i:first-child{ background:#2C9E5A; }
 .dtp.dtp-cristal .dtp-nota{ background:#fff; border-color:#1F3556; }
+
+/* v753: cajón de 3 datos y barra de progreso en bajo relieve (grabados en la tarjeta) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{ --ltg-seg:#D3D7D3; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ background:#E4E6E2 !important; border:0 !important; box-shadow:inset 2px 3px 6px rgba(20,30,50,.30), inset -2px -2px 4px rgba(255,255,255,.80), 0 1px 0 rgba(255,255,255,.95) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1px solid rgba(20,30,50,.20); box-shadow:-1px 0 0 rgba(255,255,255,.75); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-segs{ filter:drop-shadow(0 1px 0 rgba(255,255,255,.95)); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-fill{ box-shadow:inset 0 3px 5px rgba(20,30,50,.40), inset 0 -1px 1px rgba(255,255,255,.55) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{ box-shadow:inset 0 3px 5px rgba(0,40,20,.50), inset 0 -1px 1px rgba(255,255,255,.35) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.vencida .ltg-fill{ box-shadow:inset 0 3px 5px rgba(60,10,5,.50), inset 0 -1px 1px rgba(255,255,255,.35) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-barra i{ box-shadow:inset 0 2px 3px rgba(20,30,50,.35); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{ --ltg-seg:#1C2231; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ background:#1B202D !important; box-shadow:inset 2px 3px 6px rgba(0,0,0,.65), inset -1px -1px 3px rgba(255,255,255,.05), 0 1px 0 rgba(255,255,255,.08) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1px solid rgba(0,0,0,.55); box-shadow:-1px 0 0 rgba(255,255,255,.07); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-segs{ filter:drop-shadow(0 1px 0 rgba(255,255,255,.09)); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-fill{ box-shadow:inset 0 3px 5px rgba(0,0,0,.7), inset 0 -1px 1px rgba(255,255,255,.06) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.vencida .ltg-fill{ box-shadow:inset 0 3px 5px rgba(0,0,0,.55), inset 0 -1px 1px rgba(255,255,255,.12) !important; }
+
+/* v754: cajón de 3 datos en ALTO relieve (sobresale de la tarjeta); la barra de progreso sigue en bajo relieve */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ background:linear-gradient(180deg,#F3F4F1,#E6E8E4) !important; border:0 !important; box-shadow:-3px -3px 6px rgba(255,255,255,.95), 3px 4px 8px rgba(20,30,50,.24), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -1px 0 rgba(20,30,50,.08) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1px solid rgba(255,255,255,.9); box-shadow:-1px 0 0 rgba(20,30,50,.14); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ background:linear-gradient(180deg,#2A3144,#232938) !important; box-shadow:-2px -2px 5px rgba(255,255,255,.06), 3px 4px 8px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.10), inset 0 -1px 0 rgba(0,0,0,.35) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1px solid rgba(255,255,255,.10); box-shadow:-1px 0 0 rgba(0,0,0,.45); }
+
+/* v755: cajón de 3 datos como placa de un panel de control físico: placa con bisel, ranura alrededor y relieve sutil */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ margin:11px 5px 5px !important; background:linear-gradient(180deg,#F4F5F2 0%,#E9EBE7 55%,#DFE2DE 100%) !important; border:1px solid rgba(20,30,50,.20) !important; border-radius:12px !important;
+  box-shadow:0 0 0 2px #E9EBE7, 0 0 0 3px rgba(20,30,50,.20), 0 0 0 4px rgba(255,255,255,.95), 0 5px 9px rgba(20,30,50,.16), inset 0 1px 0 rgba(255,255,255,.95), inset 0 -2px 3px rgba(20,30,50,.10) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1px solid rgba(20,30,50,.20); box-shadow:inset 1px 0 0 rgba(255,255,255,.9); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res small, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b{ text-shadow:0 1px 0 rgba(255,255,255,.85); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b.ltg-rojo{ text-shadow:0 1px 0 rgba(255,255,255,.85), 0 0 10px rgba(180,35,24,.18); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res{ background:linear-gradient(180deg,#2C3347 0%,#252B3C 55%,#1F2433 100%) !important; border:1px solid rgba(0,0,0,.55) !important;
+  box-shadow:0 0 0 2px #232938, 0 0 0 3px rgba(0,0,0,.55), 0 0 0 4px rgba(255,255,255,.07), 0 5px 9px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.12), inset 0 -2px 3px rgba(0,0,0,.35) !important; }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res > div + div{ border-left:1px solid rgba(0,0,0,.55); box-shadow:inset 1px 0 0 rgba(255,255,255,.08); }
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res small, html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-res b{ text-shadow:0 1px 0 rgba(0,0,0,.6); }
+
+/* v756: tarjeta Cristal como panel de control físico: metal cepillado sutil, bisel, cantos con luz y tornillos pequeños */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{
+  background:radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) 5px 5px / 7px 7px no-repeat, radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) calc(100% - 5px) 5px / 7px 7px no-repeat, radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) 5px calc(100% - 5px) / 7px 7px no-repeat, radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) calc(100% - 5px) calc(100% - 5px) / 7px 7px no-repeat, repeating-linear-gradient(90deg, rgba(255,255,255,.12) 0 1px, rgba(20,30,50,.010) 1px 3px), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 120'%3E%3Cg fill='none' stroke='%23C9D2DD' stroke-width='1' opacity='.75'%3E%3Cpath d='M200 6 L90 40M200 14 L90 46M200 22 L90 52M200 30 L90 58M200 38 L90 64'/%3E%3C/g%3E%3C/svg%3E") no-repeat right top / 52% auto, linear-gradient(180deg,#F6F7F4 0%,#EAECE8 55%,#E0E3DF 100%) !important;
+  border:2px solid #A9B2BF !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.95), 0 9px 18px rgba(30,45,75,.17), 0 2px 4px rgba(30,45,75,.14), inset 0 0 0 1px rgba(255,255,255,.80), inset 0 2px 3px rgba(255,255,255,.95), inset 0 -3px 6px rgba(20,30,50,.10) !important;
+}
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal{
+  background:radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) 5px 5px / 7px 7px no-repeat, radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) calc(100% - 5px) 5px / 7px 7px no-repeat, radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) 5px calc(100% - 5px) / 7px 7px no-repeat, radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) calc(100% - 5px) calc(100% - 5px) / 7px 7px no-repeat, repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, rgba(0,0,0,.05) 1px 3px), linear-gradient(180deg,#2A3144 0%,#232938 55%,#1D2230 100%) !important;
+  border:2px solid #0E121B !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.06), 0 9px 18px rgba(0,0,0,.50), 0 2px 4px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.07), inset 0 2px 3px rgba(255,255,255,.10), inset 0 -3px 6px rgba(0,0,0,.35) !important;
+}
+
+
+/* v757: tarjetas del cliente (Clientes y Búsqueda) con efecto de panel físico: se conserva el color de cada estado y se suman bisel, metal cepillado y tornillos */
+html body #screen-clientes#screen-clientes .card.client-row{ border-top-width:2px !important; border-right-width:2px !important; border-bottom-width:2px !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.95), 0 7px 14px rgba(30,45,75,.15), 0 2px 4px rgba(30,45,75,.13), inset 0 0 0 1px rgba(255,255,255,.75), inset 0 2px 3px rgba(255,255,255,.90), inset 0 -3px 6px rgba(20,30,50,.10) !important; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-al-dia{ border-top-color:#9CC79A !important; border-right-color:#9CC79A !important; border-bottom-color:#9CC79A !important; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-mora{ border-top-color:#DDA3A3 !important; border-right-color:#DDA3A3 !important; border-bottom-color:#DDA3A3 !important; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-sin-credito{ border-top-color:#92ACD8 !important; border-right-color:#92ACD8 !important; border-bottom-color:#92ACD8 !important; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-inhabilitado{ border-top-color:#AEB5C1 !important; border-right-color:#AEB5C1 !important; border-bottom-color:#AEB5C1 !important; }
+html body #screen-clientes#screen-clientes .card.client-row::after{ content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:3;
+  background:radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) 5px 5px / 7px 7px no-repeat, radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) calc(100% - 5px) 5px / 7px 7px no-repeat, radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) 5px calc(100% - 5px) / 7px 7px no-repeat, radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) calc(100% - 5px) calc(100% - 5px) / 7px 7px no-repeat, repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, rgba(20,30,50,.008) 1px 3px); }
+html body.modo-oscuro #screen-clientes#screen-clientes .card.client-row{ box-shadow:0 1px 0 rgba(255,255,255,.06), 0 7px 14px rgba(0,0,0,.50), 0 2px 4px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.07), inset 0 2px 3px rgba(255,255,255,.10), inset 0 -3px 6px rgba(0,0,0,.35) !important; }
+html body.modo-oscuro #screen-clientes#screen-clientes .card.client-row::after{ background:radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) 5px 5px / 7px 7px no-repeat, radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) calc(100% - 5px) 5px / 7px 7px no-repeat, radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) 5px calc(100% - 5px) / 7px 7px no-repeat, radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) calc(100% - 5px) calc(100% - 5px) / 7px 7px no-repeat, repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 1px, rgba(0,0,0,.04) 1px 3px); }
+html body #screen-busqueda#screen-busqueda .card.client-row{ border-top-width:2px !important; border-right-width:2px !important; border-bottom-width:2px !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.95), 0 7px 14px rgba(30,45,75,.15), 0 2px 4px rgba(30,45,75,.13), inset 0 0 0 1px rgba(255,255,255,.75), inset 0 2px 3px rgba(255,255,255,.90), inset 0 -3px 6px rgba(20,30,50,.10) !important; }
+html body #screen-busqueda#screen-busqueda .card.client-row.client-row-al-dia{ border-top-color:#9CC79A !important; border-right-color:#9CC79A !important; border-bottom-color:#9CC79A !important; }
+html body #screen-busqueda#screen-busqueda .card.client-row.client-row-mora{ border-top-color:#DDA3A3 !important; border-right-color:#DDA3A3 !important; border-bottom-color:#DDA3A3 !important; }
+html body #screen-busqueda#screen-busqueda .card.client-row.client-row-sin-credito{ border-top-color:#92ACD8 !important; border-right-color:#92ACD8 !important; border-bottom-color:#92ACD8 !important; }
+html body #screen-busqueda#screen-busqueda .card.client-row.client-row-inhabilitado{ border-top-color:#AEB5C1 !important; border-right-color:#AEB5C1 !important; border-bottom-color:#AEB5C1 !important; }
+html body #screen-busqueda#screen-busqueda .card.client-row::after{ content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:3;
+  background:radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) 5px 5px / 7px 7px no-repeat, radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) calc(100% - 5px) 5px / 7px 7px no-repeat, radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) 5px calc(100% - 5px) / 7px 7px no-repeat, radial-gradient(circle, #FAFBFA 0 18%, #AEB6C2 45%, #8E98A6 70%, transparent 74%) calc(100% - 5px) calc(100% - 5px) / 7px 7px no-repeat, repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, rgba(20,30,50,.008) 1px 3px); }
+html body.modo-oscuro #screen-busqueda#screen-busqueda .card.client-row{ box-shadow:0 1px 0 rgba(255,255,255,.06), 0 7px 14px rgba(0,0,0,.50), 0 2px 4px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.07), inset 0 2px 3px rgba(255,255,255,.10), inset 0 -3px 6px rgba(0,0,0,.35) !important; }
+html body.modo-oscuro #screen-busqueda#screen-busqueda .card.client-row::after{ background:radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) 5px 5px / 7px 7px no-repeat, radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) calc(100% - 5px) 5px / 7px 7px no-repeat, radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) 5px calc(100% - 5px) / 7px 7px no-repeat, radial-gradient(circle, #59627A 0 18%, #3A4258 45%, #10141F 70%, transparent 74%) calc(100% - 5px) calc(100% - 5px) / 7px 7px no-repeat, repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 1px, rgba(0,0,0,.04) 1px 3px); }
+html body #screen-clientes#screen-clientes .card.client-row:active, html body #screen-busqueda#screen-busqueda .card.client-row:active{ transform:none !important; }
 </style>
 
 </head>
