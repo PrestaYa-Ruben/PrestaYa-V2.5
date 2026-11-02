@@ -10310,6 +10310,39 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa 
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-cuero .loan-note-titulo{font-size:17px !important;}
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-cuero .loan-note-contenido span,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-cuero .loan-note-contenido span{font-size:15.5px !important; line-height:1.3;}
+/* v796 Acero: contador de creditos solo con el texto # N (sin disco ni aro) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-cab .ltk-estado,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-cab .ltk-estado{background:none !important; border:0 !important; box-shadow:none !important; text-shadow:none !important; width:auto !important; height:auto !important; border-radius:0 !important; margin:0 !important; padding:0 2px !important; color:#14305F !important; font-size:clamp(20px,6vw,25px) !important; font-weight:700 !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-cab .ltk-estado.ltk-estado-vencido,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-cab .ltk-estado.ltk-estado-vencido{background:none !important; border:0 !important; box-shadow:none !important; text-shadow:none !important; width:auto !important; height:auto !important; border-radius:0 !important; margin:0 !important; padding:0 2px !important; color:#14305F !important; font-size:clamp(20px,6vw,25px) !important; font-weight:700 !important;}
+/* v797 Acero vencido: valor del credito, fecha, cuota y cuotas vencidas en rojo */
+html body #screen-detalle-cliente .card.loan-card-full.loan-card-vencido.ltd.ltd-acero .ltk-placa .ltk-monto-fila .ltk-monto,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.loan-card-vencido.ltd.ltd-acero .ltk-placa .ltk-monto-fila .ltk-monto{color:#C62828 !important;}
+html body #screen-detalle-cliente .card.loan-card-full.loan-card-vencido.ltd.ltd-acero .ltk-placa .ltk-dato:nth-child(1) b,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.loan-card-vencido.ltd.ltd-acero .ltk-placa .ltk-dato:nth-child(1) b{color:#C62828 !important;}
+html body #screen-detalle-cliente .card.loan-card-full.loan-card-vencido.ltd.ltd-acero .ltk-placa .ltk-dato:nth-child(3) b,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.loan-card-vencido.ltd.ltd-acero .ltk-placa .ltk-dato:nth-child(3) b{color:#C62828 !important;}
+html body #screen-detalle-cliente .card.loan-card-full.loan-card-vencido.ltd.ltd-acero .ltk-placa .ltk-celda.vencida .ltk-cuerpo,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.loan-card-vencido.ltd.ltd-acero .ltk-placa .ltk-celda.vencida .ltk-cuerpo{background:linear-gradient(180deg,#A81E1E,#C62828) !important; box-shadow:inset 0 3px 4px rgba(0,0,0,.40), inset 0 -1px 0 rgba(255,255,255,.18) !important;}
+html body #screen-detalle-cliente .card.loan-card-full.loan-card-vencido.ltd.ltd-acero .ltk-placa .ltk-celda.vencida .ltk-tab,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.loan-card-vencido.ltd.ltd-acero .ltk-placa .ltk-celda.vencida .ltk-tab{background:linear-gradient(180deg,#D04545,#B52222) !important; color:#fff !important;}
+html body #screen-detalle-cliente .card.loan-card-full.loan-card-vencido.ltd.ltd-acero .ltk-placa .ltk-celda.vencida .ltk-aro,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.loan-card-vencido.ltd.ltd-acero .ltk-placa .ltk-celda.vencida .ltk-aro{border-color:#F6E9E9 !important; background:radial-gradient(circle,#5A0F0F 0,#7A1717 75%) !important;}
+/* v798 Acero vencido: contador #N en rojo */
+html body #screen-detalle-cliente .card.loan-card-full.loan-card-vencido.ltd.ltd-acero .ltk-placa .ltk-cab .ltk-estado.ltk-estado-vencido,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.loan-card-vencido.ltd.ltd-acero .ltk-placa .ltk-cab .ltk-estado.ltk-estado-vencido{color:#C62828 !important;}
+/* v799 Acero: Progreso alineado con su icono y 'N de M' a la derecha de la palabra */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-prog-cab,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-prog-cab{align-items:center !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-prog-txt,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-prog-txt{display:flex; align-items:center; gap:12px; min-width:0;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-prog-txt .ltk-prog-sub,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-prog-txt .ltk-prog-sub{margin:0 !important; font-size:clamp(14px,4.2vw,16px) !important; white-space:nowrap;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-prog-txt .ltk-prog-tit,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-prog-txt .ltk-prog-tit{margin:0 !important;}
+/* v800 Acero: mas espacio entre Progreso y Fecha/Frecuencia/Cuota */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-prog,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-prog{margin-top:28px !important;}
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -27232,7 +27265,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
             <div class="ltk-dato"><span class="ltk-ico">${IK.cuota}</span><div><span class="ltk-k">Cuota</span><b>${formatearPesos(cuotaRealPrestamo(prestamo))}</b></div></div>
           </div>
           <div class="ltk-prog">
-            <div class="ltk-prog-cab"><span class="ltk-prog-ico">${IK.prog}</span><div><div class="ltk-prog-tit" role="button" aria-label="Ver resumen del crédito">PROGRESO</div><div class="ltk-prog-sub">${pagadas} / ${plan.length}</div></div></div>
+            <div class="ltk-prog-cab"><span class="ltk-prog-ico">${IK.prog}</span><div class="ltk-prog-txt"><div class="ltk-prog-tit" role="button" aria-label="Ver resumen del crédito">PROGRESO</div><div class="ltk-prog-sub">${pagadas} de ${plan.length}</div></div></div>
             ${segs}
           </div>
           <div class="ltk-res">
