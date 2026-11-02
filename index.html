@@ -10343,6 +10343,76 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 /* v800 Acero: mas espacio entre Progreso y Fecha/Frecuencia/Cuota */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-prog,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-prog{margin-top:28px !important;}
+/* v801 Acero: barra de progreso en pasos (circulos unidos por un canal), incrustada en la placa */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-pasos,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-pasos{display:flex; align-items:center; margin:16px 2px 0; --d:min(34px, calc(268px / var(--n) - 4px));}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso{position:relative; flex:1 1 0; min-width:0; display:flex; justify-content:center; align-items:center; cursor:pointer; -webkit-tap-highlight-color:transparent;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso:not(:first-child)::before,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso:not(:first-child)::before{content:''; position:absolute; z-index:0; right:50%; width:100%; top:50%; height:6px; transform:translateY(-50%); border-radius:3px; background:linear-gradient(180deg,#B9BEBD,#CDD1D0); box-shadow:inset 0 2px 3px rgba(0,0,0,.38), 0 1px 0 rgba(255,255,255,.95);}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.pagada:not(:first-child)::before,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.pagada:not(:first-child)::before{background:linear-gradient(180deg,#0F3274,#1A4A9C); box-shadow:inset 0 2px 3px rgba(0,0,0,.55), 0 1px 0 rgba(255,255,255,.95);}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.vencida:not(:first-child)::before,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.vencida:not(:first-child)::before{background:linear-gradient(180deg,#9E1B1B,#C62828); box-shadow:inset 0 2px 3px rgba(0,0,0,.50), 0 1px 0 rgba(255,255,255,.95);}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-disco{position:relative; z-index:1; box-sizing:border-box; width:var(--d); height:var(--d); border-radius:50%; display:flex; align-items:center; justify-content:center; font-style:normal; font-weight:800; font-size:min(15px, calc(var(--d) * .46)); line-height:1; background:linear-gradient(180deg,#C3C7C6,#D6D9D8); border:2px solid #8C9190; color:#6F7473; box-shadow:inset 0 3px 5px rgba(0,0,0,.34), 0 1px 0 rgba(255,255,255,.95);}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.actual .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.actual .ltk-disco{background:#fff; border:3px solid #2F6FD6; color:#111; box-shadow:inset 0 2px 4px rgba(0,0,0,.20), 0 1px 0 rgba(255,255,255,.95);}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.pagada .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.pagada .ltk-disco{background:linear-gradient(180deg,#0F3274,#1A4A9C); border:2px solid #0A2557; color:#fff; box-shadow:inset 0 3px 5px rgba(0,0,0,.55), 0 1px 0 rgba(255,255,255,.95);}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.vencida .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.vencida .ltk-disco{background:linear-gradient(180deg,#A81E1E,#C62828); border:2px solid #7A1212; color:#fff; box-shadow:inset 0 3px 5px rgba(0,0,0,.50), 0 1px 0 rgba(255,255,255,.95);}
+/* v802 Acero: barra de pasos estilo imagen (check azul, paso actual con halo luminoso) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-pasos,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-pasos{margin:22px 2px 8px;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso:not(:first-child)::before,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso:not(:first-child)::before{height:3px; background:#CBCFD6 !important; box-shadow:none !important; border-radius:2px;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.cn-ok:not(:first-child)::before,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.cn-ok:not(:first-child)::before{background:linear-gradient(90deg,#2F74E6,#1E62D6) !important; box-shadow:0 0 6px rgba(47,116,230,.45) !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.cn-venc:not(:first-child)::before,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.cn-venc:not(:first-child)::before{background:linear-gradient(90deg,#E05252,#C62828) !important; box-shadow:0 0 6px rgba(198,40,40,.35) !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-disco{background:#D9DCE1 !important; border:0 !important; color:#707680 !important; box-shadow:0 1px 3px rgba(40,50,70,.18), inset 0 1px 0 rgba(255,255,255,.7) !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.pagada .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.pagada .ltk-disco{background:radial-gradient(circle at 35% 25%,#4A8DF5,#1E62D6 60%,#1750BA) !important; color:#fff !important; box-shadow:0 3px 7px rgba(30,98,214,.40), inset 0 1px 1px rgba(255,255,255,.35) !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.vencida .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.vencida .ltk-disco{background:radial-gradient(circle at 35% 25%,#EE6A6A,#C62828 60%,#A81E1E) !important; color:#fff !important; box-shadow:0 3px 7px rgba(198,40,40,.40), inset 0 1px 1px rgba(255,255,255,.35) !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.actual .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.actual .ltk-disco{width:calc(var(--d) * 1.2) !important; height:calc(var(--d) * 1.2) !important; background:radial-gradient(circle at 35% 25%,#4A8DF5,#1E62D6 62%,#1750BA) !important; color:#fff !important; border:2px solid rgba(255,255,255,.92) !important; box-shadow:0 0 0 2.5px #2F74E6, 0 0 12px 3px rgba(47,116,230,.55), 0 0 24px 8px rgba(47,116,230,.25) !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-chk,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-chk{width:48%; height:48%; border-radius:50%; background:#fff; color:#1E62D6; display:flex; align-items:center; justify-content:center;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-chk svg,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-chk svg{width:72%; height:72%; display:block;}
+/* v803 Acero: barra de pasos incrustada en la placa (canal hundido, discos y linea grabados) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-pasos,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-pasos{margin:22px 2px 8px !important; padding:0; border:0; background:none; box-shadow:none; border-radius:0;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso:not(:first-child)::before,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso:not(:first-child)::before{height:4px !important; background:#B7BCC3 !important; box-shadow:inset 0 2px 2px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.85) !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.cn-ok:not(:first-child)::before,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.cn-ok:not(:first-child)::before{background:linear-gradient(180deg,#1750BA,#2F74E6) !important; box-shadow:inset 0 2px 2px rgba(0,0,30,.45), 0 1px 0 rgba(255,255,255,.85) !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.cn-venc:not(:first-child)::before,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.cn-venc:not(:first-child)::before{background:linear-gradient(180deg,#A81E1E,#D13C3C) !important; box-shadow:inset 0 2px 2px rgba(40,0,0,.45), 0 1px 0 rgba(255,255,255,.85) !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-disco{box-shadow:inset 0 3px 5px rgba(30,40,60,.40), 0 1px 0 rgba(255,255,255,.9) !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.pagada .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.pagada .ltk-disco{box-shadow:inset 0 3px 6px rgba(0,10,50,.55), inset 0 -1px 1px rgba(255,255,255,.22), 0 1px 0 rgba(255,255,255,.9) !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.vencida .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.vencida .ltk-disco{box-shadow:inset 0 3px 6px rgba(50,0,0,.55), inset 0 -1px 1px rgba(255,255,255,.22), 0 1px 0 rgba(255,255,255,.9) !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.actual .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.actual .ltk-disco{box-shadow:0 0 0 2.5px #2F74E6, 0 0 10px 2px rgba(47,116,230,.45), inset 0 3px 5px rgba(0,10,50,.45) !important;}
+/* v805 Acero: animacion de la barra de pasos (pulso en la cuota actual, destello que recorre el tramo pagado) */
+@keyframes ltkPulso{0%,100%{filter:drop-shadow(0 0 2px rgba(47,116,230,.35)); transform:scale(1);}50%{filter:drop-shadow(0 0 9px rgba(47,116,230,.95)); transform:scale(1.07);}}
+@keyframes ltkFlujo{0%{background-position:-60% 0;}100%{background-position:160% 0;}}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.actual .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.actual .ltk-disco{animation:ltkPulso 1.9s ease-in-out infinite;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.cn-ok:not(:first-child)::after,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.cn-ok:not(:first-child)::after{content:''; position:absolute; z-index:0; right:50%; width:100%; top:50%; height:4px; transform:translateY(-50%); border-radius:2px; pointer-events:none; background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.8),rgba(255,255,255,0)) no-repeat; background-size:40% 100%; animation:ltkFlujo 2.2s linear infinite;}
+@media (prefers-reduced-motion: reduce){
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.actual .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.actual .ltk-disco{animation:none !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.cn-ok:not(:first-child)::after,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.cn-ok:not(:first-child)::after{animation:none !important; display:none !important;}
+}
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -27238,11 +27308,12 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       let segs;
       if(plan.length && plan.length <= 12){
         const est = plan.map(estK);
-        segs = '<div class="ltk-celdas" style="--n:' + plan.length + '">' + plan.map((c, i) => {
-          const e = est[i];
-          const ini = i === 0 || (e === 'pagada' && est[i - 1] !== 'pagada');
-          const fin = i === plan.length - 1 || (e === 'pagada' && est[i + 1] !== 'pagada');
-          return `<span class="ltk-celda ${e}${ini ? ' ini' : ''}${fin ? ' fin' : ''}" data-cuota="${c.numero}" role="button" aria-label="Cuota ${c.numero}"><em class="ltk-tab">${c.numero}</em><b class="ltk-cuerpo"><i class="ltk-aro"></i></b></span>`;
+        const iAct = est.findIndex(e => e === '');
+        segs = '<div class="ltk-pasos" style="--n:' + plan.length + '">' + plan.map((c, i) => {
+          const e = est[i] || (i === iAct ? 'actual' : '');
+          const cn = e === 'vencida' ? 'cn-venc' : (i > 0 && est[i - 1] === 'pagada' ? 'cn-ok' : '');
+          const chk = '<i class="ltk-chk"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 17.5 19 7"/></svg></i>';
+          return `<span class="ltk-paso ${e} ${cn}" data-cuota="${c.numero}" role="button" aria-label="Cuota ${c.numero}"><b class="ltk-disco">${e === 'pagada' ? chk : c.numero}</b></span>`;
         }).join('') + '</div>';
       }else{
         segs = '<div class="ltk-barra">' + (plan.length <= 60 ? plan.map(c => `<i class="${estK(c)}"></i>`).join('') : `<i class="pagada" style="flex:${pagadas}"></i><i style="flex:${Math.max(plan.length - pagadas, 0)}"></i>`) + '</div>';
@@ -27297,7 +27368,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       cardK.querySelector('.ltk-estado').addEventListener('click', (e)=>{ e.stopPropagation(); abrirTicketPrestamo(prestamo); });
       cardK.querySelector('.ltk-monto').addEventListener('click', (e)=>{ e.stopPropagation(); abrirReciboTermico(prestamo); });
       cardK.querySelector('.ltk-prog-tit').addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); });
-      cardK.querySelectorAll('.ltk-celda[data-cuota]').forEach(sg => sg.addEventListener('click', (e)=>{ e.stopPropagation(); mostrarGloboCuota(sg, prestamo, Number(sg.dataset.cuota)); }));
+      cardK.querySelectorAll('.ltk-paso[data-cuota]').forEach(sg => sg.addEventListener('click', (e)=>{ e.stopPropagation(); mostrarGloboCuota(sg, prestamo, Number(sg.dataset.cuota)); }));
       if(cliente && cliente.alertaRiesgo && estadoVisual === 'vencido'){
         cardK.classList.add('con-sello-riesgo');
         cardK.insertAdjacentHTML('beforeend', selloRiesgoHTML());
