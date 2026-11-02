@@ -10267,6 +10267,42 @@ html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato:nth-child(-n+2) b,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato:nth-child(-n+2) b,
 html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato:nth-child(-n+2) b{color:#2F312E !important;}
+/* v787 Cristal: #063675 en valor del credito, agregar nota, barras pagadas y cuota */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-monto{color:#063675 !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia .loan-note-agregar,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia .loan-note-agregar,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-nota .loan-note.loan-note-vacia .loan-note-agregar{color:#063675 !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato:nth-child(3) b,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato:nth-child(3) b,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-dato:nth-child(3) b{color:#063675 !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.pagada .ltg-fill{background:linear-gradient(180deg,#0A428A,#063675) !important;}
+/* v788 Actual: #063675 en valor del credito, agregar nota, barras pagadas y cuota */
+html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .lao-valor,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full:not(.ltd) .lao-valor,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full:not(.ltd) .lao-valor{color:#063675 !important;}
+html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-note-vacia .loan-note-agregar,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-note-vacia .loan-note-agregar,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-note-vacia .loan-note-agregar{color:#063675 !important;}
+html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-row-cuota .loan-row-value,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-row-cuota .loan-row-value,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-row-cuota .loan-row-value{color:#063675 !important;}
+html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-progress-trozo.pagado,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-progress-trozo.pagado,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-progress-trozo.pagado{background:linear-gradient(180deg,#0A428A,#063675) !important; color:#fff !important; border-color:#052B5C !important;}
+/* v792 Acero: notas dentro de la placa (sin panel de cuero aparte), la placa llega al borde del marco */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-cuero,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-cuero{margin:12px 0 0 !important; padding:0 !important; background:none !important; box-shadow:none !important; border-radius:0 !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-cuero .loan-note:not(.loan-note-vacia),
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-cuero .loan-note:not(.loan-note-vacia){background:linear-gradient(180deg,#D3D7D1 0%,#DCDFD9 55%,#E3E6E0 100%) !important; border:1px solid #B6BBB5 !important; border-top-color:#9EA39D !important; border-bottom-color:rgba(255,255,255,.95) !important; box-shadow:inset 0 3px 6px rgba(40,50,45,.30), inset 0 1px 2px rgba(40,50,45,.30), 0 1px 0 rgba(255,255,255,.9) !important; padding:10px 14px !important; margin:0 !important;}
+/* v793 Acero: monto con mas peso y mas compacto; boton de nota como lamina sobrepuesta */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-monto-fila .ltk-monto,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-monto-fila .ltk-monto{font-weight:600 !important; letter-spacing:-1.5px !important;}
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-cuero .loan-note.loan-note-vacia,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-cuero .loan-note.loan-note-vacia{background:#1B4F94 !important; border:1px solid #0F3470 !important; border-radius:7px !important; box-shadow:0 2px 0 #0A2A5E, 0 3px 0 rgba(0,0,0,.18), 0 8px 12px -2px rgba(10,30,60,.45) !important; transform:translateY(-1px);}
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -27197,8 +27233,8 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
             <div class="ltk-res-pagado"><small>Pagado:</small><b>${formatearPesos(abonado)}</b></div>
             <div class="ltk-res-debe"><small>Debe:</small><b>${formatearPesos(saldo)}</b></div>
           </div>
+          <div class="ltd-nota-slot ltk-cuero"><div class="loan-note"></div></div>
         </div>
-        <div class="ltd-nota-slot ltk-cuero"><div class="loan-note"></div></div>
         <i class="ltk-tornillo t1"></i><i class="ltk-tornillo t2"></i><i class="ltk-tornillo t3"></i><i class="ltk-tornillo t4"></i>`;
       if(estadoVisual === 'vencido'){
         const diasMoraAlerta = diasMoraYAnticipadoPrestamo(prestamo).mora;
