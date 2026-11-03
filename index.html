@@ -10470,6 +10470,52 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-dato:nth-child(3) b,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-dato:nth-child(3) b{animation:none !important;}
 }
+/* v810 Franja superior (titulo + botones) mas baja: menos espacio vertical y botones de 40px */
+html body .header{ padding:9px 14px 8px; }
+html body .header h1{ font-size:24px; }
+html body .header .settings-btn, html body .header .refrescar-btn{ height:40px; min-height:40px; }
+html body .header .settings-btn, html body .header .refrescar-btn:not([style*="width"]){ width:40px; min-width:40px; }
+/* v811 Pagan Hoy: filtros por ruta mas separados de la franja superior */
+html body #screen-pagan-hoy #chips-rutas-pagan-hoy{ margin-top:14px; }
+/* v812 Titulo PrestaYa de Inicio: entrada letra por letra y destello final en "Ya" */
+@keyframes plEntra{0%{opacity:0; transform:translateY(16px) scale(.7);}60%{opacity:1; transform:translateY(-3px) scale(1.08);}100%{opacity:1; transform:translateY(0) scale(1);}}
+@keyframes plDestello{0%,100%{transform:scale(1); text-shadow:0 0 0 rgba(63,146,86,0);}40%{transform:scale(1.12); text-shadow:0 0 14px rgba(63,146,86,.75);}}
+.marca-animada .pl{ display:inline-block; animation:plEntra .5s cubic-bezier(.3,1.3,.5,1) both; animation-delay:calc(var(--i) * 75ms); }
+.marca-animada .brand-green .pl{ animation:plEntra .5s cubic-bezier(.3,1.3,.5,1) both, plDestello .9s ease-in-out both; animation-delay:calc(var(--i) * 75ms), calc(var(--i) * 75ms + 750ms); }
+@media (prefers-reduced-motion: reduce){ .marca-animada .pl, .marca-animada .brand-green .pl{ animation:none !important; } }
+/* v813 Boton flotante de buscar (cuadrado, mismo tamano y estilo que el de Tareas) */
+html body #btn-abrir-busqueda.buscador-fab{ position:fixed; right:20px; bottom:90px; width:50px; height:50px; padding:0; border:none; border-radius:0; background:none !important; box-shadow:none !important; z-index:39; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; transition:bottom .5s cubic-bezier(.22,1,.36,1), right .5s cubic-bezier(.22,1,.36,1), transform .25s cubic-bezier(.34,1.56,.64,1); }
+html body #btn-abrir-busqueda.buscador-fab svg.buscador-fab-ico{ width:100% !important; height:100% !important; stroke:none !important; overflow:visible; filter:drop-shadow(0 4px 6px rgba(20,30,60,.28)) drop-shadow(0 1px 1.5px rgba(20,30,60,.20)); }
+html body #btn-abrir-busqueda.buscador-fab:active{ transform:scale(.92); transition:transform .1s ease-out; }
+@media (prefers-reduced-motion: reduce){ html body #btn-abrir-busqueda.buscador-fab{ transition:none; } }
+/* v814 Inicio: se oculta el buscador junto a "Periodo seleccionado" (la busqueda queda en el boton flotante); la casilla ocupa todo el ancho */
+html body #screen-inicio .periodo-y-buscador{ grid-template-columns:1fr; }
+html body #screen-inicio .periodo-y-buscador .buscador-inicio{ display:none !important; }
+html body #screen-inicio .periodo-y-buscador .periodo-seleccionado{ flex-direction:row; align-items:center; justify-content:space-between; gap:10px; }
+html body #screen-inicio .periodo-y-buscador .periodo-seleccionado-valor{ text-align:right; font-size:15px; }
+html body #screen-inicio .periodo-y-buscador .periodo-seleccionado-label{ font-size:11px; }
+/* v815 Reloj digital de Inicio (digitos tipo rodillo) */
+#screen-inicio .welcome{ position:relative; }
+.reloj-digital{ position:absolute; right:16px; top:14px; padding:8px 11px 6px; border-radius:14px; text-align:center; color:#fff; background:linear-gradient(160deg,#2A3B84,#1B2757); box-shadow:0 6px 14px rgba(27,39,87,.30), 0 1px 3px rgba(27,39,87,.22), inset 0 1px 0 rgba(255,255,255,.18), inset 0 -2px 4px rgba(0,0,0,.25); -webkit-tap-highlight-color:transparent; }
+.rd-fila{ display:flex; align-items:center; justify-content:center; font-size:clamp(17px,5vw,21px); font-weight:700; font-variant-numeric:tabular-nums; line-height:1.15; }
+.rd-d{ display:inline-block; position:relative; width:.64em; height:1.15em; overflow:hidden; text-align:center; -webkit-mask-image:linear-gradient(transparent 0, #000 22%, #000 78%, transparent 100%); mask-image:linear-gradient(transparent 0, #000 22%, #000 78%, transparent 100%); }
+.rd-tira{ display:flex; flex-direction:column; transition:transform .6s cubic-bezier(.3,1.3,.5,1); will-change:transform; }
+.rd-tira span{ display:block; height:1.15em; line-height:1.15em; }
+.rd-sep{ padding:0 1px; opacity:.65; font-weight:700; }
+.rd-seg .rd-d{ color:#8FE3A8; }
+.rd-fecha{ margin-top:3px; font-size:10.5px; font-weight:600; letter-spacing:.3px; opacity:.85; white-space:nowrap; }
+@media (prefers-reduced-motion: reduce){ .rd-tira{ transition:none; } }
+/* v816 Reloj integrado: sin caja, tipografia como el titulo */
+.reloj-digital{ top:20px !important; right:16px !important; padding:0 !important; border-radius:0 !important; background:none !important; box-shadow:none !important; color:var(--navy,#23305F) !important; text-align:right !important; }
+.rd-fila{ justify-content:flex-end; font-size:clamp(21px,6vw,26px) !important; font-weight:800 !important; letter-spacing:-.3px; }
+.rd-seg .rd-d{ color:#22A06B !important; }
+.rd-sep{ opacity:.45 !important; padding:0 1px; }
+.rd-fecha{ margin-top:2px !important; font-size:13px !important; font-weight:600 !important; letter-spacing:0 !important; opacity:1 !important; color:var(--muted,#6B7280) !important; }
+html body.modo-oscuro .reloj-digital{ color:#E6EAF5 !important; }
+html body.modo-oscuro .rd-seg .rd-d{ color:#4ADE80 !important; }
+html body.modo-oscuro .rd-fecha{ color:#9AA3B5 !important; }
+/* v817 Reloj bajado: digitos alineados con las minusculas del titulo */
+.reloj-digital{ top:30px !important; }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -10753,6 +10799,16 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="8.01" y2="10"></line><line x1="12" y1="10" x2="12.01" y2="10"></line><line x1="16" y1="10" x2="16.01" y2="10"></line><line x1="8" y1="14" x2="8.01" y2="14"></line><line x1="12" y1="14" x2="12.01" y2="14"></line><line x1="16" y1="14" x2="16.01" y2="14"></line><line x1="8" y1="18" x2="16" y2="18"></line></svg>
   </button>
 
+  <!-- v813: la lupa de buscar pasa del encabezado a un botón flotante cuadrado, justo encima del botón de Tareas (misma función: abre la búsqueda de clientes) -->
+  <button type="button" class="buscador-fab" id="btn-abrir-busqueda" aria-label="Buscar cliente o crédito">
+    <svg class="buscador-fab-ico" viewBox="0 0 100 100" aria-hidden="true">
+      <rect x="9" y="9" width="82" height="82" rx="18" fill="#1E4FCF"/>
+      <rect x="9" y="9" width="82" height="38" rx="18" fill="#fff" opacity=".10"/>
+      <circle cx="44" cy="44" r="17" fill="none" stroke="#fff" stroke-width="8"/>
+      <line x1="57" y1="57" x2="74" y2="74" stroke="#fff" stroke-width="9" stroke-linecap="round"/>
+    </svg>
+  </button>
+
   <!-- HEADER -->
   <header class="header">
     <h1>Inicio</h1>
@@ -10768,15 +10824,17 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       <button class="refrescar-btn" id="btn-simulador-header" aria-label="Simulador de crédito" title="Simulador de crédito">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="8.01" y2="10"></line><line x1="12" y1="10" x2="12.01" y2="10"></line><line x1="16" y1="10" x2="16.01" y2="10"></line><line x1="8" y1="14" x2="8.01" y2="14"></line><line x1="12" y1="14" x2="12.01" y2="14"></line><line x1="16" y1="14" x2="16.01" y2="14"></line><line x1="8" y1="18" x2="8.01" y2="18"></line><line x1="12" y1="18" x2="16" y2="18"></line></svg>
       </button>
-      <button class="refrescar-btn" id="btn-abrir-busqueda" aria-label="Buscar cliente o crédito">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      </button>
     </div>
   </header>
 
   <!-- BIENVENIDA -->
   <section class="welcome">
-    <h2><span class="brand-navy">Presta</span><span class="brand-green">Ya</span></h2>
+    <!-- v815: reloj digital (hora, minutos y segundos con dígitos tipo rodillo) y la fecha debajo -->
+    <div class="reloj-digital" id="reloj-digital" role="timer" aria-label="Reloj">
+      <div class="rd-fila" id="rd-fila" aria-hidden="true"></div>
+      <div class="rd-fecha" id="rd-fecha"></div>
+    </div>
+    <h2 class="marca-animada" aria-label="PrestaYa"><span class="brand-navy"><span class="pl" style="--i:0" aria-hidden="true">P</span><span class="pl" style="--i:1" aria-hidden="true">r</span><span class="pl" style="--i:2" aria-hidden="true">e</span><span class="pl" style="--i:3" aria-hidden="true">s</span><span class="pl" style="--i:4" aria-hidden="true">t</span><span class="pl" style="--i:5" aria-hidden="true">a</span></span><span class="brand-green"><span class="pl" style="--i:6" aria-hidden="true">Y</span><span class="pl" style="--i:7" aria-hidden="true">a</span></span></h2>
     <div class="date" id="fecha-actual">Lunes, 10 de agosto</div>
   </section>
 
@@ -37460,6 +37518,59 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 // y sus datos quedan en sus propias llaves (tareas_v1, tareas_avisos_v1,
 // tareas_cal_abierto). No toca clientes, préstamos ni pagos.
 // ==========================================================
+// v815: reloj digital con dígitos tipo rodillo (solo visual; no toca datos)
+(function relojDigital(){
+  const fila = document.getElementById('rd-fila'), fechaEl = document.getElementById('rd-fecha');
+  if(!fila || !fechaEl) return;
+  const DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'], MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const digitos = [];
+  function crearDigito(){
+    const d = document.createElement('span'); d.className = 'rd-d';
+    const t = document.createElement('div'); t.className = 'rd-tira';
+    for(let i = 0; i < 20; i++){ const n = document.createElement('span'); n.textContent = String(i % 10); t.appendChild(n); }
+    d.appendChild(t);
+    const obj = { tira:t, pos:0 };
+    t.addEventListener('transitionend', ()=>{ if(obj.pos >= 10){ obj.pos -= 10; t.style.transition = 'none'; t.style.transform = 'translateY(' + (-obj.pos * 1.15) + 'em)'; void t.offsetHeight; t.style.transition = ''; } });
+    digitos.push(obj);
+    return d;
+  }
+  // HH : MM : SS
+  [[0,1],[2,3],[4,5]].forEach((par, i)=>{
+    const grupo = document.createElement('span'); grupo.style.display = 'inline-flex'; if(i === 2) grupo.className = 'rd-seg';
+    grupo.appendChild(crearDigito()); grupo.appendChild(crearDigito());
+    if(i > 0){ const sep = document.createElement('span'); sep.className = 'rd-sep'; sep.textContent = ':'; fila.appendChild(sep); }
+    fila.appendChild(grupo);
+  });
+  let ultimo = '';
+  function poner(valor, primera){
+    digitos.forEach((o, i)=>{
+      const v = Number(valor[i]);
+      let destino = v;
+      if(!primera){
+        const actual = o.pos % 10;
+        if(actual === v) return;
+        destino = v > actual ? v : v + 10;   // siempre gira hacia adelante
+      }
+      o.pos = destino;
+      if(primera){ o.tira.style.transition = 'none'; }
+      o.tira.style.transform = 'translateY(' + (-destino * 1.15) + 'em)';
+      if(primera){ void o.tira.offsetHeight; o.tira.style.transition = ''; }
+    });
+  }
+  let primera = true, diaMostrado = '';
+  function tick(){
+    const h = new Date();
+    const hh = String(h.getHours()).padStart(2,'0'), mm = String(h.getMinutes()).padStart(2,'0'), ss = String(h.getSeconds()).padStart(2,'0');
+    const v = hh + mm + ss;
+    if(v !== ultimo){ poner(v, primera); ultimo = v; primera = false; }
+    const dia = h.getFullYear() + '-' + h.getMonth() + '-' + h.getDate();
+    if(dia !== diaMostrado){ diaMostrado = dia; fechaEl.textContent = DIAS[h.getDay()] + ', ' + h.getDate() + ' ' + MESES[h.getMonth()] + ' ' + h.getFullYear(); }
+  }
+  tick();
+  setInterval(tick, 250);
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden){ primera = true; ultimo = ''; tick(); } });
+})();
+
 (function seccionTareas(){
   const fab = document.getElementById('btn-tareas-fab');
   const pantalla = document.getElementById('screen-tareas');
@@ -37478,11 +37589,13 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     pantalla.style.display = 'block';
     document.documentElement.style.overflow = 'hidden';
     fab.style.display = 'none';
+    const bfab = document.getElementById('btn-abrir-busqueda'); if(bfab) bfab.style.visibility = 'hidden';
   }
   function cerrar(){
     pantalla.style.display = 'none';
     document.documentElement.style.overflow = '';
     fab.style.display = '';
+    const bfab = document.getElementById('btn-abrir-busqueda'); if(bfab) bfab.style.visibility = '';
     reposicionar();
   }
   fab.addEventListener('click', abrir);
@@ -37540,6 +37653,13 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     const b = bottom + 'px', rr = right + 'px';
     if(fab.style.bottom !== b) fab.style.bottom = b;
     if(fab.style.right !== rr) fab.style.right = rr;
+    // v813: el botón flotante de buscar va justo encima del de Tareas
+    const bf = document.getElementById('btn-abrir-busqueda');
+    if(bf){
+      const bb = (bottom + 50 + 14) + 'px';
+      if(bf.style.bottom !== bb) bf.style.bottom = bb;
+      if(bf.style.right !== rr) bf.style.right = rr;
+    }
   }
   reposicionar();
   setInterval(reposicionar, 300);
