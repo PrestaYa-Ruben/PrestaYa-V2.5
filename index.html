@@ -10552,6 +10552,10 @@ html.ios .scroll-y, html.ios [id^="screen-"]{ -webkit-overflow-scrolling:touch; 
 /* v826 Sin franja azul: la barra de estado de iOS es clara (estilo default) y queda del mismo color que la barra superior */
 html body::before{ display:none !important; }
 html body #screen-tareas{ background:transparent; }
+/* v827 Barra superior solida y nitida: sin transparencia ni desenfoque, pegada a la barra de estado */
+html body .header, html body #screen-nuevo-prestamo .header{ background:var(--surface) !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; opacity:1 !important; filter:none !important; z-index:60; }
+html body.modo-oscuro .header, html body.modo-oscuro #screen-nuevo-prestamo .header{ background:var(--surface) !important; }
+html.ios, html.ios body{ background-color:var(--surface); }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
