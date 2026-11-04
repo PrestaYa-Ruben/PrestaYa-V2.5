@@ -2,6 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script>
+/* v828: deteccion temprana de iPhone/iPad (antes de pintar), para activar las optimizaciones de scroll */
+(function(){ try{ var ua=navigator.userAgent||''; if(/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)){ document.documentElement.classList.add('ios'); window.__esIOS=true; } }catch(e){} })();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>PrestaApp — Sistema de Préstamos</title>
 
@@ -10556,6 +10560,20 @@ html body #screen-tareas{ background:transparent; }
 html body .header, html body #screen-nuevo-prestamo .header{ background:var(--surface) !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; opacity:1 !important; filter:none !important; z-index:60; }
 html body.modo-oscuro .header, html body.modo-oscuro #screen-nuevo-prestamo .header{ background:var(--surface) !important; }
 html.ios, html.ios body{ background-color:var(--surface); }
+/* v828 iPhone: scroll fluido en la lista de clientes */
+/* content-visibility:auto hace que Safari recalcule alturas al deslizar (los "brincos"): en iPhone se dibujan normal */
+html.ios #screen-clientes .client-row.client-row-cliente, html.ios #screen-busqueda .client-row.client-row-cliente{ content-visibility:visible; contain-intrinsic-size:none; }
+/* alto de pantalla real del iPhone (sin saltos por la barra de Safari) */
+html.ios .app{ min-height:100vh; min-height:100dvh; }
+html.ios{ scroll-behavior:auto; }
+/* cada tarjeta se compone en su propia capa solo mientras se toca, no siempre */
+html.ios .client-row{ -webkit-tap-highlight-color:transparent; transition:none; }
+html.ios .client-row:active{ transform:scale(.995); }
+/* carruseles horizontales: sin animacion de desplazamiento forzada */
+html.ios [style*="scroll-behavior"], html.ios .cg-scroll{ scroll-behavior:auto !important; }
+/* v829 Botones flotantes por encima de la barra inferior con la zona segura del iPhone (el boton de Tareas y el de Buscar siguen su posicion solos) */
+html body .agregar-cliente-fab, html body .simulador-fab{ bottom:calc(92px + env(safe-area-inset-bottom, 0px)); }
+html body .pagar-fab, html body .share-fab{ bottom:calc(26px + env(safe-area-inset-bottom, 0px)); }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -16356,6 +16374,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     }
   }
   function actualizarBloqueoPullToRefresh(){
+    if(window.__esIOS) return; // v828: en iPhone el scroll queda libre de JS (overscroll-behavior ya lo cubre)
     if(estaArribaDelTodoPullToRefresh()){
       if(!pullToRefreshListenerPuesto){
         document.addEventListener('touchmove', manejarTouchMovePullToRefresh, { passive: false });
@@ -38494,6 +38513,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   (function(){
     let t = null;
     const raiz = document.documentElement;
+    if(window.__esIOS) return; // v828: en iPhone alternar esta clase mientras se desliza provoca repintados y tirones
     window.addEventListener('scroll', ()=>{
       if(!raiz.classList.contains('desplazando')) raiz.classList.add('desplazando');
       clearTimeout(t);
