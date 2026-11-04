@@ -10574,6 +10574,47 @@ html.ios [style*="scroll-behavior"], html.ios .cg-scroll{ scroll-behavior:auto !
 /* v829 Botones flotantes por encima de la barra inferior con la zona segura del iPhone (el boton de Tareas y el de Buscar siguen su posicion solos) */
 html body .agregar-cliente-fab, html body .simulador-fab{ bottom:calc(92px + env(safe-area-inset-bottom, 0px)); }
 html body .pagar-fab, html body .share-fab{ bottom:calc(26px + env(safe-area-inset-bottom, 0px)); }
+/* v830 Botones flotantes (Nuevo cliente, Tareas, Buscar): mas grandes y suaves en iPhone */
+html body .tareas-fab, html body #btn-agregar-cliente-fab.agregar-cliente-fab, html body #btn-abrir-busqueda.buscador-fab{
+  width:58px !important; height:58px !important;
+  -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; touch-action:manipulation;
+  will-change:transform; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+}
+/* la animacion de entrada ya no deja el boton "congelado" (antes anulaba el efecto de presionar) */
+html body #btn-agregar-cliente-fab.agregar-cliente-fab{ animation-fill-mode:backwards; }
+/* presionar: baja rapido; soltar: regresa con un rebote suave */
+html body .tareas-fab, html body #btn-agregar-cliente-fab.agregar-cliente-fab, html body #btn-abrir-busqueda.buscador-fab{
+  transition:bottom .45s cubic-bezier(.22,1,.36,1), right .45s cubic-bezier(.22,1,.36,1), transform .38s cubic-bezier(.34,1.56,.64,1) !important;
+}
+html body .tareas-fab:active, html body #btn-agregar-cliente-fab.agregar-cliente-fab:active, html body #btn-abrir-busqueda.buscador-fab:active{
+  transform:scale(.9) !important; transition:transform .09s ease-out !important;
+}
+@media (prefers-reduced-motion: reduce){ html body .tareas-fab, html body #btn-agregar-cliente-fab.agregar-cliente-fab, html body #btn-abrir-busqueda.buscador-fab{ transition:none !important; } }
+/* v831 Boton flotante de Buscar tambien en Clientes (copia de las reglas del de Inicio) */
+/* Lupa del encabezado de Inicio como tecla en relieve */
+body:not(.modo-oscuro) #btn-abrir-busqueda-clientes{
+  background:linear-gradient(160deg,#E3EBF9,#C9D8F1) !important; color:#3E63AE;
+  box-shadow:0 4px 8px rgba(35,45,80,0.18), 0 1px 2px rgba(35,45,80,0.12), inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -2px 3px rgba(0,0,0,0.08) !important;
+}
+body:not(.modo-oscuro) #btn-abrir-busqueda-clientes svg{ stroke:#3E63AE !important; }
+body:not(.modo-oscuro) #btn-abrir-busqueda-clientes{ box-shadow:inset 0 2px 0 rgba(255,255,255,0.65), inset 0 -2px 3px rgba(0,0,0,0.10) !important; }
+html body #btn-abrir-busqueda-clientes.buscador-fab{ position:fixed; right:20px; bottom:90px; width:50px; height:50px; padding:0; border:none; border-radius:0; background:none !important; box-shadow:none !important; z-index:39; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; transition:bottom .5s cubic-bezier(.22,1,.36,1), right .5s cubic-bezier(.22,1,.36,1), transform .25s cubic-bezier(.34,1.56,.64,1); }
+html body #btn-abrir-busqueda-clientes.buscador-fab svg.buscador-fab-ico{ width:100% !important; height:100% !important; stroke:none !important; overflow:visible; filter:drop-shadow(0 4px 6px rgba(20,30,60,.28)) drop-shadow(0 1px 1.5px rgba(20,30,60,.20)); }
+html body #btn-abrir-busqueda-clientes.buscador-fab:active{ transform:scale(.92); transition:transform .1s ease-out; }
+html body #btn-abrir-busqueda-clientes.buscador-fab{ transition:none; }
+html body #btn-abrir-busqueda-clientes.buscador-fab{
+  width:58px !important; height:58px !important;
+  -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; touch-action:manipulation;
+  will-change:transform; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+}
+html body #btn-abrir-busqueda-clientes.buscador-fab{
+  transition:bottom .45s cubic-bezier(.22,1,.36,1), right .45s cubic-bezier(.22,1,.36,1), transform .38s cubic-bezier(.34,1.56,.64,1) !important;
+}
+html body #btn-abrir-busqueda-clientes.buscador-fab:active{
+  transform:scale(.9) !important; transition:transform .09s ease-out !important;
+}
+html body #btn-abrir-busqueda-clientes.buscador-fab{ transition:none !important; }
+@media (prefers-reduced-motion: reduce){ html body #btn-abrir-busqueda-clientes.buscador-fab{ transition:none !important; } }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -11368,6 +11409,14 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <!-- NUEVO: botón flotante "Agregar cliente" — mismo patrón que el FAB
        "Pagar" de Detalle del Préstamo, con degradado verde. -->
+  <button type="button" class="buscador-fab" id="btn-abrir-busqueda-clientes" aria-label="Buscar cliente o crédito">
+    <svg class="buscador-fab-ico" viewBox="0 0 100 100" aria-hidden="true">
+      <rect x="9" y="9" width="82" height="82" rx="18" fill="#1E4FCF"/>
+      <rect x="9" y="9" width="82" height="38" rx="18" fill="#fff" opacity=".10"/>
+      <circle cx="44" cy="44" r="17" fill="none" stroke="#fff" stroke-width="8"/>
+      <line x1="57" y1="57" x2="74" y2="74" stroke="#fff" stroke-width="9" stroke-linecap="round"/>
+    </svg>
+  </button>
   <button type="button" class="agregar-cliente-fab" id="btn-agregar-cliente-fab" aria-label="Agregar cliente">
     <!-- v736: mismo estilo que el botón de Tareas — tablero verde con argollas, persona y "+" (sin recuadro) -->
     <svg class="agregar-cliente-fab-ico" viewBox="0 0 100 100" aria-hidden="true">
@@ -21380,10 +21429,14 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     resultados.forEach(cliente => resultadosBusqueda.appendChild(crearTarjetaCliente(cliente)));
   }
 
+  // v831: la busqueda recuerda desde que pantalla se abrio (Inicio o Clientes) para volver ahi
+  let busquedaOrigen = screenInicio;
+  document.getElementById('btn-abrir-busqueda-clientes').addEventListener('click', ()=> document.getElementById('btn-abrir-busqueda').click());
   document.getElementById('btn-abrir-busqueda').addEventListener('click', ()=>{
     inputBusquedaGlobal.value = '';
     renderizarResultadosBusqueda();
-    screenInicio.style.display = 'none';
+    busquedaOrigen = (screenClientes && screenClientes.style.display === 'block') ? screenClientes : screenInicio;
+    busquedaOrigen.style.display = 'none';
     screenBusqueda.style.display = 'block';
     bottomNav.style.display = 'none';
     window.scrollTo(0, 0);
@@ -21397,7 +21450,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   document.getElementById('btn-cerrar-busqueda').addEventListener('click', ()=>{
     screenBusqueda.style.display = 'none';
-    screenInicio.style.display = 'block';
+    busquedaOrigen.style.display = 'block';
     bottomNav.style.display = 'flex';
     window.scrollTo(0, 0);
   });
@@ -37709,13 +37762,13 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     pantalla.style.display = 'block';
     document.documentElement.style.overflow = 'hidden';
     fab.style.display = 'none';
-    const bfab = document.getElementById('btn-abrir-busqueda'); if(bfab) bfab.style.visibility = 'hidden';
+    document.querySelectorAll('.buscador-fab').forEach(x=>{ x.style.visibility = 'hidden'; });
   }
   function cerrar(){
     pantalla.style.display = 'none';
     document.documentElement.style.overflow = '';
     fab.style.display = '';
-    const bfab = document.getElementById('btn-abrir-busqueda'); if(bfab) bfab.style.visibility = '';
+    document.querySelectorAll('.buscador-fab').forEach(x=>{ x.style.visibility = ''; });
     reposicionar();
   }
   fab.addEventListener('click', abrir);
@@ -37767,22 +37820,26 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     });
     if(mejor){
       bottom = Math.max(bottom, Math.round(innerHeight - mejor.top + 18)); // CAMBIO (v523): más separación (antes 12px)
-      if(mejor.width <= 70) right = Math.round(innerWidth - mejor.right + (mejor.width - 50) / 2);
+      if(mejor.width <= 70) right = Math.round(innerWidth - mejor.right + (mejor.width - 58) / 2);
       else right = Math.round(innerWidth - mejor.right);
     }
     const b = bottom + 'px', rr = right + 'px';
     if(fab.style.bottom !== b) fab.style.bottom = b;
     if(fab.style.right !== rr) fab.style.right = rr;
     // v813: el botón flotante de buscar va justo encima del de Tareas
-    const bf = document.getElementById('btn-abrir-busqueda');
-    if(bf){
-      const bb = (bottom + 50 + 14) + 'px';
+    document.querySelectorAll('.buscador-fab').forEach(bf=>{
+      const bb = (bottom + 58 + 14) + 'px';
       if(bf.style.bottom !== bb) bf.style.bottom = bb;
       if(bf.style.right !== rr) bf.style.right = rr;
-    }
+    });
   }
   reposicionar();
-  setInterval(reposicionar, 300);
+  // v830: en iPhone se revisa menos seguido y nunca con el dedo sobre la pantalla (cada revision mide el diseno y frenaba el scroll)
+  window.__tocando = false;
+  document.addEventListener('touchstart', ()=>{ window.__tocando = true; }, { passive:true });
+  document.addEventListener('touchend', ()=>{ window.__tocando = false; reposicionar(); }, { passive:true });
+  document.addEventListener('touchcancel', ()=>{ window.__tocando = false; }, { passive:true });
+  setInterval(()=>{ if(!window.__tocando) reposicionar(); }, window.__esIOS ? 900 : 300);
   window.addEventListener('resize', reposicionar);
   // v569: reacciona de inmediato cuando cambia la pantalla (antes podía
   // tardar hasta 300 ms y luego saltaba); el movimiento lo suaviza el CSS.
