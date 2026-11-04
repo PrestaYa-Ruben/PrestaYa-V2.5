@@ -37803,25 +37803,30 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   }
   function reposicionar(){
     if(pantalla.style.display === 'block') return;
+    // v832: las distancias se calculan con el borde INFERIOR/DERECHO de cada boton (valores de CSS),
+    // no con la altura de la ventana: en iPhone esa altura cambia al deslizar (barra de Safari) y los botones "nadaban".
+    const num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
     let bottom = 26, right = 20;
     const nav = document.querySelector('.bottom-nav');
     const rn = nav && visible(nav);
-    if(rn && rn.top > innerHeight * 0.6) bottom = Math.max(bottom, Math.round(innerHeight - rn.top + 14));
+    if(rn && rn.top > innerHeight * 0.6){
+      const csn = getComputedStyle(nav);
+      bottom = Math.max(bottom, Math.round(num(csn.bottom) + nav.offsetHeight + 14));
+    }
     let mejor = null;
     document.querySelectorAll(SEL_OBSTACULOS).forEach(el=>{
-      let r = visible(el);
+      const r = visible(el);
       if(!r || r.right < innerWidth - 120) return;
-      // v569: se usa el tamaño real (sin la animación de entrada/escala)
-      // para que el botón de Tareas no "persiga" al otro mientras anima.
-      const cy = r.top + r.height/2, cx = r.left + r.width/2;
+      const cs = getComputedStyle(el);
       const h = el.offsetHeight || r.height, w = el.offsetWidth || r.width;
-      r = { top: cy - h/2, right: cx + w/2, width: w, height: h };
-      if(!mejor || r.top < mejor.top) mejor = r;
+      const tope = num(cs.bottom) + h;           // distancia desde el fondo hasta el borde superior del boton
+      const der = num(cs.right);                 // distancia desde la derecha hasta su borde derecho
+      if(!mejor || tope > mejor.tope) mejor = { tope, der, width: w };
     });
     if(mejor){
-      bottom = Math.max(bottom, Math.round(innerHeight - mejor.top + 18)); // CAMBIO (v523): más separación (antes 12px)
-      if(mejor.width <= 70) right = Math.round(innerWidth - mejor.right + (mejor.width - 58) / 2);
-      else right = Math.round(innerWidth - mejor.right);
+      bottom = Math.max(bottom, Math.round(mejor.tope + 18)); // CAMBIO (v523): más separación (antes 12px)
+      if(mejor.width <= 70) right = Math.round(mejor.der + (mejor.width - 58) / 2);
+      else right = Math.round(mejor.der);
     }
     const b = bottom + 'px', rr = right + 'px';
     if(fab.style.bottom !== b) fab.style.bottom = b;
