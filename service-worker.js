@@ -9,7 +9,8 @@
 // (ej. 'prestaya-v2', 'prestaya-v3'...). Eso obliga a los teléfonos
 // que ya instalaron la app a bajar los archivos nuevos en vez de
 // seguir usando la copia vieja guardada en caché.
-const CACHE_NAME = 'prestaya-v832';
+const CACHE_NAME = 'prestaya-v833';
+const CACHE_FUENTES = 'prestaya-fuentes'; // v833: tipografias de Google, se guardan para verse igual sin internet
 
 const ARCHIVOS_APP_SHELL = [
   './',
@@ -25,7 +26,8 @@ const ARCHIVOS_APP_SHELL = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(ARCHIVOS_APP_SHELL))
+      // v833: cada archivo se guarda por separado; si uno falla, los demas igual quedan disponibles sin internet
+      .then((cache) => Promise.all(ARCHIVOS_APP_SHELL.map((f) => cache.add(f).catch(() => {}))))
       .then(() => self.skipWaiting())
   );
 });
@@ -36,7 +38,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((nombres) =>
       Promise.all(
         nombres
-          .filter((nombre) => nombre !== CACHE_NAME)
+          .filter((nombre) => nombre !== CACHE_NAME && nombre !== CACHE_FUENTES)
           .map((nombre) => caches.delete(nombre))
       )
     ).then(() => self.clients.claim())
@@ -55,19 +57,43 @@ self.addEventListener('fetch', (event) => {
   // version mas nueva (sin usar la copia temporal del navegador); sin internet usa la
   // copia guardada. Asi los cambios se ven al abrir, sin tener que abrir dos veces.
   const url = new URL(event.request.url);
+
+  // v833: tipografias de Google — primero la copia guardada (abre al instante, incluso con senal debil o sin internet)
+  // y en segundo plano se actualiza.
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
+    event.respondWith(
+      caches.open(CACHE_FUENTES).then((cache) =>
+        cache.match(event.request).then((guardada) => {
+          const red = fetch(event.request).then((r) => {
+            if (r && (r.status === 200 || r.type === 'opaque')) cache.put(event.request, r.clone());
+            return r;
+          }).catch(() => guardada || Response.error());
+          return guardada || red;
+        })
+      )
+    );
+    return;
+  }
+
+  // v823/v833: la pagina (index.html) va "primero la red" para ver siempre la version mas nueva, pero si no
+  // responde en 4 segundos (senal debil) o no hay internet, abre al instante la copia guardada.
   const esPagina = event.request.mode === 'navigate' || (url.origin === self.location.origin && /(^|\/)(index\.html)?$/.test(url.pathname));
   if (esPagina) {
-    event.respondWith(
-      fetch(event.request, { cache: 'no-cache' })
-        .then((respuestaRed) => {
-          if (respuestaRed && respuestaRed.status === 200) {
-            const copia = respuestaRed.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', copia));
-          }
-          return respuestaRed;
-        })
-        .catch(() => caches.match('./index.html').then((r) => r || caches.match(event.request)))
-    );
+    event.respondWith((async () => {
+      const red = fetch(event.request, { cache: 'no-cache' }).then((respuestaRed) => {
+        if (respuestaRed && respuestaRed.status === 200) {
+          const copia = respuestaRed.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', copia));
+        }
+        return respuestaRed;
+      });
+      const limite = new Promise((resolver) => setTimeout(() => resolver(null), 4000));
+      const rapida = await Promise.race([red.catch(() => null), limite]);
+      if (rapida) return rapida;
+      const guardada = (await caches.match('./index.html', { ignoreSearch: true })) || (await caches.match(event.request, { ignoreSearch: true }));
+      if (guardada) return guardada;
+      return red.catch(() => Response.error());
+    })());
     return;
   }
 
