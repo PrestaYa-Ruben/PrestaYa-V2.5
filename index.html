@@ -10529,7 +10529,7 @@ html body #screen-clientes #chips-rutas-clientes{ position:relative !important; 
 html.ios, html.ios body{ -webkit-text-size-adjust:100%; }
 html.ios body{ min-height:-webkit-fill-available; -webkit-touch-callout:none; overscroll-behavior-y:none; }
 html.ios input, html.ios textarea{ -webkit-user-select:text; user-select:text; -webkit-touch-callout:default; }
-html.ios input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]), html.ios select, html.ios textarea{ font-size:16px !important; }
+html.ios .ios-16{ font-size:16px !important; }
 html.ios button, html.ios .nav-item{ touch-action:manipulation; }
 html.ios .header .back-btn svg{ width:28px; height:28px; stroke-width:2.6; }
 html.ios .header .back-btn{ margin-left:-6px; }
@@ -10541,6 +10541,9 @@ html.ios .scroll-y, html.ios [id^="screen-"]{ -webkit-overflow-scrolling:touch; 
 /* indicador del gesto de volver (borde izquierdo) */
 #ios-volver-ind{ position:fixed; left:0; top:50%; width:38px; height:38px; margin-top:-19px; border-radius:50%; background:rgba(35,48,95,.92); box-shadow:0 4px 12px rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; transform:translateX(-46px); opacity:0; z-index:100001; pointer-events:none; }
 #ios-volver-ind svg{ width:22px; height:22px; stroke:#fff; fill:none; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
+/* v824 Nuevo prestamo: monto solicitado mas grande */
+#screen-nuevo-prestamo .np-campo-monto .field-input{ font-size:clamp(30px,9vw,36px) !important; font-weight:800; padding:14px 56px 10px 50px; letter-spacing:-.3px; }
+#screen-nuevo-prestamo .np-prefijo{ font-size:clamp(30px,9vw,36px); left:16px; transform:translateY(-48%); }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -37544,6 +37547,14 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     if(!esIOS) return;
     const raiz = document.documentElement;
     raiz.classList.add('ios');
+    // iOS amplia la pantalla al enfocar un campo con letra menor a 16px: solo se suben esos (los grandes no se tocan)
+    function marcarCampos(){
+      document.querySelectorAll('input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]), select, textarea').forEach(el=>{
+        if(parseFloat(getComputedStyle(el).fontSize) < 16) el.classList.add('ios-16');
+      });
+    }
+    marcarCampos(); window.addEventListener('load', marcarCampos); setTimeout(marcarCampos, 1500);
+    document.addEventListener('focusin', e=>{ const el = e.target; if(el && /^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName) && parseFloat(getComputedStyle(el).fontSize) < 16) el.classList.add('ios-16'); });
     const standalone = window.navigator.standalone === true || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
     if(standalone) raiz.classList.add('standalone');
     if(!standalone) return; // en Safari normal ya existe el gesto nativo de atras
