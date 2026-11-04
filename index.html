@@ -21348,7 +21348,28 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     // try/catch: si una falla, se salta SOLO esa (mostrando una tarjeta de
     // aviso en su lugar) y el resto de la lista se sigue dibujando normal.
     let clientesConError = 0;
-    lista.forEach(cliente=>{
+    // v839: la lista se dibuja por lotes (24 tarjetas y, al acercarse al final, 24 mas). Con cientos de clientes,
+    // dibujarlos todos de una vez agotaba la memoria de Safari en iPhone y cerraba la pagina al abrir Clientes.
+    if(window.__ioMasClientes){ try{ window.__ioMasClientes.disconnect(); }catch(e){} window.__ioMasClientes = null; }
+    const TAM_LOTE = 24;
+    let sigClienteIdx = 0;
+    const centinelaMas = document.createElement('div');
+    centinelaMas.className = 'clientes-mas-centinela';
+    centinelaMas.setAttribute('aria-hidden', 'true');
+    centinelaMas.style.cssText = 'height:1px;width:100%;pointer-events:none;';
+    let dibujarLoteClientes = function(){
+      if(centinelaMas.parentNode) centinelaMas.parentNode.removeChild(centinelaMas);
+      const fin = Math.min(sigClienteIdx + TAM_LOTE, lista.length);
+      for(; sigClienteIdx < fin; sigClienteIdx++) dibujarClienteLista(lista[sigClienteIdx]);
+      if(sigClienteIdx < lista.length){
+        listaClientes.appendChild(centinelaMas);
+      }else if(window.__ioMasClientes){
+        try{ window.__ioMasClientes.disconnect(); }catch(e){} window.__ioMasClientes = null;
+      }
+      contadorClientes.textContent = lista.length + (lista.length === 1 ? ' cliente' : ' clientes') +
+        (clientesConError > 0 ? ' (' + clientesConError + ' con error)' : '');
+    };
+    function dibujarClienteLista(cliente){
       try{
         listaClientes.appendChild(crearTarjetaCliente(cliente));
       }catch(err){
@@ -21365,9 +21386,21 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
         `;
         listaClientes.appendChild(avisoError);
       }
-    });
-    contadorClientes.textContent = lista.length + (lista.length === 1 ? ' cliente' : ' clientes') +
-      (clientesConError > 0 ? ' (' + clientesConError + ' con error)' : '');
+    }
+    dibujarLoteClientes();
+    if(sigClienteIdx < lista.length){
+      if('IntersectionObserver' in window){
+        window.__ioMasClientes = new IntersectionObserver(es=>{
+          if(es.some(e=>e.isIntersecting) && sigClienteIdx < lista.length) dibujarLoteClientes();
+        }, { rootMargin:'1400px 0px' });
+        window.__ioMasClientes.observe(centinelaMas);
+        // el centinela se mueve al final tras cada lote: se vuelve a observar para que dispare otra vez
+        const dibujarOrig = dibujarLoteClientes;
+        dibujarLoteClientes = function(){ dibujarOrig(); if(window.__ioMasClientes && centinelaMas.parentNode){ window.__ioMasClientes.unobserve(centinelaMas); window.__ioMasClientes.observe(centinelaMas); } };
+      }else{
+        while(sigClienteIdx < lista.length) dibujarLoteClientes();
+      }
+    }
   }
 
   // ==========================================================
