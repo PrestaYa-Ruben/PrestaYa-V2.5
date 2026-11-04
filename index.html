@@ -10525,6 +10525,22 @@ html body .reloj-digital{ display:none !important; }
 /* v821 Clientes: el buscador y las rutas ya no quedan flotando; se van con la lista al deslizar (el encabezado sigue fijo) */
 html body #screen-clientes .search-row,
 html body #screen-clientes #chips-rutas-clientes{ position:relative !important; top:auto !important; z-index:auto; }
+/* v822 Optimizacion iPhone (solo cuando html.ios): zonas seguras, chevron, sin zoom al escribir, gesto de borde para volver */
+html.ios, html.ios body{ -webkit-text-size-adjust:100%; }
+html.ios body{ min-height:-webkit-fill-available; -webkit-touch-callout:none; overscroll-behavior-y:none; }
+html.ios input, html.ios textarea{ -webkit-user-select:text; user-select:text; -webkit-touch-callout:default; }
+html.ios input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]), html.ios select, html.ios textarea{ font-size:16px !important; }
+html.ios button, html.ios .nav-item{ touch-action:manipulation; }
+html.ios .header .back-btn svg{ width:28px; height:28px; stroke-width:2.6; }
+html.ios .header .back-btn{ margin-left:-6px; }
+html.ios .header .back-btn:active{ transform:none; opacity:.45; }
+html.ios.standalone body::before{ content:''; position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); background:#23305F; z-index:100000; pointer-events:none; }
+html.ios.standalone body .header{ padding-top:calc(9px + env(safe-area-inset-top)) !important; }
+html.ios .bottom-nav{ padding-bottom:calc(5px + env(safe-area-inset-bottom)) !important; }
+html.ios .scroll-y, html.ios [id^="screen-"]{ -webkit-overflow-scrolling:touch; }
+/* indicador del gesto de volver (borde izquierdo) */
+#ios-volver-ind{ position:fixed; left:0; top:50%; width:38px; height:38px; margin-top:-19px; border-radius:50%; background:rgba(35,48,95,.92); box-shadow:0 4px 12px rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; transform:translateX(-46px); opacity:0; z-index:100001; pointer-events:none; }
+#ios-volver-ind svg{ width:22px; height:22px; stroke:#fff; fill:none; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -11669,7 +11685,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   <!-- HEADER con flecha de regreso -->
   <header class="header">
     <button class="back-btn" id="btn-cerrar-nuevo-cliente" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1 id="titulo-form-cliente">Nuevo Cliente</h1>
     <span class="header-spacer"></span>
@@ -11802,7 +11818,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   <!-- HEADER con flecha de regreso -->
   <header class="header">
     <button class="back-btn" id="btn-cerrar-detalle-cliente" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Cliente</h1>
     <span class="header-spacer"></span>
@@ -12024,7 +12040,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-recordatorio" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1 id="titulo-form-recordatorio">Programar Recordatorio</h1>
     <span class="header-spacer"></span>
@@ -12098,7 +12114,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-nuevo-prestamo" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1 id="titulo-form-prestamo">Nuevo Préstamo</h1>
     <span class="header-spacer"></span>
@@ -12296,7 +12312,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-detalle-prestamo" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Detalles del préstamo</h1>
     <!-- NUEVO: a pedido — acceso a "Cobros" desde Detalle del Préstamo,
@@ -12506,7 +12522,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-agregar-abono" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Agregar Abono</h1>
     <span class="header-spacer"></span>
@@ -12699,7 +12715,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-detalle-pago" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Detalle del Pago</h1>
     <span class="header-spacer"></span>
@@ -12935,7 +12951,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-editar-pago" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Editar Cuota</h1>
     <span class="header-spacer"></span>
@@ -13018,7 +13034,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-caja" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Centro Financiero</h1>
     <span class="header-spacer"></span>
@@ -13252,7 +13268,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-movimientos-negocio" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Movimientos del Negocio</h1>
     <span class="header-spacer"></span>
@@ -13395,7 +13411,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-corte-caja" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Apertura y Cierre de Caja</h1>
     <span class="header-spacer"></span>
@@ -13749,7 +13765,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   <!-- HEADER con flecha de regreso -->
   <header class="header">
     <button class="back-btn" id="btn-cerrar-ajustes" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Ajustes</h1>
     <button class="filtro-rutas-btn" id="btn-editar-orden-ajustes" aria-label="Reordenar tarjetas" style="width:44px; height:44px; border-radius:var(--radius-full);">
@@ -13934,7 +13950,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-apariencia" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Apariencia</h1>
     <span class="header-spacer"></span>
@@ -14061,7 +14077,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 <div class="app" id="screen-seguridad" style="display:none;">
   <header class="header">
     <button class="back-btn" id="btn-cerrar-seguridad" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Seguridad</h1>
     <span class="header-spacer"></span>
@@ -14145,7 +14161,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-copia-seguridad" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Copia de seguridad</h1>
     <span class="header-spacer"></span>
@@ -14203,7 +14219,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-plantilla-recibo" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Plantilla de recibo</h1>
     <span class="header-spacer"></span>
@@ -14318,7 +14334,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-cartera" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Cartera</h1>
     <span class="header-spacer"></span>
@@ -14363,7 +14379,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-ganancias" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Ganancias</h1>
     <span class="header-spacer"></span>
@@ -14461,7 +14477,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 <div class="app" id="screen-comparativas-ganancias" style="display:none;">
   <header class="header">
     <button class="back-btn" id="btn-cerrar-comparativas" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Ganancias</h1>
     <span class="header-spacer"></span>
@@ -14546,7 +14562,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-estadisticas" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>📊 Estadísticas</h1>
     <span class="header-spacer"></span>
@@ -14692,7 +14708,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 <div class="app" id="screen-ranking-clientes" style="display:none;">
   <header class="header">
     <button class="back-btn" id="btn-cerrar-ranking-clientes" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>🏆 Ranking de Clientes</h1>
     <span class="header-spacer"></span>
@@ -14706,7 +14722,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 <div class="app" id="screen-ranking-detalle" style="display:none;">
   <header class="header">
     <button class="back-btn" id="btn-cerrar-ranking-detalle" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1 id="ranking-detalle-titulo">Ranking</h1>
     <span class="header-spacer"></span>
@@ -14721,7 +14737,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-cuotas-vencidas" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Cuotas vencidas</h1>
     <span class="header-spacer"></span>
@@ -14776,7 +14792,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-documentos" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Documentos</h1>
     <span class="header-spacer"></span>
@@ -14803,7 +14819,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 <div class="app" id="screen-documento-libre-editor" style="display:none;">
   <header class="header">
     <button class="back-btn" id="btn-cancelar-documento-libre" aria-label="Cancelar">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1 id="titulo-documento-libre-editor">Nuevo Documento</h1>
     <span class="header-spacer"></span>
@@ -14913,7 +14929,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-busqueda" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Buscar</h1>
     <span class="header-spacer"></span>
@@ -14954,7 +14970,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-cobros" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Recordatorios</h1>
     <!-- NUEVO: a pedido — "+" para crear un recordatorio manualmente,
@@ -14999,7 +15015,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-modo-cobro" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Modo de Cobro</h1>
     <button type="button" class="btn-nuevo-pill" id="btn-seleccionar-fecha-modo-cobro">
@@ -15041,7 +15057,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-pagan-hoy" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Pagan Hoy</h1>
     <span class="header-spacer"></span>
@@ -15081,7 +15097,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-acerca-de" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Acerca de</h1>
     <span class="header-spacer"></span>
@@ -16040,7 +16056,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 
   <header class="header">
     <button class="back-btn" id="btn-cerrar-simulador" aria-label="Volver">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
     <h1>Simulador de Crédito</h1>
     <span class="header-spacer"></span>
@@ -37518,6 +37534,54 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   })();
 
   // ==========================================================
+  // v822 iPhone: deteccion + gesto de deslizar desde el borde izquierdo para volver
+  // (en una PWA instalada de iOS no existe el gesto nativo de Safari). Reutiliza
+  // manejarBotonAtras(), la misma logica del boton Volver, asi que no duplica nada.
+  // ==========================================================
+  (function integracionIPhone(){
+    const ua = navigator.userAgent || '';
+    const esIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if(!esIOS) return;
+    const raiz = document.documentElement;
+    raiz.classList.add('ios');
+    const standalone = window.navigator.standalone === true || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+    if(standalone) raiz.classList.add('standalone');
+    if(!standalone) return; // en Safari normal ya existe el gesto nativo de atras
+    const ind = document.createElement('div');
+    ind.id = 'ios-volver-ind';
+    ind.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+    document.body.appendChild(ind);
+    let x0 = null, y0 = 0, activo = false;
+    const visible = id => { const e = document.getElementById(id); return !!e && e.style.display !== 'none' && e.style.display !== ''; };
+    function ocultarInd(){ ind.style.transition = 'transform .2s ease, opacity .2s ease'; ind.style.transform = 'translateX(-46px)'; ind.style.opacity = '0'; }
+    document.addEventListener('touchstart', e=>{
+      if(e.touches.length !== 1){ x0 = null; return; }
+      const t = e.touches[0];
+      x0 = t.clientX <= 22 ? t.clientX : null; y0 = t.clientY; activo = false;
+    }, { passive:true });
+    document.addEventListener('touchmove', e=>{
+      if(x0 === null) return;
+      const t = e.touches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+      if(!activo && dx > 12 && Math.abs(dx) > Math.abs(dy) * 1.2) activo = true;
+      if(activo){
+        const p = Math.min(dx, 90) / 90;
+        ind.style.transition = 'none';
+        ind.style.transform = 'translateX(' + (-46 + p * 62) + 'px)';
+        ind.style.opacity = String(Math.min(1, p * 1.4));
+      }
+    }, { passive:true });
+    document.addEventListener('touchend', e=>{
+      if(x0 === null) return;
+      const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+      const fue = activo && dx >= 80 && Math.abs(dy) < dx * 0.6;
+      x0 = null; activo = false; ocultarInd();
+      // El detalle del prestamo ya tiene su propio gesto de borde: no se repite aqui
+      if(fue && !visible('screen-detalle-prestamo')) manejarBotonAtras();
+    }, { passive:true });
+    document.addEventListener('touchcancel', ()=>{ x0 = null; activo = false; ocultarInd(); }, { passive:true });
+  })();
+
+  // ==========================================================
   // NUEVO: SIMULADOR DE CRÉDITO — completamente autocontenido, no lee ni
   // escribe ningún dato real del sistema (clientes/préstamos/pagos).
   // Reutiliza únicamente utilidades genéricas ya existentes (formatearMiles,
@@ -38315,7 +38379,10 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // file:// — no afecta en nada al resto de la app.
   if('serviceWorker' in navigator){
     window.addEventListener('load', ()=>{
-      navigator.serviceWorker.register('service-worker.js').catch(err=>{
+      navigator.serviceWorker.register('service-worker.js', { updateViaCache:'none' }).then(reg=>{
+        // v823: busca una version nueva cada vez que la app vuelve a primer plano
+        document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) reg.update().catch(()=>{}); });
+      }).catch(err=>{
         console.warn('No se pudo registrar el service worker (normal si se abre como archivo local):', err);
       });
     });

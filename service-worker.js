@@ -9,7 +9,7 @@
 // (ej. 'prestaya-v2', 'prestaya-v3'...). Eso obliga a los teléfonos
 // que ya instalaron la app a bajar los archivos nuevos en vez de
 // seguir usando la copia vieja guardada en caché.
-const CACHE_NAME = 'prestaya-v821';
+const CACHE_NAME = 'prestaya-v823';
 
 const ARCHIVOS_APP_SHELL = [
   './',
@@ -50,6 +50,26 @@ self.addEventListener('fetch', (event) => {
   // Solo maneja peticiones GET del propio origen (deja pasar las de
   // Google Fonts y otras normalmente, sin intentar cachearlas).
   if (event.request.method !== 'GET') return;
+
+  // v823: la pagina (index.html) va "primero la red": si hay internet siempre carga la
+  // version mas nueva (sin usar la copia temporal del navegador); sin internet usa la
+  // copia guardada. Asi los cambios se ven al abrir, sin tener que abrir dos veces.
+  const url = new URL(event.request.url);
+  const esPagina = event.request.mode === 'navigate' || (url.origin === self.location.origin && /(^|\/)(index\.html)?$/.test(url.pathname));
+  if (esPagina) {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-cache' })
+        .then((respuestaRed) => {
+          if (respuestaRed && respuestaRed.status === 200) {
+            const copia = respuestaRed.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', copia));
+          }
+          return respuestaRed;
+        })
+        .catch(() => caches.match('./index.html').then((r) => r || caches.match(event.request)))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((respuestaCache) => {
