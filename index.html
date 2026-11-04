@@ -16,7 +16,7 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="PrestaYa">
 
 <!-- ==========================================================
@@ -10534,8 +10534,13 @@ html.ios button, html.ios .nav-item{ touch-action:manipulation; }
 html.ios .header .back-btn svg{ width:28px; height:28px; stroke-width:2.6; }
 html.ios .header .back-btn{ margin-left:-6px; }
 html.ios .header .back-btn:active{ transform:none; opacity:.45; }
-html.ios.standalone body::before{ content:''; position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); background:#23305F; z-index:100000; pointer-events:none; }
-html.ios.standalone body .header{ padding-top:calc(9px + env(safe-area-inset-top)) !important; }
+html body::before{ content:''; position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); background:#23305F; z-index:100000; pointer-events:none; }
+html body .header{ padding-top:calc(9px + env(safe-area-inset-top)) !important; }
+html body #screen-editar-fecha-cuota .header{ padding-top:calc(12px + env(safe-area-inset-top)) !important; }
+/* v825 isla dinamica / notch: nada queda debajo de la barra de estado (env() vale 0 donde no hay muesca) */
+html body #screen-tareas{ box-sizing:border-box; padding-top:env(safe-area-inset-top); background:#23305F; }
+html body #recibo-termico-overlay .rt-full-cerrar{ top:calc(12px + env(safe-area-inset-top)); }
+html body .pin-bloqueo-contenido, html body #pin-bloqueo-overlay{ padding-top:env(safe-area-inset-top); box-sizing:border-box; }
 html.ios .bottom-nav{ padding-bottom:calc(5px + env(safe-area-inset-bottom)) !important; }
 html.ios .scroll-y, html.ios [id^="screen-"]{ -webkit-overflow-scrolling:touch; }
 /* indicador del gesto de volver (borde izquierdo) */
@@ -10544,6 +10549,9 @@ html.ios .scroll-y, html.ios [id^="screen-"]{ -webkit-overflow-scrolling:touch; 
 /* v824 Nuevo prestamo: monto solicitado mas grande */
 #screen-nuevo-prestamo .np-campo-monto .field-input{ font-size:clamp(30px,9vw,36px) !important; font-weight:800; padding:14px 56px 10px 50px; letter-spacing:-.3px; }
 #screen-nuevo-prestamo .np-prefijo{ font-size:clamp(30px,9vw,36px); left:16px; transform:translateY(-48%); }
+/* v826 Sin franja azul: la barra de estado de iOS es clara (estilo default) y queda del mismo color que la barra superior */
+html body::before{ display:none !important; }
+html body #screen-tareas{ background:transparent; }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
