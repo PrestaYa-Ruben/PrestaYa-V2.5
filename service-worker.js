@@ -9,7 +9,7 @@
 // (ej. 'prestaya-v2', 'prestaya-v3'...). Eso obliga a los teléfonos
 // que ya instalaron la app a bajar los archivos nuevos en vez de
 // seguir usando la copia vieja guardada en caché.
-const CACHE_NAME = 'prestaya-v839';
+const CACHE_NAME = 'prestaya-v841';
 const CACHE_FUENTES = 'prestaya-fuentes'; // v833: tipografias de Google, se guardan para verse igual sin internet
 
 const ARCHIVOS_APP_SHELL = [
@@ -80,6 +80,11 @@ self.addEventListener('fetch', (event) => {
   const esPagina = event.request.mode === 'navigate' || (url.origin === self.location.origin && /(^|\/)(index\.html)?$/.test(url.pathname));
   if (esPagina) {
     event.respondWith((async () => {
+      // v841: sin conexion declarada por el telefono no se espera a la red: abre al instante la copia guardada
+      if (self.navigator && self.navigator.onLine === false) {
+        const guardadaYa = (await caches.match('./index.html', { ignoreSearch: true })) || (await caches.match(event.request, { ignoreSearch: true }));
+        if (guardadaYa) return guardadaYa;
+      }
       const red = fetch(event.request, { cache: 'no-cache' }).then((respuestaRed) => {
         if (respuestaRed && respuestaRed.status === 200) {
           const copia = respuestaRed.clone();
@@ -87,7 +92,7 @@ self.addEventListener('fetch', (event) => {
         }
         return respuestaRed;
       });
-      const limite = new Promise((resolver) => setTimeout(() => resolver(null), 4000));
+      const limite = new Promise((resolver) => setTimeout(() => resolver(null), 1500));
       const rapida = await Promise.race([red.catch(() => null), limite]);
       if (rapida) return rapida;
       const guardada = (await caches.match('./index.html', { ignoreSearch: true })) || (await caches.match(event.request, { ignoreSearch: true }));
