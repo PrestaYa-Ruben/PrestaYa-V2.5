@@ -37887,8 +37887,23 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       r.style.setProperty('--sai-b', zonaSegura('bottom') + 'px');
     }catch(e){}
   }
-  window.addEventListener('orientationchange', ()=> setTimeout(()=>{ if(iframe) aplicarZonasSeguras(); }, 350));
+  window.addEventListener('orientationchange', ()=> setTimeout(()=>{ if(iframe){ aplicarZonasSeguras(); reajustarTareas(); } }, 350));
+  window.addEventListener('resize', ()=>{ if(iframe && pantalla.style.display === 'block') reajustarTareas(); });
+  // v843: iOS dejaba la pagina de Tareas con un ancho viejo (franja a la derecha) hasta pasar un rato: el iframe se creaba con la
+  // pantalla oculta. Ahora la pantalla se muestra ANTES de crearlo y se fuerza un nuevo calculo del tamano al cargar.
+  function reajustarTareas(){
+    if(!iframe) return;
+    try{
+      iframe.style.width = 'calc(100% - 1px)';
+      void iframe.offsetWidth;
+      iframe.style.width = '';
+      const w = iframe.contentWindow;
+      if(w) w.dispatchEvent(new Event('resize'));
+    }catch(e){}
+  }
   function abrir(){
+    pantalla.style.display = 'block';
+    void pantalla.offsetWidth;
     if(!iframe){
       const b64 = document.getElementById('tareas-fuente-b64').textContent.trim();
       const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
@@ -37896,9 +37911,10 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       iframe.title = 'Tareas del Día';
       iframe.srcdoc = new TextDecoder('utf-8').decode(bytes);
       pantalla.insertBefore(iframe, btnCerrar);
-      iframe.addEventListener('load', aplicarZonasSeguras);
+      iframe.addEventListener('load', ()=>{ aplicarZonasSeguras(); reajustarTareas(); [120, 400, 1000, 2200].forEach(t=> setTimeout(()=>{ if(pantalla.style.display === 'block'){ reajustarTareas(); aplicarZonasSeguras(); } }, t)); });
     }
     pantalla.style.display = 'block';
+    if(iframe) reajustarTareas();
     document.documentElement.style.overflow = 'hidden';
     fab.style.display = 'none';
     document.querySelectorAll('.buscador-fab').forEach(x=>{ x.style.visibility = 'hidden'; });
