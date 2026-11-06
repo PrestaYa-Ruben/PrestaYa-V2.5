@@ -21357,6 +21357,9 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     // dibujarlos todos de una vez agotaba la memoria de Safari en iPhone y cerraba la pagina al abrir Clientes.
     if(window.__ioMasClientes){ try{ window.__ioMasClientes.disconnect(); }catch(e){} window.__ioMasClientes = null; }
     const TAM_LOTE = 24;
+    // v851: al volver de la ficha de un cliente se dibujan de entrada tantas tarjetas como habia, para recuperar la posicion exacta
+    let tamPrimerLote = Math.max(TAM_LOTE, window.__clientesRestaurarN || 0);
+    window.__clientesRestaurarN = 0;
     let sigClienteIdx = 0;
     const centinelaMas = document.createElement('div');
     centinelaMas.className = 'clientes-mas-centinela';
@@ -21364,7 +21367,8 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     centinelaMas.style.cssText = 'height:1px;width:100%;pointer-events:none;';
     let dibujarLoteClientes = function(){
       if(centinelaMas.parentNode) centinelaMas.parentNode.removeChild(centinelaMas);
-      const fin = Math.min(sigClienteIdx + TAM_LOTE, lista.length);
+      const fin = Math.min(sigClienteIdx + tamPrimerLote, lista.length);
+      tamPrimerLote = TAM_LOTE;
       for(; sigClienteIdx < fin; sigClienteIdx++) dibujarClienteLista(lista[sigClienteIdx]);
       if(sigClienteIdx < lista.length){
         listaClientes.appendChild(centinelaMas);
@@ -22058,6 +22062,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // volver la lista se desplaza hasta ESE cliente en vez de saltar al
   // comienzo de la fila.
   let clienteIdParaRestaurarScroll = null;
+  let posicionListaClientes = null; // v851
 
   // NUEVO: tocar el nombre expande/colapsa el resto de los datos de la
   // tarjeta de perfil (teléfono, documento, ruta, dirección, notas).
@@ -22074,6 +22079,16 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   function abrirDetalleCliente(cliente){
     clienteEnDetalle = cliente;
     clienteIdParaRestaurarScroll = cliente.id; // NUEVO: para volver a esta misma fila al cerrar
+    // v851: se recuerda la posicion exacta de la lista de Clientes (scroll y cuantas tarjetas estaban dibujadas)
+    try{
+      if(screenClientes.style.display !== 'none' && listaClientes){
+        posicionListaClientes = {
+          y: Math.round(window.scrollY || (document.scrollingElement && document.scrollingElement.scrollTop) || 0),
+          n: listaClientes.querySelectorAll('.client-row').length,
+          conBusqueda: !!(buscadorClientes && buscadorClientes.value && buscadorClientes.value.trim())
+        };
+      }else{ posicionListaClientes = null; }
+    }catch(e){ posicionListaClientes = null; }
 
     // NUEVO: la tarjeta de perfil siempre arranca colapsada (solo nombre +
     // estado) — se despliega al tocar el nombre.
@@ -22202,10 +22217,21 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       // la barra "Buscar cliente..." propia de esta pantalla — antes el
       // texto escrito se quedaba ahí al volver de un cliente; ahora
       // vuelve en blanco, con la lista completa de clientes de nuevo.
+      const posGuardada = posicionListaClientes; posicionListaClientes = null;
+      const restaurarExacto = !!(posGuardada && !posGuardada.conBusqueda);
+      if(restaurarExacto) window.__clientesRestaurarN = posGuardada.n; // v851
       if(buscadorClientes) buscadorClientes.value = '';
       screenClientes.style.display = 'block';
       bottomNav.style.display = 'flex';
       renderizarClientes(clientesFiltrados()); // NUEVO: refresca la insignia/saldo con datos frescos
+      if(restaurarExacto){
+        // v851: vuelve EXACTAMENTE a donde estaba (mismo punto de la lista), sin saltos
+        window.scrollTo(0, posGuardada.y);
+        requestAnimationFrame(()=>{ window.scrollTo(0, posGuardada.y); });
+        setTimeout(()=>{ window.scrollTo(0, posGuardada.y); }, 120);
+        clienteIdParaRestaurarScroll = null;
+        return;
+      }
 
       // NUEVO: en vez de saltar siempre al comienzo de la fila, se
       // desplaza hasta el cliente del que se acaba de salir, para que
