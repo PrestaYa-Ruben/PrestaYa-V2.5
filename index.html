@@ -37992,7 +37992,8 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     try{
       const prestamos = Array.isArray(listaP) ? listaP : (typeof prestamosGuardados !== 'undefined' ? prestamosGuardados : []);
       const clientes = (typeof clientesGuardados !== 'undefined' && Array.isArray(clientesGuardados)) ? clientesGuardados : [];
-      const nombres = new Map(clientes.map(c => [c.id, c.nombre]));
+      const sinAcento = x => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      const mapaCli = new Map(clientes.map(c => [c.id, c]));
       const tareas = leerTareas();
       const antes = JSON.stringify(tareas);
       const porId = new Map(tareas.map(t => [t.id, t]));
@@ -38000,9 +38001,12 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       const nuevas = [];
       prestamos.forEach(pr => {
         if(!pr || !Array.isArray(pr.plan)) return;
+        const cli = mapaCli.get(pr.clienteId);
+        if(!cli || sinAcento(cli.ruta).indexOf('ruben') < 0) return; // solo clientes de la ruta Rubén
         const activo = pr.estado !== 'finalizado';
         const totalC = pr.plan.length;
-        const cliente = nombres.get(pr.clienteId) || 'Cliente';
+        const cliente = (cli.nombre || 'Cliente').trim();
+        const nota = String(pr.nota || cli.notas || '').trim();
         pr.plan.forEach(c => {
           if(!c || !c.fechaISO) return;
           const f = new Date(c.fechaISO); if(isNaN(f)) return;
@@ -38011,17 +38015,18 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
           vivos.add(id);
           let pagada = false;
           try{ pagada = estaCuotaPagada(pr, c.numero); }catch(e){}
-          const titulo = 'Cuota ' + c.numero + '/' + totalC + ' · ' + cliente + ' · ' + formatearPesos(c.total || 0);
+          const titulo = cliente + ' - Cuota ' + c.numero + '/' + totalC + ' - ' + formatearPesos(c.total || 0);
           const t = porId.get(id);
           if(!t){
             if(!activo || pagada) return;
             nuevas.push({ id, title: titulo, date: fecha, time: '', repeat: 'none', alarm: false, before: 0,
-              notes: 'Crédito ' + (pr.codigo || '') + ' · cobro de cuota', done: {}, prio: 'media',
+              notes: nota, pyNotas: nota, done: {}, prio: 'media',
               pyCuota: pr.id + '#' + c.numero, pyLoan: pr.id, pyTitulo: titulo, pyFecha: fecha });
             return;
           }
           if(t.date === t.pyFecha && fecha !== t.pyFecha){ t.date = fecha; t.pyFecha = fecha; t.done = {}; delete t.pyAutoDone; }
           if(t.title === t.pyTitulo && titulo !== t.pyTitulo){ t.title = titulo; t.pyTitulo = titulo; }
+          if(t.notes === t.pyNotas || /^Crédito .* · cobro de cuota$/.test(t.notes || '')){ t.notes = nota; t.pyNotas = nota; }
           t.done = t.done || {};
           const hecha = !!t.done[t.date];
           if(pagada && !hecha && !t.pyAutoDone){ t.done[t.date] = Date.now(); t.pyAutoDone = true; }
