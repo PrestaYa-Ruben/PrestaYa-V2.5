@@ -29544,6 +29544,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     detallePrestamoSwipeInicioY = null;
     if(dx < 70) return; // deslizamiento demasiado corto
     if(Math.abs(dy) > Math.abs(dx) * 0.6) return; // demasiado vertical — probablemente scroll, se ignora
+    window.__ultimoAtras = Date.now(); // v872: evita que el gesto global de 'atras' cierre tambien la ficha del cliente
     btnCerrarDetallePrestamo.click();
   }, { passive:true });
 
@@ -37694,6 +37695,11 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // nativo de Capacitor (arriba) como el mecanismo de popstate (abajo),
   // para no tener la misma lógica escrita dos veces en el archivo.
   function manejarBotonAtras(){
+    // v872: un solo gesto/boton de atras = un solo paso. Si otro mecanismo (gesto del credito, popstate de Safari,
+    // boton nativo) ya retrocedio hace un instante, este se ignora para no saltar dos pantallas de golpe.
+    const ahoraAtras = Date.now();
+    if(window.__ultimoAtras && ahoraAtras - window.__ultimoAtras < 450) return true;
+    window.__ultimoAtras = ahoraAtras;
     const pantallasApilables = Array.from(document.querySelectorAll('[id^="screen-"]'))
       .filter(el => el.id !== 'screen-inicio' && document.getElementById('btn-cerrar-' + el.id.slice('screen-'.length)));
     // CORREGIDO: a pedido — Clientes, Préstamos, Pagos y Reportes se
@@ -37842,13 +37848,13 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     ind.id = 'ios-volver-ind';
     ind.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>';
     document.body.appendChild(ind);
-    let x0 = null, y0 = 0, activo = false;
+    let x0 = null, y0 = 0, activo = false, enCredito = false;
     const visible = id => { const e = document.getElementById(id); return !!e && e.style.display !== 'none' && e.style.display !== ''; };
     function ocultarInd(){ ind.style.transition = 'transform .2s ease, opacity .2s ease'; ind.style.transform = 'translateX(-46px)'; ind.style.opacity = '0'; }
     document.addEventListener('touchstart', e=>{
       if(e.touches.length !== 1){ x0 = null; return; }
       const t = e.touches[0];
-      x0 = t.clientX <= 22 ? t.clientX : null; y0 = t.clientY; activo = false;
+      x0 = t.clientX <= 22 ? t.clientX : null; y0 = t.clientY; activo = false; enCredito = visible('screen-detalle-prestamo');
     }, { passive:true });
     document.addEventListener('touchmove', e=>{
       if(x0 === null) return;
@@ -37867,7 +37873,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       const fue = activo && dx >= 80 && Math.abs(dy) < dx * 0.6;
       x0 = null; activo = false; ocultarInd();
       // El detalle del prestamo ya tiene su propio gesto de borde: no se repite aqui
-      if(fue && !visible('screen-detalle-prestamo')) manejarBotonAtras();
+      if(fue && !enCredito && !visible('screen-detalle-prestamo')) manejarBotonAtras();
     }, { passive:true });
     document.addEventListener('touchcancel', ()=>{ x0 = null; activo = false; ocultarInd(); }, { passive:true });
   })();
