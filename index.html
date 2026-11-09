@@ -10763,6 +10763,65 @@ html body .tareas-fab, html body #btn-tareas-fab, html body #btn-tareas-flotante
 /* v888: Pagan Hoy — "Próxima: D de Mes" al extremo derecho de la línea de vencimiento */
 .ph-due-fila{ display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:1px 8px; }
 .ph-due-fila .ph-proxima{ margin-left:auto; text-align:right; font-size:12px; font-weight:600; color:var(--text-secondary); white-space:nowrap; }
+
+/* v889: Pagan Hoy — casillas de fecha con un tinte muy tenue, tarjetas en blanco hueso sutil y un poco más anchas hacia los lados */
+#pagan-hoy-dias-strip .dia-card:not(.active){ background:#F0F4FF; border-color:#DCE4F7; }
+#lista-pagan-hoy .client-card{ background:#FCFBF7; border:1.5px solid #DDD6C2; margin:0 -4px 12px -4px; }
+#lista-pagan-hoy .client-card:last-child{ margin-bottom:0; }
+body.modo-oscuro #pagan-hoy-dias-strip .dia-card:not(.active){ background:rgba(120,150,255,.08); border-color:rgba(120,150,255,.18); }
+body.modo-oscuro #lista-pagan-hoy .client-card{ background:var(--surface); border:1.5px solid rgba(160,175,210,.35); }
+/* v891: tarjetas Pagan Hoy estilo Tareas */
+#lista-pagan-hoy .client-card.ph-card{
+  display:block; padding:14px 16px 12px 14px; margin:0 -4px 12px -4px;
+  background:#EEF0FB; border:2px solid #6672C7; border-radius:26px; box-shadow:none; position:relative;
+}
+#lista-pagan-hoy .client-card.ph-card:last-child{ margin-bottom:0; }
+.ph-card{ display:flex; gap:12px; }
+#lista-pagan-hoy .client-card.ph-card{ display:flex; align-items:flex-start; gap:12px; }
+.ph-card .ph-check{ flex:0 0 auto; width:36px; height:36px; margin-top:2px; border-radius:50%; border:3px solid #C9CCD3; background:#fff; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; position:relative; }
+.ph-card .ph-check::after{ content:''; position:absolute; inset:-8px; }
+.ph-card.ph-es-aplazada .ph-check{ border-color:#F2A93B; }
+.ph-card .ph-cuerpo{ flex:1; min-width:0; }
+.ph-card .ph-nombre{ font-size:17px; font-weight:500; color:#1F2A5A; line-height:1.25; margin:2px 0 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ph-card .ph-pills{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+.ph-card .ph-pill{ font-size:13px; font-weight:600; padding:3px 11px; border-radius:999px; line-height:1.3; }
+.ph-card .ph-monto{ background:#FFF3C4; color:#7A5A00; }
+.ph-card .ph-frec{ background:#fff; color:#5560B8; border:1.5px solid #B9C0EC; }
+.ph-card .ph-aplz{ background:#FFE6C2; color:#8A4B00; }
+.ph-card .ph-nota{ display:flex; align-items:center; gap:7px; color:#8A8F9C; font-size:14px; margin-bottom:8px; min-width:0; }
+.ph-card .ph-nota svg{ width:16px; height:16px; flex:0 0 auto; stroke:#9A9FAC; }
+.ph-card .ph-nota span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ph-card .ph-pie{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.ph-card .ph-fecha{ display:flex; align-items:center; gap:6px; min-width:0; }
+.ph-card .ph-fecha svg{ width:16px; height:16px; flex:0 0 auto; stroke:#1F2A5A; }
+.ph-card .ph-prox{ font-size:14px; font-weight:700; color:#1F2A5A; white-space:nowrap; }
+.ph-card .ph-prox.ph-ultima{ color:#1E9E5A; }
+.ph-card .ph-n{ font-size:22px; font-weight:800; color:#1F2A5A; white-space:nowrap; }
+@media (max-width:370px){ .ph-card .ph-prox{ font-size:13px; } .ph-card .ph-n{ font-size:20px; } }
+body.modo-oscuro #lista-pagan-hoy .client-card.ph-card{ background:#232846; border-color:#7C88E0; }
+body.modo-oscuro .ph-card .ph-check{ background:#161A2E; border-color:#555B73; }
+body.modo-oscuro .ph-card .ph-nombre, body.modo-oscuro .ph-card .ph-n, body.modo-oscuro .ph-card .ph-prox{ color:#E8EAFB; }
+body.modo-oscuro .ph-card .ph-prox.ph-ultima{ color:#4CD08A; }
+body.modo-oscuro .ph-card .ph-fecha svg{ stroke:#E8EAFB; }
+body.modo-oscuro .ph-card .ph-monto{ background:#4A4020; color:#FFE48A; }
+body.modo-oscuro .ph-card .ph-frec{ background:#161A2E; color:#B9C0F5; border-color:#4A5290; }
+body.modo-oscuro .ph-card .ph-aplz{ background:#4D3A1E; color:#FFCB85; }
+body.modo-oscuro .ph-card .ph-nota{ color:#9AA0B8; }
+/* v892: círculo = cobrada, reloj = aplazar */
+.ph-card .ph-check svg{ width:100%; height:100%; stroke:#fff; opacity:0; transform:scale(.4); transition:transform .28s cubic-bezier(.3,1.6,.5,1), opacity .15s; display:block; padding:5px; box-sizing:border-box; }
+.ph-card .ph-check{ transition:background .25s, border-color .25s; }
+.ph-card.ph-cobrada .ph-check{ background:#22B863; border-color:#22B863; }
+.ph-card.ph-cobrada .ph-check svg{ opacity:1; transform:scale(1); }
+#lista-pagan-hoy .client-card.ph-card{ transition:background .3s, border-color .3s; }
+#lista-pagan-hoy .client-card.ph-card.ph-cobrada{ background:#E5F7EC; border-color:#2FB36B; }
+.ph-card .ph-reloj{ position:absolute; top:10px; right:12px; width:34px; height:34px; border-radius:50%; border:none; background:rgba(102,114,199,.14); display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.ph-card .ph-reloj svg{ width:18px; height:18px; stroke:#5560B8; }
+.ph-card .ph-reloj::after{ content:''; position:absolute; inset:-6px; }
+.ph-card .ph-nombre{ padding-right:40px; }
+body.modo-oscuro #lista-pagan-hoy .client-card.ph-card.ph-cobrada{ background:#16352A; border-color:#34C27A; }
+body.modo-oscuro .ph-card.ph-cobrada .ph-check{ background:#22B863; border-color:#22B863; }
+body.modo-oscuro .ph-card .ph-reloj{ background:rgba(124,136,224,.2); }
+body.modo-oscuro .ph-card .ph-reloj svg{ stroke:#B9C0F5; }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -17624,6 +17683,8 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     'prestapp_prestamos',
     'prestapp_rutas',
     'prestapp_rutas_colores',
+    'prestaya_pagan_aplazadas_v1',
+    'prestaya_pagan_cobradas_v1',
     'prestapp_movimientos_caja',
     'prestapp_recordatorios',
     'prestapp_tinte_dashboard',
@@ -34112,6 +34173,123 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       .sort((a, b) => a.cliente.nombre.localeCompare(b.cliente.nombre));
   }
 
+
+  // v891: RECORDATORIOS APLAZADOS de "Pagan Hoy". Solo cambian en qué día
+  // se MUESTRA la tarjeta; el plan, las fechas, la mora y los pagos del
+  // crédito NO se tocan. Clave "prestamoId#cuota" -> {d: día del recordatorio, o: fecha original}
+  const CLAVE_APLAZADAS_PH = 'prestaya_pagan_aplazadas_v1';
+  function leerAplazadasPH(){
+    try{ const o = JSON.parse(localStorage.getItem(CLAVE_APLAZADAS_PH) || '{}'); return (o && typeof o === 'object') ? o : {}; }
+    catch(e){ return {}; }
+  }
+  function guardarAplazadasPH(o){
+    try{ localStorage.setItem(CLAVE_APLAZADAS_PH, JSON.stringify(o)); }catch(e){}
+  }
+  // v892: marca visual "cobrado" (no registra dinero; el pago real se sigue registrando en el crédito)
+  const CLAVE_COBRADAS_PH = 'prestaya_pagan_cobradas_v1';
+  function leerCobradasPH(){
+    try{ const o = JSON.parse(localStorage.getItem(CLAVE_COBRADAS_PH) || '{}'); return (o && typeof o === 'object') ? o : {}; }catch(e){ return {}; }
+  }
+  function guardarCobradasPH(o){ try{ localStorage.setItem(CLAVE_COBRADAS_PH, JSON.stringify(o)); }catch(e){} }
+  function confetiPH(origen){
+    if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const r = origen.getBoundingClientRect(), cx = r.left + r.width/2, cy = r.top + r.height/2;
+    const cols = ['#22C55E','#FACC15','#6672C7','#F97316','#EC4899','#38BDF8'];
+    for(let i=0;i<26;i++){
+      const p = document.createElement('i');
+      const sz = 6 + Math.random()*5;
+      p.style.cssText = 'position:fixed;left:'+cx+'px;top:'+cy+'px;width:'+sz+'px;height:'+(sz*0.6)+'px;background:'+cols[i%cols.length]+';border-radius:2px;pointer-events:none;z-index:9999;';
+      document.body.appendChild(p);
+      const ang = Math.random()*Math.PI*2, d = 50 + Math.random()*90;
+      const dx = Math.cos(ang)*d, dy = Math.sin(ang)*d - 40;
+      const a = p.animate([
+        { transform:'translate(0,0) rotate(0deg)', opacity:1 },
+        { transform:'translate('+dx+'px,'+dy+'px) rotate('+(Math.random()*540)+'deg)', opacity:1, offset:.55 },
+        { transform:'translate('+(dx*1.15)+'px,'+(dy+110)+'px) rotate('+(Math.random()*720)+'deg)', opacity:0 }
+      ], { duration: 900 + Math.random()*300, easing:'cubic-bezier(.2,.7,.3,1)' });
+      a.onfinish = ()=> p.remove();
+    }
+  }
+  function claveAplazadaPH(prestamo, cuota){ return prestamo.id + '#' + cuota.numero; }
+  // Día en que se muestra la cuota: el recordatorio si es válido (si ya pasó, hoy); si no, su fecha real.
+  function diaEfectivoPH(prestamo, cuota, aplazadas){
+    const orig = claveFechaLocal(new Date(cuota.fechaISO));
+    const a = aplazadas[claveAplazadaPH(prestamo, cuota)];
+    if(a && a.o === orig && a.d){
+      const hoy = claveFechaConOffset(0);
+      return { clave: a.d < hoy ? hoy : a.d, aplazada: true, original: orig };
+    }
+    return { clave: orig, aplazada: false, original: orig };
+  }
+  // Limpia recordatorios que ya no aplican (pagada, crédito/cliente fuera, o fecha editada)
+  function limpiarAplazadasPH(){
+    const ap = leerAplazadasPH(); let cambio = false;
+    Object.keys(ap).forEach(k=>{
+      const [pid, num] = k.split('#');
+      const p = prestamosGuardados.find(x => String(x.id) === pid);
+      const c = p && (p.plan || []).find(x => String(x.numero) === num);
+      if(!p || !c || p.estado !== 'activo' || !c.fechaISO || estaCuotaPagada(p, c.numero) ||
+         claveFechaLocal(new Date(c.fechaISO)) !== ap[k].o){ delete ap[k]; cambio = true; }
+    });
+    if(cambio) guardarAplazadasPH(ap);
+    return ap;
+  }
+  function clientesPaganHoyEfectivo(clave){
+    const ap = limpiarAplazadasPH();
+    const res = [];
+    prestamosGuardados.filter(p => p.estado === 'activo' && clienteEstaActivo(p.clienteId)).forEach(prestamo=>{
+      (prestamo.plan || []).forEach(cuota=>{
+        if(!cuota.fechaISO || estaCuotaPagada(prestamo, cuota.numero)) return;
+        const e = diaEfectivoPH(prestamo, cuota, ap);
+        if(e.clave !== clave) return;
+        const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId);
+        if(cliente) res.push({ cliente, prestamo, cuota, aplazada:e.aplazada, fechaOriginal:e.original });
+      });
+    });
+    return res
+      .filter(i => !rutasFiltroActivas || rutasFiltroActivas.has(i.cliente.ruta || ''))
+      .sort((a, b) => a.cliente.nombre.localeCompare(b.cliente.nombre));
+  }
+  function aplazarCuotaPH(prestamo, cuota, dia){
+    const ap = leerAplazadasPH();
+    const orig = claveFechaLocal(new Date(cuota.fechaISO));
+    if(!dia || dia === orig) delete ap[claveAplazadaPH(prestamo, cuota)];
+    else ap[claveAplazadaPH(prestamo, cuota)] = { d: dia, o: orig };
+    guardarAplazadasPH(ap);
+    { const co = leerCobradasPH(); delete co[claveAplazadaPH(prestamo, cuota)]; guardarCobradasPH(co); }
+    generarDiasStripPaganHoy(paganHoyFechaSeleccionada);
+    renderizarPaganHoy();
+    actualizarBadgePaganHoy();
+  }
+  function abrirMenuAplazarPH(item){
+    const { prestamo, cuota, aplazada } = item;
+    const ov = document.createElement('div');
+    ov.className = 'action-sheet-overlay ph-aplazar-ov';
+    const itm = (id, color, svg, txt) => `<div class="action-sheet-item" id="${id}"><div class="icon-container ${color}"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg></div><span>${txt}</span></div>`;
+    ov.innerHTML = `<div class="action-sheet-wrap"><div class="action-sheet-card">
+      ${itm('ph-ap-manana','blue','<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>','Recordar mañana')}
+      ${itm('ph-ap-otro','blue','<rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>','Elegir otro día')}
+      ${aplazada ? itm('ph-ap-volver','green','<polyline points="1 4 1 10 7 10"></polyline><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"></path>','Volver a su día') : ''}
+      <input type="date" id="ph-ap-fecha" min="${claveFechaConOffset(0)}" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;">
+    </div></div>`;
+    document.body.appendChild(ov);
+    const cerrar = ()=>{ ov.remove(); };
+    ov.addEventListener('click', e=>{ if(e.target === ov) cerrar(); });
+    const hoyD = new Date(); 
+    const manana = claveFechaConOffset(1);
+    // "mañana" = un día después del que se está viendo (para ir arrastrándola día a día)
+    const vista = new Date(paganHoyFechaSeleccionada + 'T00:00:00'); vista.setDate(vista.getDate() + 1);
+    const sig = claveFechaLocal(vista) < manana ? manana : claveFechaLocal(vista);
+    ov.querySelector('#ph-ap-manana').addEventListener('click', ()=>{ cerrar(); aplazarCuotaPH(prestamo, cuota, sig); });
+    const inp = ov.querySelector('#ph-ap-fecha');
+    inp.addEventListener('change', ()=>{ if(inp.value){ cerrar(); aplazarCuotaPH(prestamo, cuota, inp.value); } });
+    ov.querySelector('#ph-ap-otro').addEventListener('click', ()=>{
+      try{ inp.style.pointerEvents = 'auto'; inp.showPicker ? inp.showPicker() : inp.click(); }catch(e){ inp.click(); }
+    });
+    const v = ov.querySelector('#ph-ap-volver');
+    if(v) v.addEventListener('click', ()=>{ cerrar(); aplazarCuotaPH(prestamo, cuota, null); });
+  }
+
   // NUEVO: cuenta cuántos clientes pagan cada día, en UNA sola pasada por
   // todos los préstamos — para pintar la insignia de cada tarjeta del
   // carrusel sin repetir el recorrido completo 46 veces (una por día
@@ -34119,6 +34297,8 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   function contarClientesPaganHoyPorFecha(){
     const mapa = new Map();
     montosPaganHoyPorFecha = new Map(); // v668
+    const apPH = limpiarAplazadasPH(); // v891
+    const cobPH = leerCobradasPH(); // v892
     prestamosGuardados.filter(p => p.estado === 'activo' && clienteEstaActivo(p.clienteId)).forEach(prestamo=>{
       (prestamo.plan || []).forEach(cuota=>{
         if(estaCuotaPagada(prestamo, cuota.numero)) return;
@@ -34126,7 +34306,8 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
         const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId);
         if(!cliente) return;
         if(rutasFiltroActivas && !rutasFiltroActivas.has(cliente.ruta || '')) return;
-        const clave = claveFechaLocal(new Date(cuota.fechaISO));
+        const clave = diaEfectivoPH(prestamo, cuota, apPH).clave; // v891
+        { const m = cobPH[claveAplazadaPH(prestamo, cuota)]; if(m && m.d === clave) return; } // v892: ya cobrada, no cuenta
         mapa.set(clave, (mapa.get(clave) || 0) + 1);
         // v668: también el valor real por cobrar de ese día (lo que falta de cada cuota)
         montosPaganHoyPorFecha.set(clave, (montosPaganHoyPorFecha.get(clave) || 0) + pendienteDeCuota(prestamo, cuota));
@@ -34209,49 +34390,66 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   }
 
   function actualizarBadgePaganHoy(){
-    const cantidad = clientesPaganHoy().length;
+    const cobBadge = leerCobradasPH();
+    const cantidad = clientesPaganHoyEfectivo(claveFechaConOffset(0)).filter(i => !(cobBadge[claveAplazadaPH(i.prestamo, i.cuota)] && cobBadge[claveAplazadaPH(i.prestamo, i.cuota)].d === claveFechaConOffset(0))).length; // v891/v892
     const badge = document.getElementById('pagan-hoy-badge');
     badge.textContent = cantidad > 99 ? '99+' : String(cantidad);
     badge.style.display = cantidad > 0 ? 'flex' : 'none';
   }
 
-  function crearTarjetaPaganHoy({ cliente, prestamo, cuota }){
+  function crearTarjetaPaganHoy(item){
+    const { cliente, prestamo, cuota, aplazada, fechaOriginal } = item;
     const card = document.createElement('div');
-    card.className = 'card client-card';
-    // NUEVO: el texto de vencimiento ahora refleja el día que se está
-    // viendo en el carrusel, no siempre "hoy" a secas.
-    const esHoy = paganHoyFechaSeleccionada === claveFechaConOffset(0);
-    const textoVence = esHoy ? 'Vence hoy' : ('Vence ' + formatearFechaCorta(new Date(cuota.fechaISO)));
-    // v888: fecha de la próxima cuota del crédito, al extremo derecho de la línea de vencimiento
-    let textoProximaPH = '';
+    const mCob = leerCobradasPH()[claveAplazadaPH(prestamo, cuota)];
+    const cobrada = !!(mCob && mCob.d === paganHoyFechaSeleccionada);
+    card.className = 'card client-card ph-card' + (aplazada ? ' ph-es-aplazada' : '') + (cobrada ? ' ph-cobrada' : '');
+    const DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    let proxima = '';
     try{
       const sig = (prestamo.plan || []).filter(c => c.numero > cuota.numero).sort((x, y) => x.numero - y.numero)[0];
       if(sig && sig.fechaISO){
-        const f = new Date(sig.fechaISO), m = MESES_ABREV_MIN[f.getMonth()] || '';
-        textoProximaPH = 'Próxima: ' + f.getDate() + ' de ' + m.charAt(0).toUpperCase() + m.slice(1);
-      }else{ textoProximaPH = 'Última cuota'; }
-    }catch(e){ textoProximaPH = ''; }
+        const f = new Date(sig.fechaISO);
+        proxima = `<span class="ph-prox">Próx. cuota: ${DIAS[f.getDay()]} ${f.getDate()} ${(MESES_ABREV_MIN[f.getMonth()] || '').toLowerCase()}</span>`;
+      }else{ proxima = '<span class="ph-prox ph-ultima">Última cuota</span>'; }
+    }catch(e){}
+    const FREC = { diario:'Diario', semanal:'Semanal', quincenal:'Quincenal', mensual:'Mensual' };
+    const frec = FREC[prestamo.frecuencia] || '';
+    const nota = (prestamo.nota || '').toString().trim();
+    let origTxt = '';
+    if(aplazada && fechaOriginal){ const o = new Date(fechaOriginal + 'T00:00:00'); origTxt = 'Era ' + o.getDate() + ' ' + (MESES_ABREV_MIN[o.getMonth()] || '').toLowerCase(); }
+    const ICO_CAL = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
     card.innerHTML = `
-      <div class="icon-container blue">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-      </div>
-      <div class="info">
-        <div class="name">${escaparHtml(cliente.nombre)}</div>
-        <div class="quota">Cuota #${cuota.numero} de ${prestamo.cuotas} · ${formatearPesos(cuota.total)}</div>
-        <div class="due ph-due-fila"><span>${textoVence}</span>${textoProximaPH ? `<span class="ph-proxima">${textoProximaPH}</span>` : ''}</div>
-      </div>
-      <div class="actions">
-        <div class="chevron">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      <button type="button" class="ph-check" aria-label="Marcar como cobrada"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 17.5 19 7"></polyline></svg></button>
+      <button type="button" class="ph-reloj" aria-label="Aplazar recordatorio"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></button>
+      <div class="ph-cuerpo">
+        <div class="ph-nombre">${escaparHtml(cliente.nombre)}</div>
+        <div class="ph-pills">
+          <span class="ph-pill ph-monto">${formatearPesos(cuota.total)}</span>
+          ${frec ? `<span class="ph-pill ph-frec">${frec}</span>` : ''}
+          ${aplazada ? `<span class="ph-pill ph-aplz">Aplazada${origTxt ? ' · ' + origTxt : ''}</span>` : ''}
+        </div>
+        ${nota ? `<div class="ph-nota"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="14" y2="17"></line></svg><span>${escaparHtml(nota)}</span></div>` : ''}
+        <div class="ph-pie">
+          <div class="ph-fecha">${ICO_CAL}${proxima}</div>
+          <div class="ph-n">${cuota.numero} de ${prestamo.cuotas}</div>
         </div>
       </div>
     `;
+    card.querySelector('.ph-reloj').addEventListener('click', e=>{ e.stopPropagation(); abrirMenuAplazarPH(item); });
+    card.querySelector('.ph-check').addEventListener('click', e=>{
+      e.stopPropagation();
+      const co = leerCobradasPH(), k = claveAplazadaPH(prestamo, cuota);
+      if(card.classList.contains('ph-cobrada')){ delete co[k]; card.classList.remove('ph-cobrada'); }
+      else{ co[k] = { d: paganHoyFechaSeleccionada }; card.classList.add('ph-cobrada'); confetiPH(e.currentTarget); try{ navigator.vibrate && navigator.vibrate(15); }catch(_){} }
+      guardarCobradasPH(co);
+      generarDiasStripPaganHoy(paganHoyFechaSeleccionada); actualizarBadgePaganHoy();
+    });
     card.addEventListener('click', ()=> abrirDetallePrestamo(prestamo, 'pagan-hoy'));
     return card;
   }
 
   function renderizarPaganHoy(){
-    const items = clientesPaganHoy(paganHoyFechaSeleccionada);
+    const items = clientesPaganHoyEfectivo(paganHoyFechaSeleccionada); // v891
     listaPaganHoy.innerHTML = '';
 
     if(items.length === 0){
