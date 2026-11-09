@@ -1403,19 +1403,19 @@ body.modo-oscuro #screen-nuevo-cliente .field-input{
 .campo-resaltado-suave.campo-metodo-pago .chevron-select{ stroke:#fff; }
 /* NUEVO (a pedido): color de "Aplicar abono a" según la opción elegida.
    Recargo por mora → degradado #C70039 (texto blanco) · Abono → degradado #84D7FF (texto oscuro). */
-.campo-resaltado-suave.campo-aplicar-abono.field-select-trigger[data-valor="mora"]{
+.campo-resaltado-suave.campo-aplicar-abono[data-valor="mora"]{
   /* CAMBIO (a pedido): #C70039 con degradado (más claro hacia la izquierda); texto blanco */
   background-image:linear-gradient(135deg, #EC4D73, #C70039); background-color:#C70039;
   color:#FFFFFF; -webkit-text-fill-color:#FFFFFF;
 }
-.campo-resaltado-suave.campo-aplicar-abono.field-select-trigger[data-valor="abono"]{
+.campo-resaltado-suave.campo-aplicar-abono[data-valor="abono"]{
   /* CAMBIO (a pedido): #84D7FF con el mismo degradado (más claro hacia la izquierda) que los demás campos */
   background-image:linear-gradient(135deg, #C2ECFF, #84D7FF); background-color:#84D7FF;
   color:#0A0D14; -webkit-text-fill-color:#0A0D14;
 }
-.campo-resaltado-suave.campo-aplicar-abono.field-select-trigger[data-valor="abono"] .chevron-select{ stroke:#0A0D14; }
+.campo-resaltado-suave.campo-aplicar-abono[data-valor="abono"] .chevron-select{ stroke:#0A0D14; }
 /* NUEVO (a pedido): Método de Pago → "Efectivo" en #186634 con el mismo degradado (más claro a la izquierda) */
-.campo-resaltado-suave.campo-metodo-pago.field-select-trigger[data-valor="efectivo"]{
+.campo-resaltado-suave.campo-metodo-pago[data-valor="efectivo"]{
   background-image:linear-gradient(135deg, #3E9E61, #186634); background-color:#186634;
   color:#FFFFFF; -webkit-text-fill-color:#FFFFFF;
 }
@@ -10689,6 +10689,23 @@ body.modo-oscuro #screen-inicio .periodo-seleccionado{
   border:1px solid rgba(120,200,150,.28) !important;
   box-shadow:inset 0 2px 5px rgba(0,0,0,.35) !important;
 }
+/* v873: aviso de filtros activos en la busqueda */
+html body .busqueda-filtro-aviso{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:8px 2px 2px; padding:8px 12px; border-radius:12px; background:#EAF5EC; border:1px solid #BFDDC6; font-size:13px; color:#1F4D33; }
+html body .busqueda-filtro-aviso b{ font-weight:800; }
+html body .busqueda-filtro-aviso .bfa-btn{ flex:none; border:0; background:#1E4FCF; color:#fff; font-weight:700; font-size:12.5px; padding:7px 12px; border-radius:10px; }
+body.modo-oscuro .busqueda-filtro-aviso{ background:rgba(18,161,80,.14); border-color:rgba(120,200,150,.28); color:#BFE8CE; }
+
+/* v874: select nativo en Agregar abono: con chevron visible sobre el degradado */
+select.campo-resaltado-suave.campo-aplicar-abono,select.campo-resaltado-suave.campo-metodo-pago{
+  color:#fff; -webkit-text-fill-color:#fff; font-weight:700;
+  background-repeat:no-repeat; background-position:right 14px center,0 0; background-size:18px,100% 100%;
+}
+select.campo-resaltado-suave.campo-aplicar-abono{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"),linear-gradient(135deg,#2ECC9A,#12A97A);}
+select.campo-resaltado-suave.campo-metodo-pago{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"),linear-gradient(135deg,#8B7CF6,#6C4FE0);}
+select.campo-resaltado-suave.campo-aplicar-abono[data-valor="mora"]{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"),linear-gradient(135deg,#EC4D73,#C70039);}
+select.campo-resaltado-suave.campo-aplicar-abono[data-valor="abono"]{color:#0A0D14;-webkit-text-fill-color:#0A0D14;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230A0D14' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"),linear-gradient(135deg,#C2ECFF,#84D7FF);}
+select.campo-resaltado-suave.campo-metodo-pago[data-valor="efectivo"]{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"),linear-gradient(135deg,#3E9E61,#186634);}
+select.campo-resaltado-suave option{color:#111;-webkit-text-fill-color:#111;background:#fff;}
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -15100,6 +15117,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
       <input type="text" id="input-busqueda-global" placeholder="Nombre, teléfono, ruta o N° de crédito">
     </div>
+    <div id="busqueda-filtro-aviso" class="busqueda-filtro-aviso" style="display:none;"></div>
   </div>
 
   <section class="detail-body">
@@ -16682,6 +16700,18 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // de la app + este bottom sheet. No borra ni reemplaza el <select> —
   // solo lo oculta — así que todo el código que ya lo usa (poblarlo,
   // leer/escribir .value, escuchar 'change') sigue funcionando igual.
+  // v874: select NATIVO (rueda/menú de iOS) en Agregar abono. Solo mantiene
+  // el color según la opción elegida (data-valor) sin ocultar el select.
+  function prepararSelectNativo(sel){
+    if(!sel || sel.dataset.nativo === '1') return;
+    sel.dataset.nativo = '1';
+    const ref = ()=>{ sel.dataset.valor = sel.value; };
+    const d = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value');
+    Object.defineProperty(sel,'value',{ get(){return d.get.call(this);}, set(v){ d.set.call(this,v); ref(); }, configurable:true });
+    sel.addEventListener('change',ref);
+    ref();
+  }
+
   function convertirSelectAPersonalizado(selectEl, titulo){
     if(!selectEl || selectEl.dataset.personalizado === '1') return;
     selectEl.dataset.personalizado = '1';
@@ -21514,6 +21544,36 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
      .map(x => x.c);
   }
 
+  // v873: filtros que la busqueda debe respetar
+  let busquedaEnTodo = false;
+  function descripcionFiltrosBusqueda(){
+    const partes = [];
+    if(rutasFiltroActivas && rutasFiltroActivas.size){
+      partes.push('Ruta ' + Array.from(rutasFiltroActivas).map(r => r || 'Sin asignar').join(', '));
+    }
+    if(busquedaOrigen === screenClientes && filtroClienteActivo !== 'todos'){
+      const b = document.querySelector('#tabs-filtro-clientes .tab-button.active');
+      partes.push(b ? b.textContent.trim() : filtroClienteActivo);
+    }
+    return partes.join(' · ');
+  }
+  function idsPermitidosPorFiltros(){
+    const ids = new Set();
+    const usarEstado = busquedaOrigen === screenClientes && filtroClienteActivo !== 'todos';
+    let porEstado = null;
+    if(usarEstado){
+      const v = buscadorClientes ? buscadorClientes.value : '';
+      try{ if(buscadorClientes) buscadorClientes.value = ''; porEstado = new Set(clientesFiltrados().map(c => c.id)); }
+      finally{ if(buscadorClientes) buscadorClientes.value = v; }
+    }
+    clientesGuardados.forEach(c => {
+      if(rutasFiltroActivas && !rutasFiltroActivas.has(c.ruta || '')) return;
+      if(porEstado && !porEstado.has(c.id)) return;
+      ids.add(c.id);
+    });
+    return ids;
+  }
+
   function renderizarResultadosBusqueda(){
     const termino = inputBusquedaGlobal.value;
     resultadosBusqueda.innerHTML = '';
@@ -21529,7 +21589,21 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       return;
     }
 
-    const resultados = buscarClientesGlobal(termino);
+    let resultados = buscarClientesGlobal(termino);
+    // v873: la busqueda respeta los filtros activos (ruta y, si se abrio desde Clientes, la pestana de estado)
+    const filtrosActivos = descripcionFiltrosBusqueda();
+    const aviso = document.getElementById('busqueda-filtro-aviso');
+    if(filtrosActivos){
+      if(!busquedaEnTodo){
+        const permitidos = idsPermitidosPorFiltros();
+        resultados = resultados.filter(c => permitidos.has(c.id));
+      }
+      aviso.style.display = 'flex';
+      aviso.innerHTML = '<span class="bfa-txt">' + (busquedaEnTodo ? 'Buscando en <b>todos</b> los clientes' : 'Buscando solo en: <b>' + escaparHtml(filtrosActivos) + '</b>') + '</span><button type="button" class="bfa-btn" id="btn-busqueda-alternar">' + (busquedaEnTodo ? 'Usar filtros' : 'Buscar en todo') + '</button>';
+      document.getElementById('btn-busqueda-alternar').onclick = ()=>{ busquedaEnTodo = !busquedaEnTodo; renderizarResultadosBusqueda(); };
+    }else{
+      aviso.style.display = 'none';
+    }
     if(resultados.length === 0){
       const vacio = document.createElement('div');
       vacio.className = 'empty-state';
@@ -21549,8 +21623,9 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   document.getElementById('btn-abrir-busqueda-clientes').addEventListener('click', ()=> document.getElementById('btn-abrir-busqueda').click());
   document.getElementById('btn-abrir-busqueda').addEventListener('click', ()=>{
     inputBusquedaGlobal.value = '';
-    renderizarResultadosBusqueda();
+    busquedaEnTodo = false;
     busquedaOrigen = (screenClientes && screenClientes.style.display === 'block') ? screenClientes : screenInicio;
+    renderizarResultadosBusqueda();
     busquedaOrigen.style.display = 'none';
     screenBusqueda.style.display = 'block';
     bottomNav.style.display = 'none';
@@ -37510,7 +37585,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // Las categorías personalizadas también quedan disponibles en
   // "Registrar Movimiento" de Centro Financiero.
   poblarSelectCategoriasGasto(document.getElementById('select-categoria-gasto'));
-  convertirSelectAPersonalizado(selectGastoCategoria, 'Categoría del gasto');
+  prepararSelectNativo(selectGastoCategoria);
   convertirInputFechaAPersonalizado(inputGastoFecha, 'Fecha del gasto');
 
   // ---------- Abrir/cerrar desde el menú lateral (recuerda el origen) ----------
@@ -37556,17 +37631,17 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // los <select> del sistema, en reemplazo del menú nativo del
   // sistema operativo (ver convertirSelectAPersonalizado más arriba).
   // ==========================================================
-  convertirSelectAPersonalizado(document.getElementById('select-aplicar-abono'), 'Aplicar Abono');
-  convertirSelectAPersonalizado(document.getElementById('select-aplicar-abono-editar'), 'Aplicar Abono');
-  convertirSelectAPersonalizado(document.getElementById('select-concepto-abono'), 'Concepto en el recibo');
-  convertirSelectAPersonalizado(document.getElementById('select-concepto-abono-editar'), 'Concepto en el recibo');
-  convertirSelectAPersonalizado(document.getElementById('select-metodo-pago'), 'Método de Pago');
-  convertirSelectAPersonalizado(document.getElementById('select-tipo-interes'), 'Tipo de Interés');
-  convertirSelectAPersonalizado(document.getElementById('select-frecuencia'), 'Frecuencia de Pago');
-  convertirSelectAPersonalizado(document.getElementById('select-ruta-cliente'), 'Ruta');
-  convertirSelectAPersonalizado(document.getElementById('select-categoria-gasto'), 'Categoría del Gasto');
-  convertirSelectAPersonalizado(document.getElementById('select-cuota-recordatorio'), 'Cuota');
-  convertirSelectAPersonalizado(document.getElementById('select-credito-recordatorio'), 'Crédito');
+  prepararSelectNativo(document.getElementById('select-aplicar-abono'));
+  prepararSelectNativo(document.getElementById('select-aplicar-abono-editar'));
+  prepararSelectNativo(document.getElementById('select-concepto-abono'));
+  prepararSelectNativo(document.getElementById('select-concepto-abono-editar'));
+  prepararSelectNativo(document.getElementById('select-metodo-pago'));
+  prepararSelectNativo(document.getElementById('select-tipo-interes'));
+  prepararSelectNativo(document.getElementById('select-frecuencia'));
+  prepararSelectNativo(document.getElementById('select-ruta-cliente'));
+  prepararSelectNativo(document.getElementById('select-categoria-gasto'));
+  prepararSelectNativo(document.getElementById('select-cuota-recordatorio'));
+  prepararSelectNativo(document.getElementById('select-credito-recordatorio'));
 
   // NUEVO: reemplaza el calendario nativo de Android en todos los campos
   // de fecha del sistema por el calendario propio de la app.
