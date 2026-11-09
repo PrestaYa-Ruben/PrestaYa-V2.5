@@ -10741,6 +10741,15 @@ html:has(#screen-detalle-cliente.push-ios), html:has(#screen-detalle-cliente.pus
 .action-sheet-overlay.cerrando{ background:rgba(20,30,60,0); transition:background .22s ease-out; animation:none; }
 .action-sheet-item{ transition:background .12s ease; }
 @media (prefers-reduced-motion:reduce){ .action-sheet-overlay,.action-sheet-anim{ animation:none; } }
+
+/* v881: número de posición a la izquierda de cada tarjeta, sobre el tapete y centrado en vertical */
+#clientes-lista .client-row-cliente[data-n]{ margin-left:28px; }
+#screen-clientes .client-row.client-row-cliente[data-n]{ content-visibility:visible; contain-intrinsic-size:none; } /* con 'auto' se recorta el número que queda fuera de la tarjeta */
+#clientes-lista .client-row-cliente > .cliente-num-pos{
+  position:absolute; left:-29px; width:26px; top:50%; transform:translateY(-50%);
+  text-align:center; font-size:12.5px; font-weight:800; letter-spacing:-.2px; line-height:1;
+  color:var(--text-secondary); font-variant-numeric:tabular-nums; pointer-events:none; z-index:3;
+}
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -21490,7 +21499,13 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     };
     function dibujarClienteLista(cliente){
       try{
-        listaClientes.appendChild(crearTarjetaCliente(cliente));
+        const tarjetaN = crearTarjetaCliente(cliente);
+        tarjetaN.dataset.n = String(sigClienteIdx + 1); // v881: número de posición, se recalcula en cada dibujo de la lista
+        const numPos = document.createElement('span');
+        numPos.className = 'cliente-num-pos'; numPos.setAttribute('aria-hidden','true');
+        numPos.textContent = String(sigClienteIdx + 1);
+        tarjetaN.appendChild(numPos);
+        listaClientes.appendChild(tarjetaN);
       }catch(err){
         clientesConError++;
         console.error('[Clientes] No se pudo mostrar la tarjeta de un cliente (dato dañado en su registro). ID:', cliente && cliente.id, '— Nombre guardado:', cliente && cliente.nombre, '— Error:', err);
