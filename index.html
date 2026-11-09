@@ -10706,6 +10706,25 @@ select.campo-resaltado-suave.campo-aplicar-abono[data-valor="mora"]{background-i
 select.campo-resaltado-suave.campo-aplicar-abono[data-valor="abono"]{color:#0A0D14;-webkit-text-fill-color:#0A0D14;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230A0D14' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"),linear-gradient(135deg,#C2ECFF,#84D7FF);}
 select.campo-resaltado-suave.campo-metodo-pago[data-valor="efectivo"]{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"),linear-gradient(135deg,#3E9E61,#186634);}
 select.campo-resaltado-suave option{color:#111;-webkit-text-fill-color:#111;background:#fff;}
+
+/* v876: Nuevo préstamo se abre como hoja modal de iOS (sube desde abajo, curva de iOS) */
+@keyframes npHojaSube{
+  from{ transform:translateY(100%); border-radius:18px 18px 0 0; box-shadow:0 -8px 30px rgba(0,0,0,.28); }
+  to{ transform:none; border-radius:0; box-shadow:0 0 0 rgba(0,0,0,0); }
+}
+#screen-nuevo-prestamo.screen-anim{ animation:npHojaSube .5s cubic-bezier(.32,.72,0,1); will-change:transform; }
+#screen-nuevo-prestamo.np-arrastrando{ transition:none; border-radius:18px 18px 0 0; box-shadow:0 -8px 30px rgba(0,0,0,.28); }
+#screen-nuevo-prestamo.np-suelta{ transition:transform .32s cubic-bezier(.32,.72,0,1); }
+@media (prefers-reduced-motion:reduce){ #screen-nuevo-prestamo.screen-anim{ animation:none; } }
+
+/* v877: entrada tipo "push" de iOS al abrir un cliente desde la lista (desliza desde la derecha) */
+@keyframes pushIosEntra{
+  from{ transform:translateX(100%); box-shadow:-10px 0 28px rgba(0,0,0,.22); }
+  to{ transform:none; box-shadow:0 0 0 rgba(0,0,0,0); }
+}
+html:has(#screen-detalle-cliente.push-ios), html:has(#screen-detalle-cliente.push-ios) body{ overflow-x:clip; }
+#screen-detalle-cliente.push-ios{ z-index:2; animation:pushIosEntra .42s cubic-bezier(.32,.72,0,1); will-change:transform; }
+@media (prefers-reduced-motion:reduce){ #screen-detalle-cliente.push-ios{ animation:none; } }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -22312,14 +22331,35 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     // se recuerda el origen para que "volver" regrese al lugar correcto.
     entroDetalleClienteDesdeBusqueda = screenBusqueda.style.display !== 'none';
     screenBusqueda.style.display = 'none';
-    screenClientes.style.display = 'none';
+    // v877: animación "push" de iOS solo al entrar desde la lista de Clientes o la Búsqueda
+    const vieneDeLista = screenClientes.style.display !== 'none' || entroDetalleClienteDesdeBusqueda;
+    // v878: la lista queda visible detrás (fija y desplazándose un poco a la izquierda, oscureciéndose) mientras entra el detalle
+    const listaVisible = screenClientes.style.display !== 'none' && !entroDetalleClienteDesdeBusqueda
+      && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(listaVisible){
+      const yLista = window.scrollY;
+      const st = screenClientes.style;
+      st.position = 'fixed'; st.top = (-yLista) + 'px'; st.left = '0'; st.right = '0'; st.width = '100%'; st.zIndex = '1'; st.pointerEvents = 'none';
+      const anim = screenClientes.animate(
+        [{ transform:'translateX(0)', filter:'brightness(1)' }, { transform:'translateX(-30%)', filter:'brightness(.8)' }],
+        { duration:420, easing:'cubic-bezier(.32,.72,0,1)', fill:'forwards' });
+      const limpiar = ()=>{
+        anim.cancel();
+        st.position = ''; st.top = ''; st.left = ''; st.right = ''; st.width = ''; st.zIndex = ''; st.pointerEvents = '';
+        st.display = 'none';
+      };
+      anim.onfinish = limpiar; anim.oncancel = ()=>{};
+      setTimeout(()=>{ if(screenClientes.style.position === 'fixed') limpiar(); }, 700);
+    }else{
+      screenClientes.style.display = 'none';
+    }
     bottomNav.style.display = 'none';
 
     screenDetalleCliente.style.display = 'block';
     // Se reinicia la animación cada vez que se abre (aunque sea el mismo cliente)
-    screenDetalleCliente.classList.remove('screen-anim');
+    screenDetalleCliente.classList.remove('screen-anim', 'push-ios');
     void screenDetalleCliente.offsetWidth;
-    screenDetalleCliente.classList.add('screen-anim');
+    screenDetalleCliente.classList.add(vieneDeLista ? 'push-ios' : 'screen-anim');
 
     window.scrollTo(0,0);
   }
@@ -22345,6 +22385,12 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       if(buscadorClientes) buscadorClientes.value = '';
       screenClientes.style.display = 'block';
       bottomNav.style.display = 'flex';
+      // v878: al volver, la lista entra desde la izquierda aclarándose (como el "pop" de iOS)
+      if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        screenClientes.animate(
+          [{ transform:'translateX(-30%)', filter:'brightness(.8)' }, { transform:'translateX(0)', filter:'brightness(1)' }],
+          { duration:380, easing:'cubic-bezier(.32,.72,0,1)' });
+      }
       renderizarClientes(clientesFiltrados()); // NUEVO: refresca la insignia/saldo con datos frescos
       if(restaurarExacto){
         // v851: vuelve EXACTAMENTE a donde estaba (mismo punto de la lista), sin saltos
@@ -37631,6 +37677,42 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // los <select> del sistema, en reemplazo del menú nativo del
   // sistema operativo (ver convertirSelectAPersonalizado más arriba).
   // ==========================================================
+
+  // v876: gesto de bajar la hoja (desde la cabecera) para cerrar Nuevo préstamo, como en iOS
+  (function(){
+    const sc = document.getElementById('screen-nuevo-prestamo');
+    const hd = sc && sc.querySelector('.header');
+    const back = document.getElementById('btn-cerrar-nuevo-prestamo');
+    if(!sc || !hd || !back) return;
+    let y0 = null, dy = 0, t0 = 0;
+    hd.addEventListener('touchstart', e=>{
+      if(e.touches.length !== 1) return;
+      y0 = e.touches[0].clientY; dy = 0; t0 = Date.now();
+      sc.classList.remove('np-suelta'); sc.classList.remove('screen-anim');
+    }, {passive:true});
+    hd.addEventListener('touchmove', e=>{
+      if(y0 === null) return;
+      dy = Math.max(0, e.touches[0].clientY - y0);
+      if(dy > 4){ sc.classList.add('np-arrastrando'); sc.style.transform = 'translateY(' + dy + 'px)'; }
+    }, {passive:true});
+    function fin(){
+      if(y0 === null) return;
+      const rapido = dy / Math.max(1, Date.now() - t0) > 0.6;
+      y0 = null;
+      sc.classList.remove('np-arrastrando');
+      if(dy > 110 || (rapido && dy > 40)){
+        sc.classList.add('np-suelta');
+        sc.style.transform = 'translateY(100%)';
+        setTimeout(()=>{ back.click(); sc.classList.remove('np-suelta'); sc.style.transform = ''; }, 300);
+      } else if(dy > 0){
+        sc.classList.add('np-suelta'); sc.style.transform = '';
+        setTimeout(()=>sc.classList.remove('np-suelta'), 340);
+      }
+    }
+    hd.addEventListener('touchend', fin, {passive:true});
+    hd.addEventListener('touchcancel', fin, {passive:true});
+  })();
+
   prepararSelectNativo(document.getElementById('select-aplicar-abono'));
   prepararSelectNativo(document.getElementById('select-aplicar-abono-editar'));
   prepararSelectNativo(document.getElementById('select-concepto-abono'));
