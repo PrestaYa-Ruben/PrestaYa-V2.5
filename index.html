@@ -10753,13 +10753,15 @@ html.arrancando #screen-inicio{ transform:translate3d(0,10px,0) scale(.985); }
 body{ transition:opacity .6s cubic-bezier(.32,.72,0,1); }
 #screen-inicio{ transition:transform .7s cubic-bezier(.32,.72,0,1); }
 
+html::-webkit-scrollbar,body::-webkit-scrollbar{ display:none; width:0; height:0; }
+html{ scrollbar-width:none; }
 /* v883: barra de desplazamiento rápido en Clientes (aparece al hacer scroll; se arrastra para recorrer la lista) */
 #scroll-rapido{ position:fixed; right:0; top:0; width:24px; height:52px; z-index:60; touch-action:none; opacity:0; pointer-events:none;
   transition:opacity .25s ease; -webkit-user-select:none; user-select:none; will-change:transform; }
 #scroll-rapido.visible{ opacity:1; pointer-events:auto; }
-#scroll-rapido .sr-barra{ position:absolute; right:4px; top:4px; width:6px; height:44px; border-radius:3px;
-  background:rgba(60,70,95,.55); transition:width .15s ease, background .15s ease; }
-#scroll-rapido.arrastrando .sr-barra{ width:9px; background:var(--primary, #1E2A5C); }
+#scroll-rapido .sr-barra{ position:absolute; right:1px; top:4px; width:7px; height:44px; border-radius:4px;
+  background:rgba(60,60,67,.6); transition:width .15s ease, background .15s ease; }
+#scroll-rapido.arrastrando .sr-barra{ width:10px; background:var(--primary, #1E2A5C); }
 #scroll-rapido .sr-burbuja{ position:absolute; right:26px; top:50%; transform:translateY(-50%) scale(.8); transform-origin:right center;
   background:var(--primary, #1E2A5C); color:#fff; font-size:15px; font-weight:800; padding:7px 13px; border-radius:18px; white-space:nowrap;
   box-shadow:0 4px 14px rgba(0,0,0,.25); opacity:0; transition:opacity .15s ease, transform .18s cubic-bezier(.32,.72,0,1); pointer-events:none; }
@@ -16459,18 +16461,23 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     el.innerHTML = '<div class="sr-burbuja"></div><div class="sr-barra"></div>';
     document.body.appendChild(el);
     const burbuja = el.querySelector('.sr-burbuja');
-    let oculto = null, tocando = false, arrastrando = false, y0 = 0, x0 = 0, top0 = 0, raf = 0, rafFondo = 0, topActual = 150;
-    const H = 52;
-    function rango(){
-      const sup = 150, inf = Math.max(sup + 80, window.innerHeight - (window.innerHeight > 600 ? 280 : 110));
-      return [sup, inf - H];
+    let oculto = null, tocando = false, arrastrando = false, y0 = 0, x0 = 0, top0 = 0, raf = 0, rafFondo = 0, topActual = 0;
+    // v885: el pulgar copia EXACTAMENTE la posición y el tamaño del indicador nativo de iOS (que no se puede ocultar),
+    // así se ve una sola barra en vez de dos: ocupa todo el alto de la pantalla igual que el indicador del sistema.
+    let H = 44;
+    function medir(){
+      const ih = window.innerHeight, sh = Math.max(document.documentElement.scrollHeight, ih + 1);
+      H = Math.round(Math.min(140, Math.max(36, ih * ih / sh)));
+      el.style.height = (H + 8) + 'px';
+      el.firstElementChild.nextElementSibling.style.height = H + 'px';
     }
+    function rango(){ return [0, Math.max(0, window.innerHeight - H - 8)]; }
     function maxScroll(){ return Math.max(0, document.documentElement.scrollHeight - window.innerHeight); }
     function enClientes(){ return pant.style.display !== 'none' && getComputedStyle(pant).display !== 'none' && !document.getElementById('screen-detalle-cliente').offsetParent; }
     function puedeMostrarse(){ return enClientes() && maxScroll() > window.innerHeight * 0.8; }
     function poner(t){ topActual = t; el.style.transform = 'translate3d(0,' + Math.round(t) + 'px,0)'; }
     function colocarPorScroll(){
-      const [a, b] = rango(); const m = maxScroll();
+      medir(); const [a, b] = rango(); const m = maxScroll();
       poner(a + (m > 0 ? Math.min(1, Math.max(0, window.scrollY / m)) : 0) * (b - a));
     }
     function numeroActual(){
@@ -16512,7 +16519,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       if(!tocando) return;
       if(!arrastrando){
         if(Math.abs(e.clientY - y0) < 6) return; // aún es un toque: no se agarra la barra
-        arrastrando = true; el.classList.add('arrastrando');
+        arrastrando = true; el.classList.add('arrastrando'); medir();
         burbuja.textContent = numeroActual();
         cancelAnimationFrame(rafFondo); rafFondo = requestAnimationFrame(empujarFondo);
       }
