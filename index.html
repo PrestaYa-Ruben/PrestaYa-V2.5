@@ -10752,6 +10752,20 @@ html.arrancando body{ opacity:0; }
 html.arrancando #screen-inicio{ transform:translate3d(0,10px,0) scale(.985); }
 body{ transition:opacity .6s cubic-bezier(.32,.72,0,1); }
 #screen-inicio{ transition:transform .7s cubic-bezier(.32,.72,0,1); }
+
+/* v883: barra de desplazamiento rápido en Clientes (aparece al hacer scroll; se arrastra para recorrer la lista) */
+#scroll-rapido{ position:fixed; right:0; top:0; width:30px; height:64px; z-index:60; touch-action:none; opacity:0; pointer-events:none;
+  transition:opacity .25s ease; -webkit-user-select:none; user-select:none; will-change:transform; }
+#scroll-rapido.visible{ opacity:1; pointer-events:auto; }
+#scroll-rapido .sr-barra{ position:absolute; right:4px; top:10px; width:6px; height:44px; border-radius:3px;
+  background:rgba(60,70,95,.55); transition:width .15s ease, background .15s ease; }
+#scroll-rapido.arrastrando .sr-barra{ width:9px; background:var(--primary, #1E2A5C); }
+#scroll-rapido .sr-burbuja{ position:absolute; right:26px; top:50%; transform:translateY(-50%) scale(.8); transform-origin:right center;
+  background:var(--primary, #1E2A5C); color:#fff; font-size:15px; font-weight:800; padding:7px 13px; border-radius:18px; white-space:nowrap;
+  box-shadow:0 4px 14px rgba(0,0,0,.25); opacity:0; transition:opacity .15s ease, transform .18s cubic-bezier(.32,.72,0,1); pointer-events:none; }
+#scroll-rapido.arrastrando .sr-burbuja{ opacity:1; transform:translateY(-50%) scale(1); }
+body.modo-oscuro #scroll-rapido .sr-barra{ background:rgba(220,226,240,.6); }
+@media (prefers-reduced-motion:reduce){ #scroll-rapido,#scroll-rapido .sr-barra,#scroll-rapido .sr-burbuja{ transition:none; } }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -16432,6 +16446,80 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   }
   window.scrollTo(0, 0);
   window.addEventListener('load', ()=> window.scrollTo(0, 0));
+  // v883: barra de desplazamiento rápido (Clientes). Arrastrar el pulgar recorre la lista; muestra "n / total".
+  (function(){
+    const pant = document.getElementById('screen-clientes');
+    const lista = document.getElementById('clientes-lista');
+    const cont = document.getElementById('clientes-contador');
+    if(!pant || !lista) return;
+    const el = document.createElement('div');
+    el.id = 'scroll-rapido'; el.setAttribute('aria-hidden','true');
+    el.innerHTML = '<div class="sr-burbuja"></div><div class="sr-barra"></div>';
+    document.body.appendChild(el);
+    const burbuja = el.querySelector('.sr-burbuja');
+    let oculto = null, arrastrando = false, y0 = 0, top0 = 0, raf = 0, rafFondo = 0;
+    const H = 64;
+    function rango(){
+      const sup = 150, inf = Math.max(sup + 80, window.innerHeight - (window.innerHeight > 600 ? 280 : 110));
+      return [sup, inf - H];
+    }
+    function maxScroll(){ return Math.max(0, document.documentElement.scrollHeight - window.innerHeight); }
+    function enClientes(){ return pant.style.display !== 'none' && getComputedStyle(pant).display !== 'none'; }
+    function puedeMostrarse(){ return enClientes() && maxScroll() > window.innerHeight * 0.8; }
+    function posActual(){ const m = /,\s*(-?[\d.]+)px/.exec(el.style.transform || ''); return m ? parseFloat(m[1]) : rango()[0]; }
+    function colocar(){
+      const [a, b] = rango(); const m = maxScroll();
+      const f = m > 0 ? Math.min(1, Math.max(0, window.scrollY / m)) : 0;
+      el.style.transform = 'translate3d(0,' + Math.round(a + f * (b - a)) + 'px,0)';
+    }
+    function numeroActual(){
+      const tarjetas = lista.querySelectorAll('.client-row-cliente');
+      const ref = window.innerHeight * 0.35; let n = 1;
+      for(let i = 0; i < tarjetas.length; i++){
+        const r = tarjetas[i].getBoundingClientRect();
+        if(r.bottom > ref){ n = i + 1; break; }
+        n = i + 1;
+      }
+      const tot = parseInt((cont && cont.textContent) || '', 10) || tarjetas.length;
+      return n + ' / ' + tot;
+    }
+    function mostrar(){
+      if(!puedeMostrarse()){ el.classList.remove('visible'); return; }
+      colocar(); el.classList.add('visible');
+      clearTimeout(oculto);
+      if(!arrastrando) oculto = setTimeout(()=> el.classList.remove('visible'), 1500);
+    }
+    window.addEventListener('scroll', ()=>{ if(!raf) raf = requestAnimationFrame(()=>{ raf = 0; if(arrastrando){ colocar(); burbuja.textContent = numeroActual(); } else mostrar(); }); }, {passive:true});
+    function irA(clientY){
+      const [a, b] = rango();
+      const t = Math.min(b, Math.max(a, top0 + (clientY - y0)));
+      const f = (t - a) / Math.max(1, b - a);
+      window.scrollTo(0, f * maxScroll());
+    }
+    // al llegar al final se sigue empujando abajo para que se dibujen los lotes de clientes que faltan
+    function empujarFondo(){
+      if(!arrastrando) return;
+      const [a, b] = rango(); const actual = parseFloat(posActual());
+      if(actual >= b - 2) window.scrollTo(0, maxScroll());
+      rafFondo = requestAnimationFrame(empujarFondo);
+    }
+    el.addEventListener('pointerdown', e=>{
+      arrastrando = true; el.classList.add('arrastrando'); clearTimeout(oculto);
+      y0 = e.clientY; top0 = parseFloat(posActual());
+      try{ el.setPointerCapture(e.pointerId); }catch(_){}
+      burbuja.textContent = numeroActual();
+      cancelAnimationFrame(rafFondo); rafFondo = requestAnimationFrame(empujarFondo);
+      e.preventDefault();
+    });
+    el.addEventListener('pointermove', e=>{ if(arrastrando){ irA(e.clientY); e.preventDefault(); } });
+    function soltar(){
+      if(!arrastrando) return;
+      arrastrando = false; el.classList.remove('arrastrando'); cancelAnimationFrame(rafFondo);
+      clearTimeout(oculto); oculto = setTimeout(()=> el.classList.remove('visible'), 1500);
+    }
+    el.addEventListener('pointerup', soltar); el.addEventListener('pointercancel', soltar);
+  })();
+
   // v882: cuando todo está listo, se quita 'arrancando' en dos cuadros para que el fundido arranque limpio
   (function(){ const ir = ()=> requestAnimationFrame(()=> requestAnimationFrame(()=> document.documentElement.classList.remove('arrancando'))); if(document.readyState === 'complete') ir(); else window.addEventListener('load', ir); })();
 
