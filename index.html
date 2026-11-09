@@ -10718,13 +10718,29 @@ select.campo-resaltado-suave option{color:#111;-webkit-text-fill-color:#111;back
 @media (prefers-reduced-motion:reduce){ #screen-nuevo-prestamo.screen-anim{ animation:none; } }
 
 /* v877: entrada tipo "push" de iOS al abrir un cliente desde la lista (desliza desde la derecha) */
-@keyframes pushIosEntra{
-  from{ transform:translateX(100%); box-shadow:-10px 0 28px rgba(0,0,0,.22); }
-  to{ transform:none; box-shadow:0 0 0 rgba(0,0,0,0); }
-}
+#screen-detalle-cliente.push-ios{ z-index:2; }
+#screen-detalle-cliente.push-ios::before{ content:''; position:absolute; top:0; bottom:0; left:-24px; width:24px; pointer-events:none;
+  background:linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,.16)); }
 html:has(#screen-detalle-cliente.push-ios), html:has(#screen-detalle-cliente.push-ios) body{ overflow-x:clip; }
-#screen-detalle-cliente.push-ios{ z-index:2; animation:pushIosEntra .42s cubic-bezier(.32,.72,0,1); will-change:transform; }
-@media (prefers-reduced-motion:reduce){ #screen-detalle-cliente.push-ios{ animation:none; } }
+
+/* v880: menús emergentes ("Más opciones", cuota, etc.) con movimiento tipo iOS:
+   fondo que se funde, tarjeta que sube con leve escala y frenado suave de iOS */
+@keyframes iosFondoEntra{ from{ background-color:rgba(20,30,60,0); } to{ background-color:rgba(20,30,60,.45); } }
+@keyframes iosHojaEntra{
+  0%{ opacity:0; transform:translate3d(0,26px,0) scale(.94); }
+  35%{ opacity:1; }
+  100%{ opacity:1; transform:translate3d(0,0,0) scale(1); }
+}
+@keyframes iosHojaSale{
+  from{ opacity:1; transform:translate3d(0,0,0) scale(1); }
+  to{ opacity:0; transform:translate3d(0,14px,0) scale(.97); }
+}
+.action-sheet-overlay{ animation:iosFondoEntra .34s ease-out; }
+.action-sheet-anim{ animation:iosHojaEntra .44s cubic-bezier(.32,.72,0,1); will-change:transform,opacity; }
+.action-sheet-anim-salida{ animation:iosHojaSale .22s cubic-bezier(.4,0,1,1) forwards; }
+.action-sheet-overlay.cerrando{ background:rgba(20,30,60,0); transition:background .22s ease-out; animation:none; }
+.action-sheet-item{ transition:background .12s ease; }
+@media (prefers-reduced-motion:reduce){ .action-sheet-overlay,.action-sheet-anim{ animation:none; } }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -22340,13 +22356,18 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       const yLista = window.scrollY;
       const st = screenClientes.style;
       st.position = 'fixed'; st.top = (-yLista) + 'px'; st.left = '0'; st.right = '0'; st.width = '100%'; st.zIndex = '1'; st.pointerEvents = 'none';
+      const DUR = 480, EASE = 'cubic-bezier(.32,.72,0,1)';
+      const velo = window.__atenuadorIos(0, 0.22, DUR, EASE);
       const anim = screenClientes.animate(
-        [{ transform:'translateX(0)', filter:'brightness(1)' }, { transform:'translateX(-30%)', filter:'brightness(.8)' }],
-        { duration:420, easing:'cubic-bezier(.32,.72,0,1)', fill:'forwards' });
+        [{ transform:'translate3d(0,0,0)' }, { transform:'translate3d(-30%,0,0)' }],
+        { duration:DUR, easing:EASE, fill:'forwards' });
+      // el detalle entra con la MISMA animación y arranque (solo transform: va por GPU, sin tirones)
+      window.__pushDetalleCliente = { dur:DUR, easing:EASE };
       const limpiar = ()=>{
         anim.cancel();
         st.position = ''; st.top = ''; st.left = ''; st.right = ''; st.width = ''; st.zIndex = ''; st.pointerEvents = '';
         st.display = 'none';
+        if(velo) velo.remove();
       };
       anim.onfinish = limpiar; anim.oncancel = ()=>{};
       setTimeout(()=>{ if(screenClientes.style.position === 'fixed') limpiar(); }, 700);
@@ -22360,10 +22381,28 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     screenDetalleCliente.classList.remove('screen-anim', 'push-ios');
     void screenDetalleCliente.offsetWidth;
     screenDetalleCliente.classList.add(vieneDeLista ? 'push-ios' : 'screen-anim');
+    if(vieneDeLista && window.__pushDetalleCliente){
+      const cfg = window.__pushDetalleCliente; window.__pushDetalleCliente = null;
+      screenDetalleCliente.animate(
+        [{ transform:'translate3d(100%,0,0)' }, { transform:'translate3d(0,0,0)' }],
+        { duration:cfg.dur, easing:cfg.easing });
+    }else if(vieneDeLista){
+      screenDetalleCliente.animate(
+        [{ transform:'translate3d(100%,0,0)' }, { transform:'translate3d(0,0,0)' }],
+        { duration:480, easing:'cubic-bezier(.32,.72,0,1)' });
+    }
 
     window.scrollTo(0,0);
   }
 
+  // v879: velo oscuro que se anima solo con opacity (más fluido que animar filter sobre toda la lista)
+  window.__atenuadorIos = function(de, a, ms, easing){
+    const v = document.createElement('div');
+    v.style.cssText = 'position:fixed;inset:0;background:#000;pointer-events:none;z-index:1;opacity:' + a;
+    document.body.appendChild(v);
+    v.animate([{opacity:de},{opacity:a}], {duration:ms, easing:easing});
+    return v;
+  };
   function cerrarDetalleCliente(){
     screenDetalleCliente.style.display = 'none';
     if(entroDetalleClienteDesdeBusqueda){
@@ -22388,8 +22427,10 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       // v878: al volver, la lista entra desde la izquierda aclarándose (como el "pop" de iOS)
       if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
         screenClientes.animate(
-          [{ transform:'translateX(-30%)', filter:'brightness(.8)' }, { transform:'translateX(0)', filter:'brightness(1)' }],
-          { duration:380, easing:'cubic-bezier(.32,.72,0,1)' });
+          [{ transform:'translate3d(-30%,0,0)' }, { transform:'translate3d(0,0,0)' }],
+          { duration:420, easing:'cubic-bezier(.32,.72,0,1)' });
+        const velo = window.__atenuadorIos(0.22, 0, 420, 'cubic-bezier(.32,.72,0,1)');
+        velo.style.opacity = '0'; setTimeout(()=>velo.remove(), 440);
       }
       renderizarClientes(clientesFiltrados()); // NUEVO: refresca la insignia/saldo con datos frescos
       if(restaurarExacto){
