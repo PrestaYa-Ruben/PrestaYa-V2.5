@@ -10822,6 +10822,27 @@ body.modo-oscuro #lista-pagan-hoy .client-card.ph-card.ph-cobrada{ background:#1
 body.modo-oscuro .ph-card.ph-cobrada .ph-check{ background:#22B863; border-color:#22B863; }
 body.modo-oscuro .ph-card .ph-reloj{ background:rgba(124,136,224,.2); }
 body.modo-oscuro .ph-card .ph-reloj svg{ stroke:#B9C0F5; }
+/* v893: tachado al cobrar + calendario pequeño */
+.ph-card .ph-nombre, .ph-card .ph-pill, .ph-card .ph-prox, .ph-card .ph-n, .ph-card .ph-nota span{ text-decoration-line:none; text-decoration-thickness:2px; }
+.ph-card.ph-cobrada .ph-nombre, .ph-card.ph-cobrada .ph-pill, .ph-card.ph-cobrada .ph-prox, .ph-card.ph-cobrada .ph-n, .ph-card.ph-cobrada .ph-nota span{ text-decoration-line:line-through; opacity:.6; }
+.ph-ap-titulo{ text-align:center; font-weight:700; font-size:15px; padding:14px 16px 6px; color:var(--text-secondary,#6B7280); }
+.ph-cal{ padding:12px 12px 8px; }
+.ph-cal-cab{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; font-size:16px; color:var(--text,#1F2A5A); }
+.ph-cal-nav{ width:36px; height:36px; border:none; border-radius:50%; background:rgba(102,114,199,.14); font-size:22px; line-height:1; color:#5560B8; cursor:pointer; }
+.ph-cal-nav:disabled{ opacity:.3; }
+.ph-cal-sem, .ph-cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center; }
+.ph-cal-sem span{ font-size:12px; font-weight:600; color:#8A8F9C; padding:4px 0; }
+.ph-cal-grid{ grid-template-rows:repeat(6,38px); touch-action:pan-y; }
+.ph-cal-d{ height:38px; border:none; border-radius:50%; background:transparent; font-size:15px; color:var(--text,#1F2A5A); cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.ph-cal-d.hoy{ border:1.5px solid #6672C7; }
+.ph-cal-d:active:not(:disabled){ background:#6672C7; color:#fff; }
+.ph-cal-d:disabled{ opacity:.3; }
+.ph-cal-pie{ display:flex; gap:8px; margin-top:6px; }
+.ph-cal-hoy{ flex:1; padding:10px; border:none; border-radius:12px; background:rgba(102,114,199,.14); font-size:15px; font-weight:700; color:#5560B8; cursor:pointer; }
+body.modo-oscuro .ph-cal-hoy{ background:rgba(124,136,224,.22); color:#B9C0F5; }
+.ph-cal-cancel{ flex:1; margin-top:0; padding:10px; border:none; background:transparent; font-size:15px; font-weight:600; color:#5560B8; cursor:pointer; }
+body.modo-oscuro .ph-cal-nav{ background:rgba(124,136,224,.22); color:#B9C0F5; }
+body.modo-oscuro .ph-cal-cancel{ color:#B9C0F5; }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -34217,7 +34238,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     const a = aplazadas[claveAplazadaPH(prestamo, cuota)];
     if(a && a.o === orig && a.d){
       const hoy = claveFechaConOffset(0);
-      return { clave: a.d < hoy ? hoy : a.d, aplazada: true, original: orig };
+      return { clave: a.d, aplazada: true, original: orig }; // v894: fecha libre (también pasado)
     }
     return { clave: orig, aplazada: false, original: orig };
   }
@@ -34267,10 +34288,10 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     ov.className = 'action-sheet-overlay ph-aplazar-ov';
     const itm = (id, color, svg, txt) => `<div class="action-sheet-item" id="${id}"><div class="icon-container ${color}"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg></div><span>${txt}</span></div>`;
     ov.innerHTML = `<div class="action-sheet-wrap"><div class="action-sheet-card">
+      <div class="ph-ap-titulo">Editar fecha</div>
       ${itm('ph-ap-manana','blue','<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>','Recordar mañana')}
       ${itm('ph-ap-otro','blue','<rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>','Elegir otro día')}
       ${aplazada ? itm('ph-ap-volver','green','<polyline points="1 4 1 10 7 10"></polyline><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"></path>','Volver a su día') : ''}
-      <input type="date" id="ph-ap-fecha" min="${claveFechaConOffset(0)}" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;">
     </div></div>`;
     document.body.appendChild(ov);
     const cerrar = ()=>{ ov.remove(); };
@@ -34281,10 +34302,61 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     const vista = new Date(paganHoyFechaSeleccionada + 'T00:00:00'); vista.setDate(vista.getDate() + 1);
     const sig = claveFechaLocal(vista) < manana ? manana : claveFechaLocal(vista);
     ov.querySelector('#ph-ap-manana').addEventListener('click', ()=>{ cerrar(); aplazarCuotaPH(prestamo, cuota, sig); });
-    const inp = ov.querySelector('#ph-ap-fecha');
-    inp.addEventListener('change', ()=>{ if(inp.value){ cerrar(); aplazarCuotaPH(prestamo, cuota, inp.value); } });
     ov.querySelector('#ph-ap-otro').addEventListener('click', ()=>{
-      try{ inp.style.pointerEvents = 'auto'; inp.showPicker ? inp.showPicker() : inp.click(); }catch(e){ inp.click(); }
+      const card = ov.querySelector('.action-sheet-card');
+      const hoyK = claveFechaConOffset(0);
+      let ref = new Date(hoyK + 'T00:00:00'); ref.setDate(1);
+      const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+      const pintar = ()=>{
+        const y = ref.getFullYear(), m = ref.getMonth();
+        const primero = (new Date(y, m, 1).getDay() + 6) % 7; // semana inicia lunes
+        const dias = new Date(y, m + 1, 0).getDate();
+        let celdas = '';
+        for(let i=0;i<primero;i++) celdas += '<span></span>';
+        for(let d=1; d<=dias; d++){
+          const k = y + '-' + String(m+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+          const pasado = false;
+          celdas += `<button type="button" class="ph-cal-d${k===hoyK?' hoy':''}" data-k="${k}" ${pasado?'disabled':''}>${d}</button>`;
+        }
+        const noAtras = false;
+        while(((celdas.match(/<span><\/span>|<button/g) || []).length) < 42) celdas += '<span></span>'; // v894: siempre 6 filas, tamaño fijo
+        card.innerHTML = `<div class="ph-cal">
+          <div class="ph-cal-cab"><button type="button" class="ph-cal-nav" id="ph-cal-prev" ${noAtras?'disabled':''}>‹</button><b>${MESES[m]} ${y}</b><button type="button" class="ph-cal-nav" id="ph-cal-next">›</button></div>
+          <div class="ph-cal-sem"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+          <div class="ph-cal-grid">${celdas}</div>
+          <div class="ph-cal-pie"><button type="button" class="ph-cal-cancel" id="ph-cal-cancel">Cancelar</button><button type="button" class="ph-cal-hoy" id="ph-cal-hoy">Hoy</button></div></div>`;
+        card.querySelector('#ph-cal-prev').onclick = ()=>{ ref.setMonth(ref.getMonth() - 1); pintar(); };
+        card.querySelector('#ph-cal-next').onclick = ()=>{ ref.setMonth(ref.getMonth() + 1); pintar(); };
+        card.querySelector('#ph-cal-cancel').onclick = cerrar;
+        card.querySelector('#ph-cal-hoy').onclick = ()=>{ ref = new Date(hoyK + 'T00:00:00'); ref.setDate(1); pintar(); }; // v895
+        card.querySelectorAll('.ph-cal-d:not([disabled])').forEach(bt => bt.onclick = ()=>{ cerrar(); aplazarCuotaPH(prestamo, cuota, bt.dataset.k); });
+      };
+      pintar();
+      // v895: deslizar sigue al dedo; con poco recorrido o un "flick" rápido cambia de mes
+      let x0 = null, y0 = null, t0 = 0, arrastrando = false;
+      const grid = ()=> card.querySelector('.ph-cal-grid');
+      let bloqClick = 0;
+      card.addEventListener('click', e=>{ if(Date.now() < bloqClick){ e.stopPropagation(); e.preventDefault(); } }, true); // tras arrastrar no se toca un día por accidente
+      card.addEventListener('touchstart', e=>{ x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; t0 = Date.now(); arrastrando = false; }, { passive:true });
+      card.addEventListener('touchmove', e=>{
+        if(x0 === null) return;
+        const dx = e.touches[0].clientX - x0, dy = e.touches[0].clientY - y0;
+        if(!arrastrando && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) arrastrando = true;
+        const g = grid();
+        if(arrastrando && g){ g.style.transition = 'none'; g.style.transform = 'translateX(' + (dx * 0.7) + 'px)'; g.style.opacity = String(Math.max(.35, 1 - Math.abs(dx) / 400)); }
+      }, { passive:true });
+      card.addEventListener('touchend', e=>{
+        if(x0 === null) return;
+        const dx = e.changedTouches[0].clientX - x0, dt = Math.max(1, Date.now() - t0); x0 = null;
+        const g = grid();
+        if(!arrastrando){ return; }
+        arrastrando = false; bloqClick = Date.now() + 350;
+        const cambia = Math.abs(dx) > 35 || (Math.abs(dx) / dt > 0.35 && Math.abs(dx) > 15);
+        if(!cambia){ if(g){ g.style.transition = 'transform .18s ease-out, opacity .18s'; g.style.transform = 'none'; g.style.opacity = '1'; } return; }
+        ref.setMonth(ref.getMonth() + (dx < 0 ? 1 : -1)); pintar();
+        const g2 = grid();
+        if(g2 && g2.animate) g2.animate([{ transform:'translateX(' + (dx < 0 ? 36 : -36) + 'px)', opacity:.3 }, { transform:'none', opacity:1 }], { duration:170, easing:'ease-out' });
+      }, { passive:true });
     });
     const v = ov.querySelector('#ph-ap-volver');
     if(v) v.addEventListener('click', ()=>{ cerrar(); aplazarCuotaPH(prestamo, cuota, null); });
