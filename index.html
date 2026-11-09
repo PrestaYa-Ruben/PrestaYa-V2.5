@@ -10753,6 +10753,12 @@ html.arrancando #screen-inicio{ transform:translate3d(0,10px,0) scale(.985); }
 body{ transition:opacity .6s cubic-bezier(.32,.72,0,1); }
 #screen-inicio{ transition:transform .7s cubic-bezier(.32,.72,0,1); }
 
+
+/* v887: Pagan Hoy — sin el valor dentro del recuadro de cada día (se conserva el código, solo se oculta) */
+#pagan-hoy-dias-strip .dia-monto{ display:none !important; }
+#pagan-hoy-dias-strip .dia-card{ padding-bottom:inherit; }
+/* v887: botón flotante "Tareas del día" retirado de todas las páginas (oculto; el código se conserva) */
+html body .tareas-fab, html body #btn-tareas-fab, html body #btn-tareas-flotante{ display:none !important; }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
