@@ -10754,10 +10754,10 @@ body{ transition:opacity .6s cubic-bezier(.32,.72,0,1); }
 #screen-inicio{ transition:transform .7s cubic-bezier(.32,.72,0,1); }
 
 /* v883: barra de desplazamiento rápido en Clientes (aparece al hacer scroll; se arrastra para recorrer la lista) */
-#scroll-rapido{ position:fixed; right:0; top:0; width:30px; height:64px; z-index:60; touch-action:none; opacity:0; pointer-events:none;
+#scroll-rapido{ position:fixed; right:0; top:0; width:24px; height:52px; z-index:60; touch-action:none; opacity:0; pointer-events:none;
   transition:opacity .25s ease; -webkit-user-select:none; user-select:none; will-change:transform; }
 #scroll-rapido.visible{ opacity:1; pointer-events:auto; }
-#scroll-rapido .sr-barra{ position:absolute; right:4px; top:10px; width:6px; height:44px; border-radius:3px;
+#scroll-rapido .sr-barra{ position:absolute; right:4px; top:4px; width:6px; height:44px; border-radius:3px;
   background:rgba(60,70,95,.55); transition:width .15s ease, background .15s ease; }
 #scroll-rapido.arrastrando .sr-barra{ width:9px; background:var(--primary, #1E2A5C); }
 #scroll-rapido .sr-burbuja{ position:absolute; right:26px; top:50%; transform:translateY(-50%) scale(.8); transform-origin:right center;
@@ -16446,7 +16446,9 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   }
   window.scrollTo(0, 0);
   window.addEventListener('load', ()=> window.scrollTo(0, 0));
-  // v883: barra de desplazamiento rápido (Clientes). Arrastrar el pulgar recorre la lista; muestra "n / total".
+  // v883/v884: barra de desplazamiento rápido (Clientes). Arrastrar el pulgar recorre la lista; muestra "n / total".
+  // v884: un toque simple sobre la barra ya NO se la traga (pasa a la tarjeta de abajo); solo se agarra al arrastrar;
+  // mientras se arrastra el pulgar sigue al dedo (no al scroll), así no salta cuando se cargan más clientes.
   (function(){
     const pant = document.getElementById('screen-clientes');
     const lista = document.getElementById('clientes-lista');
@@ -16457,67 +16459,80 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     el.innerHTML = '<div class="sr-burbuja"></div><div class="sr-barra"></div>';
     document.body.appendChild(el);
     const burbuja = el.querySelector('.sr-burbuja');
-    let oculto = null, arrastrando = false, y0 = 0, top0 = 0, raf = 0, rafFondo = 0;
-    const H = 64;
+    let oculto = null, tocando = false, arrastrando = false, y0 = 0, x0 = 0, top0 = 0, raf = 0, rafFondo = 0, topActual = 150;
+    const H = 52;
     function rango(){
       const sup = 150, inf = Math.max(sup + 80, window.innerHeight - (window.innerHeight > 600 ? 280 : 110));
       return [sup, inf - H];
     }
     function maxScroll(){ return Math.max(0, document.documentElement.scrollHeight - window.innerHeight); }
-    function enClientes(){ return pant.style.display !== 'none' && getComputedStyle(pant).display !== 'none'; }
+    function enClientes(){ return pant.style.display !== 'none' && getComputedStyle(pant).display !== 'none' && !document.getElementById('screen-detalle-cliente').offsetParent; }
     function puedeMostrarse(){ return enClientes() && maxScroll() > window.innerHeight * 0.8; }
-    function posActual(){ const m = /,\s*(-?[\d.]+)px/.exec(el.style.transform || ''); return m ? parseFloat(m[1]) : rango()[0]; }
-    function colocar(){
+    function poner(t){ topActual = t; el.style.transform = 'translate3d(0,' + Math.round(t) + 'px,0)'; }
+    function colocarPorScroll(){
       const [a, b] = rango(); const m = maxScroll();
-      const f = m > 0 ? Math.min(1, Math.max(0, window.scrollY / m)) : 0;
-      el.style.transform = 'translate3d(0,' + Math.round(a + f * (b - a)) + 'px,0)';
+      poner(a + (m > 0 ? Math.min(1, Math.max(0, window.scrollY / m)) : 0) * (b - a));
     }
     function numeroActual(){
-      const tarjetas = lista.querySelectorAll('.client-row-cliente');
-      const ref = window.innerHeight * 0.35; let n = 1;
-      for(let i = 0; i < tarjetas.length; i++){
-        const r = tarjetas[i].getBoundingClientRect();
-        if(r.bottom > ref){ n = i + 1; break; }
-        n = i + 1;
-      }
-      const tot = parseInt((cont && cont.textContent) || '', 10) || tarjetas.length;
-      return n + ' / ' + tot;
+      const t = lista.querySelectorAll('.client-row-cliente');
+      if(!t.length) return '';
+      const ref = window.innerHeight * 0.35;
+      let lo = 0, hi = t.length - 1; // la lista va en orden vertical: búsqueda binaria de la primera tarjeta que pasa la línea de referencia
+      while(lo < hi){ const mid = (lo + hi) >> 1; if(t[mid].getBoundingClientRect().bottom > ref) hi = mid; else lo = mid + 1; }
+      const tot = parseInt((cont && cont.textContent) || '', 10) || t.length;
+      return (lo + 1) + ' / ' + Math.max(tot, t.length);
     }
+    function programarOcultar(){ clearTimeout(oculto); oculto = setTimeout(()=>{ if(!tocando) el.classList.remove('visible'); }, 1500); }
     function mostrar(){
       if(!puedeMostrarse()){ el.classList.remove('visible'); return; }
-      colocar(); el.classList.add('visible');
-      clearTimeout(oculto);
-      if(!arrastrando) oculto = setTimeout(()=> el.classList.remove('visible'), 1500);
+      colocarPorScroll(); el.classList.add('visible'); programarOcultar();
     }
-    window.addEventListener('scroll', ()=>{ if(!raf) raf = requestAnimationFrame(()=>{ raf = 0; if(arrastrando){ colocar(); burbuja.textContent = numeroActual(); } else mostrar(); }); }, {passive:true});
+    window.addEventListener('scroll', ()=>{
+      if(raf) return;
+      raf = requestAnimationFrame(()=>{ raf = 0; if(arrastrando) burbuja.textContent = numeroActual(); else if(!tocando) mostrar(); });
+    }, {passive:true});
     function irA(clientY){
       const [a, b] = rango();
       const t = Math.min(b, Math.max(a, top0 + (clientY - y0)));
-      const f = (t - a) / Math.max(1, b - a);
-      window.scrollTo(0, f * maxScroll());
+      poner(t);
+      window.scrollTo(0, ((t - a) / Math.max(1, b - a)) * maxScroll());
     }
     // al llegar al final se sigue empujando abajo para que se dibujen los lotes de clientes que faltan
     function empujarFondo(){
       if(!arrastrando) return;
-      const [a, b] = rango(); const actual = parseFloat(posActual());
-      if(actual >= b - 2) window.scrollTo(0, maxScroll());
+      if(topActual >= rango()[1] - 2) window.scrollTo(0, maxScroll());
       rafFondo = requestAnimationFrame(empujarFondo);
     }
     el.addEventListener('pointerdown', e=>{
-      arrastrando = true; el.classList.add('arrastrando'); clearTimeout(oculto);
-      y0 = e.clientY; top0 = parseFloat(posActual());
+      tocando = true; arrastrando = false; clearTimeout(oculto);
+      y0 = e.clientY; x0 = e.clientX; top0 = topActual;
       try{ el.setPointerCapture(e.pointerId); }catch(_){}
-      burbuja.textContent = numeroActual();
-      cancelAnimationFrame(rafFondo); rafFondo = requestAnimationFrame(empujarFondo);
-      e.preventDefault();
     });
-    el.addEventListener('pointermove', e=>{ if(arrastrando){ irA(e.clientY); e.preventDefault(); } });
-    function soltar(){
-      if(!arrastrando) return;
-      arrastrando = false; el.classList.remove('arrastrando'); cancelAnimationFrame(rafFondo);
-      clearTimeout(oculto); oculto = setTimeout(()=> el.classList.remove('visible'), 1500);
+    el.addEventListener('pointermove', e=>{
+      if(!tocando) return;
+      if(!arrastrando){
+        if(Math.abs(e.clientY - y0) < 6) return; // aún es un toque: no se agarra la barra
+        arrastrando = true; el.classList.add('arrastrando');
+        burbuja.textContent = numeroActual();
+        cancelAnimationFrame(rafFondo); rafFondo = requestAnimationFrame(empujarFondo);
+      }
+      irA(e.clientY); e.preventDefault();
+    });
+    function soltar(e, cancelado){
+      if(!tocando) return;
+      const fueToque = !arrastrando;
+      tocando = false; arrastrando = false; el.classList.remove('arrastrando'); cancelAnimationFrame(rafFondo);
+      programarOcultar();
+      if(fueToque && !cancelado && e){
+        // toque simple: se le pasa a lo que haya debajo (por ejemplo la tarjeta del cliente)
+        el.style.pointerEvents = 'none';
+        const debajo = document.elementFromPoint(e.clientX, e.clientY);
+        el.style.pointerEvents = '';
+        if(debajo && debajo !== document.body && debajo !== document.documentElement) debajo.click();
+      }
     }
-    el.addEventListener('pointerup', soltar); el.addEventListener('pointercancel', soltar);
+    el.addEventListener('pointerup', e=> soltar(e, false));
+    el.addEventListener('pointercancel', e=> soltar(e, true));
   })();
 
   // v882: cuando todo está listo, se quita 'arrancando' en dos cuadros para que el fundido arranque limpio
@@ -22482,6 +22497,11 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     screenDetalleCliente.classList.remove('screen-anim', 'push-ios');
     void screenDetalleCliente.offsetWidth;
     screenDetalleCliente.classList.add(vieneDeLista ? 'push-ios' : 'screen-anim');
+    // v884: durante la entrada, un segundo toque (doble toque / toque fantasma) no debe caer sobre el detalle recién abierto
+    // (por ejemplo en su botón de volver) ni un gesto de 'atrás' cerrarlo al instante: eso producía el "rebote" hacia Inicio
+    window.__detalleAbiertoEn = Date.now();
+    screenDetalleCliente.style.pointerEvents = 'none';
+    setTimeout(()=>{ screenDetalleCliente.style.pointerEvents = ''; }, 450);
     if(vieneDeLista && window.__pushDetalleCliente){
       const cfg = window.__pushDetalleCliente; window.__pushDetalleCliente = null;
       screenDetalleCliente.animate(
@@ -37997,6 +38017,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     // v872: un solo gesto/boton de atras = un solo paso. Si otro mecanismo (gesto del credito, popstate de Safari,
     // boton nativo) ya retrocedio hace un instante, este se ignora para no saltar dos pantallas de golpe.
     const ahoraAtras = Date.now();
+    if(window.__detalleAbiertoEn && ahoraAtras - window.__detalleAbiertoEn < 450 && document.getElementById('screen-detalle-cliente').style.display === 'block') return true; // v884: recién abierta la ficha, ignora 'atrás' involuntario
     if(window.__ultimoAtras && ahoraAtras - window.__ultimoAtras < 450) return true;
     window.__ultimoAtras = ahoraAtras;
     const pantallasApilables = Array.from(document.querySelectorAll('[id^="screen-"]'))
