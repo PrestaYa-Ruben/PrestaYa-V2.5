@@ -10725,7 +10725,7 @@ select.campo-resaltado-suave option{color:#111;-webkit-text-fill-color:#111;back
 #screen-detalle-cliente.push-ios{ z-index:2; }
 #screen-detalle-cliente.push-ios::before{ content:''; position:absolute; top:0; bottom:0; left:-24px; width:24px; pointer-events:none;
   background:linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,.16)); }
-html, body{ overflow-x:clip; } /* v898: la página nunca se corre hacia los lados */
+html:has(#screen-detalle-cliente.push-ios), html:has(#screen-detalle-cliente.push-ios) body{ overflow-x:clip; } /* v903: solo durante la animación de entrada (el overflow permanente en html/body se retira por si afectaba a la barra fija en iPhone) */
 
 /* v880: menús emergentes ("Más opciones", cuota, etc.) con movimiento tipo iOS:
    fondo que se funde, tarjeta que sube con leve escala y frenado suave de iOS */
@@ -10876,6 +10876,8 @@ html body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .grafico-
 html body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes span{ color:#DDE6FF !important; }
 html body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes button{ background:#33406B !important; }
 html body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes button svg{ stroke:#C9D6FF !important; }
+/* v903: barra inferior en su propia capa de dibujo (iOS a veces la deja sin pintar) */
+.bottom-nav{ transform:translate3d(-50%,0,0); -webkit-transform:translate3d(-50%,0,0); will-change:transform; -webkit-backface-visibility:hidden; backface-visibility:hidden; }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -39471,18 +39473,39 @@ label[for=fDate]{color:var(--navy) !important;font-weight:800 !important;font-si
     if(!nav) return;
     const TABS = ['screen-inicio','screen-clientes','screen-prestamos','screen-pagos','screen-reportes'];
     let t = null;
-    function revisar(){
+    // pantalla apilada "de verdad" abierta: visible, con tamaño y sin estar transparente
+    function hayApiladaReal(){
+      return Array.from(document.querySelectorAll('[id^="screen-"]')).some(el=>{
+        if(TABS.includes(el.id)) return false;
+        const cs = getComputedStyle(el);
+        if(cs.display === 'none' || cs.visibility === 'hidden' || parseFloat(cs.opacity) === 0) return false;
+        const r = el.getBoundingClientRect();
+        return r.width > 150 && r.height > 150 && r.bottom > 0 && r.top < innerHeight;
+      });
+    }
+    function revisar(forzarRepintado){
       t = null;
-      const hayApilada = Array.from(document.querySelectorAll('[id^="screen-"]')).some(el => !TABS.includes(el.id) && getComputedStyle(el).display !== 'none');
-      if(!hayApilada && nav.style.display === 'none') nav.style.display = 'flex';
+      if(hayApiladaReal()) return;
+      const cs = getComputedStyle(nav);
+      if(nav.style.display === 'none' || cs.display === 'none') nav.style.display = 'flex';
+      if(cs.visibility !== 'visible') nav.style.visibility = 'visible';
+      if(parseFloat(cs.opacity) < 1) nav.style.opacity = '1';
+      const r = nav.getBoundingClientRect();
+      if(r.height < 20 || r.top > innerHeight - 20 || r.bottom < innerHeight - 4){ nav.style.bottom = '0px'; }
+      if(forzarRepintado === true){ // obliga a iOS a volver a dibujar la capa
+        nav.style.display = 'none'; void nav.offsetHeight; nav.style.display = 'flex';
+      }
     }
     function programar(){ if(t === null) t = setTimeout(revisar, 160); }
     const obs = new MutationObserver(programar);
     document.querySelectorAll('[id^="screen-"]').forEach(el => obs.observe(el, { attributes:true, attributeFilter:['style','class'] }));
-    obs.observe(nav, { attributes:true, attributeFilter:['style'] });
-    document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) programar(); });
-    window.addEventListener('pageshow', programar);
-    setInterval(revisar, 4000);
+    obs.observe(nav, { attributes:true, attributeFilter:['style','class'] });
+    document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) setTimeout(()=>revisar(true), 120); });
+    window.addEventListener('pageshow', ()=> setTimeout(()=>revisar(true), 120));
+    window.addEventListener('resize', programar);
+    window.addEventListener('orientationchange', ()=> setTimeout(()=>revisar(true), 300));
+    setInterval(revisar, 2500);
+    setTimeout(revisar, 600);
   })();
 
   // ==========================================================
