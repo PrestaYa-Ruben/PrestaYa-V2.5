@@ -10725,7 +10725,7 @@ select.campo-resaltado-suave option{color:#111;-webkit-text-fill-color:#111;back
 #screen-detalle-cliente.push-ios{ z-index:2; }
 #screen-detalle-cliente.push-ios::before{ content:''; position:absolute; top:0; bottom:0; left:-24px; width:24px; pointer-events:none;
   background:linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,.16)); }
-html:has(#screen-detalle-cliente.push-ios), html:has(#screen-detalle-cliente.push-ios) body{ overflow-x:clip; }
+html, body{ overflow-x:clip; } /* v898: la página nunca se corre hacia los lados */
 
 /* v880: menús emergentes ("Más opciones", cuota, etc.) con movimiento tipo iOS:
    fondo que se funde, tarjeta que sube con leve escala y frenado suave de iOS */
@@ -22472,9 +22472,22 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     screenDetalleCliente.style.pointerEvents = 'none';
     setTimeout(()=>{ screenDetalleCliente.style.pointerEvents = ''; }, 450);
     if(vieneDeLista && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-      screenDetalleCliente.animate(
+      // v898: en iPhone la pantalla podía quedarse ~8 px corrida a la derecha (animación congelada en su último tramo,
+      // dejando ver la pantalla de atrás). Se fija el estado final y se fuerza un repintado al terminar.
+      const elDet = screenDetalleCliente;
+      const asentarDetalle = ()=>{
+        elDet.classList.remove('push-ios');
+        elDet.style.transform = 'translate3d(0,0,0)';
+        void elDet.offsetWidth;
+        requestAnimationFrame(()=>{ elDet.style.transform = ''; window.scrollTo(0, 0); });
+      };
+      const animDet = elDet.animate(
         [{ transform:'translate3d(100%,0,0)' }, { transform:'translate3d(0,0,0)' }],
-        { duration:420, easing:'cubic-bezier(.32,.72,0,1)' });
+        { duration:420, easing:'cubic-bezier(.32,.72,0,1)', fill:'forwards' });
+      animDet.onfinish = ()=>{ asentarDetalle(); try{ animDet.cancel(); }catch(e){} };
+      animDet.oncancel = ()=>{ elDet.style.transform = ''; };
+      // red de seguridad por si el evento de fin no llega
+      setTimeout(()=>{ if(elDet.style.display !== 'none'){ try{ animDet.cancel(); }catch(e){} asentarDetalle(); } }, 700);
     }
 
     window.scrollTo(0,0);
@@ -40079,6 +40092,10 @@ label[for=fDate]{color:var(--navy) !important;font-weight:800 !important;font-si
       estabaVisible = ahora;
     }).observe(inicio, { attributes:true, attributeFilter:['style','class'] });
   })();
+</script>
+<script>
+// v898: si algo corre la página horizontalmente (rebote, animación), se devuelve a 0
+(function(){ let t; window.addEventListener('scroll', function(){ if(window.scrollX !== 0){ clearTimeout(t); t = setTimeout(function(){ window.scrollTo(0, window.scrollY); }, 30); } }, { passive:true }); })();
 </script>
 </body>
 </html>
