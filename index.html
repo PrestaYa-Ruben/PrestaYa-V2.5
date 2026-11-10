@@ -9220,6 +9220,7 @@ body.modo-oscuro .globo-cuota{ background:#1F2A5C !important; }
 #screen-clientes .client-row .client-row-ruta.client-row-ruta-arriba svg{ width:12px; height:12px; flex-shrink:0; }
 html body #screen-clientes .crs-frecuencia.crs-frec-diario{ background:#FFF714 !important; border-color:#E0D800 !important; color:#3A3600 !important; }
 html body #screen-clientes .crs-frecuencia.crs-frec-semanal{ background:#92D050 !important; border-color:#7CB83E !important; color:#1E3A0A !important; }
+html body #screen-clientes .crs-frecuencia.crs-frec-catorcena{ background:#0F9D8A !important; border-color:#0B8473 !important; color:#FFFFFF !important; }
 html body #screen-clientes .crs-frecuencia.crs-frec-quincenal{ background:#0068B3 !important; border-color:#005A9B !important; color:#FFFFFF !important; }
 html body #screen-clientes .crs-frecuencia.crs-frec-mensual{ background:#6E2F9D !important; border-color:#5E2687 !important; color:#FFFFFF !important; }
 
@@ -9419,6 +9420,7 @@ body.modo-oscuro #screen-busqueda#screen-busqueda .card.client-row{box-shadow:0 
 #screen-busqueda .client-row .client-row-ruta.client-row-ruta-arriba svg{width:12px; height:12px; flex-shrink:0;}
 html body #screen-busqueda .crs-frecuencia.crs-frec-diario{background:#FFF714 !important; border-color:#E0D800 !important; color:#3A3600 !important;}
 html body #screen-busqueda .crs-frecuencia.crs-frec-semanal{background:#92D050 !important; border-color:#7CB83E !important; color:#1E3A0A !important;}
+html body #screen-busqueda .crs-frecuencia.crs-frec-catorcena{background:#0F9D8A !important; border-color:#0B8473 !important; color:#FFFFFF !important;}
 html body #screen-busqueda .crs-frecuencia.crs-frec-quincenal{background:#0068B3 !important; border-color:#005A9B !important; color:#FFFFFF !important;}
 html body #screen-busqueda .crs-frecuencia.crs-frec-mensual{background:#6E2F9D !important; border-color:#5E2687 !important; color:#FFFFFF !important;}
 html body #screen-busqueda .client-row .info .name.nombre-con-ruta-arriba{white-space:normal !important; overflow:hidden !important; text-overflow:clip !important; line-height:1.2; max-height:2.4em;}
@@ -12533,6 +12535,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
             <select class="field-input field-select" id="select-frecuencia" required>
               <option value="diario">Diario</option>
               <option value="semanal">Semanal</option>
+              <option value="catorcena">Catorcenal</option>
               <option value="quincenal" selected>Quincenal</option>
               <option value="mensual">Mensual</option>
             </select>
@@ -21347,7 +21350,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       }
       else info.appendChild(filaRutaSaldo);
       filaRutaSaldo.appendChild(grupoChips);
-      const NOMBRES_FREC_TARJETA = { diario:'Diario', semanal:'Semanal', quincenal:'Quincenal', mensual:'Mensual' };
+      const NOMBRES_FREC_TARJETA = { diario:'Diario', semanal:'Semanal', catorcena:'Catorcenal', quincenal:'Quincenal', mensual:'Mensual' };
       const frecuenciasCliente = [...new Set(prestamosActivosCliente.map(p => p.frecuencia).filter(Boolean))];
       // v696: un chip por frecuencia, cada uno con su color
       frecuenciasCliente.forEach(fq => {
@@ -23060,7 +23063,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // calcularInteresDesdeCuota ni sincronizarInteresCuota — solo llena el
   // campo Interés y llama a sincronizarInteresCuota() ya existente para
   // que la Cuota deseada se recalcule con la MISMA fórmula de siempre.
-  const BLOQUE_INTERES_POR_FRECUENCIA = { diario:24, semanal:4, quincenal:2, mensual:1 };
+  const BLOQUE_INTERES_POR_FRECUENCIA = { diario:24, semanal:4, catorcena:2, quincenal:2, mensual:1 }; // v905: catorcena = cada 14 días (≈ 2 cuotas por mes)
   function calcularInteresAutomaticoPorBloque(cuotas, frecuencia, porcentajeBloque){
     const bloque = BLOQUE_INTERES_POR_FRECUENCIA[frecuencia];
     if(!bloque || !cuotas || cuotas <= 0) return null;
@@ -23117,7 +23120,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   });
 
   // ---------- Cálculo del plan de pagos ----------
-  const nombresFrecuencia = { diario:'Diario', semanal:'Semanal', quincenal:'Quincenal', mensual:'Mensual' };
+  const nombresFrecuencia = { diario:'Diario', semanal:'Semanal', catorcena:'Catorcenal', quincenal:'Quincenal', mensual:'Mensual' };
 
   // ---------------------------------------------------------------
   // MOTOR DE INTERÉS — ÚNICA fórmula de todo el sistema (2026):
@@ -23172,6 +23175,8 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
         f = new Date(p.getFullYear(), p.getMonth(), p.getDate() + i);
       }else if(frecuencia === 'semanal'){
         f = new Date(p.getFullYear(), p.getMonth(), p.getDate() + i * 7);
+      }else if(frecuencia === 'catorcena'){
+        f = new Date(p.getFullYear(), p.getMonth(), p.getDate() + i * 14);
       }else if(frecuencia === 'quincenal'){
         f = new Date(p.getFullYear(), p.getMonth(), p.getDate() + i * 15);
       }else{
@@ -23239,6 +23244,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   function sumarPasosFrecuenciaSoloInteres(base, frecuencia, pasos){
     if(frecuencia === 'diario') return new Date(base.getFullYear(), base.getMonth(), base.getDate() + pasos);
     if(frecuencia === 'semanal') return new Date(base.getFullYear(), base.getMonth(), base.getDate() + pasos * 7);
+    if(frecuencia === 'catorcena') return new Date(base.getFullYear(), base.getMonth(), base.getDate() + pasos * 14);
     if(frecuencia === 'quincenal') return new Date(base.getFullYear(), base.getMonth(), base.getDate() + pasos * 15);
     return fechaConDiaDelMes(base.getFullYear(), base.getMonth() + pasos, base.getDate()); // mensual: último día si el mes es más corto
   }
@@ -23606,6 +23612,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       const fechaCuota = new Date(fechaInicio);
       if(frecuencia === 'diario') fechaCuota.setDate(fechaInicio.getDate() + i);
       else if(frecuencia === 'semanal') fechaCuota.setDate(fechaInicio.getDate() + i * 7);
+      else if(frecuencia === 'catorcena') fechaCuota.setDate(fechaInicio.getDate() + i * 14);
       else if(frecuencia === 'quincenal') fechaCuota.setDate(fechaInicio.getDate() + i * 15);
       else fechaCuota.setMonth(fechaInicio.getMonth() + i); // mensual (por defecto)
 
@@ -23654,7 +23661,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     try{
       const datos = obtenerDatosFormularioPrestamo();
       const lista = Array.isArray(plan) ? plan : [];
-      const nombresFrec = { diario:'Diario', semanal:'Semanal', quincenal:'Quincenal', mensual:'Mensual' };
+      const nombresFrec = { diario:'Diario', semanal:'Semanal', catorcena:'Catorcenal', quincenal:'Quincenal', mensual:'Mensual' };
       const frec = (nombresFrec[datos.frecuencia] || datos.frecuencia || '--').toUpperCase();
       const fmtPct = n => (Math.round(n * 100) / 100).toLocaleString('es-CO', { maximumFractionDigits: 2 }) + '%';
       let filas;
@@ -24004,7 +24011,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // los comprobantes de pago, y el mismo patrón de bottom sheet que
   // el menú de opciones de la cuota (no se modifica ninguno de los dos).
   // ==========================================================
-  const NOMBRES_FRECUENCIA = { diario:'Diario', semanal:'Semanal', quincenal:'Quincenal', mensual:'Mensual' };
+  const NOMBRES_FRECUENCIA = { diario:'Diario', semanal:'Semanal', catorcena:'Catorcenal', quincenal:'Quincenal', mensual:'Mensual' };
   const compartirPrestamoOverlay = document.getElementById('compartir-prestamo-overlay');
   const compartirPrestamoWrap = document.getElementById('compartir-prestamo-wrap');
   let prestamoParaCompartir = null; // { prestamo, cliente }
@@ -28486,7 +28493,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     const nombreLineas = envolver(cliente.nombre || '—', '14px ' + MONO, X1 - X0);
     const mensaje = envolver('Mantenga su crédito al día y asegure su respaldo financiero cuando lo necesite.', '14px ' + MONO, W - 2 * PAD - 20);
     const plan = prestamo.plan || [];
-    const nombresFrec = { diario:'Diario', semanal:'Semanal', quincenal:'Quincenal', mensual:'Mensual' };
+    const nombresFrec = { diario:'Diario', semanal:'Semanal', catorcena:'Catorcenal', quincenal:'Quincenal', mensual:'Mensual' };
     const pesos = v => formatearPesos(v).replace('$', '$ ');
     const fFecha = prestamo.fecha ? formatearFechaCorta(new Date(prestamo.fecha + 'T00:00:00')) : '—';
     // v691: nuevas filas pedidas; el 3er elemento (true) = valor en negrita
@@ -28681,7 +28688,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       if(isNaN(d)) return '--';
       return String(d.getDate()).padStart(2,'0') + '-' + ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][d.getMonth()] + '-' + String(d.getFullYear()).slice(-2);
     };
-    const nombresFrec = { diario:'Diario', semanal:'Semanal', quincenal:'Quincenal', mensual:'Mensual' };
+    const nombresFrec = { diario:'Diario', semanal:'Semanal', catorcena:'Catorcenal', quincenal:'Quincenal', mensual:'Mensual' };
     const pct = n => (Math.round((Number(n) || 0) * 100) / 100).toLocaleString('es-CO', { maximumFractionDigits: 2 }) + '%';
     const fila = (k, v) => '<div class="np-rc-fila"><span class="np-rc-k">' + escaparHtml(k) + '</span><span class="np-rc-v">' + escaparHtml(String(v)) + '</span></div>';
     const seccion = (t, filas) => '<div class="np-rc-seccion">' + escaparHtml(t) + '</div>' + filas.map(f => fila(f[0], f[1])).join('');
@@ -34542,7 +34549,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
         proxima = `<span class="ph-prox">Próx. cuota: ${DIAS[f.getDay()]} ${f.getDate()} ${(MESES_ABREV_MIN[f.getMonth()] || '').toLowerCase()}</span>`;
       }else{ proxima = '<span class="ph-prox ph-ultima">Última cuota</span>'; }
     }catch(e){}
-    const FREC = { diario:'Diario', semanal:'Semanal', quincenal:'Quincenal', mensual:'Mensual' };
+    const FREC = { diario:'Diario', semanal:'Semanal', catorcena:'Catorcenal', quincenal:'Quincenal', mensual:'Mensual' };
     const frec = FREC[prestamo.frecuencia] || '';
     const nota = (prestamo.nota || '').toString().trim();
     let origTxt = '';
@@ -39457,6 +39464,9 @@ label[for=fDate]{color:var(--navy) !important;font-weight:800 !important;font-si
         const cli = clientesGuardados.find(c => c.id === r.c);
         if(cli){
           setTimeout(()=>{
+            // v904: se oculta TODO lo que esté debajo (Inicio, listas…). Antes quedaba Inicio visible y el detalle caía debajo en la página.
+            document.querySelectorAll('.app').forEach(el => { if(el !== det) el.style.display = 'none'; });
+            const navR = document.querySelector('.bottom-nav'); if(navR) navR.style.display = 'none';
             abrirDetalleCliente(cli);
             const y = r.y || 0; if(y){ requestAnimationFrame(()=> window.scrollTo(0, y)); setTimeout(()=> window.scrollTo(0, y), 150); }
           }, 0);
