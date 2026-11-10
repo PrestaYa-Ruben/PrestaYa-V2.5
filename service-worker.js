@@ -9,7 +9,7 @@
 // (ej. 'prestaya-v2', 'prestaya-v3'...). Eso obliga a los teléfonos
 // que ya instalaron la app a bajar los archivos nuevos en vez de
 // seguir usando la copia vieja guardada en caché.
-const CACHE_NAME = 'prestaya-v898';
+const CACHE_NAME = 'prestaya-v899';
 const CACHE_FUENTES = 'prestaya-fuentes'; // v833: tipografias de Google, se guardan para verse igual sin internet
 
 const ARCHIVOS_APP_SHELL = [
@@ -28,8 +28,12 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       // v833: cada archivo se guarda por separado; si uno falla, los demas igual quedan disponibles sin internet
       .then((cache) => Promise.all(ARCHIVOS_APP_SHELL.map((f) => cache.add(f).catch(() => {}))))
-      .then(() => self.skipWaiting())
   );
+});
+
+// v899: la versión nueva queda "en espera" hasta que la persona toque ACTUALIZAR en el aviso de la app
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.tipo === 'SALTAR_ESPERA') self.skipWaiting();
 });
 
 // ---- Activación: borra cachés de versiones anteriores ----

@@ -10845,6 +10845,18 @@ body.modo-oscuro .ph-cal-nav{ background:rgba(124,136,224,.22); color:#B9C0F5; }
 body.modo-oscuro .ph-cal-cancel{ color:#B9C0F5; }
 /* v897: sin efecto rebote/estirado al deslizar (iOS 16+): html, body y todo contenedor con scroll */
 html, body, *{ overscroll-behavior:none !important; }
+/* v899: aviso de nueva versión */
+#aviso-actualizacion{ position:fixed; left:10px; right:10px; top:calc(env(safe-area-inset-top,0px) + 8px); z-index:2147483000; display:flex; align-items:center; gap:12px;
+  padding:10px 10px 10px 12px; border-radius:18px; background:#1E2B6B; color:#fff; box-shadow:0 10px 30px rgba(10,20,60,.35); border:1px solid rgba(255,255,255,.14);
+  transform:translate3d(0,-150%,0); transition:transform .45s cubic-bezier(.32,.72,0,1); font-family:inherit; }
+#aviso-actualizacion.visible{ transform:translate3d(0,0,0); }
+#aviso-actualizacion .au-ico{ flex:0 0 auto; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.14); display:flex; align-items:center; justify-content:center; }
+#aviso-actualizacion .au-ico svg{ width:18px; height:18px; }
+#aviso-actualizacion .au-txt{ flex:1; min-width:0; display:flex; flex-direction:column; line-height:1.25; }
+#aviso-actualizacion .au-txt b{ font-size:14.5px; font-weight:700; }
+#aviso-actualizacion .au-txt span{ font-size:12px; opacity:.8; letter-spacing:-.1px; }
+#aviso-actualizacion .au-btn{ flex:0 0 auto; border:none; border-radius:12px; padding:10px 11px; background:#FFB020; color:#2A1B00; font-weight:800; font-size:13px; letter-spacing:.3px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+#aviso-actualizacion .au-btn:disabled{ opacity:.7; }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -39315,6 +39327,32 @@ label[for=fDate]{color:var(--navy) !important;font-weight:800 !important;font-si
       navigator.serviceWorker.register('service-worker.js', { updateViaCache:'none' }).then(reg=>{
         // v823: busca una version nueva cada vez que la app vuelve a primer plano
         document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) reg.update().catch(()=>{}); });
+        setInterval(()=>{ reg.update().catch(()=>{}); }, 30 * 60 * 1000);
+        // v899: aviso "Nueva actualización" cuando hay una versión nueva esperando
+        let recargando = false;
+        navigator.serviceWorker.addEventListener('controllerchange', ()=>{ if(recargando) return; recargando = true; location.reload(); });
+        const mostrarAvisoActualizacion = ()=>{
+          if(document.getElementById('aviso-actualizacion')) return;
+          const av = document.createElement('div');
+          av.id = 'aviso-actualizacion';
+          av.setAttribute('role','status');
+          av.innerHTML = '<div class="au-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.5 15a9 9 0 1 1-2.1-9.4L23 10"></path></svg></div>'
+            + '<div class="au-txt"><b>Nueva actualización</b><span>Hay una versión nueva de la app</span></div>'
+            + '<button type="button" class="au-btn">ACTUALIZAR</button>';
+          document.body.appendChild(av);
+          requestAnimationFrame(()=> requestAnimationFrame(()=> av.classList.add('visible')));
+          av.querySelector('.au-btn').addEventListener('click', ()=>{
+            const btn = av.querySelector('.au-btn'); btn.textContent = 'ACTUALIZANDO…'; btn.disabled = true;
+            const w = reg.waiting;
+            if(w){ w.postMessage({ tipo:'SALTAR_ESPERA' }); setTimeout(()=>{ if(!recargando) location.reload(); }, 4000); }
+            else location.reload();
+          });
+        };
+        if(reg.waiting && navigator.serviceWorker.controller) mostrarAvisoActualizacion();
+        reg.addEventListener('updatefound', ()=>{
+          const nuevo = reg.installing; if(!nuevo) return;
+          nuevo.addEventListener('statechange', ()=>{ if(nuevo.state === 'installed' && navigator.serviceWorker.controller) mostrarAvisoActualizacion(); });
+        });
       }).catch(err=>{
         console.warn('No se pudo registrar el service worker (normal si se abre como archivo local):', err);
       });
@@ -39352,6 +39390,48 @@ label[for=fDate]{color:var(--navy) !important;font-weight:800 !important;font-si
     sincronizarTodo();
     document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) revisarCambioDeDia(); });
     setInterval(revisarCambioDeDia, 5 * 60 * 1000);
+  })();
+
+  // ==========================================================
+  // v899: si iOS descarta la app mientras estás dentro de un cliente (parpadeo + vuelve a Inicio),
+  // al reabrirse regresa al mismo cliente (si fue hace menos de 20 min) en vez de mandarte a Inicio.
+  // ==========================================================
+  (function recordarClienteAbierto(){
+    const K = 'prestaya_nav_v1', VENTANA = 20 * 60 * 1000;
+    const det = document.getElementById('screen-detalle-cliente');
+    if(!det) return;
+    const visible = ()=> det.style.display !== 'none' && det.style.display !== '';
+    function guardar(){
+      try{
+        if(visible() && clienteEnDetalle && clienteEnDetalle.id != null)
+          localStorage.setItem(K, JSON.stringify({ t: Date.now(), c: clienteEnDetalle.id, y: Math.round(window.scrollY || 0) }));
+      }catch(e){}
+    }
+    function limpiar(){ try{ localStorage.removeItem(K); }catch(e){} }
+    new MutationObserver(()=>{
+      if(visible()){ guardar(); return; }
+      // se cierra de verdad solo si no pasó a otra pantalla apilada (ej. detalle de un crédito)
+      setTimeout(()=>{
+        const otra = Array.from(document.querySelectorAll('[id^="screen-"]')).some(el => el.id !== 'screen-inicio' && el.id !== 'screen-detalle-cliente' && el.style.display === 'block' && !['screen-clientes','screen-prestamos','screen-pagos','screen-reportes'].includes(el.id));
+        if(!otra) limpiar();
+      }, 250);
+    }).observe(det, { attributes:true, attributeFilter:['style'] });
+    let tScroll; window.addEventListener('scroll', ()=>{ if(!visible()) return; clearTimeout(tScroll); tScroll = setTimeout(guardar, 400); }, { passive:true });
+    document.addEventListener('visibilitychange', ()=>{ if(document.hidden) guardar(); });
+    window.addEventListener('pagehide', guardar);
+    // restaurar al arrancar
+    try{
+      const r = JSON.parse(localStorage.getItem(K) || 'null');
+      if(r && Date.now() - r.t < VENTANA){
+        const cli = clientesGuardados.find(c => c.id === r.c);
+        if(cli){
+          setTimeout(()=>{
+            abrirDetalleCliente(cli);
+            const y = r.y || 0; if(y){ requestAnimationFrame(()=> window.scrollTo(0, y)); setTimeout(()=> window.scrollTo(0, y), 150); }
+          }, 0);
+        }
+      }else if(r){ limpiar(); }
+    }catch(e){}
   })();
   // ==========================================================
   // NUEVO (a pedido): bloqueo del fondo. Cuando hay un modal (ventana
