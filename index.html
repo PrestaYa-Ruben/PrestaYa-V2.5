@@ -10857,6 +10857,25 @@ html, body, *{ overscroll-behavior:none !important; }
 #aviso-actualizacion .au-txt span{ font-size:12px; opacity:.8; letter-spacing:-.1px; }
 #aviso-actualizacion .au-btn{ flex:0 0 auto; border:none; border-radius:12px; padding:10px 11px; background:#FFB020; color:#2A1B00; font-weight:800; font-size:13px; letter-spacing:.3px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
 #aviso-actualizacion .au-btn:disabled{ opacity:.7; }
+/* v901: modo oscuro de Inicio — título, tarjeta Resumen del período e iconos de info */
+body.modo-oscuro .marca-animada .brand-navy{ color:#E6EBFF; }
+html body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado{ background:#1B2029 !important; border:1.5px solid rgba(255,255,255,.10) !important; }
+body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .loan-detail-grid .loan-detail-item,
+body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado > .loan-detail-item{ background:rgba(255,255,255,.05) !important; border:1px solid rgba(255,255,255,.08) !important; }
+body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .loan-detail-label{ color:#A9B3CC !important; }
+body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .loan-detail-value:not(.success){ color:#F1F4FF !important; }
+body.modo-oscuro #screen-inicio .info-tarjeta-btn{ background:rgba(120,150,255,.16); border-color:rgba(160,180,255,.35); }
+body.modo-oscuro #screen-inicio .info-tarjeta-btn svg{ stroke:#A9BDFF; color:#A9BDFF; }
+body.modo-oscuro .rp-tit-v671{ color:#E6EBFF; }
+body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .loan-detail-grid .loan-detail-item,
+body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado > .loan-detail-item{ border-radius:12px; padding:10px 12px; }
+body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado > .loan-detail-item{ margin-top:8px; display:flex; align-items:center; justify-content:space-between; }
+html body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .loan-detail-value.success{ color:#4ADE80 !important; }
+body.modo-oscuro #screen-inicio .mdp-valor.verde, body.modo-oscuro #screen-inicio .top-ruta-porcentaje{ color:#4ADE80; }
+html body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes{ background:#232C4A !important; border-color:#3A4A7C !important; }
+html body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes span{ color:#DDE6FF !important; }
+html body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes button{ background:#33406B !important; }
+html body.modo-oscuro #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes button svg{ stroke:#C9D6FF !important; }
 /* v778 Acero: paleta de la imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero{background:linear-gradient(135deg,#EEF1F1 0%,#D3D8D8 40%,#E3E7E7 62%,#C7CCCD 100%) !important; border:1px solid #A5ABAB !important; box-shadow:0 10px 20px rgba(40,50,50,.22), 0 2px 5px rgba(40,50,50,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(0,0,0,.10) !important;}
@@ -39433,6 +39452,29 @@ label[for=fDate]{color:var(--navy) !important;font-weight:800 !important;font-si
       }else if(r){ limpiar(); }
     }catch(e){}
   })();
+  // ==========================================================
+  // v900: la barra inferior nunca debe quedar oculta estando en Inicio o en una pestaña (Clientes, Préstamos, Pagos, Reportes).
+  // Si ninguna pantalla apilada (detalle, buscador, formularios…) está abierta, se vuelve a mostrar sola.
+  // ==========================================================
+  (function asegurarBarraInferior(){
+    const nav = document.querySelector('.bottom-nav');
+    if(!nav) return;
+    const TABS = ['screen-inicio','screen-clientes','screen-prestamos','screen-pagos','screen-reportes'];
+    let t = null;
+    function revisar(){
+      t = null;
+      const hayApilada = Array.from(document.querySelectorAll('[id^="screen-"]')).some(el => !TABS.includes(el.id) && getComputedStyle(el).display !== 'none');
+      if(!hayApilada && nav.style.display === 'none') nav.style.display = 'flex';
+    }
+    function programar(){ if(t === null) t = setTimeout(revisar, 160); }
+    const obs = new MutationObserver(programar);
+    document.querySelectorAll('[id^="screen-"]').forEach(el => obs.observe(el, { attributes:true, attributeFilter:['style','class'] }));
+    obs.observe(nav, { attributes:true, attributeFilter:['style'] });
+    document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) programar(); });
+    window.addEventListener('pageshow', programar);
+    setInterval(revisar, 4000);
+  })();
+
   // ==========================================================
   // NUEVO (a pedido): bloqueo del fondo. Cuando hay un modal (ventana
   // centrada o menú de opciones) o el menú lateral abierto, lo que está
