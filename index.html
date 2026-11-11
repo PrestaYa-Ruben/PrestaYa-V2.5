@@ -27898,13 +27898,13 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     { clave:'oceano', nombre:'Océano', detalle:'Cabecera con ola, datos en bloques de color, total y saldo, barra de pagado y cajón de notas' } // v908
   ];
   function obtenerDisenoTarjetaCredito(){
-    let v = 'acero'; // v882: Acero es el diseño por defecto (quien ya eligió otro lo conserva)
-    try{ v = localStorage.getItem(DISENO_TARJETA_CREDITO_KEY) || 'acero'; }catch(e){}
+    let v = 'oceano'; // v921: Océano es el diseño por defecto (quien ya eligió otro lo conserva)
+    try{ v = localStorage.getItem(DISENO_TARJETA_CREDITO_KEY) || 'oceano'; }catch(e){}
     if(v === 'premium') v = 'tabla'; // v592: Premium retirado → pasa al nuevo diseño
     if(v === 'paneles' || v === 'destacada') v = 'moderna'; // v599: retirados → pasan al diseño Moderna
     if(v === 'tabla' || v === 'moderna') v = 'acero'; // v907: Clásica y Moderna retiradas → pasan a Acero
     if(v === 'minimal') v = 'acero'; // v776: Minimal retirado → pasa al nuevo diseño Acero
-    return DISENOS_TARJETA_CREDITO.some(d => d.clave === v) ? v : 'acero';
+    return DISENOS_TARJETA_CREDITO.some(d => d.clave === v) ? v : 'oceano';
   }
   function guardarDisenoTarjetaCredito(v){
     try{ localStorage.setItem(DISENO_TARJETA_CREDITO_KEY, v); }catch(e){}
