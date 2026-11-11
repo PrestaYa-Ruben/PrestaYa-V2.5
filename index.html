@@ -28021,7 +28021,15 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     // v924: en la tarjeta Océano, tocar el globo de una cuota pendiente o vencida abre directo el pago de esa cuota
     if(!pagada && ancla.closest && ancla.closest('.ltd-oceano')){
       el.style.cursor = 'pointer';
-      el.addEventListener('click', (ev)=>{ ev.stopPropagation(); cerrarGloboCuota(); abrirAgregarAbono(prestamo, numero); });
+      // al tocar el globo se deja de cerrar por "scroll" (un temblor del dedo no debe cancelar el toque)
+      el.addEventListener('pointerdown', ()=>{ window.removeEventListener('scroll', cerrarGloboCuota, true); window.removeEventListener('resize', cerrarGloboCuota); });
+      el.addEventListener('click', (ev)=>{
+        ev.stopPropagation(); cerrarGloboCuota();
+        // v926: primero se abre el detalle del préstamo (así la ficha del cliente se oculta y el formulario de pago se ve),
+        // y encima el formulario de abono con esa cuota seleccionada
+        abrirDetallePrestamo(prestamo, 'cliente');
+        abrirAgregarAbono(prestamo, numero);
+      });
     }
     ancla.classList.add('cuota-tocada');
     requestAnimationFrame(()=> el.classList.add('visible'));
