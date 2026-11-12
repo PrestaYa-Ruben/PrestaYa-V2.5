@@ -8841,6 +8841,17 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
 #recibo-termico-overlay .rt-caja{ max-width:340px !important; }
 #recibo-termico-overlay .rt-vista{ filter:drop-shadow(0 6px 14px rgba(0,0,0,.18)) !important; }
 
+/* v976: el recibo se ve apoyado sobre una superficie (mesa gris): sombra de contacto + sombra ambiente, y una ligera inclinación */
+#imagen-comprobante-overlay, #compartir-comprobante-overlay, #compartir-historial-overlay, #compartir-cronograma-overlay{
+  background:linear-gradient(180deg,#cfcfcf,#a9a9a9) !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+#imagen-comprobante-img, #compartir-comprobante-img, #recibo-termico-overlay .rt-vista img, #compartir-historial-img, #compartir-cronograma-img{
+  box-shadow:none !important; border-radius:0 !important;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.40)) drop-shadow(0 6px 7px rgba(0,0,0,.22)) drop-shadow(0 14px 14px rgba(0,0,0,.20)); }
+#imagen-comprobante-img, #compartir-comprobante-img{ transform:rotate(-0.7deg); }
+#recibo-termico-overlay .rt-vista{ filter:none !important; padding:6px 6px 22px; }
+.img-scroll-comprobante{ box-shadow:none !important; border-radius:0 !important; padding:8px 24px 44px; box-sizing:border-box; }
+#compartir-historial-overlay .imagen-comprobante-card, #compartir-cronograma-overlay .imagen-comprobante-card{ max-width:388px; }
+
 /* ==========================================================
    v635: Moderna — cabecera verde con degradado y hoja blanca encima
    ========================================================== */
