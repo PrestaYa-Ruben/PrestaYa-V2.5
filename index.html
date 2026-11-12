@@ -28940,10 +28940,22 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       }
     }
     if(!(adicional > 1)) adicional = 0;
+    // v968: puntualidad — a tiempo si pagó antes, el día del vencimiento o 1 día después; si no, "Pago N día(s) tarde" (N = días pasados del día de gracia)
+    let msgPuntual = '';
+    if(ultimo && !prestamo.soloInteres && ultimo.aplicarA !== 'mora' && ultimo.concepto !== 'recargo_prorroga'){
+      const cs = partes.map(p => p.cuota).filter(n => n !== undefined && n !== null);
+      const cPl = cs.length ? plan.find(c => c.numero === Math.min.apply(null, cs)) : null;
+      if(cPl && estaCuotaPagada(prestamo, cPl.numero) && cPl.fechaISO && ultimo.fecha){
+        const dia = f => { const d = new Date(f); d.setHours(0, 0, 0, 0); return d; };
+        const dif = Math.round((dia(ultimo.fecha) - dia(cPl.fechaISO)) / 86400000);
+        if(dif <= 1) msgPuntual = 'Pagaste a tiempo.';
+        else msgPuntual = 'Pago ' + (dif - 1) + (dif - 1 === 1 ? ' día tarde.' : ' días tarde.');
+      }
+    }
     const cuotaRecibo = partes.length ? numeroCuotaReciboPago(prestamo, partes.map(p => p.cuota)) : pagadas;
     const ocultarSP = !!opciones.ocultarSaldoYProximo;
     const filas = [
-      ['VALOR ABONADO:', pesos(valor), 'monto'],
+      ['ABONO REALIZADO:', pesos(valor), 'monto'],
       ['CONCEPTO:', concepto],
       ...(adicional ? [['ABONO ADICIONAL:', pesos(adicional)]] : []),
       ['CLIENTE:', cliente.nombre || '—'],
@@ -28954,7 +28966,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       ...((mostrarReciboSaldo() && !ocultarSP) || creditoPagado ? [['SALDO PENDIENTE:', pesos(saldoReciboPrestamo(prestamo))]] : []),
       ...(mostrarReciboProximo() && !ocultarSP ? [['PRÓXIMO PAGO:', (() => { const px = proximaCuotaPendiente(prestamo); return px ? fechaDiaCT(px.fechaISO) : 'Crédito al día'; })()]] : [])
     ];
-    return { filas, creditoPagado, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos() };
+    return { filas, msgPuntual, creditoPagado, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos() };
   }
   // El recibo que abre "Monto aprobado": el último abono del crédito
   function generarCanvasReciboTermico(prestamo){
@@ -28976,13 +28988,16 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     let y = 0; const plano = [];
     y += 44; plano.push(['marca', y]);
     y += 30; plano.push(['titulo', y]);
-    y += 31; plano.push(['guiones', y]); // v934: más aire bajo "COMPROBANTE DE PAGO"
+    if(datos.msgPuntual){ y += 22; plano.push(['subTitulo', y, datos.msgPuntual]); y += 21; } // v969: puntualidad justo bajo "COMPROBANTE DE PAGO"
+    else y += 31;
+    plano.push(['guiones', y]); // v934: más aire bajo "COMPROBANTE DE PAGO"
     const yFilasIni = y;
     filas.forEach((f, i) => {
       const fuenteV = f[2] === 'monto' ? 'bold 21px ' + MONO : '14px ' + MONO;
       let lineasV = [f[1]];
       const wEt = ancho(f[0], '14px ' + MONO) + 8;
-      if(f[2] !== 'chico' && f[2] !== 'monto') lineasV = envolver(f[1], fuenteV, X1 - X0 - wEt);
+      if(f[2] !== 'chico' && f[2] !== 'monto' && f[2] !== 'sub') lineasV = envolver(f[1], fuenteV, X1 - X0 - wEt);
+      if(f[2] === 'sub'){ y += 19; plano.push(['sub', y, f[1]]); return; } // v968: línea pequeña bajo el valor
       y += (i === 0 ? 38 : 34); plano.push(['fila', y, f[0], lineasV[0], f[2]]);
       lineasV.slice(1).forEach(l => { y += 20; plano.push(['cont', y, l, wEt]); });
     });
@@ -29064,6 +29079,17 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
         ctx.restore();
       }
       else if(t === 'titulo'){ ctx.font = '16px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(datos.titulo || 'COMPROBANTE DE PAGO', W / 2, yy, W - 2 * PAD); }
+      else if(t === 'subTitulo'){
+        // v970: reloj pequeño a la izquierda del texto; en rojo si el pago fue tarde
+        const col = /^Pago /.test(e[2]) ? '#B71C1C' : '#1B7A2F';
+        ctx.font = '11.5px ' + MONO; const tw = ancho(e[2], ctx.font), r = 4.3, gap = 5, x0 = (W - (2 * r + gap + tw)) / 2;
+        ctx.fillStyle = col; ctx.textAlign = 'left'; ctx.fillText(e[2], x0 + 2 * r + gap, yy);
+        const cx = x0 + r, cy = yy - 3.6;
+        ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx, cy - r * 0.62); ctx.lineTo(cx, cy); ctx.lineTo(cx + r * 0.5, cy + r * 0.3); ctx.stroke();
+        ctx.restore();
+      }
       else if(t === 'fila'){
         const f14 = '14px ' + MONO;
         ctx.font = f14; ctx.fillText(e[2], X0, yy);
