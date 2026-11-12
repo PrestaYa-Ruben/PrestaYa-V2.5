@@ -24417,7 +24417,39 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // recargo de mora (pago.aplicarA === 'mora') muestran un símbolo de
   // alerta en rojo en vez del número de cuota, para diferenciarlas de un
   // abono normal. Misma paleta/estilo que generarCanvasDetalleCredito.
+  // v954: Historial y Cronograma con el diseño térmico (tabla con líneas, sin mensaje inferior).
+  // Los anteriores quedan como ...Anterior (sin uso).
+  function datosCabeceraTabla(prestamo, cliente, titulo){
+    const cli = cliente || clientesGuardados.find(c => c.id === prestamo.clienteId) || {};
+    const num = numeroCreditoCliente(prestamo);
+    return {
+      titulo, creditoPagado: false, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos(),
+      filas: [
+        ['CLIENTE:', cli.nombre || '—'],
+        ['MONTO DEL PRÉSTAMO:', formatearPesos(prestamo.valor), 'monto'],
+        ['FECHA DEL PRÉSTAMO:', prestamo.fecha ? fechaDiaCT(prestamo.fecha + 'T00:00:00') : '—'],
+        ...(num ? [['CRÉDITO:', '# ' + num]] : []),
+        ['N.° DE CUOTAS:', prestamo.soloInteres ? 'Sin plazo' : String(prestamo.cuotas || (prestamo.plan || []).length || 0)]
+      ]
+    };
+  }
   function generarCanvasHistorialCredito(prestamo, cliente){
+    const d = datosCabeceraTabla(prestamo, cliente, 'HISTORIAL DE PAGOS');
+    const pagos = pagosDe(prestamo).slice().sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+    const nombreCorto = p => {
+      if(p.aplicarA === 'mora' || p.concepto === 'recargo_prorroga') return 'Prórroga';
+      if(p.concepto === 'pago_interes') return 'Pago interés';
+      return ({ capital_interes:'Int. y Capital', solo_interes:'Solo interés', solo_capital:'Solo capital', abono:'Abono', capital:'Abono a capital' })[p.aplicarA] || 'Int. y Capital';
+    };
+    d.tabla = {
+      encabezados: ['#', 'FECHA', 'ABONADO A', 'ABONADO'],
+      anchos: [0.095, 0.285, 0.365, 0.255],
+      alinea: ['centro', 'centro', 'centro', 'der'],
+      filas: pagos.length ? pagos.map(p => [p.aplicarA === 'mora' ? '—' : (p.cuota != null ? p.cuota : '—'), fechaDiaCT(p.fecha).replace(/ (\d{2})(\d{2})$/, ' $2'), nombreCorto(p), formatearPesos(p.monto)]) : [['—', '—', 'Sin pagos aún', '—']]
+    };
+    return dibujarComprobanteTermico(d);
+  }
+  function generarCanvasHistorialCreditoAnterior(prestamo, cliente){
     // CAMBIO: mismo ajuste que generarCanvasDetalleCredito — margen=0 y sin
     // fondo de página, el canvas queda del tamaño exacto de la tarjeta.
     const margen = 0;
@@ -24643,6 +24675,26 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // encabezado verde, bloque de datos del crédito, tabla con bordes:
   // Cuota / Vence / Valor / Estado.
   function generarCanvasCronograma(prestamo, cliente){
+    const d = datosCabeceraTabla(prestamo, cliente, 'CRONOGRAMA DE CUOTAS');
+    const plan = prestamo.plan || [];
+    const rojas = [];
+    d.tabla = {
+      encabezados: ['CUOTA', 'VENCE', 'VALOR', 'ESTADO'],
+      anchos: [0.19, 0.30, 0.255, 0.255],
+      alinea: ['centro', 'centro', 'centro', 'centro'],
+      filas: plan.map((c, i) => {
+        const pagada = estaCuotaPagada(prestamo, c.numero);
+        const vencida = !pagada && cuotaVencida(prestamo, c);
+        const parcial = !pagada && !vencida && sumaAbonadaCuota(prestamo, c.numero) > 0;
+        rojas[i] = vencida ? { 3: true } : null;
+        return [c.numero, fechaDiaCT(c.fechaISO).replace(/ (\d{2})(\d{2})$/, ' $2'), formatearPesos(c.total), pagada ? 'Pagada' : (vencida ? 'Vencida' : (parcial ? 'Parcial' : 'Pendiente'))];
+      })
+    };
+    d.tabla.rojas = rojas;
+    if(!d.tabla.filas.length) d.tabla.filas = [['—', '—', '—', '—']];
+    return dibujarComprobanteTermico(d);
+  }
+  function generarCanvasCronogramaAnterior(prestamo, cliente){
     // CAMBIO: mismo ajuste que los demás — margen=0 y sin fondo de página,
     // el canvas queda del tamaño exacto de la tarjeta.
     const margen = 0;
@@ -24815,7 +24867,31 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // generarCanvasComprobante.
   // REDISEÑADO — "Resumen de Crédito": sin Interés ni Total a pagar, datos
   // restantes en 2 columnas (más compacto), y nuevo pie de página.
+  // v953: el recibo del crédito nuevo y el del contador de créditos usan el diseño térmico.
+  // El anterior queda como generarCanvasResumenPrestamoAnterior (sin uso).
   function generarCanvasResumenPrestamo(prestamo, cliente){
+    const cli = cliente || clientesGuardados.find(c => c.id === prestamo.clienteId) || {};
+    const fFecha = prestamo.fecha ? fechaDiaCT(prestamo.fecha + 'T00:00:00') : '—';
+    const doc = cli.documento ? String(cli.documento).trim() : '';
+    const docTxt = doc ? 'CC ' + (/^[\d.\s]+$/.test(doc) ? formatearMiles(doc.replace(/\D/g, '')) : doc) : '';
+    const num = numeroCreditoCliente(prestamo);
+    const filas = [
+      ['VALOR PRESTADO:', formatearPesos(prestamo.valor), 'monto'],
+      ['CLIENTE:', cli.nombre || '—'],
+      ...(docTxt ? [['IDENTIFICACIÓN:', docTxt]] : []),
+      ...(num ? [['CRÉDITO:', '# ' + num]] : []),
+      ['FECHA DEL CRÉDITO:', fFecha],
+      ['N.° DE CUOTAS:', prestamo.soloInteres ? 'Sin plazo' : String(prestamo.cuotas || (prestamo.plan || []).length || 0)],
+      ['VALOR POR CUOTA:', formatearPesos(cuotaRealPrestamo(prestamo))],
+      ['FRECUENCIA DE PAGO:', (NOMBRES_FRECUENCIA[prestamo.frecuencia] || prestamo.frecuencia || '—').toUpperCase()]
+    ];
+    return dibujarComprobanteTermico({
+      filas, creditoPagado: prestamo.estado === 'finalizado', codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos(),
+      titulo: 'COMPROBANTE DE CRÉDITO',
+      pie: ['¡Gracias por tu confianza!', 'Pagar a tiempo es tu mejor respaldo.', 'Mantenerte al día te abre las puertas', 'a mejores oportunidades y nuevos créditos.']
+    });
+  }
+  function generarCanvasResumenPrestamoAnterior(prestamo, cliente){
     // REDISEÑADO: pedido explícito del usuario — este comprobante ahora
     // usa EXACTAMENTE el mismo diseño que el Comprobante de Pago
     // (generarCanvasComprobante): mismo encabezado con logo circular "P",
@@ -28783,11 +28859,65 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     vals.push(suma % 103); vals.push(106);
     return vals.map(v => C128_PAT[v]).join(''); // anchos alternando barra/espacio
   }
+  // v946: Code 128 subconjunto C (dos dígitos por símbolo): la mitad de símbolos → menos barras para el mismo número
+  function code128C(digitos){
+    let d = String(digitos); if(d.length % 2) d = '0' + d;
+    const vals = [105]; let suma = 105;
+    for(let i = 0; i < d.length; i += 2){ const v = parseInt(d.substr(i, 2), 10); vals.push(v); suma += v * (i / 2 + 1); }
+    vals.push(suma % 103); vals.push(106);
+    return vals.map(v => C128_PAT[v]).join('');
+  }
 
-  // v929: el recibo que abre "Monto aprobado" ahora es el "Comprobante de pago" de la imagen de referencia.
-  // La versión anterior (Resumen del crédito) se conserva como generarCanvasReciboTermicoAnterior.
+  // v951: el diseño "Comprobante de pago" (papel térmico) es ahora el de TODOS los recibos para compartir.
+  // dibujarComprobanteTermico() solo dibuja; las funciones de abajo arman los datos de cada recibo.
+  const MES_CT = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  function fechaDiaCT(f){ const d = new Date(f); return isNaN(d) ? '—' : String(d.getDate()).padStart(2, '0') + ' ' + MES_CT[d.getMonth()] + ' ' + d.getFullYear(); }
+  // Arma los datos del comprobante a partir de un préstamo y los pagos (partes) de UN abono.
+  // partes: pagos del abono (varias si se repartió entre cuotas); null → el último abono del crédito.
+  function datosComprobanteDePagos(prestamo, partes, opciones){
+    opciones = opciones || {};
+    const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId) || (typeof clienteEnDetalle !== 'undefined' && clienteEnDetalle) || {};
+    const plan = prestamo.plan || [];
+    const todos = (prestamo.pagos || []).filter(p => p && p.fecha);
+    if(!partes || !partes.length){
+      const ult = todos.slice().sort((a, b) => String(a.fecha).localeCompare(String(b.fecha))).pop();
+      partes = ult ? (ult.lote ? todos.filter(p => p.lote === ult.lote) : [ult]) : [];
+    }
+    const ultimo = partes[partes.length - 1];
+    const pagadas = plan.filter(c => estaCuotaPagada(prestamo, c.numero)).length;
+    const totalCuotas = plan.length || prestamo.cuotas || 0;
+    const creditoPagado = !prestamo.soloInteres && (prestamo.estado === 'finalizado' || (totalCuotas > 0 && pagadas >= totalCuotas));
+    const pesos = v => formatearPesos(v);
+    const valor = partes.reduce((a, p) => a + (Number(p.monto) || 0), 0);
+    let concepto = '—';
+    if(ultimo){
+      const nC = partes.map(p => p.cuota).filter(n => n !== undefined && n !== null);
+      const txtC = nC.length ? (Math.min.apply(null, nC) === Math.max.apply(null, nC) ? 'la cuota ' + nC[0] : 'las cuotas ' + Math.min.apply(null, nC) + '-' + Math.max.apply(null, nC)) : '';
+      concepto = ultimo.aplicarA === 'mora' || ultimo.concepto === 'recargo_prorroga' ? 'Recargo por prórroga'
+        : (ultimo.aplicarA === 'abono' && txtC ? 'Abono a ' + txtC
+        : (nombresAplicarA[ultimo.aplicarA] || 'Interés y Capital'));
+    }
+    const cuotaRecibo = partes.length ? numeroCuotaReciboPago(prestamo, partes.map(p => p.cuota)) : pagadas;
+    const ocultarSP = !!opciones.ocultarSaldoYProximo;
+    const filas = [
+      ['VALOR ABONADO:', pesos(valor), 'monto'],
+      ['CONCEPTO:', concepto],
+      ['CLIENTE:', cliente.nombre || '—'],
+      ...(numeroCreditoCliente(prestamo) ? [['CRÉDITO:', '# ' + numeroCreditoCliente(prestamo)]] : []),
+      ['FECHA DE ABONO:', ultimo ? fechaDiaCT(ultimo.fecha) : '—'],
+      ['CUOTA:', prestamo.soloInteres ? 'Sin plazo' : (cuotaRecibo + ' de ' + totalCuotas)], // v953: el número de la cuota de ESE recibo (cuota 1 → 1 de 4); si el abono no completó ninguna, las cuotas pagadas
+      ...(obtenerReciboMostrarMetodo() ? [['MÉTODO DE PAGO:', ultimo ? ({ efectivo:'Efectivo', transferencia:'Transferencia' }[ultimo.metodoPago] || ultimo.metodoPago || 'Efectivo') : '—']] : []),
+      ...((mostrarReciboSaldo() && !ocultarSP) || creditoPagado ? [['SALDO PENDIENTE:', pesos(saldoReciboPrestamo(prestamo))]] : []),
+      ...(mostrarReciboProximo() && !ocultarSP ? [['PRÓXIMO PAGO:', (() => { const px = proximaCuotaPendiente(prestamo); return px ? fechaDiaCT(px.fechaISO) : 'Crédito al día'; })()]] : [])
+    ];
+    return { filas, creditoPagado, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos() };
+  }
+  // El recibo que abre "Monto aprobado": el último abono del crédito
   function generarCanvasReciboTermico(prestamo){
-    const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId) || {};
+    return dibujarComprobanteTermico(datosComprobanteDePagos(prestamo, null));
+  }
+  function dibujarComprobanteTermico(datos){
+    const filas = datos.filas, creditoPagado = !!datos.creditoPagado;
     const W = 340, PAD = 22, X0 = PAD, X1 = W - PAD;
     const MONO = "'Courier Prime', 'Courier New', Courier, monospace";
     const TINTA = '#1d1d1d', PAPEL = '#F7F6F2';
@@ -28798,40 +28928,12 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       pal.forEach(w => { const t = l ? l + ' ' + w : w; if(medir.measureText(t).width > maxW && l){ lineas.push(l); l = w; } else l = t; });
       if(l) lineas.push(l); return lineas;
     };
-    const MES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    const fDia = f => { const d = new Date(f); return isNaN(d) ? '—' : String(d.getDate()).padStart(2, '0') + ' ' + MES[d.getMonth()] + ' ' + d.getFullYear(); };
-    const plan = prestamo.plan || [];
-    const pagos = (prestamo.pagos || []).filter(p => p && p.fecha);
-    const ultimo = pagos.slice().sort((a, b) => String(a.fecha).localeCompare(String(b.fecha))).pop();
-    const pagadas = plan.filter(c => estaCuotaPagada(prestamo, c.numero)).length;
-    const totalCuotas = plan.length || prestamo.cuotas || 0;
-    const pesos = v => formatearPesos(v);
-    // v933: valor y concepto del ÚLTIMO abono (si fue repartido en varias cuotas se suman las partes del mismo lote)
-    const partesUlt = ultimo ? (ultimo.lote ? pagos.filter(p => p.lote === ultimo.lote) : [ultimo]) : [];
-    const valorUlt = partesUlt.reduce((a, p) => a + (Number(p.monto) || 0), 0);
-    let conceptoUlt = '—';
-    if(ultimo){
-      const nCuotasUlt = partesUlt.map(p => p.cuota).filter(n => n !== undefined && n !== null);
-      const textoCuotasUlt = nCuotasUlt.length ? (Math.min.apply(null, nCuotasUlt) === Math.max.apply(null, nCuotasUlt) ? 'la cuota ' + nCuotasUlt[0] : 'las cuotas ' + Math.min.apply(null, nCuotasUlt) + '-' + Math.max.apply(null, nCuotasUlt)) : '';
-      conceptoUlt = ultimo.aplicarA === 'mora' || ultimo.concepto === 'recargo_prorroga' ? 'Recargo por prórroga'
-        : (ultimo.aplicarA === 'abono' && textoCuotasUlt ? 'Abono a ' + textoCuotasUlt // v944
-        : (nombresAplicarA[ultimo.aplicarA] || 'Interés y Capital'));
-    }
-    // [etiqueta, valor, tipo] tipo: 'monto' (grande y negrita) | 'chico' (valor pequeño) | undefined
-    const filas = [
-      ['VALOR ABONADO:', pesos(valorUlt), 'monto'],
-      ['CONCEPTO:', conceptoUlt],
-      ['CLIENTE:', cliente.nombre || '—'],
-      ...(numeroCreditoCliente(prestamo) ? [['CRÉDITO:', '# ' + numeroCreditoCliente(prestamo)]] : []), // v931: solo si el cliente tiene más de un crédito
-      ['FECHA DE ABONO:', ultimo ? fDia(ultimo.fecha) : '—'],
-      ['CUOTA:', prestamo.soloInteres ? 'Sin plazo' : (pagadas + ' de ' + totalCuotas)],
-      ['MÉTODO DE PAGO:', ultimo ? ({ efectivo:'Efectivo', transferencia:'Transferencia' }[ultimo.metodoPago] || ultimo.metodoPago || 'Efectivo') : '—'] // v932: método real del último abono; fila "Estado" retirada (código conservado en el comentario de v929)
-    ];
-    const pie = ['¡Gracias por tu pago!', 'Tu puntualidad es tu mejor respaldo.', 'Mantenerte al día te abre las puertas', 'a mejores oportunidades y nuevos créditos.'];
+    const pie = datos.pie || ['¡Gracias por tu pago!', 'Tu puntualidad es tu mejor respaldo.', 'Mantenerte al día te abre las puertas', 'a mejores oportunidades y nuevos créditos.'];
     let y = 0; const plano = [];
     y += 44; plano.push(['marca', y]);
     y += 30; plano.push(['titulo', y]);
     y += 31; plano.push(['guiones', y]); // v934: más aire bajo "COMPROBANTE DE PAGO"
+    const yFilasIni = y;
     filas.forEach((f, i) => {
       const fuenteV = f[2] === 'monto' ? 'bold 21px ' + MONO : '14px ' + MONO;
       let lineasV = [f[1]];
@@ -28840,14 +28942,22 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       y += (i === 0 ? 38 : 34); plano.push(['fila', y, f[0], lineasV[0], f[2]]);
       lineasV.slice(1).forEach(l => { y += 20; plano.push(['cont', y, l, wEt]); });
     });
-    y += 24; plano.push(['guiones', y]);
-    pie.forEach((l, i) => { y += (i === 0 ? 30 : 19); plano.push(['pie', y, l]); });
+    // v948: sello diagonal "CRÉDITO PAGADO" cuando el crédito ya está terminado
+    if(creditoPagado) plano.push(['sello', (yFilasIni + y) / 2 + 6]);
+    if(datos.tabla){ // v954: tabla con líneas (Historial y Cronograma) en vez del mensaje del pie
+      y += 22; plano.push(['tabla', y]); y += 22 * (datos.tabla.filas.length + 1);
+      y += 26; plano.push(['guiones', y]);
+    }else{
+      y += 24; plano.push(['guiones', y]);
+      pie.forEach((l, i) => { y += (i === 0 ? 30 : 19); plano.push(['pie', y, l]); });
+    }
     // v930: código de barras Code 128 (PY + código del crédito + fecha del último abono o de hoy)
-    const fBar = ultimo ? String(ultimo.fecha).slice(0, 10).replace(/-/g, '') : new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    const datoBarras = String(prestamo.codigo || prestamo.id).replace(/[^A-Za-z0-9]/g, '').replace(/^PRE/i, ''); // v931: número más corto (~50%)
-    const patBarras = code128B(datoBarras);
-    y += 26; plano.push(['barras', y]);
-    y += 56 + 16; plano.push(['codtxt', y, datoBarras]);
+    const datoBarras = String(datos.codigo || '').replace(/[^A-Za-z0-9]/g, '').replace(/^PRE/i, '') || '0'; // v931: número más corto (~50%)
+    const patBarras = /^\d+$/.test(datoBarras) ? code128C(datoBarras) : code128B(datoBarras); // v946: solo dígitos → subconjunto C (menos barras)
+    if(!datos.sinCodigo){ // v951: con "Ocultar el ID del crédito" activo no se imprime el código de barras
+      y += 26; plano.push(['barras', y]);
+      y += 56 + 16; plano.push(['codtxt', y, datoBarras]); // v946: altura original (56)
+    }
     const H = Math.ceil(y + 30);
 
     const canvas = document.createElement('canvas');
@@ -28895,8 +29005,18 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
         anchos.forEach(w => { if(barra) ctx.fillRect(x, yy, w * m, 56); x += w * m; barra = !barra; });
       }
       else if(t === 'codtxt'){ ctx.font = '12px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(e[2].split('').join(' '), W / 2, yy, W - 2 * PAD); }
-      else if(t === 'marca'){ ctx.font = 'bold 34px ' + MONO; ctx.textAlign = 'center'; ctx.fillText('PrestaYa', W / 2, yy, W - 2 * PAD); }
-      else if(t === 'titulo'){ ctx.font = '16px ' + MONO; ctx.textAlign = 'center'; ctx.fillText('COMPROBANTE DE PAGO', W / 2, yy, W - 2 * PAD); }
+      else if(t === 'marca'){
+        ctx.font = 'bold 34px ' + MONO; ctx.textAlign = 'center'; ctx.fillText('PrestaYa', W / 2, yy, W - 2 * PAD);
+        // v945: tinta desgastada: falla de impresión (manchitas del color del papel, rayas y zonas más tenues)
+        const wM = ancho('PrestaYa', 'bold 34px ' + MONO), x0m = W / 2 - wM / 2;
+        let sm = 31337; const azm = () => { sm = (sm * 1664525 + 1013904223) >>> 0; return sm / 4294967296; };
+        ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
+        for(let k = 0; k < 190; k++){ const r = 0.35 + azm() * 0.75; ctx.fillStyle = 'rgba(247,246,242,' + (0.5 + azm() * 0.4).toFixed(2) + ')'; ctx.beginPath(); ctx.arc(x0m + azm() * wM, yy - 25 + azm() * 29, r, 0, 6.2832); ctx.fill(); }
+        for(let k = 0; k < 8; k++){ const xs = x0m + azm() * wM, ys = yy - 25 + azm() * 29; ctx.strokeStyle = 'rgba(247,246,242,0.7)'; ctx.lineWidth = 0.5 + azm() * 0.7; ctx.beginPath(); ctx.moveTo(xs, ys); ctx.lineTo(xs + (azm() - 0.5) * 9, ys + (azm() - 0.5) * 3); ctx.stroke(); }
+        for(let k = 0; k < 3; k++){ ctx.fillStyle = 'rgba(247,246,242,0.16)'; ctx.fillRect(x0m + azm() * wM * 0.8, yy - 26, 10 + azm() * 26, 30); }
+        ctx.restore();
+      }
+      else if(t === 'titulo'){ ctx.font = '16px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(datos.titulo || 'COMPROBANTE DE PAGO', W / 2, yy, W - 2 * PAD); }
       else if(t === 'fila'){
         const f14 = '14px ' + MONO;
         ctx.font = f14; ctx.fillText(e[2], X0, yy);
@@ -28917,8 +29037,8 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
             ctx.fillText(e[3][i], xd, yy); ctx.restore();
           }
         }
-        if(e[2] === 'CUOTA:' && e[3] !== '—' && e[3] !== 'Sin plazo'){ // v935: círculo rojo a mano alzada alrededor de "3 de 8"
-          const wT = ancho(e[3], fv), cx = xv + wT / 2 + 3, cy = yy - 4.5, rx = wT / 2 + 9, ry = 15;
+        if((e[2] === 'CUOTA:' && !creditoPagado && e[3] !== '—' && e[3] !== 'Sin plazo') || (e[2] === 'SALDO PENDIENTE:' && creditoPagado)){ // v935 · v949: con el crédito terminado el círculo pasa al saldo: círculo rojo a mano alzada alrededor de "3 de 8"
+          const wT = ancho(e[3], fv), cx = xv + wT / 2 + 3, cy = yy - 4.5, rx = Math.max(wT / 2 + 9, 22), ry = 15;
           let sem = 4242; const az = () => { sem = (sem * 1664525 + 1013904223) >>> 0; return sem / 4294967296; };
           ctx.save(); ctx.shadowColor = 'rgba(190,20,20,0.35)'; ctx.shadowBlur = 0.8; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
           [[-0.55, 1.0, 0.0, 2.1, 1.9, 'rgba(205,30,30,0.9)'], [0.35, 1.06, 0.22, 2.0, 1.4, 'rgba(215,45,45,0.55)']].forEach(([ini, esc, rot, vueltas, grosor, color]) => {
@@ -28934,6 +29054,37 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
           });
           ctx.restore();
         }
+      }
+      else if(t === 'tabla'){
+        const T = datos.tabla, rh = 22, nF = T.filas.length + 1, top = yy, bot = top + rh * nF, anchoT = X1 - X0;
+        const colX = [X0]; T.anchos.forEach(w => colX.push(colX[colX.length - 1] + w * anchoT));
+        ctx.save(); ctx.strokeStyle = 'rgba(29,29,29,0.85)'; ctx.shadowBlur = 0.4; ctx.lineWidth = 1;
+        ctx.strokeRect(X0, top, anchoT, bot - top);
+        for(let i = 1; i < nF; i++){ ctx.lineWidth = i === 1 ? 1.6 : 0.6; ctx.beginPath(); ctx.moveTo(X0, top + rh * i); ctx.lineTo(X1, top + rh * i); ctx.stroke(); }
+        ctx.lineWidth = 0.8; for(let k = 1; k < colX.length - 1; k++){ ctx.beginPath(); ctx.moveTo(colX[k], top); ctx.lineTo(colX[k], bot); ctx.stroke(); }
+        ctx.restore();
+        const celda = (txt, k, yb, fuente, color) => {
+          const w = colX[k + 1] - colX[k] - 8; ctx.font = fuente; ctx.fillStyle = color || TINTA;
+          if(T.alinea[k] === 'der'){ ctx.textAlign = 'right'; ctx.fillText(txt, colX[k + 1] - 5, yb, w); }
+          else { ctx.textAlign = 'center'; ctx.fillText(txt, (colX[k] + colX[k + 1]) / 2, yb, w); }
+        };
+        T.encabezados.forEach((h, k) => { ctx.textAlign = 'center'; ctx.font = 'bold 10px ' + MONO; ctx.fillStyle = TINTA; ctx.fillText(h, (colX[k] + colX[k + 1]) / 2, top + 15, colX[k + 1] - colX[k] - 6); });
+        T.filas.forEach((fila, i) => fila.forEach((txt, k) => celda(String(txt), k, top + rh * (i + 1) + 15, '10.5px ' + MONO, T.rojas && T.rojas[i] && T.rojas[i][k] ? '#B71C1C' : null)));
+        ctx.textAlign = 'left'; ctx.fillStyle = TINTA;
+      }
+      else if(t === 'sello'){
+        const cxs = W - PAD - 62, tw = 124, th = 66, COL = '200,30,30'; // v950: tinta roja
+        ctx.save(); ctx.translate(cxs, yy + 26); ctx.rotate(-0.21); // v950: más abajo, entre las filas de texto corto ctx.shadowBlur = 0.6; ctx.shadowColor = 'rgba(' + COL + ',0.5)';
+        ctx.strokeStyle = 'rgba(' + COL + ',0.82)'; ctx.fillStyle = 'rgba(' + COL + ',0.82)';
+        ctx.lineWidth = 3; ctx.strokeRect(-tw / 2, -th / 2, tw, th);
+        ctx.lineWidth = 1; ctx.strokeRect(-tw / 2 + 4, -th / 2 + 4, tw - 8, th - 8);
+        ctx.font = 'bold 22px ' + MONO; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('CRÉDITO', 0, -13, tw - 12); ctx.fillText('PAGADO', 0, 13, tw - 12);
+        ctx.lineWidth = 0.9; ctx.lineJoin = 'round'; ctx.strokeText('CRÉDITO', 0, -13, tw - 12); ctx.strokeText('PAGADO', 0, 13, tw - 12); // v950: más peso en el texto // v949: dos líneas
+        // tinta de sello irregular: huecos del color del papel
+        let sx = 2718; const azs = () => { sx = (sx * 1664525 + 1013904223) >>> 0; return sx / 4294967296; };
+        ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
+        for(let k = 0; k < 150; k++){ ctx.fillStyle = 'rgba(247,246,242,' + (0.55 + azs() * 0.4).toFixed(2) + ')'; ctx.beginPath(); ctx.arc((azs() - 0.5) * (tw + 6), (azs() - 0.5) * (th + 6), 0.4 + azs() * 0.9, 0, 6.2832); ctx.fill(); }
+        ctx.restore(); ctx.textBaseline = 'alphabetic';
       }
       else if(t === 'cont'){ ctx.font = '14px ' + MONO; ctx.fillText(e[2], X0 + e[3], yy); }
       else if(t === 'pie'){
@@ -31812,7 +31963,12 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // usar una fuente que ya esté cargada cuando se dibuja.
   try{ if(document.fonts && document.fonts.load) document.fonts.load("800 68px PrestaYaMonto", "$0123456789."); }catch(err){}
 
+  // v951: el comprobante de abono usa el nuevo diseño térmico; el anterior queda como generarCanvasComprobanteAnterior (sin uso)
   function generarCanvasComprobante(prestamo, cuota, pagoEspecifico, opciones){
+    const partes = Array.isArray(pagoEspecifico) ? pagoEspecifico : (pagoEspecifico ? [pagoEspecifico] : pagosDeCuota(prestamo, cuota.numero));
+    return dibujarComprobanteTermico(datosComprobanteDePagos(prestamo, partes, opciones));
+  }
+  function generarCanvasComprobanteAnterior(prestamo, cuota, pagoEspecifico, opciones){
     // CORREGIDO: cuando un solo abono se reparte en cascada entre VARIAS
     // cuotas (ej. el cliente paga 2 cuotas juntas en un solo pago), se
     // crea un registro de pago por cada cuota cubierta. Antes esta función
@@ -32810,7 +32966,11 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // pie. Reutiliza los mismos interruptores de "qué incluir" que ya
   // usa la pantalla en vivo (mostrarReciboSaldo, obtenerReciboMostrarMetodo,
   // etc.), así que lo que ves en pantalla es lo que se comparte.
+  // v951: la imagen del detalle del pago usa el nuevo diseño térmico (el anterior queda como ...Anterior)
   function generarCanvasDetallePagoPantalla(prestamo, cuota, pago){
+    return dibujarComprobanteTermico(datosComprobanteDePagos(prestamo, [pago]));
+  }
+  function generarCanvasDetallePagoPantallaAnterior(prestamo, cuota, pago){
     const anchoCard = 430;
     const padX = 20;
     const FUENTE = '"Helvetica Neue", Arial, sans-serif';
@@ -35604,7 +35764,13 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // El canvas nunca se rellena por completo: solo se pinta la tarjeta redondeada
   // (con sombra) sobre un fondo que se deja transparente, así el PNG final tiene
   // esquinas exteriores transparentes de verdad, no un recorte simulado con CSS.
+  // v951: el recibo del cliente usa el nuevo diseño cuando ya tiene al menos un abono (si no, se conserva el anterior)
   function generarCanvasReciboCliente(cliente){
+    const ult = obtenerUltimoPagoCliente(cliente.id);
+    if(ult) return dibujarComprobanteTermico(datosComprobanteDePagos(ult.prestamo, [ult.pago]));
+    return generarCanvasReciboClienteAnterior(cliente);
+  }
+  function generarCanvasReciboClienteAnterior(cliente){
     const ultimo = obtenerUltimoPagoCliente(cliente.id);
     const proxima = proximaCuotaClienteInfo(cliente.id);
     const prestamoRef = (ultimo && ultimo.prestamo) || (proxima && proxima.prestamo) ||
