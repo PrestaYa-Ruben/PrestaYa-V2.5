@@ -28774,7 +28774,179 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   // ==========================================================
   // v691: interés de mora por cuota que se informa en el recibo (dato fijo, la app no lo guarda por crédito)
   const RECIBO_INTERES_MORA_PCT = 10;
+  // v930: código de barras Code 128 (subconjunto B) real, para el comprobante
+  const C128_PAT = ["212222","222122","222221","121223","121322","131222","122213","122312","132212","221213","221312","231212","112232","122132","122231","113222","123122","123221","223211","221132","221231","213212","223112","312131","311222","321122","321221","312212","322112","322211","212123","212321","232121","111323","131123","131321","112313","132113","132311","211313","231113","231311","112133","112331","132131","113123","113321","133121","313121","211331","231131","213113","213311","213131","311123","311321","331121","312113","312311","332111","314111","221411","431111","111224","111422","121124","121421","141122","141221","112214","112412","122114","122411","142112","142211","241211","221114","413111","241112","134111","111242","121142","121241","114212","124112","124211","411212","421112","421211","212141","214121","412121","111143","111341","131141","114113","114311","411113","411311","113141","114131","311141","411131","211412","211214","211232","2331112"];
+  function code128B(texto){
+    const t = String(texto).replace(/[^\x20-\x7E]/g, '');
+    const vals = [104]; let suma = 104;
+    for(let i = 0; i < t.length; i++){ const v = t.charCodeAt(i) - 32; vals.push(v); suma += v * (i + 1); }
+    vals.push(suma % 103); vals.push(106);
+    return vals.map(v => C128_PAT[v]).join(''); // anchos alternando barra/espacio
+  }
+
+  // v929: el recibo que abre "Monto aprobado" ahora es el "Comprobante de pago" de la imagen de referencia.
+  // La versión anterior (Resumen del crédito) se conserva como generarCanvasReciboTermicoAnterior.
   function generarCanvasReciboTermico(prestamo){
+    const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId) || {};
+    const W = 340, PAD = 22, X0 = PAD, X1 = W - PAD;
+    const MONO = "'Courier Prime', 'Courier New', Courier, monospace";
+    const TINTA = '#1d1d1d', PAPEL = '#F7F6F2';
+    const medir = document.createElement('canvas').getContext('2d');
+    const ancho = (t, f) => { medir.font = f; return medir.measureText(t).width; };
+    const envolver = (txt, fuente, maxW) => {
+      medir.font = fuente; const pal = String(txt).split(/\s+/); const lineas = []; let l = '';
+      pal.forEach(w => { const t = l ? l + ' ' + w : w; if(medir.measureText(t).width > maxW && l){ lineas.push(l); l = w; } else l = t; });
+      if(l) lineas.push(l); return lineas;
+    };
+    const MES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const fDia = f => { const d = new Date(f); return isNaN(d) ? '—' : String(d.getDate()).padStart(2, '0') + ' ' + MES[d.getMonth()] + ' ' + d.getFullYear(); };
+    const plan = prestamo.plan || [];
+    const pagos = (prestamo.pagos || []).filter(p => p && p.fecha);
+    const ultimo = pagos.slice().sort((a, b) => String(a.fecha).localeCompare(String(b.fecha))).pop();
+    const pagadas = plan.filter(c => estaCuotaPagada(prestamo, c.numero)).length;
+    const totalCuotas = plan.length || prestamo.cuotas || 0;
+    const pesos = v => formatearPesos(v);
+    // v933: valor y concepto del ÚLTIMO abono (si fue repartido en varias cuotas se suman las partes del mismo lote)
+    const partesUlt = ultimo ? (ultimo.lote ? pagos.filter(p => p.lote === ultimo.lote) : [ultimo]) : [];
+    const valorUlt = partesUlt.reduce((a, p) => a + (Number(p.monto) || 0), 0);
+    let conceptoUlt = '—';
+    if(ultimo){
+      const nCuotasUlt = partesUlt.map(p => p.cuota).filter(n => n !== undefined && n !== null);
+      const textoCuotasUlt = nCuotasUlt.length ? (Math.min.apply(null, nCuotasUlt) === Math.max.apply(null, nCuotasUlt) ? 'la cuota ' + nCuotasUlt[0] : 'las cuotas ' + Math.min.apply(null, nCuotasUlt) + '-' + Math.max.apply(null, nCuotasUlt)) : '';
+      conceptoUlt = ultimo.aplicarA === 'mora' || ultimo.concepto === 'recargo_prorroga' ? 'Recargo por prórroga'
+        : (ultimo.aplicarA === 'abono' && textoCuotasUlt ? 'Abono a ' + textoCuotasUlt // v944
+        : (nombresAplicarA[ultimo.aplicarA] || 'Interés y Capital'));
+    }
+    // [etiqueta, valor, tipo] tipo: 'monto' (grande y negrita) | 'chico' (valor pequeño) | undefined
+    const filas = [
+      ['VALOR ABONADO:', pesos(valorUlt), 'monto'],
+      ['CONCEPTO:', conceptoUlt],
+      ['CLIENTE:', cliente.nombre || '—'],
+      ...(numeroCreditoCliente(prestamo) ? [['CRÉDITO:', '# ' + numeroCreditoCliente(prestamo)]] : []), // v931: solo si el cliente tiene más de un crédito
+      ['FECHA DE ABONO:', ultimo ? fDia(ultimo.fecha) : '—'],
+      ['CUOTA:', prestamo.soloInteres ? 'Sin plazo' : (pagadas + ' de ' + totalCuotas)],
+      ['MÉTODO DE PAGO:', ultimo ? ({ efectivo:'Efectivo', transferencia:'Transferencia' }[ultimo.metodoPago] || ultimo.metodoPago || 'Efectivo') : '—'] // v932: método real del último abono; fila "Estado" retirada (código conservado en el comentario de v929)
+    ];
+    const pie = ['¡Gracias por tu pago!', 'Tu puntualidad es tu mejor respaldo.', 'Mantenerte al día te abre las puertas', 'a mejores oportunidades y nuevos créditos.'];
+    let y = 0; const plano = [];
+    y += 44; plano.push(['marca', y]);
+    y += 30; plano.push(['titulo', y]);
+    y += 31; plano.push(['guiones', y]); // v934: más aire bajo "COMPROBANTE DE PAGO"
+    filas.forEach((f, i) => {
+      const fuenteV = f[2] === 'monto' ? 'bold 21px ' + MONO : '14px ' + MONO;
+      let lineasV = [f[1]];
+      const wEt = ancho(f[0], '14px ' + MONO) + 8;
+      if(f[2] !== 'chico' && f[2] !== 'monto') lineasV = envolver(f[1], fuenteV, X1 - X0 - wEt);
+      y += (i === 0 ? 38 : 34); plano.push(['fila', y, f[0], lineasV[0], f[2]]);
+      lineasV.slice(1).forEach(l => { y += 20; plano.push(['cont', y, l, wEt]); });
+    });
+    y += 24; plano.push(['guiones', y]);
+    pie.forEach((l, i) => { y += (i === 0 ? 30 : 19); plano.push(['pie', y, l]); });
+    // v930: código de barras Code 128 (PY + código del crédito + fecha del último abono o de hoy)
+    const fBar = ultimo ? String(ultimo.fecha).slice(0, 10).replace(/-/g, '') : new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const datoBarras = String(prestamo.codigo || prestamo.id).replace(/[^A-Za-z0-9]/g, '').replace(/^PRE/i, ''); // v931: número más corto (~50%)
+    const patBarras = code128B(datoBarras);
+    y += 26; plano.push(['barras', y]);
+    y += 56 + 16; plano.push(['codtxt', y, datoBarras]);
+    const H = Math.ceil(y + 30);
+
+    const canvas = document.createElement('canvas');
+    const ctx = prepararCanvasNitido(canvas, W, H, 3);
+    ctx.fillStyle = PAPEL; ctx.fillRect(0, 0, W, H);
+    // v930: papel térmico real: tono cálido, grano, sombreado de bordes y un doblez suave
+    (function(){
+      let sem = 77123;
+      const az = () => { sem = (sem * 1664525 + 1013904223) >>> 0; return sem / 4294967296; };
+      const g = ctx.createLinearGradient(0, 0, W, 0);
+      g.addColorStop(0, 'rgba(0,0,0,0.07)'); g.addColorStop(0.07, 'rgba(0,0,0,0)'); g.addColorStop(0.93, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.07)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      for(let i = 0; i < Math.round(W * H / 14); i++){ ctx.fillStyle = 'rgba(' + (az() < 0.5 ? '0,0,0' : '255,255,255') + ',' + (0.015 + az() * 0.03).toFixed(3) + ')'; ctx.fillRect(az() * W, az() * H, 0.8, 0.8); }
+      for(let yy = 0; yy < H; yy += 2.5){ if(az() < 0.25){ ctx.fillStyle = 'rgba(0,0,0,0.015)'; ctx.fillRect(0, yy, W, 1); } }
+    })();
+    // v942: marca de agua "PrestaYa" en diagonal, muy tenue
+    const MOSTRAR_MARCA_AGUA = false; // v943: retirada a pedido (código conservado; poner true para volver a mostrarla)
+    if(MOSTRAR_MARCA_AGUA){
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.clip();
+    ctx.translate(W / 2, H / 2); ctx.rotate(-Math.PI / 6.5);
+    ctx.font = 'bold 40px ' + MONO; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = 'rgba(0,0,0,0.038)';
+    const paso = 120, nFilasMa = Math.ceil(H / paso) + 2;
+    for(let r = -nFilasMa; r <= nFilasMa; r++){ for(let c = -2; c <= 2; c++){ ctx.fillText('PrestaYa', c * 260 + (r % 2 ? 130 : 0), r * 105); } }
+    ctx.restore();
+    }
+    ctx.save(); ctx.globalCompositeOperation = 'destination-out'; ctx.fillStyle = '#000'; // v938: relleno opaco para que el recorte sí borre (con el de la textura quedaba casi invisible)
+    const DZ = 5, DH = 4; // v940 (antes 3.8/3.1); v938: dentado muy fino, como el corte de una impresora de recibos
+    ctx.beginPath(); ctx.moveTo(0, 0);
+    for(let x = 0; x <= W; x += DZ){ ctx.lineTo(x + DZ / 2, DH); ctx.lineTo(x + DZ, 0); }
+    ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(0, H);
+    for(let x = 0; x <= W; x += DZ){ ctx.lineTo(x + DZ / 2, H - DH); ctx.lineTo(x + DZ, H); }
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+    const guiones = yy => { ctx.fillStyle = TINTA; const L = 6, G = 3, n = Math.floor((W - 2 * PAD + G) / (L + G)), x0 = (W - (n * L + (n - 1) * G)) / 2; for(let i = 0; i < n; i++) ctx.fillRect(x0 + i * (L + G), yy - 1.2, L, 2.4); };
+    // v930: "tinta" térmica: leve sangrado alrededor de cada trazo
+    ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = 0.7;
+    plano.forEach(e => {
+      const [t, yy] = e;
+      ctx.fillStyle = TINTA; ctx.textAlign = 'left';
+      if(t === 'guiones') guiones(yy);
+      else if(t === 'barras'){
+        const anchos = patBarras.split('').map(Number), mod = anchos.reduce((a, b) => a + b, 0);
+        const m = Math.min(2, (W - 2 * PAD - 20) / mod), total = mod * m; let x = (W - total) / 2, barra = true;
+        anchos.forEach(w => { if(barra) ctx.fillRect(x, yy, w * m, 56); x += w * m; barra = !barra; });
+      }
+      else if(t === 'codtxt'){ ctx.font = '12px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(e[2].split('').join(' '), W / 2, yy, W - 2 * PAD); }
+      else if(t === 'marca'){ ctx.font = 'bold 34px ' + MONO; ctx.textAlign = 'center'; ctx.fillText('PrestaYa', W / 2, yy, W - 2 * PAD); }
+      else if(t === 'titulo'){ ctx.font = '16px ' + MONO; ctx.textAlign = 'center'; ctx.fillText('COMPROBANTE DE PAGO', W / 2, yy, W - 2 * PAD); }
+      else if(t === 'fila'){
+        const f14 = '14px ' + MONO;
+        ctx.font = f14; ctx.fillText(e[2], X0, yy);
+        const xv = X0 + ancho(e[2], f14) + 8, disp = X1 - xv;
+        let fv = e[4] === 'monto' ? 'bold 21px ' + MONO : (e[4] === 'chico' ? '11.5px ' + MONO : f14);
+        let px = parseFloat(fv.match(/([\d.]+)px/)[1]);
+        while(ancho(e[3], fv) > disp && px > 9){ px -= 0.5; fv = fv.replace(/[\d.]+px/, px + 'px'); }
+        ctx.font = fv;
+        if(e[4] === 'monto'){ // v934: cifras más juntas (interletraje negativo, dibujado letra a letra por compatibilidad con Safari)
+          const JUNTAR = 1.3; let xc = xv;
+          for(const ch of e[3]){ ctx.fillText(ch, xc, yy); xc += ctx.measureText(ch).width - JUNTAR; }
+        } else ctx.fillText(e[3], xv, yy);
+        if(e[2] === 'CUOTA:' && /\d/.test(e[3])){ // v936: los dos números de la cuota, más negros y marcados
+          for(let i = 0; i < e[3].length; i++){
+            if(!/\d/.test(e[3][i])) continue;
+            const xd = xv + ancho(e[3].slice(0, i), fv);
+            ctx.save(); ctx.font = fv; ctx.fillStyle = '#000'; ctx.shadowBlur = 0.9; ctx.shadowColor = 'rgba(0,0,0,0.6)'; // v937: negro intenso pero sin negrita
+            ctx.fillText(e[3][i], xd, yy); ctx.restore();
+          }
+        }
+        if(e[2] === 'CUOTA:' && e[3] !== '—' && e[3] !== 'Sin plazo'){ // v935: círculo rojo a mano alzada alrededor de "3 de 8"
+          const wT = ancho(e[3], fv), cx = xv + wT / 2 + 3, cy = yy - 4.5, rx = wT / 2 + 9, ry = 15;
+          let sem = 4242; const az = () => { sem = (sem * 1664525 + 1013904223) >>> 0; return sem / 4294967296; };
+          ctx.save(); ctx.shadowColor = 'rgba(190,20,20,0.35)'; ctx.shadowBlur = 0.8; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+          [[-0.55, 1.0, 0.0, 2.1, 1.9, 'rgba(205,30,30,0.9)'], [0.35, 1.06, 0.22, 2.0, 1.4, 'rgba(215,45,45,0.55)']].forEach(([ini, esc, rot, vueltas, grosor, color]) => {
+            const fase = az() * 6, N = 90; ctx.beginPath(); ctx.strokeStyle = color;
+            for(let i = 0; i <= N; i++){
+              const f = i / N, a = ini + f * Math.PI * vueltas;
+              const r = esc * (1 + 0.045 * Math.sin(a * 3 + fase) + 0.03 * Math.sin(a * 5 + fase * 2)) * (1 + f * 0.07); // la espiral se abre un poco: no cierra perfecto
+              const x = cx + Math.cos(a + rot * 0.2) * rx * r + (az() - 0.5) * 0.5;
+              const y = cy + Math.sin(a) * ry * r + Math.cos(a + rot) * 1.5 + (az() - 0.5) * 0.5;
+              if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.lineWidth = grosor; ctx.stroke();
+          });
+          ctx.restore();
+        }
+      }
+      else if(t === 'cont'){ ctx.font = '14px ' + MONO; ctx.fillText(e[2], X0 + e[3], yy); }
+      else if(t === 'pie'){
+        let px = 12.5; let fv = px + 'px ' + MONO;
+        while(ancho(e[2], fv) > W - 20 && px > 9){ px -= 0.25; fv = px + 'px ' + MONO; }
+        ctx.font = fv; ctx.textAlign = 'center'; ctx.fillText(e[2], W / 2, yy);
+      }
+    });
+    ctx.textAlign = 'left';
+    return canvas;
+  }
+
+  function generarCanvasReciboTermicoAnterior(prestamo){
     // v628: ajustado a las especificaciones — ticket de 380px, papel #f3f3f3,
     // dientes de 8px cada 26px arriba y abajo, fuente Courier Prime.
     const cliente = clientesGuardados.find(c => c.id === prestamo.clienteId) || {};
