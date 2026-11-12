@@ -24463,7 +24463,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       if(esExtra(p)) return 'Abono adicional';
       if(p.aplicarA === 'mora' || p.concepto === 'recargo_prorroga') return 'Prórroga';
       if(p.concepto === 'pago_interes') return 'Pago interés';
-      return ({ capital_interes:'Int. y Capital', solo_interes:'Solo interés', solo_capital:'Solo capital', abono:'Abono', capital:'Abono a capital' })[p.aplicarA] || 'Int. y Capital';
+      return ({ capital_interes:'Cap. e Interés', solo_interes:'Solo interés', solo_capital:'Solo capital', abono:'Abono', capital:'Abono a capital' })[p.aplicarA] || 'Cap. e Interés';
     };
     d.tabla = {
       encabezados: ['#', 'FECHA', 'ABONADO A', 'ABONADO'],
@@ -28937,7 +28937,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       const txtC = nC.length ? (Math.min.apply(null, nC) === Math.max.apply(null, nC) ? 'la cuota ' + nC[0] : 'las cuotas ' + Math.min.apply(null, nC) + '-' + Math.max.apply(null, nC)) : '';
       concepto = ultimo.aplicarA === 'mora' || ultimo.concepto === 'recargo_prorroga' ? 'Recargo por prórroga'
         : (ultimo.aplicarA === 'abono' && txtC ? 'Abono a ' + txtC
-        : (nombresAplicarA[ultimo.aplicarA] || 'Interés y Capital'));
+        : (ultimo.aplicarA === 'capital_interes' ? 'Capital e Interés' : (nombresAplicarA[ultimo.aplicarA] || 'Capital e Interés'))); // v978
     }
     // v960: ADICIONAL = lo que el cliente pagó por encima de lo que debía de la cuota (p. ej. cuota $150.000, paga $200.000 → $50.000)
     let adicional = 0;
@@ -28967,7 +28967,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     const ocultarSP = !!opciones.ocultarSaldoYProximo;
     const filas = [
       ['ABONO REALIZADO:', pesos(valor), 'monto'],
-      ['CONCEPTO:', concepto],
+      ['ABONADO A:', concepto],
       ...(adicional ? [['ABONO ADICIONAL:', pesos(adicional)]] : []),
       ['CLIENTE:', cliente.nombre || '—'],
       ...(numeroCreditoCliente(prestamo) ? [['CRÉDITO:', '# ' + numeroCreditoCliente(prestamo)]] : []),
@@ -29143,7 +29143,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
           }
         }
         if((e[2] === 'CUOTA:' && !creditoPagado && e[3] !== '—' && e[3] !== 'Sin plazo') || (e[2] === 'SALDO PENDIENTE:' && creditoPagado)){ // v935 · v949: con el crédito terminado el círculo pasa al saldo: círculo rojo a mano alzada alrededor de "3 de 8"
-          const wT = ancho(e[3], fv), cx = xv + wT / 2 + 3, cy = yy - 4.5, rx = Math.max(wT / 2 + 9, 22), ry = 15;
+          const wT = ancho(e[3], fv), cx = xv + wT / 2 + 3, cy = yy - 4.5, rx = Math.max(wT / 2 + 10, 22), ry = 13; // v979: más ovalado
           let sem = 4242; const az = () => { sem = (sem * 1664525 + 1013904223) >>> 0; return sem / 4294967296; };
           ctx.save(); ctx.shadowColor = 'rgba(190,20,20,0.35)'; ctx.shadowBlur = 0.8; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
           [[-0.55, 1.0, 0.0, 2.1, 1.9, 'rgba(205,30,30,0.9)'], [0.35, 1.06, 0.22, 2.0, 1.4, 'rgba(215,45,45,0.55)']].forEach(([ini, esc, rot, vueltas, grosor, color]) => {
