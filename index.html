@@ -28972,7 +28972,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       pal.forEach(w => { const t = l ? l + ' ' + w : w; if(medir.measureText(t).width > maxW && l){ lineas.push(l); l = w; } else l = t; });
       if(l) lineas.push(l); return lineas;
     };
-    const pie = datos.pie || ['¡Gracias por tu pago!', 'Tu puntualidad es tu mejor respaldo.', 'Mantenerte al día te abre las puertas', 'a mejores oportunidades y nuevos créditos.'];
+    const pie = datos.pie || ['¡Gracias por su abono!']; // v965: mensaje corto + escudo
     let y = 0; const plano = [];
     y += 44; plano.push(['marca', y]);
     y += 30; plano.push(['titulo', y]);
@@ -28993,7 +28993,8 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       y += 26; plano.push(['guiones', y]);
     }else{
       y += 24; plano.push(['guiones', y]);
-      pie.forEach((l, i) => { y += (i === 0 ? 30 : 19); plano.push(['pie', y, l]); });
+      if(datos.pie) pie.forEach((l, i) => { y += (i === 0 ? 28 : 16); plano.push(['pie', y, l]); });
+      else { y += 34; plano.push(['pieEscudo', y, pie[0]]); y += 4; } // v966: texto más grande con el escudo a su izquierda
     }
     // v930: código de barras Code 128 (PY + código del crédito + fecha del último abono o de hoy)
     // v955: el código de barras SIEMPRE se imprime. Con "Ocultar el ID del crédito" activo no lleva el ID: lleva un número
@@ -29133,8 +29134,15 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
         ctx.restore(); ctx.textBaseline = 'alphabetic';
       }
       else if(t === 'cont'){ ctx.font = '14px ' + MONO; ctx.fillText(e[2], X0 + e[3], yy); }
+      else if(t === 'pieEscudo'){
+        // v967: "¡Gracias por su abono!" grande y más negro (sin escudo)
+        ctx.font = '15px ' + MONO; ctx.textAlign = 'center';
+        ctx.fillStyle = '#000'; ctx.strokeStyle = '#000'; ctx.lineWidth = 0.45;
+        ctx.fillText(e[2], W / 2, yy + 1); ctx.strokeText(e[2], W / 2, yy + 1);
+        ctx.textAlign = 'left';
+      }
       else if(t === 'pie'){
-        let px = 12.5; let fv = px + 'px ' + MONO;
+        let px = 10.5; let fv = px + 'px ' + MONO;
         while(ancho(e[2], fv) > W - 20 && px > 9){ px -= 0.25; fv = px + 'px ' + MONO; }
         ctx.font = fv; ctx.textAlign = 'center'; ctx.fillText(e[2], W / 2, yy);
       }
