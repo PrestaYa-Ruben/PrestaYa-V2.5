@@ -11120,6 +11120,12 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 .dtp.dtp-acero .dtp-acero-res > i:nth-child(2){ background:#C7E2CC; }
 .dtp.dtp-acero .dtp-acero-res > i:nth-child(3){ background:#E5D4AF; }
 .dtp.dtp-acero .dtp-nota{ background:#1E4C88; border-color:#0E2E5C; }
+
+/* v985: fila "Debe" sin icono; se integra "Ha pagado" + valor */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag-t{ flex:1 1 auto; font-size:min(17.5px, 4vw) !important; overflow:visible !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-ha-pagado{ flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-start; line-height:1.1; padding:0 8px; border-right:1.5px solid #BFE6CF; white-space:nowrap; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-hp-k{ font-size:min(11px, 2.6vw); font-weight:700; color:#6B7486; text-transform:uppercase; letter-spacing:.2px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-hp-v{ font-size:min(15.5px, 3.6vw); font-weight:800; color:#1E2B6B; }
 </style>
 
 </head>
@@ -28299,10 +28305,10 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
         </div>
         <div class="lto-tot">
           <div class="lto-tot-a">${IO.cartera}<div class="lto-tx"><span class="lto-k">Total a pagar</span><b class="lto-v">${formatearPesos(totalPagar)}</b></div></div>
-          <div class="lto-tot-b"><span class="lto-k">Pagado</span><b class="lto-v">${formatearPesos(abonado)}</b></div>
+          <div class="lto-tot-b"><span class="lto-k">Valor cuotas</span><b class="lto-v">${formatearPesos(cuotaRealPrestamo(prestamo))}</b></div>
         </div>
         <div class="lto-pag" role="button" aria-label="Ver resumen del crédito">
-          <div class="lto-pag-fila"><span class="lto-chk">${IO.billete}</span><div class="lto-pag-t">Debe: <span class="lto-pag-v">${formatearPesos(saldo)}</span></div><div class="lto-pct" title="Cuotas pagadas">${pagadas}/${plan.length}</div></div>
+          <div class="lto-pag-fila"><div class="lto-pag-t">Debe: <span class="lto-pag-v">${formatearPesos(saldo)}</span></div><div class="lto-ha-pagado"><span class="lto-hp-k">Ha pagado</span><b class="lto-hp-v">${formatearPesos(abonado)}</b></div><div class="lto-pct" title="Cuotas pagadas">${pagadas}/${plan.length}</div></div>
           ${segsO}
         </div>
         <div class="lto-notas">
