@@ -29005,7 +29005,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     if(creditoPagado) plano.push(['sello', (yFilasIni + y) / 2 + 6]);
     if(datos.tabla){ // v954: tabla con líneas (Historial y Cronograma) en vez del mensaje del pie
       y += 22; plano.push(['tabla', y]); y += 22 * (datos.tabla.filas.length + 1);
-      y += 26; plano.push(['guiones', y]);
+      y += 26; // v973: sin línea punteada inferior (se conserva el mismo espacio)
     }else{
       y += 24; plano.push(['guiones', y]);
       if(datos.pie) pie.forEach((l, i) => { y += (i === 0 ? 28 : 16); plano.push(['pie', y, l]); });
@@ -29131,10 +29131,10 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       else if(t === 'tabla'){
         const T = datos.tabla, rh = 22, nF = T.filas.length + 1, top = yy, bot = top + rh * nF, anchoT = X1 - X0;
         const colX = [X0]; T.anchos.forEach(w => colX.push(colX[colX.length - 1] + w * anchoT));
-        ctx.save(); ctx.strokeStyle = 'rgba(29,29,29,0.85)'; ctx.shadowBlur = 0.4; ctx.lineWidth = 1;
+        ctx.save(); ctx.strokeStyle = 'rgba(29,29,29,0.22)'; ctx.shadowBlur = 0; ctx.lineWidth = 0.8; // v975: líneas apenas visibles
         ctx.strokeRect(X0, top, anchoT, bot - top);
-        for(let i = 1; i < nF; i++){ ctx.lineWidth = i === 1 ? 1.6 : 0.6; ctx.beginPath(); ctx.moveTo(X0, top + rh * i); ctx.lineTo(X1, top + rh * i); ctx.stroke(); }
-        ctx.lineWidth = 0.8; for(let k = 1; k < colX.length - 1; k++){ ctx.beginPath(); ctx.moveTo(colX[k], top); ctx.lineTo(colX[k], bot); ctx.stroke(); }
+        for(let i = 1; i < nF; i++){ ctx.lineWidth = i === 1 ? 1 : 0.6; ctx.beginPath(); ctx.moveTo(X0, top + rh * i); ctx.lineTo(X1, top + rh * i); ctx.stroke(); }
+        ctx.lineWidth = 0.6; for(let k = 1; k < colX.length - 1; k++){ ctx.beginPath(); ctx.moveTo(colX[k], top); ctx.lineTo(colX[k], bot); ctx.stroke(); }
         ctx.restore();
         const celda = (txt, k, yb, fuente, color) => {
           const w = colX[k + 1] - colX[k] - 8; ctx.font = fuente; ctx.fillStyle = color || TINTA;
