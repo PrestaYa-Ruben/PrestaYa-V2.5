@@ -28952,12 +28952,14 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       pie.forEach((l, i) => { y += (i === 0 ? 30 : 19); plano.push(['pie', y, l]); });
     }
     // v930: código de barras Code 128 (PY + código del crédito + fecha del último abono o de hoy)
-    const datoBarras = String(datos.codigo || '').replace(/[^A-Za-z0-9]/g, '').replace(/^PRE/i, '') || '0'; // v931: número más corto (~50%)
+    // v955: el código de barras SIEMPRE se imprime. Con "Ocultar el ID del crédito" activo no lleva el ID: lleva un número
+    // neutro (fecha y hora de generación), así el ID no se revela pero el recibo no queda sin código.
+    const ahoraCT = new Date(), p2CT = n => String(n).padStart(2, '0');
+    const codigoNeutro = String(ahoraCT.getFullYear()).slice(2) + p2CT(ahoraCT.getMonth() + 1) + p2CT(ahoraCT.getDate()) + p2CT(ahoraCT.getHours()) + p2CT(ahoraCT.getMinutes());
+    const datoBarras = datos.sinCodigo ? codigoNeutro : (String(datos.codigo || '').replace(/[^A-Za-z0-9]/g, '').replace(/^PRE/i, '') || '0'); // v931: número más corto (~50%)
     const patBarras = /^\d+$/.test(datoBarras) ? code128C(datoBarras) : code128B(datoBarras); // v946: solo dígitos → subconjunto C (menos barras)
-    if(!datos.sinCodigo){ // v951: con "Ocultar el ID del crédito" activo no se imprime el código de barras
-      y += 26; plano.push(['barras', y]);
-      y += 56 + 16; plano.push(['codtxt', y, datoBarras]); // v946: altura original (56)
-    }
+    y += 26; plano.push(['barras', y]);
+    y += 56 + 16; plano.push(['codtxt', y, datoBarras]); // v946: altura original (56)
     const H = Math.ceil(y + 30);
 
     const canvas = document.createElement('canvas');
