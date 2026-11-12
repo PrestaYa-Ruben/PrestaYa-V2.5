@@ -8841,16 +8841,6 @@ html body #screen-detalle-cliente .detail-stats .card.stat-card-sm .label{ font-
 #recibo-termico-overlay .rt-caja{ max-width:340px !important; }
 #recibo-termico-overlay .rt-vista{ filter:drop-shadow(0 6px 14px rgba(0,0,0,.18)) !important; }
 
-/* v976: el recibo se ve apoyado sobre una superficie (mesa gris): sombra de contacto + sombra ambiente, y una ligera inclinación */
-#imagen-comprobante-overlay, #compartir-comprobante-overlay, #compartir-historial-overlay, #compartir-cronograma-overlay{
-  background:linear-gradient(180deg,#cfcfcf,#a9a9a9) !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
-#imagen-comprobante-img, #compartir-comprobante-img, #recibo-termico-overlay .rt-vista img, #compartir-historial-img, #compartir-cronograma-img{
-  box-shadow:0 10px 30px rgba(0,0,0,.22) !important; border-radius:18px !important;
-  filter:none; }
-#recibo-termico-overlay .rt-vista{ filter:none !important; padding:0; }
-#recibo-termico-overlay .rt-caja{ max-width:372px !important; }
-.img-scroll-comprobante{ box-shadow:none !important; border-radius:18px !important; padding:0; box-sizing:border-box; }
-#compartir-historial-overlay .imagen-comprobante-card, #compartir-cronograma-overlay .imagen-comprobante-card, #imagen-comprobante-overlay .imagen-comprobante-card, #compartir-comprobante-overlay .imagen-comprobante-card{ max-width:372px; }
 
 /* ==========================================================
    v635: Moderna — cabecera verde con degradado y hoja blanca encima
@@ -28983,28 +28973,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   function generarCanvasReciboTermico(prestamo){
     return dibujarComprobanteTermico(datosComprobanteDePagos(prestamo, null));
   }
-  // v977: el recibo (también el que se comparte con el cliente) va apoyado sobre una superficie gris: sombra de contacto, sombra suave y ligera inclinación
   function dibujarComprobanteTermico(datos){
-    return ponerReciboSobreSuperficie(dibujarComprobanteTermicoBase(datos));
-  }
-  function ponerReciboSobreSuperficie(base){
-    try{
-      const esc = base.width / 340, M = 26 * esc, w = base.width + 2 * M, h = base.height + 2 * M;
-      const c = document.createElement('canvas'); c.width = Math.round(w); c.height = Math.round(h);
-      const ctx = c.getContext('2d');
-      const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#d2d2d2'); g.addColorStop(1, '#adadad');
-      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-      const v = ctx.createRadialGradient(w / 2, h * 0.42, Math.min(w, h) * 0.25, w / 2, h / 2, Math.max(w, h) * 0.75);
-      v.addColorStop(0, 'rgba(255,255,255,0.10)'); v.addColorStop(1, 'rgba(0,0,0,0.10)');
-      ctx.fillStyle = v; ctx.fillRect(0, 0, w, h);
-      ctx.save(); ctx.translate(w / 2, h / 2); ctx.rotate(-0.012); ctx.translate(-base.width / 2, -base.height / 2);
-      ctx.shadowColor = 'rgba(0,0,0,0.26)'; ctx.shadowBlur = 16 * esc; ctx.shadowOffsetX = 2 * esc; ctx.shadowOffsetY = 11 * esc; ctx.drawImage(base, 0, 0);
-      ctx.shadowColor = 'rgba(0,0,0,0.38)'; ctx.shadowBlur = 2.5 * esc; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 1.2 * esc; ctx.drawImage(base, 0, 0);
-      ctx.restore();
-      return c;
-    }catch(e){ return base; }
-  }
-  function dibujarComprobanteTermicoBase(datos){
     const filas = datos.filas, creditoPagado = !!datos.creditoPagado;
     const W = 340, PAD = 22, X0 = PAD, X1 = W - PAD;
     const MONO = "'Courier Prime', 'Courier New', Courier, monospace";
