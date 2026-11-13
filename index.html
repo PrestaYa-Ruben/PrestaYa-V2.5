@@ -11344,6 +11344,20 @@ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .
 /* v1025: contador de créditos — solo el número, sin círculo */
 html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-creditos{ background:none !important; border:none !important; box-shadow:none !important; min-width:0; height:auto; padding:0 2px; border-radius:0; color:#3A4152; font-size:17px; font-weight:800; }
 body.modo-oscuro html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-creditos{ color:#E7EAF3; }
+
+/* v1026: Inicio — rediseño visual (solo estilos): sin patrones en las 4 tarjetas, números más grandes, mejor contraste del período, más aire bajo los filtros, radios unificados */
+html body #screen-inicio #dashboard-tarjetas-inicio .stat-card::before,
+html body #screen-inicio #dashboard-tarjetas-inicio .stat-card::after{ display:none !important; content:none !important; background:none !important; background-image:none !important; }
+html body #screen-inicio #dashboard-tarjetas-inicio .stat-card .value{ font-size:clamp(26px,6.9vw,30px) !important; font-weight:800 !important; letter-spacing:-.6px; line-height:1.1; }
+html body #screen-inicio .periodo-seleccionado .periodo-seleccionado-label{ color:#3B4660 !important; font-size:11.5px !important; font-weight:700 !important; letter-spacing:.7px; }
+html body #screen-inicio .periodo-y-buscador{ margin-top:16px !important; }
+html body #screen-inicio .periodo-seleccionado{ border-radius:16px !important; }
+html body #screen-inicio .card,
+html body #screen-inicio .stat-card{ border-radius:16px !important; }
+html body #screen-inicio .loan-detail-item,
+html body #screen-inicio .comparativo-ganancias-resumen,
+html body #screen-inicio .mdp-total,
+html body #screen-inicio .top-rutas-total{ border-radius:12px !important; }
 </style>
 
 </head>
