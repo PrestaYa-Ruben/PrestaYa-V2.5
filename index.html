@@ -11420,6 +11420,38 @@ html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias .compa
 html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado{ background:linear-gradient(160deg,#DFF4F5 0%,#B8E0E6 100%) !important; border:1.5px solid #8BCAD3 !important; }
 html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes{ background:#C5E6EB !important; border-color:#96CDD6 !important; }
 html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes button svg{ stroke:#2C7C8A !important; }
+
+/* v1043: Notas (tarjeta de crédito en cliente) con el efecto incrustado de la barra de Ganancias; contenedores de Resumen del período más claros */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas{ background:rgba(30,45,80,0.08) !important; background-image:none !important; border:none !important; box-shadow:inset 0 1.5px 3px rgba(20,30,60,0.18), 0 1px 0 rgba(255,255,255,0.8) !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .loan-detail-item{ background:rgba(255,255,255,0.55) !important; box-shadow:inset 0 1.5px 3px rgba(20,60,70,0.16), 0 1px 0 rgba(255,255,255,0.8) !important; }
+
+/* v1044: tarjeta de crédito en cliente — borde del contenedor de barras de progreso con menos intensidad */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag{ border-color:#A9BAD3 !important; }
+
+/* v1045: más contraste en "Próxima cuota / Cuota vencida" (tarjeta de cliente) y bloques de cuotas un poco más redondeados */
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-top{ font-weight:600; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-ambar .crn-tile-top{ color:#141000 !important; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja .crn-tile-top{ color:#3A0A07 !important; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-ambar .crn-warn{ fill:#A86A12; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-gris .crn-t-etq{ color:#0B1220 !important; font-weight:600; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-top b{ font-weight:800; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg{ border-radius:11px !important; }
+
+/* v1046: nota del cliente (si tiene) justo debajo del nombre, en letra pequeña y con buen contraste */
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-nota{ margin:-4px 0 7px; color:#374151; font-size:12px; font-weight:500; line-height:1.3; font-style:italic; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; overflow-wrap:anywhere; }
+body.modo-oscuro html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-nota{ color:#C9D1E0; }
+
+/* v1047: Resumen del período — azul marino suave */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado{ background:linear-gradient(160deg,#E2E9F4 0%,#B9C9E2 100%) !important; border:1.5px solid #8EA4C9 !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes{ background:#CBD7EA !important; border-color:#9CB0D2 !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes button svg{ stroke:#1A365D !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .loan-detail-item{ box-shadow:inset 0 1.5px 3px rgba(26,54,93,0.18), 0 1px 0 rgba(255,255,255,0.8) !important; }
+
+/* v1048: Resumen del período — dorado ámbar suave */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado{ background:linear-gradient(160deg,#FCF3DA 0%,#F3DFA6 100%) !important; border:1.5px solid #E3C573 !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes{ background:#F6E7BC !important; border-color:#E0C479 !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes button svg{ stroke:#8A5A0B !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .loan-detail-item{ box-shadow:inset 0 1.5px 3px rgba(120,80,10,0.17), 0 1px 0 rgba(255,255,255,0.8) !important; }
 </style>
 
 </head>
@@ -21610,7 +21642,8 @@ html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .gr
     const inhab = cliente.estadoCliente === 'inhabilitado' ? '<span class="chip-inhabilitado">INHABILITADO</span>' : '';
     const contador = prestamosActivos.length ? '<span class="crn-creditos" aria-label="' + prestamosActivos.length + ' préstamo(s) activo(s)">' + prestamosActivos.length + '</span>' : '';
     const cab = '<div class="crn-fila-sup">' + (ruta ? '<div class="crn-ruta">' + ICO_PERSONA + '<span>' + esc(ruta) + '</span><i class="crn-punto"></i></div>' : '<div></div>') + contador + '</div>'
-      + '<div class="crn-nombre">' + esc(cliente.nombre) + inhab + '</div>';
+      + '<div class="crn-nombre">' + esc(cliente.nombre) + inhab + '</div>'
+      + ((cliente.notas || '').trim() ? '<div class="crn-nota">' + esc((cliente.notas || '').trim()) + '</div>' : '');
     if(!prestamosActivos.length){
       bloque.innerHTML = '<div class="crn-izq">' + cab
         + '<div class="crn-linea">Teléfono: ' + esc(cliente.telefono || '—') + '</div>'
