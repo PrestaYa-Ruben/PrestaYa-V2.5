@@ -11270,6 +11270,80 @@ html body #screen-detalle-prestamo #pagos-lista .pago-item:not(.recargo):not(.ab
 
 /* v1021: Clientes — se quita el diseño de ondas de las tarjetas de cliente (el patrón de puntos de mora se conserva) */
 html body #screen-clientes .client-row.client-row-cliente:not(.client-row-mora)::before{ display:none !important; background-image:none !important; }
+
+/* v1022: Clientes — rediseño de la tarjeta de cliente según imagen de referencia (mismos datos; lo anterior queda oculto) */
+.crn{ display:none; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente{ display:block !important; position:relative; padding:14px 12px 13px 14px !important; margin-bottom:12px; background:#fff !important; background-image:none !important; border:1.5px solid #A4ABBC !important; border-radius:18px !important; box-shadow:0 6px 16px rgba(60,72,104,.13), 0 1px 3px rgba(60,72,104,.08) !important; min-height:0; overflow:hidden; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente::before,html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente::after{ display:none !important; content:none !important; background:none !important; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente > *:not(.crn):not(.client-alerta-mora){ display:none !important; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente > .crn{ display:grid; grid-template-columns:minmax(0,1fr) 1px 118px; column-gap:11px; align-items:stretch; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-izq{ min-width:0; display:flex; flex-direction:column; justify-content:center; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-ruta{ display:flex; align-items:center; gap:5px; color:#6B7280; font-size:13px; font-weight:500; line-height:1.2; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-ruta-ico{ width:15px; height:15px; flex:none; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-ruta span{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-punto{ width:4px; height:4px; border-radius:50%; background:#4B5563; flex:none; margin-left:2px; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-nombre{ margin:2px 0 7px; color:#3A4152; font-size:clamp(17px,4.7vw,20px); font-weight:800; letter-spacing:-.3px; line-height:1.15; overflow-wrap:anywhere; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-nombre .chip-inhabilitado{ margin-left:6px; vertical-align:middle; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-linea{ color:#111827; font-size:13.5px; font-weight:400; line-height:1.38; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-linea b{ font-weight:800; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-linea-suave{ color:#6B7280; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-segs{ display:flex; gap:3px; margin-top:6px; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg{ flex:1 1 0; min-width:2px; height:4px; border-radius:3px; background:#D5DAE6; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg.pagada{ background:linear-gradient(90deg,#64C678,#4B9C61); }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg.vencida{ background:#E4685F; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-sep{ background:#DCDFE7; margin:2px 0; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile{ display:flex; flex-direction:column; border-radius:14px; overflow:hidden; text-align:center; cursor:pointer; min-width:0; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-main{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:10px 6px; border-radius:14px; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-top{ padding:7px 4px 9px; font-size:10.5px; line-height:1.2; color:#2B2416; white-space:nowrap; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-top b{ font-weight:800; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-t-etq{ font-size:11px; line-height:1.3; color:#1F2937; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-t-etq b{ font-weight:800; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-monto{ font-size:clamp(16px,4.4vw,19px); font-weight:800; letter-spacing:-.4px; line-height:1.1; white-space:nowrap; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-chip{ background:rgba(255,255,255,.72); color:#1F2937; font-size:10.5px; font-weight:500; line-height:1; padding:5px 9px; border-radius:7px; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-warn{ width:11px; height:11px; vertical-align:-1px; fill:#C98A2B; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-ambar{ background:#FAEAC0; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-ambar .crn-tile-main{ background:linear-gradient(180deg,#F8DC93,#F3C871); }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-ambar .crn-monto{ color:#2E2108; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja{ background:#FBD9D4; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja .crn-tile-main{ background:linear-gradient(180deg,#F5B9B1,#EE9C92); }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja .crn-warn{ fill:#C53030; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja .crn-monto{ color:#4A1410; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-gris .crn-tile-main{ background:linear-gradient(180deg,#D3DAE6,#C8D0DE); }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-gris .crn-monto{ color:#0F172A; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente.client-row-sin-credito .crn-tile-gris .crn-tile-main{ background:#EEF1F6; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente > .client-alerta-mora{ margin-top:10px; }
+@media (max-width:370px){
+  html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente > .crn{ grid-template-columns:minmax(0,1fr) 1px 108px; column-gap:9px; }
+  html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-linea{ font-size:12.5px; }
+}
+body.modo-oscuro html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente{ background:var(--surface) !important; border-color:rgba(160,175,210,.35) !important; }
+body.modo-oscuro html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-nombre,body.modo-oscuro html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-linea{ color:#E7EAF3; }
+body.modo-oscuro html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-ruta{ color:#9BA4B4; }
+body.modo-oscuro html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-sep{ background:rgba(160,175,210,.25); }
+
+/* v1022b: ajustes a 360 px y franja de mora dentro del flujo */
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente > .client-alerta-mora{ position:static !important; inset:auto !important; transform:none !important; margin:11px -12px -13px -14px !important; width:auto !important; border-radius:0 !important; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-top{ white-space:normal; padding:7px 4px 9px; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-linea{ white-space:normal; overflow:visible; }
+@media (max-width:370px){
+  html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente > .crn{ grid-template-columns:minmax(0,1fr) 1px 104px; column-gap:8px; }
+  html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-linea{ font-size:12px; }
+  html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-nombre{ font-size:17px; }
+  html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-top{ font-size:9.5px; }
+  html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-t-etq{ font-size:10.5px; }
+  html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-monto{ font-size:16px; }
+}
+
+/* v1022c: "Próxima cuota: Hoy" en una sola línea (≥371 px) */
+@media (min-width:371px){ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-ambar .crn-tile-top{ white-space:nowrap; } }
+
+/* v1024: contador de créditos activos (insignia amarilla) en la tarjeta nueva */
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-fila-sup{ display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:23px; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-creditos{ flex:none; display:inline-flex; align-items:center; justify-content:center; min-width:28px; height:22px; padding:0 8px; border-radius:12px; background:#F8BD21; color:#0A0D14; border:1px solid #DDA510; font-size:14px; font-weight:800; line-height:1; }
+
+/* v1025: contador de créditos — solo el número, sin círculo */
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-creditos{ background:none !important; border:none !important; box-shadow:none !important; min-width:0; height:auto; padding:0 2px; border-radius:0; color:#3A4152; font-size:17px; font-weight:800; }
+body.modo-oscuro html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-creditos{ color:#E7EAF3; }
 </style>
 
 </head>
@@ -21444,6 +21518,83 @@ html body #screen-clientes .client-row.client-row-cliente:not(.client-row-mora):
   const ICONO_AVATAR_PERSONA = '<svg class="icono-avatar-persona" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8.2" r="4.3"></circle><path d="M3.6 20.3c.7-4.1 4.1-6.8 8.4-6.8s7.7 2.7 8.4 6.8c.1.5-.3.9-.8.9H4.4c-.5 0-.9-.4-.8-.9z"></path></svg>';
 
 
+  // v1022 (a pedido, con imagen de referencia): rediseño de la tarjeta de cliente.
+  // Se agrega un bloque nuevo (.crn) con los MISMOS datos; el diseño anterior
+  // sigue en el HTML, solo oculto por CSS (en #screen-clientes).
+  function construirBloqueTarjetaCliente(cliente, prestamosActivos){
+    const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+    const NOMBRES_FREC = { diario:'Diario', semanal:'Semanal', catorcena:'Catorcenal', quincenal:'Quincenal', mensual:'Mensual' };
+    const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    const ICO_WARN = '<svg class="crn-warn" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 1.6 21h20.8z"/><rect x="11" y="9" width="2" height="6.5" rx="1" fill="#fff"/><circle cx="12" cy="18" r="1.15" fill="#fff"/></svg>';
+    const ICO_PERSONA = '<svg class="crn-ruta-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3"></circle><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path><circle cx="18" cy="5" r="3"></circle></svg>';
+    const ruta = (cliente.ruta || '').trim();
+    const bloque = document.createElement('div');
+    bloque.className = 'crn';
+    const inhab = cliente.estadoCliente === 'inhabilitado' ? '<span class="chip-inhabilitado">INHABILITADO</span>' : '';
+    const contador = prestamosActivos.length ? '<span class="crn-creditos" aria-label="' + prestamosActivos.length + ' préstamo(s) activo(s)">' + prestamosActivos.length + '</span>' : '';
+    const cab = '<div class="crn-fila-sup">' + (ruta ? '<div class="crn-ruta">' + ICO_PERSONA + '<span>' + esc(ruta) + '</span><i class="crn-punto"></i></div>' : '<div></div>') + contador + '</div>'
+      + '<div class="crn-nombre">' + esc(cliente.nombre) + inhab + '</div>';
+    if(!prestamosActivos.length){
+      bloque.innerHTML = '<div class="crn-izq">' + cab
+        + '<div class="crn-linea">Teléfono: ' + esc(cliente.telefono || '—') + '</div>'
+        + '<div class="crn-linea crn-linea-suave">Sin crédito activo</div></div>'
+        + '<div class="crn-sep"></div>'
+        + '<div class="crn-tile crn-tile-gris"><div class="crn-tile-main"><div class="crn-t-etq">Sin crédito activo</div></div></div>';
+      return bloque;
+    }
+    const otorgado = prestamosActivos.reduce((t, p) => t + (Number(p.valor) || 0), 0);
+    const saldo = prestamosActivos.reduce((t, p) => t + saldoPendientePrestamo(p), 0);
+    let pagadas = 0, total = 0, trozos = '';
+    prestamosActivos.forEach(p => (p.plan || []).forEach(c => {
+      const pag = estaCuotaPagada(p, c.numero);
+      total++; if(pag) pagadas++;
+      trozos += '<i class="crn-seg ' + (pag ? 'pagada' : (cuotaVencida(p, c) ? 'vencida' : 'pendiente')) + '"></i>';
+    }));
+    const soloInteres = prestamosActivos.every(p => p.soloInteres);
+    // próxima cuota (la sin pagar más antigua entre los créditos activos)
+    let proxima = null, prestamoProx = null;
+    prestamosActivos.forEach(p => (p.plan || []).forEach(c => {
+      if(!c || !c.fechaISO || estaCuotaPagada(p, c.numero)) return;
+      if(!proxima || String(c.fechaISO) < String(proxima.fechaISO)){ proxima = c; prestamoProx = p; }
+    }));
+    let tile = '<div class="crn-tile crn-tile-gris"><div class="crn-tile-main"><div class="crn-t-etq">Sin cuotas pendientes</div></div></div>';
+    if(proxima){
+      const [ay, am, ad] = String(proxima.fechaISO).slice(0, 10).split('-').map(Number);
+      const f = new Date(ay, am - 1, ad);
+      const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+      const dif = Math.round((f - hoy) / 86400000);
+      const fechaTxt = DIAS[f.getDay()] + ' ' + f.getDate() + ' ' + MESES[f.getMonth()];
+      const monto = formatearPesos(cuotaRealPrestamo(prestamoProx));
+      const frec = NOMBRES_FREC[prestamoProx.frecuencia] || prestamoProx.frecuencia || '';
+      const chip = frec ? '<div class="crn-chip">' + esc(frec) + '</div>' : '';
+      if(dif <= 0){
+        const venc = dif < 0;
+        tile = '<div class="crn-tile ' + (venc ? 'crn-tile-roja' : 'crn-tile-ambar') + '" role="button" aria-label="Editar fecha de esta cuota">'
+          + '<div class="crn-tile-top">' + (venc ? 'Cuota vencida: <b>' + fechaTxt + '</b>' : 'Próxima cuota: <b>Hoy</b>') + ' ' + ICO_WARN + '</div>'
+          + '<div class="crn-tile-main"><div class="crn-t-etq">' + (venc ? 'Vencida' : 'Vence: <b>Hoy</b>') + ' ' + ICO_WARN + '</div>'
+          + '<div class="crn-monto">' + monto + '</div>' + chip + '</div></div>';
+      }else{
+        tile = '<div class="crn-tile crn-tile-gris" role="button" aria-label="Editar fecha de esta cuota"><div class="crn-tile-main">'
+          + '<div class="crn-t-etq">Próxima cuota:<br>' + (dif === 1 ? 'Mañana' : fechaTxt) + '</div>'
+          + '<div class="crn-monto">' + monto + '</div>' + chip + '</div></div>';
+      }
+    }
+    bloque.innerHTML = '<div class="crn-izq">' + cab
+      + '<div class="crn-linea">Otorgado: ' + formatearPesos(otorgado) + '</div>'
+      + '<div class="crn-linea">Saldo pendiente: <b>' + formatearPesos(saldo) + '</b></div>'
+      + '<div class="crn-linea">' + (soloInteres ? 'Solo interés' : pagadas + ' de ' + total + ' cuotas') + '</div>'
+      + (soloInteres ? '' : '<div class="crn-segs" aria-label="' + pagadas + ' de ' + total + ' cuotas pagadas">' + trozos + '</div>') + '</div>'
+      + '<div class="crn-sep"></div>' + tile;
+    const tileEl = bloque.querySelector('.crn-tile[role="button"]');
+    if(tileEl && prestamoProx){
+      tileEl.addEventListener('click', ev => {
+        ev.stopPropagation();
+        if(typeof abrirEditarFechaDesdeClientes === 'function') abrirEditarFechaDesdeClientes(prestamoProx, proxima);
+      });
+    }
+    return bloque;
+  }
   // CAMBIO (a pedido): avatar de persona en lugar de la torta de cuotas (false = volver a la torta)
   const AVATAR_PERSONA_TARJETA = true;
   function crearTarjetaCliente(cliente){
@@ -21871,6 +22022,8 @@ html body #screen-clientes .client-row.client-row-cliente:not(.client-row-mora):
         }
       }
     }catch(errAlerta){}
+
+    try{ card.insertBefore(construirBloqueTarjetaCliente(cliente, prestamosActivosCliente), card.firstChild); }catch(errCrn){ console.error('[Clientes] tarjeta nueva:', errCrn); }
 
     // Al tocar la tarjeta se abre el detalle completo del cliente
     card.addEventListener('click', ()=> abrirDetalleCliente(cliente));
