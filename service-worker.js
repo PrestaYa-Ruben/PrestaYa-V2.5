@@ -9,7 +9,7 @@
 // (ej. 'prestaya-v2', 'prestaya-v3'...). Eso obliga a los teléfonos
 // que ya instalaron la app a bajar los archivos nuevos en vez de
 // seguir usando la copia vieja guardada en caché.
-const CACHE_NAME = 'prestaya-v1056';
+const CACHE_NAME = 'prestaya-v1057';
 const CACHE_FUENTES = 'prestaya-fuentes'; // v833: tipografias de Google, se guardan para verse igual sin internet
 
 const ARCHIVOS_APP_SHELL = [
