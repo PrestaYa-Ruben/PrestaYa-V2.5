@@ -11408,6 +11408,18 @@ html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias .grafi
 
 /* v1039: Período seleccionado — mismo efecto incrustado que la barra de progreso de Ganancias */
 html body:not(.modo-oscuro) #screen-inicio .periodo-seleccionado{ background:rgba(30,45,80,0.08) !important; background-image:none !important; border:none !important; box-shadow:inset 0 1.5px 3px rgba(20,30,60,0.18), 0 1px 0 rgba(255,255,255,0.8) !important; }
+
+/* v1040: Ganancias — verde esmeralda, acorde al contexto de ganancias */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias{ background:linear-gradient(160deg,#DDF5E7 0%,#B5E5C8 100%) !important; border:1.5px solid #86CBA3 !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias .grafico-ganancias-selector-mes{ background:#C4EAD3 !important; border-color:#92CFAB !important; }
+
+/* v1041: Ganancias — contenedor de valores comparativos en un tono más claro (conserva el efecto incrustado) */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias .comparativo-ganancias-resumen{ background:rgba(255,255,255,0.55) !important; box-shadow:inset 0 1.5px 3px rgba(20,60,40,0.16), 0 1px 0 rgba(255,255,255,0.8) !important; }
+
+/* v1042: Resumen del período — verde azulado (teal), acorde a un resumen financiero y distinto de las demás tarjetas */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado{ background:linear-gradient(160deg,#DFF4F5 0%,#B8E0E6 100%) !important; border:1.5px solid #8BCAD3 !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes{ background:#C5E6EB !important; border-color:#96CDD6 !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes button svg{ stroke:#2C7C8A !important; }
 </style>
 
 </head>
