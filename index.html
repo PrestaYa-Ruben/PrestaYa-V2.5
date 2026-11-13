@@ -11493,6 +11493,10 @@ html body #screen-detalle-prestamo #pagos-lista .pago-item .cuota-accion.mas svg
 html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir{ width:44px !important; height:44px !important; min-width:44px !important; border-radius:13px !important; border:1.5px solid rgba(20,30,60,.32) !important; box-shadow:none !important; filter:none !important; transition:none !important; }
 html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir:active{ transform:none !important; box-shadow:none !important; }
 html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir svg{ width:22px !important; height:22px !important; filter:none !important; }
+
+/* v1067: globo de cuota pagada — acción "Compartir comprobante" */
+.globo-cuota .globo-cuota-accion{ display:flex; align-items:center; justify-content:center; gap:6px; margin-top:7px; padding-top:7px; border-top:1px solid rgba(20,30,60,.12); font-size:12.5px; font-weight:700; color:#1A365D; white-space:nowrap; }
+.globo-cuota .globo-cuota-accion svg{ width:15px; height:15px; flex:none; }
 </style>
 
 </head>
@@ -28600,6 +28604,18 @@ html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir svg{ widt
     // v654: la puntica siempre apunta al centro exacto de la cuota tocada
     const centro = r.left + r.width / 2;
     el.querySelector('.globo-cuota-flecha').style.left = Math.max(14, Math.min(centro - x, gw - 14)) + 'px';
+    // v1067: tocar el globo de una cuota PAGADA comparte su comprobante térmico (mismo comprobante y misma función de siempre)
+    if(pagada){
+      const acc = document.createElement('div'); acc.className = 'globo-cuota-accion';
+      acc.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg><span>Compartir comprobante</span>';
+      el.insertBefore(acc, el.querySelector('.globo-cuota-flecha'));
+      el.style.cursor = 'pointer';
+      el.addEventListener('pointerdown', ()=>{ window.removeEventListener('scroll', cerrarGloboCuota, true); window.removeEventListener('resize', cerrarGloboCuota); });
+      el.addEventListener('click', (ev)=>{
+        ev.stopPropagation(); cerrarGloboCuota();
+        compartirComprobanteCuota(prestamo, cuota);
+      });
+    }
     // v924: en la tarjeta Océano, tocar el globo de una cuota pendiente o vencida abre directo el pago de esa cuota
     if(!pagada && ancla.closest && ancla.closest('.ltd-oceano')){
       el.style.cursor = 'pointer';
