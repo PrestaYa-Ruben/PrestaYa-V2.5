@@ -28711,7 +28711,18 @@ html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir svg{ widt
     ov.innerHTML = '<div class="po-caja" role="dialog" aria-label="Plan de pago"><div class="po-cab"><b>Plan de pago</b><div class="po-acc"><button type="button" class="po-share" aria-label="Compartir imagen del plan de pago"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></button><button type="button" class="po-x" aria-label="Cerrar">×</button></div></div>'
       + '<div class="po-scroll"><table class="po-tabla"><thead><tr><th>Cuota</th><th>Fecha de pago</th><th>Valor</th></tr></thead><tbody>' + (filas || '<tr><td colspan="3">Sin cuotas</td></tr>') + '</tbody></table></div>'
       + '<div class="po-pie"><span>Total</span><b>' + formatearPesos(total) + '</b></div></div>';
-    const cerrar = ()=>{ ov.classList.remove('visible'); document.removeEventListener('keydown', tecla); setTimeout(()=> ov.remove(), 180); };
+    // v1071: mientras el modal está abierto, lo que hay detrás queda congelado (sin scroll ni rebote); al cerrar vuelve exactamente a su posición
+    const yAntes = window.scrollY || window.pageYOffset || 0, bs = document.body.style;
+    const estiloAntes = { position: bs.position, top: bs.top, left: bs.left, right: bs.right, width: bs.width, overflow: bs.overflow };
+    bs.position = 'fixed'; bs.top = (-yAntes) + 'px'; bs.left = '0'; bs.right = '0'; bs.width = '100%'; bs.overflow = 'hidden';
+    const sinMover = e => { if(!e.target.closest('.po-scroll')) e.preventDefault(); };
+    ov.addEventListener('touchmove', sinMover, { passive: false });
+    let cerrado = false;
+    const cerrar = ()=>{
+      if(cerrado) return; cerrado = true;
+      Object.assign(bs, estiloAntes); window.scrollTo(0, yAntes);
+      ov.classList.remove('visible'); document.removeEventListener('keydown', tecla); setTimeout(()=> ov.remove(), 180);
+    };
     const tecla = e => { if(e.key === 'Escape') cerrar(); };
     ov.addEventListener('click', e => { if(e.target === ov) cerrar(); });
     ov.querySelector('.po-x').addEventListener('click', cerrar);
