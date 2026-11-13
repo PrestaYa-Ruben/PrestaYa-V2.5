@@ -29403,6 +29403,8 @@ html body #screen-clientes#screen-clientes #chips-rutas-clientes .tab-button{ he
     }
     const cuotaRecibo = partes.length ? numeroCuotaReciboPago(prestamo, partes.map(p => p.cuota)) : pagadas;
     const ocultarSP = !!opciones.ocultarSaldoYProximo;
+    // v1059: cuota registrada como "Pago de interés" → el comprobante no muestra la cuota y siempre muestra el saldo pendiente
+    const esPagoInteres = !!(ultimo && ultimo.concepto === 'pago_interes');
     const filas = [
       ['CLIENTE:', cliente.nombre || '—'], // v1054: el cliente primero, luego el abono
       ['ABONO REALIZADO:', pesos(valor), 'monto'],
@@ -29410,9 +29412,9 @@ html body #screen-clientes#screen-clientes #chips-rutas-clientes .tab-button{ he
       ...(adicional ? [['ABONO ADICIONAL:', pesos(adicional)]] : []),
       ...(numeroCreditoCliente(prestamo) ? [['CRÉDITO:', '# ' + numeroCreditoCliente(prestamo)]] : []),
       ['FECHA DE ABONO:', ultimo ? fechaDiaCT(ultimo.fecha) : '—'],
-      ['CUOTA:', prestamo.soloInteres ? 'Sin plazo' : (cuotaRecibo + ' de ' + totalCuotas)], // v953: el número de la cuota de ESE recibo (cuota 1 → 1 de 4); si el abono no completó ninguna, las cuotas pagadas
+      ...(esPagoInteres ? [] : [['CUOTA:', prestamo.soloInteres ? 'Sin plazo' : (cuotaRecibo + ' de ' + totalCuotas)]]), // v953 · v1059: el número de la cuota de ESE recibo (cuota 1 → 1 de 4); si el abono no completó ninguna, las cuotas pagadas
       ...(obtenerReciboMostrarMetodo() ? [['MÉTODO DE PAGO:', ultimo ? ({ efectivo:'Efectivo', transferencia:'Transferencia' }[ultimo.metodoPago] || ultimo.metodoPago || 'Efectivo') : '—']] : []),
-      ...((mostrarReciboSaldo() && !ocultarSP) || creditoPagado ? [['SALDO PENDIENTE:', pesos(saldoReciboPrestamo(prestamo))]] : []),
+      ...((mostrarReciboSaldo() && !ocultarSP) || creditoPagado || esPagoInteres ? [['SALDO PENDIENTE:', pesos(saldoReciboPrestamo(prestamo))]] : []),
       ...(mostrarReciboProximo() && !ocultarSP ? [['PRÓXIMO PAGO:', (() => { const px = proximaCuotaPendiente(prestamo); return px ? fechaDiaCT(px.fechaISO) : 'Crédito al día'; })()]] : [])
     ];
     return { filas, msgPuntual, creditoPagado, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos() };
