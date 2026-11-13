@@ -11358,6 +11358,56 @@ html body #screen-inicio .loan-detail-item,
 html body #screen-inicio .comparativo-ganancias-resumen,
 html body #screen-inicio .mdp-total,
 html body #screen-inicio .top-rutas-total{ border-radius:12px !important; }
+
+/* v1026b: Ganancias (Inicio) — sin la píldora de porcentaje superior (queda el de abajo) y tarjeta en gris claro neutro */
+html body #screen-inicio #tarjeta-comparativo-ganancias #comparativo-ganancias-badge, html body #screen-inicio #tarjeta-comparativo-ganancias .comparativo-ganancias-badge{ display:none !important; }
+html body #screen-inicio #tarjeta-comparativo-ganancias{ background:#F1F3F6 !important; background-image:none !important; border-color:#D9DEE7 !important; }
+html body #screen-inicio #tarjeta-comparativo-ganancias::before, html body #screen-inicio #tarjeta-comparativo-ganancias::after{ display:none !important; content:none !important; background:none !important; background-image:none !important; }
+
+/* v1027: Ganancias neutra (mayor especificidad que las reglas verdes previas) */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias{ background:#F1F3F6 !important; background-image:none !important; border:1.5px solid #D9DEE7 !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias::before, html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias::after{ display:none !important; content:none !important; background:none !important; background-image:none !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias .grafico-ganancias-selector-mes{ background:#E4E8EE !important; border-color:#CBD2DD !important; }
+
+/* v1028/v1029: Ganancias — campo de valores comparativos más hundido (solo sombra interior; sin gris más oscuro) */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias .comparativo-ganancias-resumen{ box-shadow:inset 0 3px 7px rgba(30,45,80,.20), inset 0 1px 2px rgba(30,45,80,.18), 0 1px 0 rgba(255,255,255,.85) !important; }
+
+/* v1030: Ganancias — un poco más de gris */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias{ background:#E5E8ED !important; border-color:#CBD1DB !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias .grafico-ganancias-selector-mes{ background:#D8DDE5 !important; border-color:#BFC7D3 !important; }
+
+/* v1031: Medios de Pago — valor en $0 en negro mate; Total Movido con más padding interno */
+html body #screen-inicio #tarjeta-medios-pago-inicio .mdp-valor.mdp-en-cero{ color:#2B2D31 !important; }
+html body #screen-inicio #tarjeta-medios-pago-inicio .mdp-total{ padding:15px 18px !important; }
+
+/* v1032: Total Movido — efecto incrustado más marcado */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-medios-pago-inicio .mdp-total{ background:linear-gradient(180deg,#E9E6F6,#F1EFFA) !important; border:1px solid #C9C3E2 !important; box-shadow:inset 0 4px 9px rgba(50,40,110,.26), inset 0 1px 2px rgba(50,40,110,.28), inset 0 -1px 0 rgba(255,255,255,.9), 0 1px 0 rgba(255,255,255,.95) !important; }
+
+/* v1033: Capital por Ruta — barras y contenedor "Capital en la calle" con el mismo efecto incrustado de Ganancias */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-top-rutas-capital .top-ruta-barra-track{ height:8px !important; background:rgba(30,45,80,0.08) !important; box-shadow:inset 0 1.5px 3px rgba(20,30,60,0.18), 0 1px 0 rgba(255,255,255,0.8) !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-top-rutas-capital .top-ruta-barra-fill{ height:8px !important; box-shadow:inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 2px rgba(20,40,60,0.25) !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-top-rutas-capital .top-rutas-total{ box-shadow:inset 0 3px 7px rgba(30,45,80,.20), inset 0 1px 2px rgba(30,45,80,.18), 0 1px 0 rgba(255,255,255,.85) !important; }
+
+/* v1034: Resumen del período — los 3 contenedores con el efecto incrustado de las barras de Ganancias */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .loan-detail-item{ background:rgba(30,45,80,0.08) !important; background-image:none !important; border:none !important; box-shadow:inset 0 1.5px 3px rgba(20,30,60,0.18), 0 1px 0 rgba(255,255,255,0.8) !important; }
+
+/* v1035: Ganancias y Medios de Pago — contenedores con el mismo efecto que la barra de progreso de Ganancias */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias .comparativo-ganancias-resumen,
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-medios-pago-inicio .mdp-total{ background:rgba(30,45,80,0.08) !important; background-image:none !important; border:none !important; box-shadow:inset 0 1.5px 3px rgba(20,30,60,0.18), 0 1px 0 rgba(255,255,255,0.8) !important; }
+
+/* v1036: Inicio — se retiran los patrones/líneas decorativos de todas las tarjetas */
+html body #screen-inicio .card::before, html body #screen-inicio .card::after,
+html body #screen-inicio .stat-card::before, html body #screen-inicio .stat-card::after{ display:none !important; content:none !important; background:none !important; background-image:none !important; }
+
+/* v1037: Capital por Ruta — más color de fondo (verde menta) para que se note */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-top-rutas-capital{ background:linear-gradient(160deg,#E6F6EC 0%,#C9E9D6 100%) !important; background-image:linear-gradient(160deg,#E6F6EC 0%,#C9E9D6 100%) !important; border:1.5px solid #9DD2B3 !important; }
+
+/* v1038: Ganancias — gris más marcado (degradado) para que se note más */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias{ background:linear-gradient(160deg,#E1E5EB 0%,#CDD3DD 100%) !important; border:1.5px solid #B3BBC9 !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias .grafico-ganancias-selector-mes{ background:#D2D8E1 !important; border-color:#AEB7C6 !important; }
+
+/* v1039: Período seleccionado — mismo efecto incrustado que la barra de progreso de Ganancias */
+html body:not(.modo-oscuro) #screen-inicio .periodo-seleccionado{ background:rgba(30,45,80,0.08) !important; background-image:none !important; border:none !important; box-shadow:inset 0 1.5px 3px rgba(20,30,60,0.18), 0 1px 0 rgba(255,255,255,0.8) !important; }
 </style>
 
 </head>
@@ -27419,6 +27469,9 @@ html body #screen-inicio .top-rutas-total{ border-radius:12px !important; }
 
     animarValorPesos(elTransferencia, trMes);
     animarValorPesos(elEfectivo, efMes);
+    // v1031: un medio de pago en $0 se pinta en negro mate (solo marca una clase; el valor no cambia)
+    elEfectivo.classList.toggle('mdp-en-cero', !(efMes > 0));
+    elTransferencia.classList.toggle('mdp-en-cero', !(trMes > 0));
     animarValorPesos(elTotal, efMes + trMes);
 
     // v671: Total Recaudado del mes elegido en "Resumen del período"
