@@ -28644,16 +28644,53 @@ html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir svg{ widt
   }
 
   // v922: modal pequeño con la tabla del plan de pago (cuota, fecha y valor). Solo lectura: no toca ningún cálculo.
+  // v1071: imagen del modal "Plan de pago" tal como se ve (cuota, fecha, día de pago, puntualidad y valor), sin el total
+  function dibujarCanvasPlanOceano(filas){
+    const W = 340, S = 3, B = 2.5, R = 20, HC = 46, HT = 32, FUENTE = 'Inter, -apple-system, BlinkMacSystemFont, sans-serif';
+    const hFila = f => f.extra ? 56 : 40;
+    const H = HC + HT + filas.reduce((a, f) => a + hFila(f), 0) + B;
+    const cv = document.createElement('canvas'); cv.width = W * S; cv.height = H * S;
+    const ctx = cv.getContext('2d'); ctx.scale(S, S);
+    const ruta = (x, y, w, h, r) => { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); };
+    ruta(0, 0, W, H, R); ctx.fillStyle = '#4A56B0'; ctx.fill();
+    ctx.save(); ruta(B, B, W - 2 * B, H - 2 * B, R - B); ctx.clip();
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+    const g = ctx.createLinearGradient(0, 0, W, HC); g.addColorStop(0, '#1F2A5A'); g.addColorStop(1, '#6672C7');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, HC + B);
+    ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; ctx.fillStyle = '#fff'; ctx.font = '700 16px ' + FUENTE; ctx.fillText('Plan de pago', 16, HC / 2 + 1);
+    const cx = [0.10, 0.457, 0.855].map(p => B + p * (W - 2 * B));
+    let y = HC + B * 0.5;
+    ctx.fillStyle = '#EEF0FB'; ctx.fillRect(0, y, W, HT);
+    ctx.fillStyle = '#1F2A5A'; ctx.font = '700 11.5px ' + FUENTE; ctx.textAlign = 'center';
+    ['CUOTA', 'FECHA DE PAGO', 'VALOR'].forEach((t, k) => ctx.fillText(t, cx[k], y + HT / 2 + 0.5));
+    y += HT;
+    filas.forEach(f => {
+      const h = hFila(f);
+      ctx.fillStyle = f.pag ? '#EEF9F2' : (f.ven ? '#FDECEA' : '#FFFFFF'); ctx.fillRect(0, y, W, h);
+      ctx.fillStyle = '#E6E9F6'; ctx.fillRect(0, y, W, 1);
+      const col = f.ven ? '#C0281C' : '#1F2A5A', yc = f.extra ? y + h / 2 - 8 : y + h / 2;
+      ctx.fillStyle = col; ctx.textAlign = 'center';
+      ctx.font = '800 14px ' + FUENTE; ctx.fillText(String(f.numero), cx[0], y + h / 2 + 0.5);
+      ctx.font = '600 14px ' + FUENTE; ctx.fillText(f.fecha, cx[1], yc + 0.5); ctx.fillText(f.valor, cx[2], y + h / 2 + 0.5);
+      if(f.extra){ ctx.font = '700 11px ' + FUENTE; ctx.fillStyle = f.tarde ? '#D92D20' : '#1E9E5A'; ctx.fillText(f.extra, cx[1], yc + 17); }
+      y += h;
+    });
+    ctx.restore();
+    return cv;
+  }
+
   function abrirPlanPagoOceano(prestamo){
     const previo = document.getElementById('plan-oceano-overlay'); if(previo) previo.remove();
     const MES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
     const fTxt = f => { const d = new Date(f); return isNaN(d) ? '—' : d.getDate() + ' ' + MES[d.getMonth()] + ' ' + d.getFullYear(); };
     const plan = prestamo.plan || [];
     let total = 0;
+    const datosImg = []; // v1071: las mismas filas que se ven en el modal, para dibujar la imagen que se comparte
     const filas = plan.map(c => {
       const pag = estaCuotaPagada(prestamo, c.numero);
       const ven = !pag && cuotaVencida(prestamo, c);
       const v = Number(c.total) || 0; total += v;
+      const filaImg = { numero: c.numero, fecha: fTxt(c.fechaISO), valor: formatearPesos(v), pag, ven, extra: '', tarde: false }; datosImg.push(filaImg);
       // fecha real del pago (último abono de la cuota) y si fue antes/a tiempo (verde) o después (rojo) del vencimiento
       let extra = '';
       if(pag){
@@ -28664,6 +28701,7 @@ html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir svg{ widt
           const tarde = pu && pu.tipo === 'tarde';
           const nota = !pu ? '' : (pu.tipo === 'tarde' ? ' · ' + pu.dias + ' d tarde' : (pu.tipo === 'anticipado' ? ' · ' + pu.dias + ' d antes' : ' · a tiempo'));
           extra = '<small class="po-pago ' + (tarde ? 'tarde' : 'ok') + '">Pagó ' + fTxt(ult.fecha).replace(/ \d{4}$/, '') + nota + '</small>';
+          filaImg.extra = 'Pagó ' + fTxt(ult.fecha).replace(/ \d{4}$/, '') + nota; filaImg.tarde = !!tarde;
         }
       }
       return '<tr class="' + (pag ? 'pagada' : (ven ? 'vencida' : '')) + '"><td>' + c.numero + '</td><td>' + fTxt(c.fechaISO) + extra + '</td><td>' + formatearPesos(v) + '</td></tr>';
@@ -28682,7 +28720,7 @@ html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir svg{ widt
       e.stopPropagation();
       const cli = clientesGuardados.find(c => c.id === prestamo.clienteId) || (typeof clienteEnDetalle !== 'undefined' ? clienteEnDetalle : null);
       let canvas = null;
-      try{ canvas = generarCanvasCronograma(prestamo, cli); }catch(err){ console.warn('[Plan de pago]', err); }
+      try{ canvas = dibujarCanvasPlanOceano(datosImg); }catch(err){ console.warn('[Plan de pago]', err); }
       if(!canvas){ alert('No se pudo generar la imagen. Intenta de nuevo.'); return; }
       const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1));
       const archivo = blob ? new File([blob], 'plan-de-pago-' + (prestamo.codigo || 'credito') + '.png', { type: 'image/png' }) : null;
@@ -28691,7 +28729,9 @@ html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir svg{ widt
         catch(err){ if(err && err.name === 'AbortError') return; console.warn('navigator.share no funcionó:', err); }
       }
       cerrar();
-      abrirModalCronograma(prestamo, cli);
+      canvasCronogramaActual = canvas;
+      compartirCronogramaImg.src = canvas.toDataURL('image/png');
+      compartirCronogramaOverlay.style.display = 'flex';
     });
     document.addEventListener('keydown', tecla);
     document.body.appendChild(ov);
