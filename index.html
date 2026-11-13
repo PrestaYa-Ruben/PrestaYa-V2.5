@@ -11155,6 +11155,121 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile.
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas{ border-color:#D4D6DB; background:linear-gradient(180deg,#E3E5E9 0%,#EEEFF2 60%); box-shadow:inset 0 3px 7px rgba(40,44,52,.20), inset 0 1px 2px rgba(40,44,52,.18), 0 1px 0 rgba(255,255,255,.95); }
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas-tit, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas-tit svg{ color:#6B7280; }
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas .loan-note-contenido span{ color:#2F3440 !important; }
+
+/* v1005: esquinas de la tarjeta del crédito menos redondeadas (26px → 18px) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano { border-radius:18px !important; }
+
+/* v1006: esquinas de las casillas internas menos redondeadas */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile{ border-radius:12px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-ic{ border-radius:9px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a{ border-radius:14px 0 0 14px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b{ border-radius:0 14px 14px 0; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag{ border-radius:14px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg{ border-radius:4px; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas{ border-radius:13px; }
+
+/* v1006: casillas internas con esquinas menos redondeadas */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile{ border-radius:12px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-ic{ border-radius:9px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pill{ border-radius:9px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a{ border-radius:14px 0 0 14px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b{ border-radius:0 14px 14px 0 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag{ border-radius:14px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg{ border-radius:4px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas{ border-radius:13px !important; }
+
+/* v1007: valores de las 4 casillas superiores con menos peso (800 → 650) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile .lto-v{ font-weight:650; }
+
+/* v1008: Debe en rojo (lo que falta) y Ha pagado en verde (lo ya pagado) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag-t .lto-hp-v{ color:#D6453D; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-ha-pagado .lto-hp-v{ color:#1E9E5A; }
+
+/* v1009: paleta #1A365D marino · #EBF8FF azul claro · #2F855A verde · #D69E2E ámbar · #C53030 rojo · #F7FAFC fondo · #4A5568 gris texto */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano { background:#F7FAFC !important; border-color:#1A365D !important; color:#1A365D; box-shadow:0 10px 24px rgba(26,54,93,.16), 0 2px 6px rgba(26,54,93,.10) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-cab{ background:#1A365D !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-onda path:first-child{ fill:#2F855A !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-onda path:nth-child(2){ stroke:#EBF8FF !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-onda path:nth-child(3){ fill:#F7FAFC !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano.loan-card-vencido .lto-onda path:first-child{ fill:#C53030 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-cred-k, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-cli-k{ color:#EBF8FF !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile.t1, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile.t2, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile.t3, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile.t4{ background:#EBF8FF; border:1.5px solid #CBE4F5; box-shadow:0 2px 5px rgba(26,54,93,.10); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile .lto-k{ color:#4A5568; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile .lto-v{ color:#1A365D; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile .lto-ic, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .t1 .lto-ic, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .t2 .lto-ic, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .t3 .lto-ic, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .t4 .lto-ic, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile.t2 .lto-ic, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile.t3 .lto-ic, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile.t4 .lto-ic{ background:#1A365D; color:#fff; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pill{ background:#D5EBF8; color:#1A365D; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a{ background:#1A365D; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b{ background:#2F855A; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a .lto-k, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-k, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-v{ color:#fff; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag{ background:#fff; border-color:#1A365D; box-shadow:0 2px 5px rgba(26,54,93,.10); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag-t, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-ha-pagado{ border-right-color:#CBE4F5; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag-t .lto-hp-v{ color:#C53030; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-hp-k{ color:#4A5568; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-ha-pagado .lto-hp-v{ color:#2F855A; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pct{ color:#1A365D; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-barra{ background:#EBF8FF; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-barra i{ background:#2F855A; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas{ border-color:#E2E8F0; background:linear-gradient(180deg,#E9EEF3 0%,#F1F4F8 60%); box-shadow:inset 0 3px 7px rgba(74,85,104,.18), inset 0 1px 2px rgba(74,85,104,.14), 0 1px 0 rgba(255,255,255,.95); }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas-tit, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas-tit svg{ color:#4A5568; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas .loan-note-contenido span{ color:#2D3748 !important; }
+
+/* v1010: cuotas pendientes (azul claro) más visibles */
+
+/* v1011: Valor cuotas con verde más oscuro para mejor contraste (blanco sobre #276749 ≈ 6.4:1) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b{ background:#276749; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-k{ font-weight:800; }
+
+/* v1012: verdes de texto/cuotas pagadas más oscuros (#276749) para accesibilidad */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-ha-pagado .lto-hp-v{ color:#276749; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-barra i{ background:#276749; }
+
+/* v1013: paleta reducida (marino + un solo verde #276749 + tintes de azul claro), cuotas pagadas en verde suave, más aire entre tarjetas */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-onda path:first-child{ fill:#276749 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pill{ background:#fff; border:1px solid #CBE4F5; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-barra i{ background:#6FB28E; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid{ gap:14px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-cab + .lto-grid{ margin-top:18px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot{ margin-top:14px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag{ margin-top:14px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas{ margin-top:14px !important; }
+
+/* v1015: cuotas con el diseño original (verde degradado / verde claro) — v1014: cuotas pagadas en #10B981 (texto marino para mantener el contraste) */
+
+/* v1015: cuotas exactamente como la imagen de referencia (colores muestreados) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg{ background:#E1F2E8; border:1.5px solid #CBE3D5; color:#3A7650; border-radius:8px !important; font-weight:800; box-shadow:none; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.pagada{ background:linear-gradient(180deg,#64C678 0%,#4B9C61 100%); border:1.5px solid #4A995F; color:#fff; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.vencida{ background:#C53030; border-color:#9B2C2C; color:#fff; }
+
+/* v1016: fondo de la tarjeta un poco más oscuro (#F7FAFC → #EDF2F7) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano { background:#EDF2F7 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-onda path:nth-child(3){ fill:#EDF2F7 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas{ background:linear-gradient(180deg,#E0E6ED 0%,#E9EEF4 60%); border-color:#D5DCE5; }
+
+/* v1017: Detalles del préstamo — contraste, acción principal, fondos unificados, jerarquía de monto */
+html body #screen-detalle-prestamo .chip-metodo-pago.efectivo{ color:#1E3A8A !important; }
+html body #screen-detalle-prestamo .chip-metodo-pago.transferencia{ color:#5B21B6 !important; }
+html body #screen-detalle-prestamo .chip-metodo-pago svg{ opacity:1 !important; }
+html body #screen-detalle-prestamo .pagar-fab{ background:#1A365D; border-color:#12274A; box-shadow:0 10px 22px rgba(26,54,93,.38), inset 0 1px 0 rgba(255,255,255,.22); }
+html body #screen-detalle-prestamo .cuota-item.cuota-item-detallada::after{ display:none !important; }
+html body #screen-detalle-prestamo .cuota-item.cuota-item-detallada::before{ background:#E5A12C; }
+html body #screen-detalle-prestamo .cuota-item .cuota-monto{ font-size:clamp(16px,4.6vw,20px) !important; font-weight:800; color:#18202F; }
+
+/* v1018: Detalles del préstamo — botones secundarios neutros, 1 acción primaria (Historial), rojo solo en Eliminar, pestañas = azul de "Pagar" */
+html body #screen-detalle-prestamo .btn-accion-prestamo.historial, html body #screen-detalle-prestamo .btn-accion-prestamo.cronograma, html body #screen-detalle-prestamo .btn-accion-prestamo.editar, html body #screen-detalle-prestamo .btn-accion-prestamo.renovar, html body #screen-detalle-prestamo .btn-accion-prestamo.descuento{ background:#EBF4FB !important; color:#1A365D !important; border:1.5px solid #C9DDEE !important; box-shadow:0 1px 2px rgba(26,54,93,.08) !important; text-shadow:none !important; background-image:none !important; }
+html body #screen-detalle-prestamo .btn-accion-prestamo.historial{ background:#1A365D !important; color:#fff !important; border-color:#12274A !important; }
+html body #screen-detalle-prestamo .btn-accion-prestamo.eliminar{ background:#FDECEC !important; color:#C53030 !important; border:1.5px solid #F0B8B8 !important; box-shadow:0 1px 2px rgba(197,48,48,.10) !important; text-shadow:none !important; background-image:none !important; }
+html body #screen-detalle-prestamo .btn-accion-prestamo svg{ stroke:currentColor; }
+html body #screen-detalle-prestamo .loan-tab.active{ background:#1A365D !important; color:#fff !important; }
+
+
+/* v1020: Pagadas = mismo diseño/colores que las tarjetas pagadas de "Todas" (solo visual, mismos datos) */
+html body #screen-detalle-prestamo #pagos-lista .pago-item:not(.recargo):not(.abono):not(.descuento) .pago-meta{ color:#5A6880 !important; font-weight:500 !important; }
+html body #screen-detalle-prestamo #pagos-lista .pago-item:not(.recargo):not(.abono):not(.descuento) .pago-meta .pago-pagada-el{ color:#00803A; font-weight:800; letter-spacing:.1px; }
+html body #screen-detalle-prestamo #pagos-lista .pago-item:not(.recargo):not(.abono):not(.descuento) .pago-desglose-capital,html body #screen-detalle-prestamo #pagos-lista .pago-item:not(.recargo):not(.abono):not(.descuento) .pago-desglose-interes{ color:#5A6880 !important; font-weight:500 !important; }
+html body #screen-detalle-prestamo #pagos-lista .pago-item:not(.recargo):not(.abono):not(.descuento) .cuota-accion.mas{ width:39px; height:39px; }
+
+/* v1021: Clientes — se quita el diseño de ondas de las tarjetas de cliente (el patrón de puntos de mora se conserva) */
+html body #screen-clientes .client-row.client-row-cliente:not(.client-row-mora)::before{ display:none !important; background-image:none !important; }
 </style>
 
 </head>
@@ -30349,7 +30464,7 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas
             ? '<span class="abono-label">Abono a capital</span> · ' + formatearFechaCorta(new Date(pago.fecha))
             : esAbonoParcial
             ? '<span class="abono-label">Abono a cuota ' + pago.cuota + '</span> · ' + formatearFechaCorta(new Date(pago.fecha))
-            : (esRecargoMora ? '<span class="recargo-label">Recargo</span>' : (esAbono ? '<span class="abono-label">Abono</span>' : 'Cuota ' + pago.cuota)) + ' · Pagada el ' + formatearFechaCorta(new Date(pago.fecha))}</div>
+            : (esRecargoMora ? '<span class="recargo-label">Recargo</span>' : (esAbono ? '<span class="abono-label">Abono</span>' : 'Cuota ' + pago.cuota)) + ' · <span class="pago-pagada-el">Pagada el ' + formatearFechaCorta(new Date(pago.fecha)) + '</span>'}</div>
           ${(!esRecargoMora && !esAbono) ? `<div class="pago-desglose"><span class="pago-desglose-capital">Capital: ${formatearPesos(pago.capitalPagado || 0)}</span><span class="pago-desglose-interes">Interés: ${formatearPesos(pago.interesPagado || 0)}</span></div>` : ''}
           ${pago.nota ? `<div class="pago-nota"></div>` : ''}
         </div>
