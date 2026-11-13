@@ -29391,10 +29391,10 @@ html body #screen-inicio #tarjeta-comparativo-ganancias *, html body #screen-ini
     const cuotaRecibo = partes.length ? numeroCuotaReciboPago(prestamo, partes.map(p => p.cuota)) : pagadas;
     const ocultarSP = !!opciones.ocultarSaldoYProximo;
     const filas = [
+      ['CLIENTE:', cliente.nombre || '—'], // v1054: el cliente primero, luego el abono
       ['ABONO REALIZADO:', pesos(valor), 'monto'],
       ['ABONADO A:', concepto],
       ...(adicional ? [['ABONO ADICIONAL:', pesos(adicional)]] : []),
-      ['CLIENTE:', cliente.nombre || '—'],
       ...(numeroCreditoCliente(prestamo) ? [['CRÉDITO:', '# ' + numeroCreditoCliente(prestamo)]] : []),
       ['FECHA DE ABONO:', ultimo ? fechaDiaCT(ultimo.fecha) : '—'],
       ['CUOTA:', prestamo.soloInteres ? 'Sin plazo' : (cuotaRecibo + ' de ' + totalCuotas)], // v953: el número de la cuota de ESE recibo (cuota 1 → 1 de 4); si el abono no completó ninguna, las cuotas pagadas
@@ -29539,7 +29539,8 @@ html body #screen-inicio #tarjeta-comparativo-ganancias *, html body #screen-ini
         let px = parseFloat(fv.match(/([\d.]+)px/)[1]);
         while(ancho(e[3], fv) > disp && px > 9){ px -= 0.5; fv = fv.replace(/[\d.]+px/, px + 'px'); }
         ctx.font = fv;
-        if(/\d/.test(e[3])) textoNum(e[3], xv, yy); // v934 · v984: cifras y puntos de miles más juntos
+        if(e[2] === 'CLIENTE:'){ ctx.save(); ctx.font = 'bold ' + fv; ctx.fillStyle = '#000'; ctx.fillText(e[3], xv, yy); ctx.restore(); } // v1055: nombre en negro intenso y negrita
+        else if(/\d/.test(e[3])) textoNum(e[3], xv, yy); // v934 · v984: cifras y puntos de miles más juntos
         else ctx.fillText(e[3], xv, yy);
         if(e[2] === 'CUOTA:' && /\d/.test(e[3])){ // v936: los dos números de la cuota, más negros y marcados
           for(let i = 0; i < e[3].length; i++){
