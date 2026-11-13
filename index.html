@@ -11483,6 +11483,16 @@ html body #screen-clientes#screen-clientes .tabs{ padding-left:8px !important; p
 
 /* v1058: Clientes — cápsulas de filtro de rutas un poco más grandes */
 html body #screen-clientes#screen-clientes #chips-rutas-clientes .tab-button{ height:34px !important; padding:0 19px !important; font-size:14px !important; }
+
+/* v1060: Pagadas — botón de opciones de la tarjeta más grande y plano (sin sombra ni realce) */
+html body #screen-detalle-prestamo #pagos-lista .pago-item .cuota-accion.mas{ width:44px !important; height:44px !important; min-width:44px !important; border-radius:13px !important; border:1.5px solid rgba(20,30,60,.32) !important; box-shadow:none !important; filter:none !important; transition:none !important; }
+html body #screen-detalle-prestamo #pagos-lista .pago-item .cuota-accion.mas:active{ transform:none !important; box-shadow:none !important; }
+html body #screen-detalle-prestamo #pagos-lista .pago-item .cuota-accion.mas svg{ width:22px !important; height:22px !important; filter:none !important; }
+
+/* v1062: Todas — botón de compartir plano (sin sombra), borde un poco más marcado y mismo tamaño que el de Pagadas */
+html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir{ width:44px !important; height:44px !important; min-width:44px !important; border-radius:13px !important; border:1.5px solid rgba(20,30,60,.32) !important; box-shadow:none !important; filter:none !important; transition:none !important; }
+html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir:active{ transform:none !important; box-shadow:none !important; }
+html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir svg{ width:22px !important; height:22px !important; filter:none !important; }
 </style>
 
 </head>
@@ -29427,6 +29437,7 @@ html body #screen-clientes#screen-clientes #chips-rutas-clientes .tab-button{ he
     const filas = datos.filas, creditoPagado = !!datos.creditoPagado;
     const W = 340, PAD = 22, X0 = PAD, X1 = W - PAD;
     const MONO = "'Courier Prime', 'Courier New', Courier, monospace";
+    const SANS = "Inter, -apple-system, BlinkMacSystemFont, sans-serif"; // v1065: valores del comprobante en Inter (la letra de la app); las etiquetas siguen en Courier
     const TINTA = '#1d1d1d', PAPEL = '#F7F6F2';
     const medir = document.createElement('canvas').getContext('2d');
     const ancho = (t, f) => { medir.font = f; return medir.measureText(t).width; };
@@ -29435,6 +29446,8 @@ html body #screen-clientes#screen-clientes #chips-rutas-clientes .tab-button{ he
     const advN = (c, w, px) => (c === '.' || c === ',') ? w * 0.42 : (/\d/.test(c) ? w - 0.085 * px : w);
     const anchoNum = (t, f) => { medir.font = f; const px = pxDe(f); let a = 0; for(const c of t) a += advN(c, medir.measureText(c).width, px); return a; };
     const textoNum = (t, x, y) => { const px = pxDe(ctx.font); for(const c of t){ const w = ctx.measureText(c).width; ctx.fillText(c, (c === '.' || c === ',') ? x - w * 0.29 : x, y); x += advN(c, w, px); } };
+    const ETQ = datos.tabla ? SANS : MONO; // v1066: en Historial y Plan de pago (con tabla) también las etiquetas van en Inter; PrestaYa y el subtítulo siguen en Courier
+    const anchoV = (t, f) => /Inter/.test(f) ? ancho(t, f) : anchoNum(t, f);
     const envolver = (txt, fuente, maxW) => {
       medir.font = fuente; const pal = String(txt).split(/\s+/); const lineas = []; let l = '';
       pal.forEach(w => { const t = l ? l + ' ' + w : w; if(medir.measureText(t).width > maxW && l){ lineas.push(l); l = w; } else l = t; });
@@ -29449,9 +29462,9 @@ html body #screen-clientes#screen-clientes #chips-rutas-clientes .tab-button{ he
     plano.push(['guiones', y]); // v934: más aire bajo "COMPROBANTE DE PAGO"
     const yFilasIni = y;
     filas.forEach((f, i) => {
-      const fuenteV = f[2] === 'monto' ? 'bold 21px ' + MONO : '14px ' + MONO;
+      const fuenteV = f[2] === 'monto' ? 'bold 21px ' + SANS : '15px ' + SANS;
       let lineasV = [f[1]];
-      const wEt = ancho(f[0], '14px ' + MONO) + 8;
+      const wEt = ancho(f[0], '14px ' + ETQ) + 8;
       if(f[2] !== 'chico' && f[2] !== 'monto' && f[2] !== 'sub') lineasV = envolver(f[1], fuenteV, X1 - X0 - wEt);
       if(f[2] === 'sub'){ y += 19; plano.push(['sub', y, f[1]]); return; } // v968: línea pequeña bajo el valor
       y += (i === 0 ? 38 : 34); plano.push(['fila', y, f[0], lineasV[0], f[2]]);
@@ -29538,7 +29551,7 @@ html body #screen-clientes#screen-clientes #chips-rutas-clientes .tab-button{ he
       else if(t === 'subTitulo'){
         // v970: reloj pequeño a la izquierda del texto; en rojo si el pago fue tarde
         const col = /^Pago /.test(e[2]) ? '#B71C1C' : '#1B7A2F';
-        ctx.font = '11.5px ' + MONO; const tw = ancho(e[2], ctx.font), r = 4.3, gap = 5, x0 = (W - (2 * r + gap + tw)) / 2;
+        ctx.font = '12.5px ' + SANS; const tw = ancho(e[2], ctx.font), r = 4.3, gap = 5, x0 = (W - (2 * r + gap + tw)) / 2;
         ctx.fillStyle = col; ctx.textAlign = 'left'; ctx.fillText(e[2], x0 + 2 * r + gap, yy);
         const cx = x0 + r, cy = yy - 3.6;
         ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
@@ -29547,26 +29560,26 @@ html body #screen-clientes#screen-clientes #chips-rutas-clientes .tab-button{ he
         ctx.restore();
       }
       else if(t === 'fila'){
-        const f14 = '14px ' + MONO;
+        const f14 = '14px ' + ETQ;
         ctx.font = f14; ctx.fillText(e[2], X0, yy);
         const xv = X0 + ancho(e[2], f14) + 8, disp = X1 - xv;
-        let fv = e[4] === 'monto' ? 'bold 21px ' + MONO : (e[4] === 'chico' ? '11.5px ' + MONO : f14);
+        let fv = e[4] === 'monto' ? 'bold 21px ' + SANS : (e[4] === 'chico' ? '11.5px ' + SANS : '15px ' + SANS);
         let px = parseFloat(fv.match(/([\d.]+)px/)[1]);
         while(ancho(e[3], fv) > disp && px > 9){ px -= 0.5; fv = fv.replace(/[\d.]+px/, px + 'px'); }
         ctx.font = fv;
-        if(e[2] === 'CLIENTE:'){ ctx.save(); ctx.font = 'bold ' + fv; ctx.fillStyle = '#000'; ctx.fillText(e[3], xv, yy); ctx.restore(); } // v1055: nombre en negro intenso y negrita
-        else if(/\d/.test(e[3])) textoNum(e[3], xv, yy); // v934 · v984: cifras y puntos de miles más juntos
+        if(e[2] === 'CLIENTE:'){ ctx.save(); ctx.font = fv; ctx.fillStyle = '#000'; ctx.fillText(e[3], xv, yy); ctx.restore(); } // v1055 · v1065: nombre en negro intenso, sin negrita
+        else if(/\d/.test(e[3]) && !/Inter/.test(fv)) textoNum(e[3], xv, yy); // v934 · v984: cifras y puntos de miles más juntos
         else ctx.fillText(e[3], xv, yy);
         if(e[2] === 'CUOTA:' && /\d/.test(e[3])){ // v936: los dos números de la cuota, más negros y marcados
           for(let i = 0; i < e[3].length; i++){
             if(!/\d/.test(e[3][i])) continue;
-            const xd = xv + anchoNum(e[3].slice(0, i), fv);
+            const xd = xv + anchoV(e[3].slice(0, i), fv);
             ctx.save(); ctx.font = fv; ctx.fillStyle = '#000'; ctx.shadowBlur = 0.9; ctx.shadowColor = 'rgba(0,0,0,0.6)'; // v937: negro intenso pero sin negrita
             ctx.fillText(e[3][i], xd, yy); ctx.restore();
           }
         }
         if((e[2] === 'CUOTA:' && !creditoPagado && e[3] !== '—' && e[3] !== 'Sin plazo') || (e[2] === 'SALDO PENDIENTE:' && creditoPagado)){ // v935 · v949: con el crédito terminado el círculo pasa al saldo: círculo rojo a mano alzada alrededor de "3 de 8"
-          const wT = anchoNum(e[3], fv), cx = xv + wT / 2 + 3, cy = yy - 4.5, rx = Math.max(wT / 2 + 10, 22), ry = 13; // v979: más ovalado
+          const wT = anchoV(e[3], fv), cx = xv + wT / 2 + 3, cy = yy - 4.5, rx = Math.max(wT / 2 + 10, 22), ry = 13; // v979: más ovalado
           let sem = 4242; const az = () => { sem = (sem * 1664525 + 1013904223) >>> 0; return sem / 4294967296; };
           ctx.save(); ctx.shadowColor = 'rgba(190,20,20,0.35)'; ctx.shadowBlur = 0.8; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
           [[-0.55, 1.0, 0.0, 2.1, 1.9, 'rgba(205,30,30,0.9)'], [0.35, 1.06, 0.22, 2.0, 1.4, 'rgba(215,45,45,0.55)']].forEach(([ini, esc, rot, vueltas, grosor, color]) => {
@@ -29593,15 +29606,15 @@ html body #screen-clientes#screen-clientes #chips-rutas-clientes .tab-button{ he
         ctx.restore();
         const celda = (txt, k, yb, fuente, color) => {
           const w = colX[k + 1] - colX[k] - 8; ctx.font = fuente; ctx.fillStyle = color || TINTA;
-          if(/\d/.test(txt)){ // v984: cifras más juntas también en las tablas
+          if(/\d/.test(txt) && !/Inter/.test(fuente)){ // v984: cifras más juntas también en las tablas
             const wn = anchoNum(txt, fuente); ctx.textAlign = 'left';
             textoNum(txt, T.alinea[k] === 'der' ? colX[k + 1] - 5 - wn : (colX[k] + colX[k + 1]) / 2 - wn / 2, yb); return;
           }
           if(T.alinea[k] === 'der'){ ctx.textAlign = 'right'; ctx.fillText(txt, colX[k + 1] - 5, yb, w); }
           else { ctx.textAlign = 'center'; ctx.fillText(txt, (colX[k] + colX[k + 1]) / 2, yb, w); }
         };
-        T.encabezados.forEach((h, k) => { ctx.textAlign = 'center'; ctx.font = 'bold 10px ' + MONO; ctx.fillStyle = TINTA; ctx.fillText(h, (colX[k] + colX[k + 1]) / 2, top + 15, colX[k + 1] - colX[k] - 6); });
-        T.filas.forEach((fila, i) => fila.forEach((txt, k) => celda(String(txt), k, top + rh * (i + 1) + 15, '10.5px ' + MONO, T.rojas && T.rojas[i] && T.rojas[i][k] ? '#B71C1C' : (T.verdes && T.verdes[i] && T.verdes[i][k] ? (k === 3 ? '#0B4F1A' : '#1B7A2F') : (T.azules && T.azules[i] && T.azules[i][k] ? '#1456B8' : null)))));
+        T.encabezados.forEach((h, k) => { ctx.textAlign = 'center'; ctx.font = 'bold 10px ' + ETQ; ctx.fillStyle = TINTA; ctx.fillText(h, (colX[k] + colX[k + 1]) / 2, top + 15, colX[k + 1] - colX[k] - 6); });
+        T.filas.forEach((fila, i) => fila.forEach((txt, k) => celda(String(txt), k, top + rh * (i + 1) + 15, '10.5px ' + SANS, T.rojas && T.rojas[i] && T.rojas[i][k] ? '#B71C1C' : (T.verdes && T.verdes[i] && T.verdes[i][k] ? (k === 3 ? '#0B4F1A' : '#1B7A2F') : (T.azules && T.azules[i] && T.azules[i][k] ? '#1456B8' : null)))));
         ctx.textAlign = 'left'; ctx.fillStyle = TINTA;
       }
       else if(t === 'sello'){
@@ -29618,7 +29631,7 @@ html body #screen-clientes#screen-clientes #chips-rutas-clientes .tab-button{ he
         for(let k = 0; k < 150; k++){ ctx.fillStyle = 'rgba(247,246,242,' + (0.55 + azs() * 0.4).toFixed(2) + ')'; ctx.beginPath(); ctx.arc((azs() - 0.5) * (tw + 6), (azs() - 0.5) * (th + 6), 0.4 + azs() * 0.9, 0, 6.2832); ctx.fill(); }
         ctx.restore(); ctx.textBaseline = 'alphabetic';
       }
-      else if(t === 'cont'){ ctx.font = '14px ' + MONO; if(/\d/.test(e[2])) textoNum(e[2], X0 + e[3], yy); else ctx.fillText(e[2], X0 + e[3], yy); }
+      else if(t === 'cont'){ ctx.font = '15px ' + SANS; ctx.fillText(e[2], X0 + e[3], yy); } // v1065
       else if(t === 'pieEscudo'){
         // v967: "¡Gracias por su abono!" grande y más negro (sin escudo)
         ctx.font = '15px ' + MONO; ctx.textAlign = 'center';
