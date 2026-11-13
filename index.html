@@ -11497,6 +11497,11 @@ html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir svg{ widt
 /* v1067: globo de cuota pagada — acción "Compartir comprobante" */
 .globo-cuota .globo-cuota-accion{ display:flex; align-items:center; justify-content:center; gap:6px; margin-top:7px; padding-top:7px; border-top:1px solid rgba(20,30,60,.12); font-size:12.5px; font-weight:700; color:#1A365D; white-space:nowrap; }
 .globo-cuota .globo-cuota-accion svg{ width:15px; height:15px; flex:none; }
+
+/* v1070: Plan de pago (modal de Fecha inicio) — botón pequeño de compartir imagen */
+#plan-oceano-overlay .po-acc{ display:flex; align-items:center; gap:8px; }
+#plan-oceano-overlay .po-share{ width:28px; height:28px; padding:0; border:0; border-radius:50%; background:rgba(255,255,255,.2); color:#fff; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
+#plan-oceano-overlay .po-share svg{ width:15px; height:15px; }
 </style>
 
 </head>
@@ -28665,13 +28670,29 @@ html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir svg{ widt
     }).join('');
     const ov = document.createElement('div');
     ov.id = 'plan-oceano-overlay';
-    ov.innerHTML = '<div class="po-caja" role="dialog" aria-label="Plan de pago"><div class="po-cab"><b>Plan de pago</b><button type="button" class="po-x" aria-label="Cerrar">×</button></div>'
+    ov.innerHTML = '<div class="po-caja" role="dialog" aria-label="Plan de pago"><div class="po-cab"><b>Plan de pago</b><div class="po-acc"><button type="button" class="po-share" aria-label="Compartir imagen del plan de pago"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></button><button type="button" class="po-x" aria-label="Cerrar">×</button></div></div>'
       + '<div class="po-scroll"><table class="po-tabla"><thead><tr><th>Cuota</th><th>Fecha de pago</th><th>Valor</th></tr></thead><tbody>' + (filas || '<tr><td colspan="3">Sin cuotas</td></tr>') + '</tbody></table></div>'
       + '<div class="po-pie"><span>Total</span><b>' + formatearPesos(total) + '</b></div></div>';
     const cerrar = ()=>{ ov.classList.remove('visible'); document.removeEventListener('keydown', tecla); setTimeout(()=> ov.remove(), 180); };
     const tecla = e => { if(e.key === 'Escape') cerrar(); };
     ov.addEventListener('click', e => { if(e.target === ov) cerrar(); });
     ov.querySelector('.po-x').addEventListener('click', cerrar);
+    // v1070: botón pequeño para compartir la imagen del plan de pago (panel nativo: WhatsApp y demás); si no hay panel, abre la vista previa de siempre
+    ov.querySelector('.po-share').addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      const cli = clientesGuardados.find(c => c.id === prestamo.clienteId) || (typeof clienteEnDetalle !== 'undefined' ? clienteEnDetalle : null);
+      let canvas = null;
+      try{ canvas = generarCanvasCronograma(prestamo, cli); }catch(err){ console.warn('[Plan de pago]', err); }
+      if(!canvas){ alert('No se pudo generar la imagen. Intenta de nuevo.'); return; }
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1));
+      const archivo = blob ? new File([blob], 'plan-de-pago-' + (prestamo.codigo || 'credito') + '.png', { type: 'image/png' }) : null;
+      if(archivo && navigator.share && navigator.canShare && navigator.canShare({ files: [archivo] })){
+        try{ await navigator.share({ files: [archivo], title: 'Plan de pago' }); return; }
+        catch(err){ if(err && err.name === 'AbortError') return; console.warn('navigator.share no funcionó:', err); }
+      }
+      cerrar();
+      abrirModalCronograma(prestamo, cli);
+    });
     document.addEventListener('keydown', tecla);
     document.body.appendChild(ov);
     requestAnimationFrame(()=> ov.classList.add('visible'));
