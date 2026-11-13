@@ -29478,7 +29478,7 @@ html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir svg{ widt
     plano.push(['guiones', y]); // v934: más aire bajo "COMPROBANTE DE PAGO"
     const yFilasIni = y;
     filas.forEach((f, i) => {
-      const fuenteV = f[2] === 'monto' ? 'bold 21px ' + SANS : '15px ' + SANS;
+      const fuenteV = f[2] === 'monto' ? 'bold 16px ' + SANS : '15px ' + SANS;
       let lineasV = [f[1]];
       const wEt = ancho(f[0], '14px ' + ETQ) + 8;
       if(f[2] !== 'chico' && f[2] !== 'monto' && f[2] !== 'sub') lineasV = envolver(f[1], fuenteV, X1 - X0 - wEt);
@@ -29579,7 +29579,7 @@ html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir svg{ widt
         const f14 = '14px ' + ETQ;
         ctx.font = f14; ctx.fillText(e[2], X0, yy);
         const xv = X0 + ancho(e[2], f14) + 8, disp = X1 - xv;
-        let fv = e[4] === 'monto' ? 'bold 21px ' + SANS : (e[4] === 'chico' ? '11.5px ' + SANS : '15px ' + SANS);
+        let fv = e[4] === 'monto' ? 'bold 16px ' + SANS : (e[4] === 'chico' ? '11.5px ' + SANS : '15px ' + SANS);
         let px = parseFloat(fv.match(/([\d.]+)px/)[1]);
         while(ancho(e[3], fv) > disp && px > 9){ px -= 0.5; fv = fv.replace(/[\d.]+px/, px + 'px'); }
         ctx.font = fv;
