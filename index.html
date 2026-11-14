@@ -11502,6 +11502,21 @@ html body #screen-detalle-prestamo .cuota-item .cuota-accion.compartir svg{ widt
 #plan-oceano-overlay .po-acc{ display:flex; align-items:center; gap:8px; }
 #plan-oceano-overlay .po-share{ width:28px; height:28px; padding:0; border:0; border-radius:50%; background:rgba(255,255,255,.2); color:#fff; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
 #plan-oceano-overlay .po-share svg{ width:15px; height:15px; }
+
+/* v1073: Resumen del período — celeste suave (reemplaza el dorado) */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado{ background:linear-gradient(160deg,#F1F7FD 0%,#DCE9F7 100%) !important; border:1.5px solid #BED5EC !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .grafico-ganancias-selector-mes{ background:#E6EFF9 !important; border-color:#BED5EC !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .loan-detail-item{ box-shadow:inset 0 1.5px 3px rgba(30,70,120,0.10), 0 1px 0 rgba(255,255,255,0.9) !important; }
+
+/* v1074: Resumen del período — contenedores internos un poco más marcados */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-total-prestado-recaudado .loan-detail-item{ background:#FFFFFF !important; border:1px solid #B4CDE6 !important; box-shadow:inset 0 2px 4px rgba(30,70,120,0.16), 0 1px 0 rgba(255,255,255,0.95) !important; }
+
+/* v1075: Ganancias — contenedor de comparación un poco más marcado */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-comparativo-ganancias .comparativo-ganancias-resumen{ background:rgba(255,255,255,0.72) !important; border:1px solid #8FCBA9 !important; box-shadow:inset 0 2px 4px rgba(20,60,40,0.20), 0 1px 0 rgba(255,255,255,0.9) !important; }
+
+/* v1076: Medios de Pago y Capital por Ruta — contenedores un poco más marcados */
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-medios-pago-inicio .mdp-total{ background:rgba(30,45,80,0.11) !important; border:1px solid rgba(80,70,150,0.32) !important; box-shadow:inset 0 2.5px 5px rgba(20,30,60,0.24), 0 1px 0 rgba(255,255,255,0.85) !important; }
+html body:not(.modo-oscuro) #screen-inicio #tarjeta-top-rutas-capital .top-rutas-total{ border:1px solid rgba(40,110,80,0.32) !important; box-shadow:inset 0 3px 6px rgba(30,45,80,.26), inset 0 1px 2px rgba(30,45,80,.20), 0 1px 0 rgba(255,255,255,.85) !important; }
 </style>
 
 </head>
