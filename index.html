@@ -11557,6 +11557,46 @@ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .
 
 /* v1087: "N de M cuotas" en negro puro, mismo peso */
 html body:not(.modo-oscuro) #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-linea-cuotas{ color:#000 !important; font-weight:600 !important; }
+
+/* v1090: alerta sutil en vencidas — pulso suave del recuadro rojo, del triángulo y del aviso de mora */
+@keyframes vencPulsoCaja{ 0%,100%{ box-shadow:0 0 0 0 rgba(217,45,32,0); } 50%{ box-shadow:0 0 0 4px rgba(217,45,32,.22); } }
+@keyframes vencPulsoIcono{ 0%,100%{ transform:scale(1); opacity:1; } 50%{ transform:scale(1.22); opacity:.72; } }
+@keyframes vencPulsoAviso{ 0%,100%{ opacity:1; } 50%{ opacity:.55; } }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja{ animation:vencPulsoCaja 2.4s ease-in-out infinite; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja .crn-warn{ transform-origin:center; transform-box:fill-box; animation:vencPulsoIcono 2.4s ease-in-out infinite; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .client-alerta-mora svg, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .client-alerta-mora .cam-titulo{ animation:vencPulsoAviso 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion:reduce){
+  html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja .crn-warn, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .client-alerta-mora svg, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .client-alerta-mora .cam-titulo{ animation:none; }
+}
+
+/* v1091: la barra de progreso de cuotas se llena de izquierda a derecha al aparecer la tarjeta */
+@keyframes segLlena{ from{ transform:scaleX(0); opacity:.2; } to{ transform:scaleX(1); opacity:1; } }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg.pagada, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg.vencida{ transform-origin:left center; animation:segLlena .45s cubic-bezier(.22,.61,.36,1) backwards; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(1){ animation-delay:0.25s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(2){ animation-delay:0.32s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(3){ animation-delay:0.39s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(4){ animation-delay:0.46s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(5){ animation-delay:0.53s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(6){ animation-delay:0.60s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(7){ animation-delay:0.67s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(8){ animation-delay:0.74s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(9){ animation-delay:0.81s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(10){ animation-delay:0.88s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(11){ animation-delay:0.95s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(12){ animation-delay:1.02s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(13){ animation-delay:1.09s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(14){ animation-delay:1.16s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(15){ animation-delay:1.23s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(16){ animation-delay:1.30s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(17){ animation-delay:1.37s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(18){ animation-delay:1.44s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(19){ animation-delay:1.51s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(20){ animation-delay:1.58s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(21){ animation-delay:1.65s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(22){ animation-delay:1.72s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(23){ animation-delay:1.79s; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(24){ animation-delay:1.86s; }
+@media (prefers-reduced-motion:reduce){ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg.pagada, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg.vencida{ animation:none; } }
 </style>
 
 </head>
