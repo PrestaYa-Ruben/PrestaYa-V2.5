@@ -11558,20 +11558,22 @@ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .
 /* v1087: "N de M cuotas" en negro puro, mismo peso */
 html body:not(.modo-oscuro) #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-linea-cuotas{ color:#000 !important; font-weight:600 !important; }
 
+/* v1096: pulsos de vencidas arrancan tras la transición (1,8 s) y el triángulo solo cambia de opacidad: menos repintado al volver de un cliente */
 /* v1090: alerta sutil en vencidas — pulso suave del recuadro rojo, del triángulo y del aviso de mora */
 @keyframes vencPulsoCaja{ 0%,100%{ box-shadow:0 0 0 0 rgba(217,45,32,0); } 50%{ box-shadow:0 0 0 4px rgba(217,45,32,.22); } }
-@keyframes vencPulsoIcono{ 0%,100%{ transform:scale(1); opacity:1; } 50%{ transform:scale(1.22); opacity:.72; } }
+@keyframes vencPulsoIcono{ 0%,100%{ opacity:1; } 50%{ opacity:.55; } }
 @keyframes vencPulsoAviso{ 0%,100%{ opacity:1; } 50%{ opacity:.55; } }
-html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja{ animation:vencPulsoCaja 2.4s ease-in-out infinite; }
-html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja .crn-warn{ transform-origin:center; transform-box:fill-box; animation:vencPulsoIcono 2.4s ease-in-out infinite; }
-html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .client-alerta-mora svg, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .client-alerta-mora .cam-titulo{ animation:vencPulsoAviso 2.4s ease-in-out infinite; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja{ animation:vencPulsoCaja 2.4s ease-in-out 1.8s infinite backwards; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja .crn-warn{ animation:vencPulsoIcono 2.4s ease-in-out 1.8s infinite backwards; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .client-alerta-mora svg, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .client-alerta-mora .cam-titulo{ animation:vencPulsoAviso 2.4s ease-in-out 1.8s infinite backwards; }
 @media (prefers-reduced-motion:reduce){
   html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-tile-roja .crn-warn, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .client-alerta-mora svg, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .client-alerta-mora .cam-titulo{ animation:none; }
 }
 
 /* v1091: la barra de progreso de cuotas se llena de izquierda a derecha al aparecer la tarjeta */
 @keyframes segLlena{ from{ transform:scaleX(0); opacity:.2; } to{ transform:scaleX(1); opacity:1; } }
-html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg.pagada, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg.vencida{ transform-origin:left center; animation:segLlena .45s cubic-bezier(.22,.61,.36,1) backwards; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg.pagada, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg.vencida{ transform-origin:left center; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente.cl-ent .crn-seg.pagada, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente.cl-ent .crn-seg.vencida{ animation:segLlena .45s cubic-bezier(.22,.61,.36,1) backwards; }
 html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(1){ animation-delay:0.25s; }
 html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(2){ animation-delay:0.32s; }
 html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(3){ animation-delay:0.39s; }
@@ -23247,6 +23249,7 @@ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .
   }
 
   function cerrarDetalleCliente(){
+    window.__cierreDetalleCliente = performance.now(); // v1096: al volver no se repiten las animaciones de entrada de la lista
     screenDetalleCliente.style.display = 'none';
     if(entroDetalleClienteDesdeBusqueda){
       // CORREGIDO: antes el buscador quedaba con el texto de la búsqueda
@@ -39712,10 +39715,18 @@ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .
     if(!pant || !lista) return;
     if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     let visible = pant.style.display === 'block';
+    // v1096: al volver desde el detalle de un cliente NO se repite la entrada en cascada (causaba un temblor en todas las tarjetas)
+    let cierreDetalle = -9999;
+    const pantDet = document.getElementById('screen-detalle-cliente');
+    if(pantDet){
+      let detVisible = pantDet.style.display === 'block';
+      new MutationObserver(()=>{ const v = pantDet.style.display === 'block'; if(detVisible && !v) cierreDetalle = performance.now(); detVisible = v; }).observe(pantDet, { attributes:true, attributeFilter:['style'] });
+    }
     function entrar(){
+      if(performance.now() - Math.max(cierreDetalle, window.__cierreDetalleCliente || -9999) < 1200) return;
       const filas = Array.from(pant.querySelectorAll('.client-row-cliente')).slice(0, 8);
       filas.forEach((f, i)=>{ f.style.setProperty('--cl-d', (i * 45) + 'ms'); f.classList.add('cl-ent'); });
-      setTimeout(()=> filas.forEach(f=>{ f.classList.remove('cl-ent'); f.style.removeProperty('--cl-d'); }), 8 * 45 + 560);
+      setTimeout(()=> filas.forEach(f=>{ f.classList.remove('cl-ent'); f.style.removeProperty('--cl-d'); }), 8 * 45 + 1500);
     }
     new MutationObserver(()=>{
       const v = pant.style.display === 'block';
@@ -41127,7 +41138,7 @@ label[for=fDate]{color:var(--navy) !important;font-weight:800 !important;font-si
       const p = r.target;
       const ahora = visible(p), antes = estado.get(p);
       estado.set(p, ahora);
-      if(listo && ahora && !antes) animar(p);
+      if(listo && ahora && !antes && !(p.id === 'screen-clientes' && performance.now() - (window.__cierreDetalleCliente || -9999) < 1500)) animar(p); // v1096: sin re-animar la lista al volver del detalle
     });
   });
   pantallas.forEach(p => mo.observe(p, { attributes:true, attributeFilter:['style','class'] }));
