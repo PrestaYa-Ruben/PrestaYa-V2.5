@@ -29695,7 +29695,7 @@ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .
       lineasV.slice(1).forEach(l => { y += 20; plano.push(['cont', y, l, wEt]); });
     });
     // v948: sello diagonal "CRÉDITO PAGADO" cuando el crédito ya está terminado
-    if(creditoPagado) plano.push(['sello', (yFilasIni + y) / 2 + 6]);
+    const yFinFilas = y; // v1099: referencia para el sello
     if(datos.tabla){ // v954: tabla con líneas (Historial y Cronograma) en vez del mensaje del pie
       y += 22; plano.push(['tabla', y]); y += 22 * (datos.tabla.filas.length + 1);
       y += 26; // v973: sin línea punteada inferior (se conserva el mismo espacio)
@@ -29713,6 +29713,7 @@ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .
     const patBarras = /^\d+$/.test(datoBarras) ? code128C(datoBarras) : code128B(datoBarras); // v946: solo dígitos → subconjunto C (menos barras)
     y += 26; plano.push(['barras', y]);
     y += 56 + 16; plano.push(['codtxt', y, datoBarras]); // v946: altura original (56)
+    if(creditoPagado) plano.push(['sello', (yFilasIni + yFinFilas) / 2 + 24]); // v1100: sello circular, encima de todo, casi al centro de las filas · v1099
     const H = Math.ceil(y + 30);
 
     const canvas = document.createElement('canvas');
@@ -29842,18 +29843,46 @@ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .
         ctx.textAlign = 'left'; ctx.fillStyle = TINTA;
       }
       else if(t === 'sello'){
-        const cxs = W - PAD - 62, tw = 124, th = 66, COL = '200,30,30'; // v950: tinta roja
-        ctx.save(); ctx.translate(cxs, yy + 26); ctx.rotate(-0.21); // v950: más abajo, entre las filas de texto corto ctx.shadowBlur = 0.6; ctx.shadowColor = 'rgba(' + COL + ',0.5)';
-        ctx.strokeStyle = 'rgba(' + COL + ',0.82)'; ctx.fillStyle = 'rgba(' + COL + ',0.82)';
-        ctx.lineWidth = 3; ctx.strokeRect(-tw / 2, -th / 2, tw, th);
-        ctx.lineWidth = 1; ctx.strokeRect(-tw / 2 + 4, -th / 2 + 4, tw - 8, th - 8);
-        ctx.font = 'bold 22px ' + MONO; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('CRÉDITO', 0, -13, tw - 12); ctx.fillText('PAGADO', 0, 13, tw - 12);
-        ctx.lineWidth = 0.9; ctx.lineJoin = 'round'; ctx.strokeText('CRÉDITO', 0, -13, tw - 12); ctx.strokeText('PAGADO', 0, 13, tw - 12); // v950: más peso en el texto // v949: dos líneas
-        // tinta de sello irregular: huecos del color del papel
+        // v1099: sello circular verde "CRÉDITO TOTALMENTE PAGADO" (texto en arco arriba y abajo, check y PAGADO grande), tinta con transparencia
+        const Rs = 64, cxs = W - PAD - 58, cys = yy, VERDE = '24,100,60';
+        ctx.save(); ctx.translate(cxs, cys); ctx.rotate(-0.13);
+        ctx.globalAlpha = 0.78; ctx.strokeStyle = 'rgb(' + VERDE + ')'; ctx.fillStyle = 'rgb(' + VERDE + ')';
+        ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, 0, Rs, 0, 6.2832); ctx.stroke();
+        ctx.lineWidth = 1.1; ctx.beginPath(); ctx.arc(0, 0, Rs - 5.5, 0, 6.2832); ctx.stroke();
+        ctx.lineWidth = 1.1; ctx.beginPath(); ctx.arc(0, 0, Rs * 0.62, 0, 6.2832); ctx.stroke();
+        // texto en arco
+        const FARC = 'bold 8.6px Arial, Helvetica, sans-serif', TXT = 'CRÉDITO TOTALMENTE PAGADO';
+        ctx.font = FARC; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+        const anchos = Array.from(TXT).map(ch => ctx.measureText(ch).width + 0.6);
+        const total = anchos.reduce((p, c) => p + c, 0);
+        const rArriba = Rs * 0.70, rAbajo = Rs * 0.855; // radio de la línea base
+        const arco = (rb, centro, abajo) => {
+          const rm = abajo ? rb - 6 : rb + 3; // radio medio para repartir el ángulo
+          let ang = total / rm; let a0 = centro - ang / 2; if(abajo) a0 = centro + ang / 2;
+          let acum = 0;
+          Array.from(TXT).forEach((ch, i) => {
+            const mitad = anchos[i] / 2; const a = abajo ? a0 - (acum + mitad) / rm : a0 + (acum + mitad) / rm;
+            ctx.save(); ctx.translate(Math.cos(a) * rb, Math.sin(a) * rb); ctx.rotate(abajo ? a - Math.PI / 2 : a + Math.PI / 2);
+            ctx.fillText(ch, 0, 0); ctx.restore(); acum += anchos[i];
+          });
+        };
+        arco(rArriba, -Math.PI / 2, false);
+        arco(rAbajo, Math.PI / 2, true);
+        // check
+        ctx.lineWidth = 4.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        ctx.beginPath(); ctx.moveTo(-9, -22); ctx.lineTo(-3, -15); ctx.lineTo(10, -31); ctx.stroke();
+        // PAGADO grande
+        ctx.font = '900 33px "Arial Black", Impact, Arial, sans-serif'; ctx.textBaseline = 'middle';
+        ctx.save(); ctx.rotate(-0.08); ctx.fillText('PAGADO', 0, 9, Rs * 1.62); ctx.restore();
+        // tinta irregular: huecos del color del papel
         let sx = 2718; const azs = () => { sx = (sx * 1664525 + 1013904223) >>> 0; return sx / 4294967296; };
-        ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
-        for(let k = 0; k < 150; k++){ ctx.fillStyle = 'rgba(247,246,242,' + (0.55 + azs() * 0.4).toFixed(2) + ')'; ctx.beginPath(); ctx.arc((azs() - 0.5) * (tw + 6), (azs() - 0.5) * (th + 6), 0.4 + azs() * 0.9, 0, 6.2832); ctx.fill(); }
-        ctx.restore(); ctx.textBaseline = 'alphabetic';
+        ctx.globalAlpha = 1;
+        for(let k = 0; k < 260; k++){
+          const ang = azs() * 6.2832, rr = Math.sqrt(azs()) * (Rs + 3);
+          ctx.fillStyle = 'rgba(247,246,242,' + (0.5 + azs() * 0.45).toFixed(2) + ')';
+          ctx.beginPath(); ctx.arc(Math.cos(ang) * rr, Math.sin(ang) * rr, 0.35 + azs() * 0.95, 0, 6.2832); ctx.fill();
+        }
+        ctx.restore(); ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
       }
       else if(t === 'cont'){ ctx.font = '15px ' + SANS; ctx.fillText(e[2], X0 + e[3], yy); } // v1065
       else if(t === 'pieEscudo'){
