@@ -11597,6 +11597,7 @@ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .
 html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(23){ animation-delay:1.79s; }
 html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg:nth-child(24){ animation-delay:1.86s; }
 @media (prefers-reduced-motion:reduce){ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg.pagada, html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-seg.vencida{ animation:none; } }
+
 </style>
 
 </head>
@@ -24987,7 +24988,7 @@ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .
     return {
       titulo, creditoPagado: false, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos(),
       filas: [
-        ['CLIENTE:', cli.nombre || '—'],
+        ['NOMBRE:', cli.nombre || '—'],
         ['MONTO DEL PRÉSTAMO:', formatearPesos(prestamo.valor), 'monto'],
         ['FECHA DEL PRÉSTAMO:', prestamo.fecha ? fechaDiaCT(prestamo.fecha + 'T00:00:00') : '—'],
         ['FRECUENCIA DE PAGO:', (NOMBRES_FRECUENCIA[prestamo.frecuencia] || prestamo.frecuencia || '—').toUpperCase()],
@@ -25466,7 +25467,7 @@ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .
     const num = numeroCreditoCliente(prestamo);
     const filas = [
       ['VALOR PRESTADO:', formatearPesos(prestamo.valor), 'monto'],
-      ['CLIENTE:', cli.nombre || '—'],
+      ['NOMBRE:', cli.nombre || '—'],
       ...(docTxt ? [['IDENTIFICACIÓN:', docTxt]] : []),
       ...(num ? [['CRÉDITO:', '# ' + num]] : []),
       ['FECHA DEL CRÉDITO:', fFecha],
@@ -29636,7 +29637,7 @@ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .
     // v1059: cuota registrada como "Pago de interés" → el comprobante no muestra la cuota y siempre muestra el saldo pendiente
     const esPagoInteres = !!(ultimo && ultimo.concepto === 'pago_interes');
     const filas = [
-      ['CLIENTE:', cliente.nombre || '—'], // v1054: el cliente primero, luego el abono
+      ['NOMBRE:', cliente.nombre || '—'], // v1054: el cliente primero, luego el abono
       ['ABONO REALIZADO:', pesos(valor), 'monto'],
       ['ABONADO A:', concepto],
       ...(adicional ? [['ABONO ADICIONAL:', pesos(adicional)]] : []),
@@ -29787,7 +29788,7 @@ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .
         let px = parseFloat(fv.match(/([\d.]+)px/)[1]);
         while(ancho(e[3], fv) > disp && px > 9){ px -= 0.5; fv = fv.replace(/[\d.]+px/, px + 'px'); }
         ctx.font = fv;
-        if(e[2] === 'CLIENTE:'){ ctx.save(); ctx.font = fv; ctx.fillStyle = '#000'; ctx.fillText(e[3], xv, yy); ctx.restore(); } // v1055 · v1065: nombre en negro intenso, sin negrita
+        if(e[2] === 'NOMBRE:'){ ctx.save(); ctx.font = fv; ctx.fillStyle = '#000'; ctx.fillText(e[3], xv, yy); ctx.restore(); } // v1055 · v1065: nombre en negro intenso, sin negrita
         else if(/\d/.test(e[3]) && !/Inter/.test(fv)) textoNum(e[3], xv, yy); // v934 · v984: cifras y puntos de miles más juntos
         else ctx.fillText(e[3], xv, yy);
         if(e[2] === 'CUOTA:' && /\d/.test(e[3])){ // v936: los dos números de la cuota, más negros y marcados
