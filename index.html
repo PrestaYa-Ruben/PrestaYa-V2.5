@@ -29947,7 +29947,8 @@ html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .
       ['FECHA DE ABONO:', ultimo ? fechaDiaCT(ultimo.fecha) : '—'],
       ...(esPagoInteres ? [] : [['CUOTA:', prestamo.soloInteres ? 'Sin plazo' : (cuotaRecibo + ' de ' + totalCuotas)]]), // v953 · v1059: el número de la cuota de ESE recibo (cuota 1 → 1 de 4); si el abono no completó ninguna, las cuotas pagadas
       ...(obtenerReciboMostrarMetodo() ? [['MÉTODO DE PAGO:', ultimo ? ({ efectivo:'Efectivo', transferencia:'Transferencia' }[ultimo.metodoPago] || ultimo.metodoPago || 'Efectivo') : '—']] : []),
-      ...((mostrarReciboSaldo() && !ocultarSP) || creditoPagado || esPagoInteres ? [['SALDO RESTANTE:', pesos(saldoReciboPrestamo(prestamo))]] : []),
+      ...(((mostrarReciboSaldo() || (totalCuotas > 0 && !prestamo.soloInteres && cuotaRecibo / totalCuotas >= 0.5)) && !ocultarSP) || creditoPagado || esPagoInteres ? // v1115: el saldo restante sale solo al pagar el 50% o más de las cuotas; el interruptor lo fuerza siempre
+         [['SALDO RESTANTE:', pesos(saldoReciboPrestamo(prestamo))]] : []),
       ...(mostrarReciboProximo() && !ocultarSP ? [['PRÓXIMO PAGO:', (() => { const px = proximaCuotaPendiente(prestamo); return px ? fechaDiaCT(px.fechaISO) : 'Crédito al día'; })()]] : [])
     ];
     const idRef = ultimo ? Number(ultimo.lote || ultimo.id) : 0; // v1111: N.° de comprobante estable (6 dígitos derivados del registro del abono)
