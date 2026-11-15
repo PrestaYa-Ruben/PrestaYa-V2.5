@@ -30198,7 +30198,7 @@ function dibujarComprobanteTermico(datos){
         ctx.textAlign = 'left';
       }
       else if(t === 'comNo'){ // v1111: "COMPROBANTE No.  008542" en Inter regular, centrado
-        ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.font = '13px ' + SANS; ctx.textAlign = 'center'; ctx.fillStyle = '#000';
+        ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.font = '12px ' + SANS; ctx.textAlign = 'center'; ctx.fillStyle = '#85837C'; // v1119: más suave y más pequeño
         ctx.fillText('RECIBO No.  ' + e[2], W / 2, yy); ctx.restore();
       }
       else if(t === 'correo'){ // v1113: "Info-PrestaYa@Outlook.com" con icono de sobre en blanco y negro, alineado con la línea de WhatsApp
