@@ -30047,7 +30047,7 @@ function dibujarComprobanteTermico(datos){
     }else{
       y += 24; plano.push(['guiones', y, creditoPagado ? 199.5 : undefined]); // v1102: la línea termina en el borde del sello
       if(datos.pie) pie.forEach((l, i) => { y += (i === 0 ? 28 : 16); plano.push(['pie', y, l]); });
-      else { y += 34; plano.push(['pieEscudo', y, pie[0]]); y += 4; } // v966: texto más grande con el escudo a su izquierda
+      else { y += 34; plano.push(['pieEscudo', y, pie[0]]); y += 19; plano.push(['pieMsg', y, 'Un pago puntual es un crédito']); y += 14; plano.push(['pieMsg', y, 'siempre disponible para usted.']); y += 4; } // v1108 · v1109: mensaje en letra pequeña bajo el agradecimiento (dos líneas centradas) // v966: texto más grande con el escudo a su izquierda
     }
     // v930: código de barras Code 128 (PY + código del crédito + fecha del último abono o de hoy)
     // v955: el código de barras SIEMPRE se imprime. Con "Ocultar el ID del crédito" activo no lleva el ID: lleva un número
@@ -30107,14 +30107,9 @@ function dibujarComprobanteTermico(datos){
       }
       else if(t === 'codtxt'){ ctx.font = '12px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(e[2].split('').join(' '), W / 2, yy, W - 2 * PAD); }
       else if(t === 'marca'){
-        ctx.font = 'bold 34px ' + MONO; ctx.textAlign = 'center'; ctx.fillText('PrestaYa', W / 2, yy, W - 2 * PAD);
-        // v945: tinta desgastada: falla de impresión (manchitas del color del papel, rayas y zonas más tenues)
-        const wM = ancho('PrestaYa', 'bold 34px ' + MONO), x0m = W / 2 - wM / 2;
-        let sm = 31337; const azm = () => { sm = (sm * 1664525 + 1013904223) >>> 0; return sm / 4294967296; };
+        // v1107: "PrestaYa" con la misma tipografía (Inter) del nombre y los valores, en negrita, nítido y sin desgaste de tinta
         ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
-        for(let k = 0; k < 190; k++){ const r = 0.35 + azm() * 0.75; ctx.fillStyle = 'rgba(230,227,218,' + (0.5 + azm() * 0.4).toFixed(2) + ')'; ctx.beginPath(); ctx.arc(x0m + azm() * wM, yy - 25 + azm() * 29, r, 0, 6.2832); ctx.fill(); }
-        for(let k = 0; k < 8; k++){ const xs = x0m + azm() * wM, ys = yy - 25 + azm() * 29; ctx.strokeStyle = 'rgba(230,227,218,0.7)'; ctx.lineWidth = 0.5 + azm() * 0.7; ctx.beginPath(); ctx.moveTo(xs, ys); ctx.lineTo(xs + (azm() - 0.5) * 9, ys + (azm() - 0.5) * 3); ctx.stroke(); }
-        for(let k = 0; k < 3; k++){ ctx.fillStyle = 'rgba(230,227,218,0.16)'; ctx.fillRect(x0m + azm() * wM * 0.8, yy - 26, 10 + azm() * 26, 30); }
+        ctx.font = 'bold 36px ' + SANS; ctx.textAlign = 'center'; ctx.fillText('PrestaYa', W / 2, yy, W - 2 * PAD);
         ctx.restore();
       }
       else if(t === 'titulo'){ ctx.font = '16px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(datos.titulo || 'COMPROBANTE DE PAGO', W / 2, yy, W - 2 * PAD); }
@@ -30198,6 +30193,9 @@ function dibujarComprobanteTermico(datos){
         ctx.fillStyle = '#000'; ctx.strokeStyle = '#000'; ctx.lineWidth = 0.45;
         ctx.fillText(e[2], W / 2, yy + 1); ctx.strokeText(e[2], W / 2, yy + 1);
         ctx.textAlign = 'left';
+      }
+      else if(t === 'pieMsg'){ // v1110: mensaje bajo el agradecimiento en Inter regular (la tipografía de "PrestaYa", sin negrita)
+        ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.font = '11.5px ' + SANS; ctx.textAlign = 'center'; ctx.fillText(e[2], W / 2, yy); ctx.restore();
       }
       else if(t === 'pie'){
         let px = 10.5; let fv = px + 'px ' + MONO;
