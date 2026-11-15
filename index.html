@@ -11899,6 +11899,11 @@ html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .
 html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .crn-seg.pagada,
 html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .crn-seg.vencida{ animation:none; }
 }
+/* v1116: porcentaje pagado (solo el número) alineado al final de la barra, en la misma línea de "6 de 8 cuotas" */
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-linea-cuotas,
+html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .crn-linea-cuotas{ display:flex !important; justify-content:space-between !important; align-items:baseline !important; gap:8px !important; }
+html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-pct,
+html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .crn-pct{ font-weight:500 !important; font-size:0.82em !important; font-variant-numeric:tabular-nums !important; margin-left:auto !important; text-align:right !important; } /* v1117: menos peso y tamaño */
 </style>
 
 </head>
@@ -22139,7 +22144,7 @@ html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .
     bloque.innerHTML = '<div class="crn-izq">' + cab
       + '<div class="crn-linea">Otorgado: ' + formatearPesos(otorgado) + '</div>'
       + '<div class="crn-linea">Saldo pendiente: <b>' + formatearPesos(saldo) + '</b></div>'
-      + '<div class="crn-linea crn-linea-cuotas">' + (soloInteres ? 'Solo interés' : pagadas + ' de ' + total + ' cuotas') + '</div>'
+      + '<div class="crn-linea crn-linea-cuotas">' + (soloInteres ? 'Solo interés' : '<span>' + pagadas + ' de ' + total + ' cuotas</span><span class="crn-pct">' + (total ? Math.round(pagadas / total * 100) : 0) + '%</span>') + '</div>' // v1116: porcentaje pagado al final de la barra
       + (soloInteres ? '' : '<div class="crn-segs" aria-label="' + pagadas + ' de ' + total + ' cuotas pagadas">' + trozos + '</div>') + '</div>'
       + '<div class="crn-sep"></div>' + tile;
     const tileEl = bloque.querySelector('.crn-tile[role="button"]');
