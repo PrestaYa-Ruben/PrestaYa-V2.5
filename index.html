@@ -29946,11 +29946,13 @@ html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .
       ...(numeroCreditoCliente(prestamo) ? [['CRÉDITO:', '# ' + numeroCreditoCliente(prestamo)]] : []),
       ['FECHA DE ABONO:', ultimo ? fechaDiaCT(ultimo.fecha) : '—'],
       ...(esPagoInteres ? [] : [['CUOTA:', prestamo.soloInteres ? 'Sin plazo' : (cuotaRecibo + ' de ' + totalCuotas)]]), // v953 · v1059: el número de la cuota de ESE recibo (cuota 1 → 1 de 4); si el abono no completó ninguna, las cuotas pagadas
+      ...((mostrarReciboSaldo() && !ocultarSP) || creditoPagado || esPagoInteres ? [['SALDO RESTANTE:', pesos(saldoReciboPrestamo(prestamo))]] : []),
       ...(obtenerReciboMostrarMetodo() ? [['MÉTODO DE PAGO:', ultimo ? ({ efectivo:'Efectivo', transferencia:'Transferencia' }[ultimo.metodoPago] || ultimo.metodoPago || 'Efectivo') : '—']] : []),
-      ...((mostrarReciboSaldo() && !ocultarSP) || creditoPagado || esPagoInteres ? [['SALDO PENDIENTE:', pesos(saldoReciboPrestamo(prestamo))]] : []),
       ...(mostrarReciboProximo() && !ocultarSP ? [['PRÓXIMO PAGO:', (() => { const px = proximaCuotaPendiente(prestamo); return px ? fechaDiaCT(px.fechaISO) : 'Crédito al día'; })()]] : [])
     ];
-    return { filas, msgPuntual, creditoPagado, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos() };
+    const idRef = ultimo ? Number(ultimo.lote || ultimo.id) : 0; // v1111: N.° de comprobante estable (6 dígitos derivados del registro del abono)
+    const numeroComp = idRef ? String(Math.floor(idRef / 1000) % 1000000).padStart(6, '0') : '';
+    return { filas, msgPuntual, numeroComp, creditoPagado, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos() };
   }
   // El recibo que abre "Monto aprobado": el último abono del crédito
   function generarCanvasReciboTermico(prestamo){
@@ -30002,6 +30004,24 @@ function dibujarSelloPagado(ctx, cxC, cyC, lado){
     ctx.restore(); }
   ctx.restore();
 }
+// v1111: marcador azul a mano alzada (reemplaza el óvalo rojo): mancha azul marino irregular; el texto va encima en claro
+function marcadorAzul(ctx, xa, xb, cy, rh){
+  let sem = 5151; const az = () => { sem = (sem * 1664525 + 1013904223) >>> 0; return sem / 4294967296; };
+  const trazar = (dx, dy, esc) => {
+    const cx = (xa + xb) / 2, rx = (xb - xa) / 2 * esc, ry = rh * esc, N = 72; ctx.beginPath();
+    for(let i = 0; i <= N; i++){
+      const a = i / N * Math.PI * 2, c = Math.cos(a), sn = Math.sin(a), n = 4;
+      const px = Math.sign(c) * Math.pow(Math.abs(c), 2 / n), py = Math.sign(sn) * Math.pow(Math.abs(sn), 2 / n);
+      const r = 1 + 0.03 * Math.sin(a * 3 + 1.3) + 0.02 * Math.sin(a * 7 + 0.4) + (az() - 0.5) * 0.025;
+      const x = cx + dx + px * rx * r, y = cy + dy + py * ry * r; if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+  };
+  ctx.save(); ctx.shadowBlur = 1.2; ctx.shadowColor = 'rgba(20,35,120,0.55)';
+  ctx.fillStyle = 'rgba(24,40,128,0.97)'; trazar(0, 0, 1); ctx.fill();
+  ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(30,48,140,0.5)'; trazar(1.2, 0.8, 1.04); ctx.fill(); ctx.restore();
+}
+const WHATSAPP_PATH = 'M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z'; // v1111: icono de WhatsApp (1 color)
 function dibujarComprobanteTermico(datos){
     const filas = datos.filas, creditoPagado = !!datos.creditoPagado;
     const W = 340, PAD = 22, X0 = PAD, X1 = W - PAD;
@@ -30026,7 +30046,8 @@ function dibujarComprobanteTermico(datos){
     let y = 0; const plano = [];
     y += 44; plano.push(['marca', y]);
     y += 30; plano.push(['titulo', y]);
-    if(datos.msgPuntual){ y += 22; plano.push(['subTitulo', y, datos.msgPuntual]); y += 21; } // v969: puntualidad justo bajo "COMPROBANTE DE PAGO"
+    if(datos.msgPuntual){ y += 22; plano.push(['subTitulo', y, datos.msgPuntual]); if(datos.numeroComp){ y += 25; plano.push(['comNo', y, datos.numeroComp]); } y += 20; } // v969: puntualidad justo bajo "COMPROBANTE DE PAGO" · v1111: N.° de comprobante
+    else if(datos.numeroComp){ y += 26; plano.push(['comNo', y, datos.numeroComp]); y += 22; }
     else y += 31;
     plano.push(['guiones', y]); // v934: más aire bajo "COMPROBANTE DE PAGO"
     const yFilasIni = y;
@@ -30047,8 +30068,9 @@ function dibujarComprobanteTermico(datos){
     }else{
       y += 24; plano.push(['guiones', y, creditoPagado ? 199.5 : undefined]); // v1102: la línea termina en el borde del sello
       if(datos.pie) pie.forEach((l, i) => { y += (i === 0 ? 28 : 16); plano.push(['pie', y, l]); });
-      else { y += 34; plano.push(['pieEscudo', y, pie[0]]); y += 19; plano.push(['pieMsg', y, 'Un pago puntual es un crédito']); y += 14; plano.push(['pieMsg', y, 'siempre disponible para usted.']); y += 4; } // v1108 · v1109: mensaje en letra pequeña bajo el agradecimiento (dos líneas centradas) // v966: texto más grande con el escudo a su izquierda
+      else { y += 34; plano.push(['pieEscudo', y, pie[0]]); y += 19; plano.push(['pieMsg', y, 'Un pago puntual es un crédito']); y += 14; plano.push(['pieMsg', y, 'siempre disponible para usted.']); y += 4; } // v1108 · v1109: mensaje en letra pequeña bajo el agradecimiento (dos líneas centradas)
     }
+    y += datos.tabla ? 4 : 20; plano.push(['atencion', y]); // v1111: línea de atención por WhatsApp en todos los comprobantes
     // v930: código de barras Code 128 (PY + código del crédito + fecha del último abono o de hoy)
     // v955: el código de barras SIEMPRE se imprime. Con "Ocultar el ID del crédito" activo no lleva el ID: lleva un número
     // neutro (fecha y hora de generación), así el ID no se revela pero el recibo no queda sin código.
@@ -30127,38 +30149,23 @@ function dibujarComprobanteTermico(datos){
       else if(t === 'fila'){
         const f14 = '14px ' + ETQ;
         ctx.font = f14; ctx.fillText(e[2], X0, yy);
-        const xv = X0 + ancho(e[2], f14) + 8, disp = X1 - xv;
+        let xv = X0 + ancho(e[2], f14) + 8; const disp = X1 - xv;
         let fv = e[4] === 'monto' ? 'bold 16px ' + SANS : (e[4] === 'chico' ? '11.5px ' + SANS : '15px ' + SANS);
         let px = parseFloat(fv.match(/([\d.]+)px/)[1]);
         while(ancho(e[3], fv) > disp && px > 9){ px -= 0.5; fv = fv.replace(/[\d.]+px/, px + 'px'); }
-        ctx.font = fv;
+        ctx.font = fv; xv = X1 - anchoV(e[3], fv); // v1111: valores alineados a la derecha
+        const resalta = (e[2] === 'CUOTA:' && !creditoPagado && e[3] !== '—' && e[3] !== 'Sin plazo') || (e[2] === 'SALDO RESTANTE:' && creditoPagado);
+        if(resalta){ marcadorAzul(ctx, xv - 10, xv + anchoV(e[3], fv) + 10, yy - 4.5, 13.5); ctx.fillStyle = '#F4F2EC'; }
         if(e[2] === 'NOMBRE:'){ ctx.save(); ctx.font = fv; ctx.fillStyle = '#000'; ctx.fillText(e[3], xv, yy); ctx.restore(); } // v1055 · v1065: nombre en negro intenso, sin negrita
         else if(/\d/.test(e[3]) && !/Inter/.test(fv)) textoNum(e[3], xv, yy); // v934 · v984: cifras y puntos de miles más juntos
         else ctx.fillText(e[3], xv, yy);
-        if(e[2] === 'CUOTA:' && /\d/.test(e[3])){ // v936: los dos números de la cuota, más negros y marcados
+        if(e[2] === 'CUOTA:' && /\d/.test(e[3]) && !resalta){ // v936: los dos números de la cuota, más negros y marcados
           for(let i = 0; i < e[3].length; i++){
             if(!/\d/.test(e[3][i])) continue;
             const xd = xv + anchoV(e[3].slice(0, i), fv);
             ctx.save(); ctx.font = fv; ctx.fillStyle = '#000'; ctx.shadowBlur = 0.9; ctx.shadowColor = 'rgba(0,0,0,0.6)'; // v937: negro intenso pero sin negrita
             ctx.fillText(e[3][i], xd, yy); ctx.restore();
           }
-        }
-        if((e[2] === 'CUOTA:' && !creditoPagado && e[3] !== '—' && e[3] !== 'Sin plazo') || (e[2] === 'SALDO PENDIENTE:' && creditoPagado)){ // v935 · v949: con el crédito terminado el círculo pasa al saldo: círculo rojo a mano alzada alrededor de "3 de 8"
-          const wT = anchoV(e[3], fv), cx = xv + wT / 2 + 3, cy = yy - 4.5, rx = Math.max(wT / 2 + 10, 22), ry = 13; // v979: más ovalado
-          let sem = 4242; const az = () => { sem = (sem * 1664525 + 1013904223) >>> 0; return sem / 4294967296; };
-          ctx.save(); ctx.shadowColor = 'rgba(190,20,20,0.35)'; ctx.shadowBlur = 0.8; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-          [[-0.55, 1.0, 0.0, 2.1, 1.9, 'rgba(205,30,30,0.9)'], [0.35, 1.06, 0.22, 2.0, 1.4, 'rgba(215,45,45,0.55)']].forEach(([ini, esc, rot, vueltas, grosor, color]) => {
-            const fase = az() * 6, N = 90; ctx.beginPath(); ctx.strokeStyle = color;
-            for(let i = 0; i <= N; i++){
-              const f = i / N, a = ini + f * Math.PI * vueltas;
-              const r = esc * (1 + 0.045 * Math.sin(a * 3 + fase) + 0.03 * Math.sin(a * 5 + fase * 2)) * (1 + f * 0.07); // la espiral se abre un poco: no cierra perfecto
-              const x = cx + Math.cos(a + rot * 0.2) * rx * r + (az() - 0.5) * 0.5;
-              const y = cy + Math.sin(a) * ry * r + Math.cos(a + rot) * 1.5 + (az() - 0.5) * 0.5;
-              if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            }
-            ctx.lineWidth = grosor; ctx.stroke();
-          });
-          ctx.restore();
         }
       }
       else if(t === 'tabla'){
@@ -30186,13 +30193,23 @@ function dibujarComprobanteTermico(datos){
         // v1103: sello vectorial nítido; lado 133,9 px lógicos y centro a 264,3 px del borde izquierdo (medidas de la imagen de referencia)
         dibujarSelloPagado(ctx, 264.3, yy, 133.9);
       }
-      else if(t === 'cont'){ ctx.font = '15px ' + SANS; ctx.fillText(e[2], X0 + e[3], yy); } // v1065
+      else if(t === 'cont'){ ctx.font = '15px ' + SANS; ctx.fillText(e[2], X1 - ancho(e[2], ctx.font), yy); } // v1065 · v1111: valores alineados a la derecha
       else if(t === 'pieEscudo'){
         // v967: "¡Gracias por su abono!" grande y más negro (sin escudo)
         ctx.font = '15px ' + MONO; ctx.textAlign = 'center';
         ctx.fillStyle = '#000'; ctx.strokeStyle = '#000'; ctx.lineWidth = 0.45;
         ctx.fillText(e[2], W / 2, yy + 1); ctx.strokeText(e[2], W / 2, yy + 1);
         ctx.textAlign = 'left';
+      }
+      else if(t === 'comNo'){ // v1111: "COMPROBANTE No.  008542" en Inter regular, centrado
+        ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.font = '13px ' + SANS; ctx.textAlign = 'center'; ctx.fillStyle = '#000';
+        ctx.fillText('COMPROBANTE No.  ' + e[2], W / 2, yy); ctx.restore();
+      }
+      else if(t === 'atencion'){ // v1111: "Atención al cliente WhatsApp: 316 268 5282" con el icono de WhatsApp en blanco y negro
+        ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.font = '11px ' + SANS; ctx.textAlign = 'left'; ctx.fillStyle = TINTA;
+        const txtA = 'Atención al cliente WhatsApp: 316 268 5282', wA = ancho(txtA, ctx.font), ic = 13, gapI = 6, x0A = (W - (ic + gapI + wA)) / 2;
+        ctx.save(); ctx.translate(x0A, yy - ic + 2); ctx.scale(ic / 24, ic / 24); ctx.fill(new Path2D(WHATSAPP_PATH)); ctx.restore();
+        ctx.fillText(txtA, x0A + ic + gapI, yy); ctx.restore();
       }
       else if(t === 'pieMsg'){ // v1110: mensaje bajo el agradecimiento en Inter regular (la tipografía de "PrestaYa", sin negrita)
         ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.font = '11.5px ' + SANS; ctx.textAlign = 'center'; ctx.fillText(e[2], W / 2, yy); ctx.restore();
