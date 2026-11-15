@@ -25775,7 +25775,7 @@ html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .
     const filas = [
       ['VALOR PRESTADO:', formatearPesos(prestamo.valor), 'monto'],
       ['NOMBRE:', cli.nombre || '—'],
-      ...(docTxt ? [['IDENTIFICACIÓN:', docTxt]] : []),
+      // v1122: se retira la identificación de este térmico (docTxt se conserva por si se vuelve a mostrar)
       ...(num ? [['CRÉDITO:', '# ' + num]] : []),
       ['FECHA DEL CRÉDITO:', fFecha],
       ['N.° DE CUOTAS:', prestamo.soloInteres ? 'Sin plazo' : String(prestamo.cuotas || (prestamo.plan || []).length || 0)],
@@ -25785,7 +25785,7 @@ html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .
     return dibujarComprobanteTermico({
       filas, creditoPagado: prestamo.estado === 'finalizado', codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos(),
       titulo: 'COMPROBANTE DE CRÉDITO',
-      pie: ['¡Gracias por tu confianza!', 'Pagar a tiempo es tu mejor respaldo.', 'Mantenerte al día te abre las puertas', 'a mejores oportunidades y nuevos créditos.']
+      gracias: '¡Gracias por elegirnos!' // v1120: mismo pie que los demás térmicos (agradecimiento + mensaje + WhatsApp + correo)
     });
   }
   function generarCanvasResumenPrestamoAnterior(prestamo, cliente){
@@ -30038,7 +30038,7 @@ function dibujarComprobanteTermico(datos){
       pal.forEach(w => { const t = l ? l + ' ' + w : w; if(medir.measureText(t).width > maxW && l){ lineas.push(l); l = w; } else l = t; });
       if(l) lineas.push(l); return lineas;
     };
-    const pie = datos.pie || ['¡Gracias por su abono!']; // v965: mensaje corto + escudo
+    const pie = datos.pie || [datos.gracias || '¡Gracias por su abono!']; // v965: mensaje corto + escudo
     let y = 0; const plano = [];
     y += 44; plano.push(['marca', y]);
     y += 30; plano.push(['titulo', y]);
