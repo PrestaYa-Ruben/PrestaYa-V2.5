@@ -30093,7 +30093,7 @@ function dibujarComprobanteTermico(datos){
       y += 22; plano.push(['tabla', y]); y += 22 * (datos.tabla.filas.length + 1);
       y += 26; // v973: sin línea punteada inferior (se conserva el mismo espacio)
     }else{
-      y += 24; plano.push(['guiones', y, creditoPagado ? 199.5 : undefined]); // v1102: la línea termina en el borde del sello
+      y += 24; plano.push(['guiones', y]); // v1126: la línea punteada va completa también con sello (antes se cortaba en 199,5) · v1102: la línea termina en el borde del sello · v1125: se vuelve al largo original del térmico (el sello queda sobre el pie, bajo los datos)
       if(datos.pie) pie.forEach((l, i) => { y += (i === 0 ? 28 : 16); plano.push(['pie', y, l]); });
       else { y += 34; plano.push(['pieEscudo', y, pie[0]]); y += 19; plano.push(['pieMsg', y, 'Un pago puntual es un crédito']); y += 14; plano.push(['pieMsg', y, 'siempre disponible para usted.']); y += 4; } // v1108 · v1109: mensaje en letra pequeña bajo el agradecimiento (dos líneas centradas)
     }
@@ -30107,7 +30107,7 @@ function dibujarComprobanteTermico(datos){
     const patBarras = /^\d+$/.test(datoBarras) ? code128C(datoBarras) : code128B(datoBarras); // v946: solo dígitos → subconjunto C (menos barras)
     y += 26; plano.push(['barras', y]);
     y += 38 + 16; plano.push(['codtxt', y, datoBarras]); // v946 · v1114: altura 38 (antes 56)
-    if(creditoPagado) plano.push(['sello', yFinFilas + 22.4]); // v1102: centrado sobre la línea punteada inferior, como en la imagen de referencia
+    if(creditoPagado) plano.unshift(['sello', yFinFilas - 47]); // v1128: sello en la posición marcada por el usuario (centro x 194, 47 px sobre la última fila) y DETRÁS del texto, así los datos siguen legibles; // v1102: sello de la referencia · v1124: más abajo, justo debajo de la última fila (no tapa los datos)
     const H = Math.ceil(y + 30);
 
     const canvas = document.createElement('canvas');
@@ -30181,7 +30181,7 @@ function dibujarComprobanteTermico(datos){
         let px = parseFloat(fv.match(/([\d.]+)px/)[1]);
         while(ancho(e[3], fv) > disp && px > 9){ px -= 0.5; fv = fv.replace(/[\d.]+px/, px + 'px'); }
         ctx.font = fv; xv = X1 - anchoV(e[3], fv); // v1111: valores alineados a la derecha
-        const resalta = (e[2] === 'CUOTA:' && !creditoPagado && e[3] !== '—' && e[3] !== 'Sin plazo') || (e[2] === 'SALDO RESTANTE:' && creditoPagado);
+        const resalta = (e[2] === 'CUOTA:' && !creditoPagado && e[3] !== '—' && e[3] !== 'Sin plazo'); // v1127: en el térmico final del crédito (pagado) no va la píldora azul en el saldo restante
         if(resalta){ marcadorAzul(ctx, xv - 12, xv + anchoV(e[3], fv) + 12, yy - 4.5, 13); ctx.fillStyle = '#F4F2EC'; }
         if(e[2] === 'NOMBRE:'){ ctx.save(); ctx.font = fv; ctx.fillStyle = '#000'; ctx.fillText(e[3], xv, yy); ctx.restore(); } // v1055 · v1065: nombre en negro intenso, sin negrita
         else if(/\d/.test(e[3]) && !/Inter/.test(fv)) textoNum(e[3], xv, yy); // v934 · v984: cifras y puntos de miles más juntos
@@ -30218,7 +30218,7 @@ function dibujarComprobanteTermico(datos){
       }
       else if(t === 'sello'){
         // v1103: sello vectorial nítido; lado 133,9 px lógicos y centro a 264,3 px del borde izquierdo (medidas de la imagen de referencia)
-        dibujarSelloPagado(ctx, 264.3, yy, 133.9);
+        dibujarSelloPagado(ctx, 194.2, yy, 133.9);
       }
       else if(t === 'cont'){ ctx.font = '15px ' + SANS; ctx.fillText(e[2], X1 - ancho(e[2], ctx.font), yy); } // v1065 · v1111: valores alineados a la derecha
       else if(t === 'pieEscudo'){
