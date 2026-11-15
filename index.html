@@ -11904,6 +11904,17 @@ html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .
 html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .crn-linea-cuotas{ display:flex !important; justify-content:space-between !important; align-items:baseline !important; gap:8px !important; }
 html body #screen-clientes#screen-clientes .card.client-row.client-row-cliente .crn-pct,
 html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .crn-pct{ font-weight:500 !important; font-size:0.82em !important; font-variant-numeric:tabular-nums !important; margin-left:auto !important; text-align:right !important; } /* v1117: menos peso y tamaño */
+/* v1123: al abrir cualquier imagen compartible (térmicos, recibos, historial, plan, simulador…) el fondo queda borroso, sin scroll y sin animaciones */
+#imagen-comprobante-overlay,
+#compartir-comprobante-overlay,
+#compartir-plan-overlay,
+#sim-compartir-overlay,
+#recordatorio-cuota-preview-overlay,
+#documento-libre-preview-overlay,
+#ticket-prestamo-overlay,
+#img-comp-cuota-overlay{ -webkit-backdrop-filter:blur(14px) saturate(1.1) !important; backdrop-filter:blur(14px) saturate(1.1) !important; }
+#img-comp-cuota-overlay{ background:rgba(14,20,50,.5) !important; }
+html.fondo-congelado *:not(.confirm-modal-overlay):not(.confirm-modal-overlay *):not(#img-comp-cuota-overlay):not(#img-comp-cuota-overlay *){ animation-play-state:paused !important; }
 </style>
 
 </head>
@@ -28988,6 +28999,26 @@ html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .
     enlace.href = url; enlace.download = nombreArchivo; document.body.appendChild(enlace); enlace.click(); document.body.removeChild(enlace);
     setTimeout(()=> URL.revokeObjectURL(url), 60000);
   }
+  // v1123: fondo congelado e inmóvil mientras hay una imagen compartible abierta (scroll bloqueado + animaciones en pausa); el desenfoque lo da el CSS
+  const OVERLAYS_COMPARTIR = ['imagen-comprobante-overlay', 'compartir-comprobante-overlay', 'compartir-plan-overlay', 'sim-compartir-overlay', 'recordatorio-cuota-preview-overlay', 'documento-libre-preview-overlay', 'ticket-prestamo-overlay'];
+  const congelarFondo = (function(){
+    let y0 = 0, mio = false, prev = null;
+    return function(){
+      const hs = document.documentElement, bs = document.body.style;
+      const abierto = !!document.getElementById('img-comp-cuota-overlay') || OVERLAYS_COMPARTIR.some(id => { const e = document.getElementById(id); return e && e.style.display !== 'none' && getComputedStyle(e).display !== 'none'; });
+      hs.classList.toggle('fondo-congelado', abierto);
+      if(abierto && !mio && bs.position !== 'fixed'){
+        y0 = window.scrollY || window.pageYOffset || 0; prev = { position: bs.position, top: bs.top, left: bs.left, right: bs.right, width: bs.width, overflow: bs.overflow };
+        bs.position = 'fixed'; bs.top = (-y0) + 'px'; bs.left = '0'; bs.right = '0'; bs.width = '100%'; bs.overflow = 'hidden'; mio = true;
+      }else if(!abierto && mio){
+        Object.assign(bs, prev); window.scrollTo(0, y0); mio = false;
+      }
+    };
+  })();
+  (function(){
+    const iniciar = () => { const mo = new MutationObserver(congelarFondo); OVERLAYS_COMPARTIR.forEach(id => { const e = document.getElementById(id); if(e) mo.observe(e, { attributes: true, attributeFilter: ['style', 'class'] }); }); };
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
+  })();
   function abrirImagenCompartible(opc){
     const canvas = opc.canvas;
     if(!canvas){ alert('No se pudo generar la imagen. Intenta de nuevo.'); return; }
@@ -28997,13 +29028,13 @@ html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .
       + '<div class="icc-acciones"><button type="button" class="icc-compartir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>Compartir</button>'
       + '<button type="button" class="icc-cerrar" aria-label="Cerrar">×</button></div></div>';
     ov.querySelector('img').src = canvas.toDataURL('image/png');
-    document.body.appendChild(ov);
+    document.body.appendChild(ov); document.documentElement.classList.add('fondo-congelado');
     const yAntes = window.scrollY || window.pageYOffset || 0, bs = document.body.style;
     const estiloAntes = { position: bs.position, top: bs.top, left: bs.left, right: bs.right, width: bs.width, overflow: bs.overflow };
     bs.position = 'fixed'; bs.top = (-yAntes) + 'px'; bs.left = '0'; bs.right = '0'; bs.width = '100%'; bs.overflow = 'hidden';
     ov.addEventListener('touchmove', e => { if(!e.target.closest('.icc-scroll')) e.preventDefault(); }, { passive: false });
     let cerrado = false;
-    const cerrar = ()=>{ if(cerrado) return; cerrado = true; Object.assign(bs, estiloAntes); window.scrollTo(0, yAntes); ov.remove(); };
+    const cerrar = ()=>{ if(cerrado) return; cerrado = true; Object.assign(bs, estiloAntes); window.scrollTo(0, yAntes); ov.remove(); congelarFondo(); };
     ov.querySelector('.icc-cerrar').addEventListener('click', cerrar);
     ov.addEventListener('click', e => { if(e.target === ov) cerrar(); });
     ov.querySelector('.icc-compartir').addEventListener('click', ()=>{
