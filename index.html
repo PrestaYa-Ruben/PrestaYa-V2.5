@@ -30007,7 +30007,7 @@ function dibujarComprobanteTermico(datos){
     const W = 340, PAD = 22, X0 = PAD, X1 = W - PAD;
     const MONO = "'Courier Prime', 'Courier New', Courier, monospace";
     const SANS = "Inter, -apple-system, BlinkMacSystemFont, sans-serif"; // v1065: valores del comprobante en Inter (la letra de la app); las etiquetas siguen en Courier
-    const TINTA = '#1d1d1d', PAPEL = '#EEECE5';
+    const TINTA = '#1d1d1d', PAPEL = '#E6E3DA';
     const medir = document.createElement('canvas').getContext('2d');
     const ancho = (t, f) => { medir.font = f; return medir.measureText(t).width; };
     // v984: cifras más juntas y puntos de miles más pegados (dibujado carácter a carácter, compatible con Safari)
@@ -30112,9 +30112,9 @@ function dibujarComprobanteTermico(datos){
         const wM = ancho('PrestaYa', 'bold 34px ' + MONO), x0m = W / 2 - wM / 2;
         let sm = 31337; const azm = () => { sm = (sm * 1664525 + 1013904223) >>> 0; return sm / 4294967296; };
         ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
-        for(let k = 0; k < 190; k++){ const r = 0.35 + azm() * 0.75; ctx.fillStyle = 'rgba(238,236,229,' + (0.5 + azm() * 0.4).toFixed(2) + ')'; ctx.beginPath(); ctx.arc(x0m + azm() * wM, yy - 25 + azm() * 29, r, 0, 6.2832); ctx.fill(); }
-        for(let k = 0; k < 8; k++){ const xs = x0m + azm() * wM, ys = yy - 25 + azm() * 29; ctx.strokeStyle = 'rgba(238,236,229,0.7)'; ctx.lineWidth = 0.5 + azm() * 0.7; ctx.beginPath(); ctx.moveTo(xs, ys); ctx.lineTo(xs + (azm() - 0.5) * 9, ys + (azm() - 0.5) * 3); ctx.stroke(); }
-        for(let k = 0; k < 3; k++){ ctx.fillStyle = 'rgba(238,236,229,0.16)'; ctx.fillRect(x0m + azm() * wM * 0.8, yy - 26, 10 + azm() * 26, 30); }
+        for(let k = 0; k < 190; k++){ const r = 0.35 + azm() * 0.75; ctx.fillStyle = 'rgba(230,227,218,' + (0.5 + azm() * 0.4).toFixed(2) + ')'; ctx.beginPath(); ctx.arc(x0m + azm() * wM, yy - 25 + azm() * 29, r, 0, 6.2832); ctx.fill(); }
+        for(let k = 0; k < 8; k++){ const xs = x0m + azm() * wM, ys = yy - 25 + azm() * 29; ctx.strokeStyle = 'rgba(230,227,218,0.7)'; ctx.lineWidth = 0.5 + azm() * 0.7; ctx.beginPath(); ctx.moveTo(xs, ys); ctx.lineTo(xs + (azm() - 0.5) * 9, ys + (azm() - 0.5) * 3); ctx.stroke(); }
+        for(let k = 0; k < 3; k++){ ctx.fillStyle = 'rgba(230,227,218,0.16)'; ctx.fillRect(x0m + azm() * wM * 0.8, yy - 26, 10 + azm() * 26, 30); }
         ctx.restore();
       }
       else if(t === 'titulo'){ ctx.font = '16px ' + MONO; ctx.textAlign = 'center'; ctx.fillText(datos.titulo || 'COMPROBANTE DE PAGO', W / 2, yy, W - 2 * PAD); }
