@@ -30071,11 +30071,12 @@ function dibujarComprobanteTermico(datos){
     };
     const pie = datos.pie || [datos.gracias || '¡Gracias por su abono!']; // v965: mensaje corto + escudo
     let y = 0; const plano = [];
-    y += 44; plano.push(['marca', y]);
-    y += 30; plano.push(['titulo', y]);
-    if(datos.msgPuntual){ y += 22; plano.push(['subTitulo', y, datos.msgPuntual]); if(datos.numeroComp){ y += 25; plano.push(['comNo', y, datos.numeroComp]); } y += 20; } // v969: puntualidad justo bajo "COMPROBANTE DE PAGO" · v1111: N.° de comprobante
-    else if(datos.numeroComp){ y += 26; plano.push(['comNo', y, datos.numeroComp]); y += 22; }
-    else y += 31;
+    const cmp = !datos.tabla; // v1132: espaciado más compacto en térmicos y recibos (el historial y el plan de pagos conservan el espaciado original)
+    y += cmp ? 40 : 44; plano.push(['marca', y]);
+    y += cmp ? 27 : 30; plano.push(['titulo', y]);
+    if(datos.msgPuntual){ y += cmp ? 19 : 22; plano.push(['subTitulo', y, datos.msgPuntual]); if(datos.numeroComp){ y += cmp ? 21 : 25; plano.push(['comNo', y, datos.numeroComp]); } y += cmp ? 16 : 20; } // v969: puntualidad justo bajo "COMPROBANTE DE PAGO" · v1111: N.° de comprobante
+    else if(datos.numeroComp){ y += cmp ? 22 : 26; plano.push(['comNo', y, datos.numeroComp]); y += cmp ? 18 : 22; }
+    else y += cmp ? 27 : 31;
     plano.push(['guiones', y]); // v934: más aire bajo "COMPROBANTE DE PAGO"
     const yFilasIni = y;
     filas.forEach((f, i) => {
@@ -30084,7 +30085,7 @@ function dibujarComprobanteTermico(datos){
       const wEt = ancho(f[0], '14px ' + ETQ) + 8;
       if(f[2] !== 'chico' && f[2] !== 'monto' && f[2] !== 'sub') lineasV = envolver(f[1], fuenteV, X1 - X0 - wEt);
       if(f[2] === 'sub'){ y += 19; plano.push(['sub', y, f[1]]); return; } // v968: línea pequeña bajo el valor
-      y += (i === 0 ? 38 : 34); plano.push(['fila', y, f[0], lineasV[0], f[2]]);
+      y += cmp ? (i === 0 ? 34 : 29) : (i === 0 ? 38 : 34); plano.push(['fila', y, f[0], lineasV[0], f[2]]);
       lineasV.slice(1).forEach(l => { y += 20; plano.push(['cont', y, l, wEt]); });
     });
     // v948: sello diagonal "CRÉDITO PAGADO" cuando el crédito ya está terminado
@@ -30093,11 +30094,11 @@ function dibujarComprobanteTermico(datos){
       y += 22; plano.push(['tabla', y]); y += 22 * (datos.tabla.filas.length + 1);
       y += 26; // v973: sin línea punteada inferior (se conserva el mismo espacio)
     }else{
-      y += 24; plano.push(['guiones', y]); // v1126: la línea punteada va completa también con sello (antes se cortaba en 199,5) · v1102: la línea termina en el borde del sello · v1125: se vuelve al largo original del térmico (el sello queda sobre el pie, bajo los datos)
+      y += cmp ? 20 : 24; plano.push(['guiones', y]); // v1126: la línea punteada va completa también con sello (antes se cortaba en 199,5) · v1102: la línea termina en el borde del sello · v1125: se vuelve al largo original del térmico (el sello queda sobre el pie, bajo los datos)
       if(datos.pie) pie.forEach((l, i) => { y += (i === 0 ? 28 : 16); plano.push(['pie', y, l]); });
-      else { y += 34; plano.push(['pieEscudo', y, pie[0]]); y += 19; plano.push(['pieMsg', y, 'Un pago puntual es un crédito']); y += 14; plano.push(['pieMsg', y, 'siempre disponible para usted.']); y += 4; } // v1108 · v1109: mensaje en letra pequeña bajo el agradecimiento (dos líneas centradas)
+      else { y += 28; plano.push(['pieEscudo', y, pie[0]]); y += 16; plano.push(['pieMsg', y, 'Un pago puntual es un crédito']); y += 13; plano.push(['pieMsg', y, 'siempre disponible para usted.']); y += 4; } // v1108 · v1109: mensaje en letra pequeña bajo el agradecimiento (dos líneas centradas)
     }
-    y += datos.tabla ? 4 : 20; plano.push(['atencion', y]); y += 18; plano.push(['correo', y]); // v1111: línea de atención por WhatsApp · v1113: correo debajo, en todos los comprobantes
+    y += datos.tabla ? 4 : 15; plano.push(['atencion', y]); y += cmp ? 15 : 18; plano.push(['correo', y]); // v1111: línea de atención por WhatsApp · v1113: correo debajo, en todos los comprobantes
     // v930: código de barras Code 128 (PY + código del crédito + fecha del último abono o de hoy)
     // v955: el código de barras SIEMPRE se imprime. Con "Ocultar el ID del crédito" activo no lleva el ID: lleva un número
     // neutro (fecha y hora de generación), así el ID no se revela pero el recibo no queda sin código.
@@ -30105,10 +30106,10 @@ function dibujarComprobanteTermico(datos){
     const codigoNeutro = String(ahoraCT.getFullYear()).slice(2) + p2CT(ahoraCT.getMonth() + 1) + p2CT(ahoraCT.getDate()) + p2CT(ahoraCT.getHours()) + p2CT(ahoraCT.getMinutes());
     const datoBarras = datos.sinCodigo ? codigoNeutro : (String(datos.codigo || '').replace(/[^A-Za-z0-9]/g, '').replace(/^PRE/i, '') || '0'); // v931: número más corto (~50%)
     const patBarras = /^\d+$/.test(datoBarras) ? code128C(datoBarras) : code128B(datoBarras); // v946: solo dígitos → subconjunto C (menos barras)
-    y += 26; plano.push(['barras', y]);
-    y += 38 + 16; plano.push(['codtxt', y, datoBarras]); // v946 · v1114: altura 38 (antes 56)
-    if(creditoPagado) plano.unshift(['sello', yFinFilas - 47]); // v1128: sello en la posición marcada por el usuario (centro x 194, 47 px sobre la última fila) y DETRÁS del texto, así los datos siguen legibles; // v1102: sello de la referencia · v1124: más abajo, justo debajo de la última fila (no tapa los datos)
-    const H = Math.ceil(y + 30);
+    y += cmp ? 20 : 26; plano.push(['barras', y]);
+    y += 38 + (cmp ? 14 : 16); plano.push(['codtxt', y, datoBarras]); // v946 · v1114: altura 38 (antes 56)
+    if(creditoPagado) plano.unshift(['sello', yFinFilas - 40]); // v1128: sello en la posición marcada por el usuario (centro x 194, 47 px sobre la última fila) y DETRÁS del texto, así los datos siguen legibles; // v1102: sello de la referencia · v1124: más abajo, justo debajo de la última fila (no tapa los datos)
+    const H = Math.ceil(y + (cmp ? 22 : 30));
 
     const canvas = document.createElement('canvas');
     const ctx = prepararCanvasNitido(canvas, W, H, 3);
