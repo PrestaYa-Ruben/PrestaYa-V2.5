@@ -29935,7 +29935,7 @@ html.fondo-congelado *:not(.confirm-modal-overlay):not(.confirm-modal-overlay *)
   }
   // v946: Code 128 subconjunto C (dos dígitos por símbolo): la mitad de símbolos → menos barras para el mismo número
   // v1144: a pedido se ocultan en los térmicos/comprobantes/recibos el código de barras, el mensaje de puntualidad ("Pagaste a tiempo" / "Pago N días tarde") y la fila "ABONADO A:". Ocultos, no borrados: poner true para volver a mostrarlos.
-  window.PY_MOSTRAR_TERMICO = { codigoBarras: false, puntualidad: false, abonadoA: false };
+  window.PY_MOSTRAR_TERMICO = { codigoBarras: false, puntualidad: false, abonadoA: false, cop: false }; // v1155: cop oculto (poner cop:true para volver a mostrar "$ 125.000 cop")
   function code128C(digitos){
     let d = String(digitos); if(d.length % 2) d = '0' + d;
     const vals = [105]; let suma = 105;
@@ -30004,23 +30004,27 @@ html.fondo-congelado *:not(.confirm-modal-overlay):not(.confirm-modal-overlay *)
     const ocultarSP = !!opciones.ocultarSaldoYProximo;
     // v1059: cuota registrada como "Pago de interés" → el comprobante no muestra la cuota y siempre muestra el saldo pendiente
     const esPagoInteres = !!(ultimo && ultimo.concepto === 'pago_interes');
+    const esMoraRecibo = !!(ultimo && (ultimo.aplicarA === 'mora' || ultimo.concepto === 'recargo_prorroga')); // v1156
     const filas = [
       ['NOMBRE:', nombreParaRecibo(cliente.nombre)], // v1054: el cliente primero, luego el abono · v1153
       ...filaDocumentoRecibo(cliente), // v1146
       ['ABONO REALIZADO:', pesos(valor), 'monto'],
+      ...(esMoraRecibo ? [['POR CONCEPTO DE:', 'Posponer fecha']] : []), // v1156
       ...(window.PY_MOSTRAR_TERMICO.abonadoA ? [['ABONADO A:', concepto]] : []), // v1144
       ...(adicional ? [['ABONO ADICIONAL:', pesos(adicional)]] : []),
       ...(numeroCreditoCliente(prestamo) ? [['CRÉDITO:', '# ' + numeroCreditoCliente(prestamo)]] : []),
       ['FECHA DE ABONO:', ultimo ? fechaDiaCT(ultimo.fecha) : '—'],
       ...(esPagoInteres ? [] : [['CUOTA:', prestamo.soloInteres ? 'Sin plazo' : (cuotaRecibo + ' de ' + totalCuotas)]]), // v953 · v1059: el número de la cuota de ESE recibo (cuota 1 → 1 de 4); si el abono no completó ninguna, las cuotas pagadas
       ...(obtenerReciboMostrarMetodo() ? [['MÉTODO DE PAGO:', ultimo ? ({ efectivo:'Efectivo', transferencia:'Transferencia' }[ultimo.metodoPago] || ultimo.metodoPago || 'Efectivo') : '—']] : []),
-      ...(((mostrarReciboSaldo() || (totalCuotas > 0 && !prestamo.soloInteres && cuotaRecibo / totalCuotas >= 0.5)) && !ocultarSP) || creditoPagado || esPagoInteres ? // v1115: el saldo restante sale solo al pagar el 50% o más de las cuotas; el interruptor lo fuerza siempre
+      ...(((mostrarReciboSaldo() || (totalCuotas > 0 && !prestamo.soloInteres && cuotaRecibo / totalCuotas >= 0.5)) && !ocultarSP) || creditoPagado || esPagoInteres || prestamo.soloInteres ? // v1115: el saldo restante sale solo al pagar el 50% o más de las cuotas; el interruptor lo fuerza siempre
          [['SALDO RESTANTE:', pesos(saldoReciboPrestamo(prestamo))]] : []),
       ...(mostrarReciboProximo() && !ocultarSP ? [['PRÓXIMO PAGO:', (() => { const px = proximaCuotaPendiente(prestamo); return px ? fechaDiaCT(px.fechaISO) : 'Crédito al día'; })()]] : [])
     ];
     const idRef = ultimo ? Number(ultimo.lote || ultimo.id) : 0; // v1111: N.° de comprobante estable (6 dígitos derivados del registro del abono)
     const numeroComp = idRef ? String(Math.floor(idRef / 1000) % 1000000).padStart(6, '0') : '';
-    return { filas, msgPuntual, numeroComp, creditoPagado, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos() };
+    const tsRec = ultimo ? (idRef > 1e12 ? idRef : new Date(ultimo.fecha).getTime()) : 0;
+    const fechaHora = (() => { const d = new Date(tsRec); if(!tsRec || isNaN(d)) return ''; let h = d.getHours(); const ap = h >= 12 ? 'pm' : 'am'; h = h % 12 || 12; return fechaDiaCT(d).replace(/^0/, '') + ' - ' + h + ':' + String(d.getMinutes()).padStart(2, '0') + ' ' + ap; })(); // v1156
+    return { filas, fechaHora, msgPuntual, numeroComp, creditoPagado, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos() };
   }
   // El recibo que abre "Monto aprobado": el último abono del crédito
   function generarCanvasReciboTermico(prestamo){
@@ -30121,8 +30125,8 @@ function dibujarComprobanteTermico(datos){
     y += (cmp ? 40 : 44) + 10; // v1145: +10 de aire sobre PrestaYa
     plano.push(['marca', y]);
     y += cmp ? 27 : 30; plano.push(['titulo', y]);
-    if(datos.msgPuntual){ y += cmp ? 19 : 22; plano.push(['subTitulo', y, datos.msgPuntual]); if(datos.numeroComp){ y += cmp ? 21 : 25; plano.push(['comNo', y, datos.numeroComp]); } y += cmp ? 16 : 20; } // v969: puntualidad justo bajo "COMPROBANTE DE PAGO" · v1111: N.° de comprobante
-    else if(datos.numeroComp){ y += cmp ? 22 : 26; plano.push(['comNo', y, datos.numeroComp]); y += cmp ? 18 : 22; }
+    if(datos.msgPuntual){ y += cmp ? 19 : 22; plano.push(['subTitulo', y, datos.msgPuntual]); if(datos.numeroComp){ y += cmp ? 21 : 25; plano.push(['comNo', y, datos.numeroComp]); if(datos.fechaHora){ y += 15; plano.push(['fechaHora', y, datos.fechaHora]); } } y += cmp ? 16 : 20; } // v969: puntualidad justo bajo "COMPROBANTE DE PAGO" · v1111: N.° de comprobante
+    else if(datos.numeroComp){ y += cmp ? 22 : 26; plano.push(['comNo', y, datos.numeroComp]); if(datos.fechaHora){ y += 15; plano.push(['fechaHora', y, datos.fechaHora]); } y += cmp ? 18 : 22; }
     else y += cmp ? 27 : 31;
     plano.push(['guiones', y]); // v934: más aire bajo "COMPROBANTE DE PAGO"
     const yFilasIni = y;
@@ -30243,13 +30247,14 @@ function dibujarComprobanteTermico(datos){
         const esTeal = ['ABONO REALIZADO:', 'VALOR PRESTADO:', 'MONTO DEL PRÉSTAMO:'].includes(e[2]); // v1148: también el valor prestado / monto del préstamo
         const esCop = (esTeal || e[2] === 'SALDO RESTANTE:') && /^\$/.test(e[3]); // v1147: "$ 158.000 cop"
         const txtCop = esCop ? '$ ' + e[3].replace(/^\$\s*/, '') : '', fCop = '12px ' + SANS;
-        const wValor = esCop ? ancho(txtCop, fv) + ancho(' cop', fCop) : anchoV(e[3], fv);
+        const verCop = !!window.PY_MOSTRAR_TERMICO.cop; // v1155
+        const wValor = esCop ? ancho(txtCop, fv) + (verCop ? ancho(' cop', fCop) : 0) : anchoV(e[3], fv);
         if(esCop) xv = X1 - wValor;
         const resalta = (e[2] === 'CUOTA:' && !creditoPagado && e[3] !== '—' && e[3] !== 'Sin plazo') || (creditoPagado && e[2] === 'SALDO RESTANTE:'); // v1136: en el térmico final del crédito el óvalo azul va en el saldo restante ($0) // v1127: en el térmico final del crédito (pagado) no va la píldora azul en el saldo restante
         if(resalta){ ovaloManoAzul(ctx, xv - 8, xv + wValor + 8, yy - 4.5, 12); } // v1134: óvalo a mano alzada, el texto queda en tinta
         if(esCop){
           ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.fillStyle = esTeal ? TEAL : TINTA;
-          ctx.font = fv; ctx.fillText(txtCop, xv, yy); ctx.font = fCop; ctx.fillText(' cop', xv + ancho(txtCop, fv), yy); ctx.restore();
+          ctx.font = fv; ctx.fillText(txtCop, xv, yy); if(verCop){ ctx.font = fCop; ctx.fillText(' cop', xv + ancho(txtCop, fv), yy); } ctx.restore();
         }
         else if(e[2] === 'CUOTA:' && /\d/.test(e[3])){ // v1135: solo los números de la cuota (4 y 6) en negrita; "de" normal
           const segs = e[3].split(/(\d+)/).filter(Boolean), fb = 'bold ' + fv; let tot = 0;
@@ -30299,6 +30304,10 @@ function dibujarComprobanteTermico(datos){
       else if(t === 'comNo'){ // v1111: "COMPROBANTE No.  008542" en Inter regular, centrado
         ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.font = '12px ' + SANS; ctx.textAlign = 'center'; ctx.fillStyle = PIZARRA; // v1119 · v1150: más suave y más pequeño
         ctx.fillText('RECIBO No.  ' + e[2], W / 2, yy); ctx.restore();
+      }
+      else if(t === 'fechaHora'){ // v1156
+        ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.font = '12px ' + SANS; ctx.textAlign = 'center'; ctx.fillStyle = PIZARRA;
+        ctx.fillText(e[2], W / 2, yy); ctx.restore();
       }
       else if(t === 'correo'){ // v1113: "Info-PrestaYa@Outlook.com" con icono de sobre en blanco y negro, alineado con la línea de WhatsApp
         ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.font = '11px ' + SANS; ctx.textAlign = 'left'; ctx.fillStyle = TINTA; ctx.strokeStyle = TINTA;
