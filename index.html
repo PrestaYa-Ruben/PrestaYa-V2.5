@@ -30196,7 +30196,7 @@ function dibujarComprobanteTermico(datos){
         let px = parseFloat(fv.match(/([\d.]+)px/)[1]);
         while(ancho(e[3], fv) > disp && px > 9){ px -= 0.5; fv = fv.replace(/[\d.]+px/, px + 'px'); }
         ctx.font = fv; xv = X1 - anchoV(e[3], fv); // v1111: valores alineados a la derecha
-        const resalta = (e[2] === 'CUOTA:' && !creditoPagado && e[3] !== '—' && e[3] !== 'Sin plazo'); // v1127: en el térmico final del crédito (pagado) no va la píldora azul en el saldo restante
+        const resalta = (e[2] === 'CUOTA:' && !creditoPagado && e[3] !== '—' && e[3] !== 'Sin plazo') || (creditoPagado && e[2] === 'SALDO RESTANTE:'); // v1136: en el térmico final del crédito el óvalo azul va en el saldo restante ($0) // v1127: en el térmico final del crédito (pagado) no va la píldora azul en el saldo restante
         if(resalta){ ovaloManoAzul(ctx, xv - 8, xv + anchoV(e[3], fv) + 8, yy - 4.5, 12); } // v1134: óvalo a mano alzada, el texto queda en tinta
         if(e[2] === 'CUOTA:' && /\d/.test(e[3])){ // v1135: solo los números de la cuota (4 y 6) en negrita; "de" normal
           const segs = e[3].split(/(\d+)/).filter(Boolean), fb = 'bold ' + fv; let tot = 0;
