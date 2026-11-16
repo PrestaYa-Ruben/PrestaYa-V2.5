@@ -11915,6 +11915,11 @@ html body #screen-busqueda#screen-busqueda .card.client-row.client-row-cliente .
 #img-comp-cuota-overlay{ -webkit-backdrop-filter:blur(14px) saturate(1.1) !important; backdrop-filter:blur(14px) saturate(1.1) !important; }
 #img-comp-cuota-overlay{ background:rgba(14,20,50,.5) !important; }
 html.fondo-congelado *:not(.confirm-modal-overlay):not(.confirm-modal-overlay *):not(#img-comp-cuota-overlay):not(#img-comp-cuota-overlay *){ animation-play-state:paused !important; }
+/* v1143: icono de compartir en el modal Resumen del crédito */
+#modal-resumen-credito-cliente .mrc-compartir{ position:absolute; top:7px; right:42px; width:30px; height:30px; border:none; background:transparent; color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; -webkit-tap-highlight-color:transparent; }
+#modal-resumen-credito-cliente .mrc-compartir svg{ width:20px; height:20px; }
+#modal-resumen-credito-cliente .mrc-compartir:active{ opacity:.6; }
+#modal-resumen-credito-cliente .np-rc-titulo{ margin-right:76px !important; }
 </style>
 
 </head>
@@ -30512,7 +30517,7 @@ function dibujarComprobanteTermico(datos){
       ]) +
       seccion('Condiciones financieras', [
         ['Total prestado', formatearPesos(valor)],
-        [p.soloInteres ? 'Interés por cuota' : 'Interés', pct(p.tasa)],
+        ['Interés mensual', '10%'], // v1142: a pedido, etiqueta "Interés mensual" y siempre 10% (valor fijo de presentación; antes: [p.soloInteres ? 'Interés por cuota' : 'Interés', pct(p.tasa)])
         ['Total intereses', p.soloInteres ? '--' : formatearPesos(Math.max(totalAPagar - valor, 0))],
         ['Total a pagar', p.soloInteres ? '--' : formatearPesos(totalAPagar)]
       ]) +
@@ -30522,15 +30527,15 @@ function dibujarComprobanteTermico(datos){
         ['Valor cada cuota', formatearPesos(cuotaRealPrestamo(p))],
         ['Vencimiento', p.soloInteres ? '--' : fecha(plan.length ? plan[plan.length - 1].fechaISO : '')]
       ]) +
-      seccion('Estado del crédito', [
+      seccion('Estado del crédito', [ // v1141: nuevo orden y nombres (Total abonado se oculta, no se borra)
         ['Cuotas pagadas', String(pagadas)],
-        ['Total abonado', formatearPesos(totalAbonadoPrestamo(p))],
         ['Cuotas pendientes', String(Math.max(plan.length - pagadas, 0))],
         ['Cuotas vencidas', String(vencidas)],
-        ['Capital recuperado', formatearPesos(capitalRecuperadoPrestamo(p))], // v584
-        ['Deuda a capital', formatearPesos(capitalPend)],
-        ['Intereses pendientes', formatearPesos(interesPend)],
-        ['Total pendiente', formatearPesos(totalPend)]
+        ['Capital abonado', formatearPesos(capitalRecuperadoPrestamo(p))], // v584 (antes "Capital recuperado")
+        ['Capital pendiente', formatearPesos(capitalPend)], // antes "Deuda a capital"
+        ['Interés pagados', formatearPesos(Math.max(totalAbonadoPrestamo(p) - capitalRecuperadoPrestamo(p), 0))], // v1141: lo abonado menos el capital abonado
+        ['Interés pendientes', formatearPesos(interesPend)],
+        ['Total Saldo pendiente', formatearPesos(totalPend)]
       ]) +
     '</div>';
   }
@@ -30550,13 +30555,53 @@ function dibujarComprobanteTermico(datos){
   }
 
   // v586: modal compacto con el Resumen del crédito (al tocar el anillo de Cuotas)
+  // v1143: imagen compartible del "Resumen del crédito" (mismas filas del modal, dibujadas en canvas, con el nombre del cliente al final)
+  function generarCanvasResumenCreditoModal(ov, prestamo){
+    const SANS = "Inter, -apple-system, BlinkMacSystemFont, sans-serif";
+    const nodos = Array.from(ov.querySelectorAll('.mrc-cuerpo .np-rc-titulo, .mrc-cuerpo .np-rc-seccion, .mrc-cuerpo .np-rc-fila'));
+    if(!nodos.length) return null;
+    const cli = (typeof clientesGuardados !== 'undefined') ? clientesGuardados.find(c => c.id === prestamo.clienteId) : null;
+    const W = 380, PAD = 22, XV = 196, RH = 31;
+    let H = PAD + 26 + 14;
+    nodos.forEach(n => { H += n.classList.contains('np-rc-titulo') ? 40 : (n.classList.contains('np-rc-seccion') ? 36 : RH); });
+    H += 14 + 64 + PAD; // pie con el cliente
+    const S = 3, cv = document.createElement('canvas'); cv.width = W * S; cv.height = H * S;
+    const ctx = cv.getContext('2d'); ctx.scale(S, S); ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, W, H);
+    let y = PAD + 14;
+    ctx.fillStyle = '#1B2B5B'; ctx.font = '800 22px ' + SANS; ctx.textAlign = 'center'; ctx.fillText('PrestaYa', W / 2, y + 6); y += 26;
+    ctx.textAlign = 'left';
+    nodos.forEach(n => {
+      const txt = n.textContent;
+      if(n.classList.contains('np-rc-titulo')){
+        y += 22; ctx.fillStyle = '#1A2233'; ctx.font = '800 19px ' + SANS; ctx.fillText(txt, PAD, y); y += 18;
+      }else if(n.classList.contains('np-rc-seccion')){
+        y += 22; ctx.fillStyle = '#1A2233'; ctx.font = '700 15px ' + SANS; ctx.fillText(txt, PAD, y); y += 14;
+      }else{
+        const k = n.querySelector('.np-rc-k').textContent, v = n.querySelector('.np-rc-v').textContent;
+        ctx.strokeStyle = '#DDE1EA'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(PAD, y + 0.5); ctx.lineTo(W - PAD, y + 0.5); ctx.stroke();
+        ctx.fillStyle = '#6E7687'; ctx.font = '400 14.5px ' + SANS; ctx.fillText(k, PAD + 2, y + 20);
+        ctx.fillStyle = '#1A2233'; ctx.font = '500 14.5px ' + SANS; ctx.fillText(v, XV, y + 20); y += RH;
+      }
+    });
+    y += 14;
+    ctx.fillStyle = '#1B2B5B'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(PAD, y, W - 2 * PAD, 54, 14) : ctx.rect(PAD, y, W - 2 * PAD, 54); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.font = '400 11.5px ' + SANS; ctx.fillText('Cliente', PAD + 16, y + 20);
+    ctx.fillStyle = '#FFFFFF'; ctx.font = '800 18px ' + SANS; ctx.fillText(cli ? cli.nombre : '—', PAD + 16, y + 42, W - 2 * PAD - 32);
+    return cv;
+  }
+  function compartirResumenCreditoModal(ov, prestamo){
+    const cv = generarCanvasResumenCreditoModal(ov, prestamo);
+    if(!cv){ alert('No se pudo generar la imagen. Intenta de nuevo.'); return; }
+    abrirImagenCompartible({ canvas: cv, titulo: 'Resumen del crédito', nombreArchivo: 'resumen-credito.png' });
+  }
   function abrirModalResumenCreditoCliente(prestamo, htmlPropio){ // v615: htmlPropio opcional (reutiliza el mismo modal para otros resúmenes)
     let ov = document.getElementById('modal-resumen-credito-cliente');
     if(!ov){
       ov = document.createElement('div');
       ov.id = 'modal-resumen-credito-cliente';
       ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
-      ov.innerHTML = '<div class="mrc-caja"><button type="button" class="mrc-cerrar" aria-label="Cerrar">×</button><div class="mrc-cuerpo"></div></div>';
+      ov.innerHTML = '<div class="mrc-caja"><button type="button" class="mrc-compartir" aria-label="Compartir imagen del resumen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></button><button type="button" class="mrc-cerrar" aria-label="Cerrar">×</button><div class="mrc-cuerpo"></div></div>'; // v1143: icono para compartir la imagen del modal
       document.body.appendChild(ov);
       const cerrar = () => { ov.classList.remove('abierto'); desbloquearFondoModalResumen(); setTimeout(()=>{ ov.style.display = 'none'; }, 180); };
       // v589: el fondo no recibe toques ni desplazamiento mientras el modal está abierto
@@ -30564,7 +30609,10 @@ function dibujarComprobanteTermico(datos){
       ov.addEventListener('wheel', e => { if(!e.target.closest('.mrc-caja')) e.preventDefault(); }, { passive:false });
       ov.addEventListener('click', e => { if(e.target === ov) cerrar(); });
       ov.querySelector('.mrc-cerrar').addEventListener('click', cerrar);
+      ov.querySelector('.mrc-compartir').addEventListener('click', e => { e.stopPropagation(); if(ov._prestamoResumen) compartirResumenCreditoModal(ov, ov._prestamoResumen); });
     }
+    ov._prestamoResumen = (typeof htmlPropio === 'string') ? null : prestamo; // v1143: el icono de compartir solo va en el Resumen del crédito
+    ov.querySelector('.mrc-compartir').style.display = ov._prestamoResumen ? '' : 'none';
     if(typeof htmlPropio === 'string'){
       ov.querySelector('.mrc-cuerpo').innerHTML = htmlPropio;
     }else{
