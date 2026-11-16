@@ -25308,6 +25308,17 @@ html.fondo-congelado *:not(.confirm-modal-overlay):not(.confirm-modal-overlay *)
   // abono normal. Misma paleta/estilo que generarCanvasDetalleCredito.
   // v954: Historial y Cronograma con el diseño térmico (tabla con líneas, sin mensaje inferior).
   // Los anteriores quedan como ...Anterior (sin uso).
+  // v1153: en los recibos, si el nombre tiene exactamente tres palabras (dos nombres y un apellido) se muestra "Diego F Ocampo":
+  // primer nombre, inicial del segundo y apellido. Con otra cantidad de palabras, o si la del medio es una partícula
+  // ("de", "del", "la", "los", "san"...), el nombre se deja tal cual.
+  function nombreParaRecibo(nombre){
+    const n = String(nombre || '').trim().replace(/\s+/g, ' ');
+    const p = n.split(' ');
+    if(p.length !== 3) return nombre || '—';
+    const particulas = ['de', 'del', 'la', 'las', 'los', 'y', 'e', 'san', 'santa', 'da', 'do', 'di', 'van', 'von', 'bin', 'ben'];
+    if(particulas.includes(p[1].toLowerCase()) || p[1].length < 2) return n;
+    return p[0] + ' ' + p[1].charAt(0).toUpperCase() + ' ' + p[2];
+  }
   // v1146: documento del cliente bajo su nombre en los recibos ("C.C 94.472.769"); si no tiene documento registrado no se muestra nada
   function filaDocumentoRecibo(cli){
     const d = cli && cli.documento ? String(cli.documento).trim() : '';
@@ -25320,7 +25331,7 @@ html.fondo-congelado *:not(.confirm-modal-overlay):not(.confirm-modal-overlay *)
     return {
       titulo, creditoPagado: false, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos(),
       filas: [
-        ['NOMBRE:', cli.nombre || '—'],
+        ['NOMBRE:', nombreParaRecibo(cli.nombre)], // v1153
         ...filaDocumentoRecibo(cli), // v1146
         ['MONTO DEL PRÉSTAMO:', formatearPesos(prestamo.valor), 'monto'],
         ['FECHA DEL PRÉSTAMO:', prestamo.fecha ? fechaDiaCT(prestamo.fecha + 'T00:00:00') : '—'],
@@ -25800,7 +25811,7 @@ html.fondo-congelado *:not(.confirm-modal-overlay):not(.confirm-modal-overlay *)
     const num = numeroCreditoCliente(prestamo);
     const filas = [
       ['VALOR PRESTADO:', formatearPesos(prestamo.valor), 'monto'],
-      ['NOMBRE:', cli.nombre || '—'],
+      ['NOMBRE:', nombreParaRecibo(cli.nombre)], // v1153
       ...filaDocumentoRecibo(cli), // v1148: documento bajo el nombre también en este recibo
       // v1122: se retira la identificación de este térmico (docTxt se conserva por si se vuelve a mostrar)
       ...(num ? [['CRÉDITO:', '# ' + num]] : []),
@@ -29994,7 +30005,7 @@ html.fondo-congelado *:not(.confirm-modal-overlay):not(.confirm-modal-overlay *)
     // v1059: cuota registrada como "Pago de interés" → el comprobante no muestra la cuota y siempre muestra el saldo pendiente
     const esPagoInteres = !!(ultimo && ultimo.concepto === 'pago_interes');
     const filas = [
-      ['NOMBRE:', cliente.nombre || '—'], // v1054: el cliente primero, luego el abono
+      ['NOMBRE:', nombreParaRecibo(cliente.nombre)], // v1054: el cliente primero, luego el abono · v1153
       ...filaDocumentoRecibo(cliente), // v1146
       ['ABONO REALIZADO:', pesos(valor), 'monto'],
       ...(window.PY_MOSTRAR_TERMICO.abonadoA ? [['ABONADO A:', concepto]] : []), // v1144
@@ -30123,7 +30134,7 @@ function dibujarComprobanteTermico(datos){
       const wEt = ancho(f[0], '14px ' + ETQ) + 8;
       if(f[2] !== 'chico' && f[2] !== 'monto' && f[2] !== 'sub') lineasV = envolver(f[1], fuenteV, X1 - X0 - wEt);
       if(f[2] === 'sub'){ y += 19; plano.push(['sub', y, f[1]]); return; } // v968: línea pequeña bajo el valor
-      y += (cmp ? (i === 0 ? 34 : 29) : (i === 0 ? 38 : 34)) - (trasDoc ? 4 : 0); trasDoc = false; plano.push(['fila', y, f[0], lineasV[0], f[2]]);
+      y += (cmp ? (i === 0 ? 38 : 33) : (i === 0 ? 38 : 34)) - (trasDoc ? 4 : 0); trasDoc = false; plano.push(['fila', y, f[0], lineasV[0], f[2]]); // v1154: comprobante un poco más alto (+4 px por fila)
       lineasV.slice(1).forEach(l => { y += 20; plano.push(['cont', y, l, wEt]); });
     });
     // v948: sello diagonal "CRÉDITO PAGADO" cuando el crédito ya está terminado
@@ -30149,7 +30160,7 @@ function dibujarComprobanteTermico(datos){
     y += 38 + (cmp ? 14 : 16); plano.push(['codtxt', y, datoBarras]);
     } // v946 · v1114: altura 38 (antes 56)
     if(creditoPagado) plano.unshift(['sello', yFinFilas - 40]); // v1128: sello en la posición marcada por el usuario (centro x 194, 47 px sobre la última fila) y DETRÁS del texto, así los datos siguen legibles; // v1102: sello de la referencia · v1124: más abajo, justo debajo de la última fila (no tapa los datos)
-    const H = Math.ceil(y + (cmp ? 22 : 30));
+    const H = Math.ceil(y + (cmp ? 28 : 30)); // v1154: +6 px abajo en el comprobante compacto
 
     const canvas = document.createElement('canvas');
     const ctx = prepararCanvasNitido(canvas, W, H, 3);
@@ -30218,7 +30229,12 @@ function dibujarComprobanteTermico(datos){
       }
       else if(t === 'fila'){
         const f14 = '14px ' + ETQ;
-        ctx.font = f14; ctx.fillStyle = AZUL; ctx.fillText(e[2], X0, yy); ctx.fillStyle = TINTA; // v1135 · v1149: etiquetas en azul profundo
+        ctx.font = f14; ctx.fillStyle = AZUL; // v1135 · v1149
+        { // v1154: letras de las etiquetas más juntas (se dibuja letra por letra con un avance menor; compatible con Safari)
+          const trk = ETQ === MONO ? -0.8 : -0.3; let xe = X0;
+          for(const ch of e[2]){ ctx.fillText(ch, xe, yy); xe += ancho(ch, f14) + trk; }
+        }
+        ctx.fillStyle = TINTA;
         let xv = X0 + ancho(e[2], f14) + 8; const disp = X1 - xv;
         let fv = e[4] === 'monto' ? 'bold 16px ' + SANS : (e[4] === 'chico' ? '11.5px ' + SANS : '15px ' + SANS);
         let px = parseFloat(fv.match(/([\d.]+)px/)[1]);
