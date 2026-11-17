@@ -30122,7 +30122,8 @@ function dibujarComprobanteTermico(datos){
     const pie = datos.pie || [datos.gracias || '¡Gracias por su abono!']; // v965: mensaje corto + escudo
     let y = 0; const plano = [];
     const cmp = !datos.tabla; // v1132: espaciado más compacto en térmicos y recibos (el historial y el plan de pagos conservan el espaciado original)
-    y += (cmp ? 30 : 44) + 10; // v1145: +10 de aire sobre PrestaYa
+    y += (cmp ? 30 : 44) + 28; // v1161: PrestaYa mucho más despegada del borde superior
+ // v1145: +10 de aire sobre PrestaYa
     plano.push(['marca', y]);
     y += cmp ? 24 : 30; plano.push(['titulo', y]); // v1160 compacto
     if(datos.msgPuntual){ y += cmp ? 19 : 22; plano.push(['subTitulo', y, datos.msgPuntual]); if(datos.numeroComp){ y += cmp ? 21 : 25; plano.push(['comNo', y, datos.numeroComp]); if(datos.fechaHora){ y += 14; plano.push(['fechaHora', y, datos.fechaHora]); } } y += cmp ? 16 : 20; } // v969: puntualidad justo bajo "COMPROBANTE DE PAGO" · v1111: N.° de comprobante
