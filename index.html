@@ -30165,7 +30165,7 @@ function dibujarComprobanteTermico(datos){
     y += 38 + (cmp ? 14 : 16); plano.push(['codtxt', y, datoBarras]);
     } // v946 · v1114: altura 38 (antes 56)
     if(creditoPagado) plano.unshift(['sello', yFinFilas - 40]); // v1128: sello en la posición marcada por el usuario (centro x 194, 47 px sobre la última fila) y DETRÁS del texto, así los datos siguen legibles; // v1102: sello de la referencia · v1124: más abajo, justo debajo de la última fila (no tapa los datos)
-    const H = Math.ceil(y + (cmp ? 20 : 30)); // v1154: +6 px abajo en el comprobante compacto
+    const H = Math.ceil(y + (cmp ? 38 : 48)); // v1162: más aire bajo WhatsApp y correo // v1154: +6 px abajo en el comprobante compacto
 
     const canvas = document.createElement('canvas');
     const ctx = prepararCanvasNitido(canvas, W, H, 3);
@@ -30191,6 +30191,8 @@ function dibujarComprobanteTermico(datos){
     ctx.restore();
     }
     ctx.save(); ctx.globalCompositeOperation = 'destination-out'; ctx.fillStyle = '#000'; // v938: relleno opaco para que el recorte sí borre (con el de la textura quedaba casi invisible)
+    const DENTADO = false; // v1163: bordes superior e inferior rectos (dentado conservado, poner true para volver a verlo)
+    if(DENTADO){
     const DZ = 5, DH = 4; // v940 (antes 3.8/3.1); v938: dentado muy fino, como el corte de una impresora de recibos
     ctx.beginPath(); ctx.moveTo(0, 0);
     for(let x = 0; x <= W; x += DZ){ ctx.lineTo(x + DZ / 2, DH); ctx.lineTo(x + DZ, 0); }
@@ -30198,6 +30200,11 @@ function dibujarComprobanteTermico(datos){
     ctx.beginPath(); ctx.moveTo(0, H);
     for(let x = 0; x <= W; x += DZ){ ctx.lineTo(x + DZ / 2, H - DH); ctx.lineTo(x + DZ, H); }
     ctx.closePath(); ctx.fill();
+    }else{ // v1163: esquinas redondeadas (se recorta lo que queda fuera del rectángulo redondeado)
+      const RC = 14; ctx.beginPath(); ctx.rect(0, 0, W, H);
+      ctx.moveTo(RC, 0); ctx.arcTo(0, 0, 0, RC, RC); ctx.lineTo(0, H - RC); ctx.arcTo(0, H, RC, H, RC); ctx.lineTo(W - RC, H); ctx.arcTo(W, H, W, H - RC, RC); ctx.lineTo(W, RC); ctx.arcTo(W, 0, W - RC, 0, RC); ctx.closePath();
+      ctx.fill('evenodd');
+    }
     ctx.restore();
     const guiones = (yy, xMax) => { ctx.save(); ctx.globalAlpha = 1; ctx.fillStyle = DIV_C; // v1150: líneas punteadas del color de la imagen de referencia
       const L = 3.5, G = 2.5, n = Math.floor((W - 2 * PAD + G) / (L + G)), x0 = (W - (n * L + (n - 1) * G)) / 2; for(let i = 0; i < n; i++){ if(xMax && x0 + i * (L + G) + L > xMax) break; ctx.fillRect(x0 + i * (L + G), yy - 0.7, L, 1.4); } ctx.restore(); }; // v956: punteo más pequeño y ligero
