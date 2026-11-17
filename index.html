@@ -11933,6 +11933,28 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.p
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.parcial .ltg-fill{ background:linear-gradient(90deg,#34B26A 0,#1F8A4C var(--pp),var(--ltg-seg) var(--pp),var(--ltg-seg) 100%) !important; }
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.parcial .ltk-disco,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.parcial .ltk-disco{ background:linear-gradient(0deg,#7FAAEE var(--pp),#fff var(--pp)) !important; border:3px solid #2F6FD6; color:#0E2A5C !important; text-shadow:none !important; }
+/* v1168: Simular crédito */
+#screen-simular-credito .sim-cuerpo{ padding:14px 16px 40px; display:flex; flex-direction:column; gap:14px; }
+#screen-simular-credito #sim-vista-lista, #screen-simular-credito #sim-vista-form, #screen-simular-credito #sim-vista-detalle{ display:flex; flex-direction:column; gap:14px; }
+#screen-simular-credito #sim-lista{ display:flex; flex-direction:column; gap:10px; }
+#screen-simular-credito .sim-fila-2{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; }
+#screen-simular-credito .sim-item{ display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer; }
+#screen-simular-credito .sim-item-info{ flex:1; min-width:0; }
+#screen-simular-credito .sim-item-nombre{ font-size:17px; font-weight:700; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#screen-simular-credito .sim-item-sub{ font-size:13.5px; color:var(--text-secondary); margin-top:3px; }
+#screen-simular-credito .sim-item svg{ width:20px; height:20px; stroke:var(--text-secondary); flex-shrink:0; }
+#screen-simular-credito .sim-vacio{ text-align:center; color:var(--text-secondary); font-size:14.5px; padding:26px 10px; }
+#screen-simular-credito .sim-acciones{ display:flex; flex-direction:column; gap:10px; }
+#screen-simular-credito .sim-btn-sec, #screen-simular-credito .sim-btn-peligro{ width:100%; padding:14px; border-radius:14px; font-size:16px; font-weight:700; background:transparent; cursor:pointer; }
+#screen-simular-credito .sim-btn-sec{ border:1.5px solid var(--border, #C9D1DC); color:var(--text); }
+#screen-simular-credito .sim-btn-peligro{ border:1.5px solid #D92D20; color:#D92D20; }
+#screen-simular-credito .sim-host .card{ pointer-events:none; margin-bottom:0; }
+#screen-simular-credito #sim-vista-abono{ display:flex; flex-direction:column; gap:14px; }
+#screen-simular-credito #sim-abonos{ display:flex; flex-direction:column; gap:8px; }
+#screen-simular-credito .sim-ab-titulo{ font-size:13.5px; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.4px; margin:4px 2px 0; }
+#screen-simular-credito .sim-ab-fila{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 14px; cursor:pointer; }
+#screen-simular-credito .sim-ab-fila b{ font-size:16px; color:var(--text); }
+#screen-simular-credito .sim-ab-fila span{ font-size:13px; color:var(--text-secondary); }
 </style>
 
 </head>
@@ -15076,6 +15098,78 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
      Se abre al tocar el icono de configuración del header.
      Reutiliza el mismo sistema de tarjetas (.card, .icon-container).
      ========================================================== -->
+<!-- v1168: SIMULAR CRÉDITO — área aparte, dentro de Ajustes. Lo que se crea aquí vive solo aquí (clave propia en el teléfono) y no se mezcla con clientes, créditos, totales ni respaldos reales. -->
+<div class="app" id="screen-simular-credito" style="display:none;">
+  <header class="header">
+    <button class="back-btn" id="sim-btn-volver" aria-label="Volver">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <h1 id="sim-titulo">Simular crédito</h1>
+    <span class="header-spacer"></span>
+  </header>
+
+  <section class="detail-body sim-cuerpo">
+    <!-- Vista 1: lista -->
+    <div id="sim-vista-lista">
+      <button type="button" class="primary-button sim-btn-principal" id="sim-btn-nuevo">Simular crédito</button>
+      <div id="sim-lista"></div>
+    </div>
+
+    <!-- Vista 2: formulario -->
+    <div id="sim-vista-form" style="display:none;">
+      <div class="form-field"><label class="field-label" for="sim-tipo">Tipo de préstamo*</label>
+        <select class="field-input field-select" id="sim-tipo"><option value="cuotas" selected>Por cuotas</option><option value="solo_interes">Solo interés</option></select></div>
+      <div class="form-field"><label class="field-label" for="sim-nombre">Nombre del cliente*</label>
+        <input type="text" class="field-input" id="sim-nombre" placeholder="Cliente de prueba" autocomplete="off"></div>
+      <div class="form-field"><label class="field-label" for="sim-documento">Documento (opcional)</label>
+        <input type="text" class="field-input" id="sim-documento" inputmode="numeric" placeholder="Cédula" autocomplete="off"></div>
+      <div class="form-field"><label class="field-label" for="sim-valor">Valor del préstamo*</label>
+        <input type="text" class="field-input" id="sim-valor" inputmode="numeric" placeholder="$ 0" autocomplete="off"></div>
+      <div class="sim-fila-2">
+        <div class="form-field"><label class="field-label" for="sim-tasa">Interés (%)*</label>
+          <input type="text" class="field-input" id="sim-tasa" inputmode="decimal" placeholder="10" autocomplete="off"></div>
+        <div class="form-field" id="sim-campo-cuotas"><label class="field-label" for="sim-cuotas">N.° de cuotas*</label>
+          <input type="number" class="field-input" id="sim-cuotas" inputmode="numeric" min="1" placeholder="4"></div>
+      </div>
+      <div class="form-field"><label class="field-label" for="sim-frecuencia">Frecuencia de pago*</label>
+        <select class="field-input field-select" id="sim-frecuencia">
+          <option value="diario">Diario</option><option value="semanal" selected>Semanal</option><option value="catorcena">Catorcenal</option><option value="quincenal">Quincenal</option><option value="mensual">Mensual</option>
+        </select></div>
+      <div class="form-field"><label class="field-label" for="sim-fecha">Fecha del crédito*</label>
+        <input type="date" class="field-input" id="sim-fecha"></div>
+      <button type="button" class="primary-button sim-btn-principal" id="sim-btn-guardar">Guardar</button>
+      <button type="button" class="sim-btn-peligro" id="sim-btn-eliminar-form" style="display:none;">Eliminar cliente</button>
+    </div>
+
+    <!-- Vista 4: registrar abono simulado -->
+    <div id="sim-vista-abono" style="display:none;">
+      <div class="form-field"><label class="field-label" for="sim-ab-valor">Valor del abono*</label>
+        <input type="text" class="field-input" id="sim-ab-valor" inputmode="numeric" placeholder="$ 0" autocomplete="off"></div>
+      <div class="form-field"><label class="field-label" for="sim-ab-aplicar">Aplicar abono a</label>
+        <select class="field-input field-select" id="sim-ab-aplicar"><option value="capital_interes" selected>Capital y interés</option><option value="abono">Abono</option><option value="solo_interes">Solo interés</option><option value="mora">Posponer fecha</option><option value="solo_capital">Solo capital</option></select></div>
+      <div class="form-field"><label class="field-label" for="sim-ab-metodo">Método de pago</label>
+        <select class="field-input field-select" id="sim-ab-metodo"><option value="efectivo" selected>Efectivo</option><option value="transferencia">Transferencia</option></select></div>
+      <div class="form-field"><label class="field-label" for="sim-ab-fecha">Fecha del abono</label>
+        <input type="date" class="field-input" id="sim-ab-fecha"></div>
+      <button type="button" class="primary-button sim-btn-principal" id="sim-ab-guardar">Registrar abono</button>
+    </div>
+
+    <!-- Vista 3: tarjeta del crédito simulado -->
+    <div id="sim-vista-detalle" style="display:none;">
+      <div id="sim-tarjeta-host" class="sim-host"></div>
+      <div class="sim-acciones">
+        <button type="button" class="primary-button sim-btn-principal" id="sim-btn-abonar">Registrar abono</button>
+        <div id="sim-abonos"></div>
+        <button type="button" class="sim-btn-sec" id="sim-btn-deshacer" style="display:none;">Deshacer último abono</button>
+        <button type="button" class="sim-btn-sec" id="sim-btn-recibo">Compartir recibo del crédito</button>
+        <button type="button" class="sim-btn-sec" id="sim-btn-plan">Compartir plan de pagos</button>
+        <button type="button" class="sim-btn-sec" id="sim-btn-editar">Editar</button>
+        <button type="button" class="sim-btn-peligro" id="sim-btn-eliminar">Eliminar cliente</button>
+      </div>
+    </div>
+  </section>
+</div>
+
 <div class="app" id="screen-ajustes" style="display:none;">
 
 
@@ -15132,6 +15226,18 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       <div class="info">
         <div class="title">Diseño tarjeta del crédito</div>
         <div class="subtitle" id="subtitulo-diseno-tarjeta-credito">Diseño: Actual</div>
+      </div>
+      <div class="trailing chevron">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+    </div>
+
+    <!-- v1168: Simular crédito (créditos de prueba, separados de los datos reales) -->
+    <div class="card settings-item" id="item-simular-credito" role="button" tabindex="0">
+      <div class="icon-container blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="16" height="19" rx="2.5"></rect><rect x="7.5" y="6" width="9" height="3.5" rx="1"></rect><path d="M8 13.5h.01M12 13.5h.01M16 13.5h.01M8 17.5h.01M12 17.5h.01M16 17.5h.01"></path></svg></div>
+      <div class="info">
+        <div class="title">Simular crédito</div>
+        <div class="subtitle">Créditos de prueba, sin afectar tus datos</div>
       </div>
       <div class="trailing chevron">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -38485,6 +38591,253 @@ function dibujarComprobanteTermico(datos){
     }
     window.scrollTo(0, 0);
   });
+
+  // ==========================================================
+  // v1168 — SIMULAR CRÉDITO (Ajustes). Todo vive AQUÍ y solo aquí:
+  //  • Se guarda en su propia clave del teléfono (py_simulador_creditos), que NO está en el respaldo ni la lee ninguna otra parte de la app.
+  //  • Nunca se agrega a clientesGuardados / prestamosGuardados ni se llama a guardarClientes / guardarPrestamos, así que no suma en
+  //    el dashboard, ganancias, cartera, mora, reportes ni recordatorios.
+  //  • Para dibujar la tarjeta se presta, solo durante ese instante (y se retira siempre), un cliente ficticio a la lista en memoria.
+  // ==========================================================
+  (function(){
+    const KEY = 'py_simulador_creditos';
+    const scr = document.getElementById('screen-simular-credito');
+    const $ = id => document.getElementById(id);
+    let vista = 'lista', itemActual = null, venimosDeDetalle = false;
+
+    function cargar(){ try{ const v = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(v) ? v : []; }catch(e){ return []; } }
+    function guardar(lista){ try{ localStorage.setItem(KEY, JSON.stringify(lista)); }catch(e){ alert('No se pudo guardar la simulación en este dispositivo.'); } }
+
+    function construir(it){
+      const cliente = { id: 'sim-' + it.id, nombre: it.nombre, documento: it.documento || '', ruta: '' };
+      const soloI = it.tipo === 'solo_interes';
+      const anio = new Date(it.fecha + 'T00:00:00').getFullYear();
+      const prestamo = {
+        id: it.id, codigo: 'PRE-' + anio + '-' + String(it.num || 1).padStart(6, '0'), clienteId: cliente.id,
+        tipoInteres: 'capital_inicial', valor: it.valor, cuotas: soloI ? 1 : it.cuotas, tasa: it.tasa, frecuencia: it.frecuencia, fecha: it.fecha,
+        nota: '', fechaPrimeraCuota: '', fechaSegundaCuota: '', moraHabilitada: false, soloInteres: soloI, estado: 'activo',
+        pagos: JSON.parse(JSON.stringify(it.pagos || [])), tasaBaseBloque: 0
+      };
+      if(soloI){
+        // mismo orden que al crear un préstamo a solo interés real: plan inicial de 6 → total → se regenera según los abonos
+        const plan0 = generarPlanInicialSoloInteres({ valor: it.valor, tasa: it.tasa, frecuencia: it.frecuencia, fecha: it.fecha, fechaPrimeraCuota: '', fechaSegundaCuota: '', pagos: [] }, 6);
+        prestamo.plan = plan0; prestamo.totalAPagar = plan0.reduce((s, c) => s + c.total, 0); prestamo.cuotaMostrada = Math.round(plan0[plan0.length - 1].total);
+        regenerarPlanSoloInteres(prestamo);
+      }else{
+        const plan = calcularPlanPagos(it.valor, it.cuotas, it.frecuencia, it.fecha, it.tasa);
+        prestamo.plan = plan; prestamo.totalAPagar = plan.reduce((s, c) => s + c.total, 0); prestamo.cuotaMostrada = Math.round(plan[plan.length - 1].total);
+      }
+      const fin = soloI ? (sincronizarPrestamoSoloInteres(prestamo), prestamoSoloInteresSaldado(prestamo)) : prestamo.plan.every(c => estaCuotaPagada(prestamo, c.numero));
+      prestamo.estado = fin ? 'finalizado' : 'activo';
+      if(fin && prestamo.pagos.length) prestamo.fechaFinalizacion = prestamo.pagos[prestamo.pagos.length - 1].fecha;
+      return { cliente, prestamo };
+    }
+
+    // Ejecuta fn con el cliente ficticio prestado (en memoria) a la lista real, y lo retira siempre al terminar
+    function conCliente(cliente, fn){
+      clientesGuardados.push(cliente);
+      try{ return fn(); }
+      finally{ const i = clientesGuardados.indexOf(cliente); if(i !== -1) clientesGuardados.splice(i, 1); }
+    }
+    function grupos(prestamo){
+      const out = [], vistos = new Set();
+      (prestamo.pagos || []).forEach(p => {
+        const k = p.lote != null ? 'l' + p.lote : 'i' + p.id; if(vistos.has(k)) return; vistos.add(k);
+        out.push((prestamo.pagos || []).filter(q => (q.lote != null ? 'l' + q.lote : 'i' + q.id) === k));
+      });
+      return out;
+    }
+    function canvasAbono(cliente, prestamo, partes){
+      const cuota = (prestamo.plan || []).find(c => c.numero === partes[0].cuota) || prestamo.plan[0];
+      return conCliente(cliente, () => generarCanvasComprobante(prestamo, cuota, partes));
+    }
+
+    // Copia (una sola vez) los estilos de la tarjeta, que la app liga a la pantalla de detalle del cliente, para esta pantalla.
+    function copiarEstilosTarjeta(){
+      if(window.__simEstilos) return; window.__simEstilos = true;
+      const OLD = '#screen-detalle-cliente', NEW = '#screen-simular-credito';
+      function proc(reglas){
+        let out = '';
+        for(const r of reglas){
+          if(r.type === 1){ if(r.selectorText && r.selectorText.indexOf(OLD) !== -1) out += r.cssText.split(OLD).join(NEW) + '\n'; }
+          else if(r.type === 4 || r.type === 12){ const dentro = proc(r.cssRules); if(dentro) out += (r.type === 4 ? '@media ' + r.media.mediaText : '@supports ' + r.conditionText) + '{' + dentro + '}\n'; }
+        }
+        return out;
+      }
+      let css = '';
+      for(const sh of Array.from(document.styleSheets)){ try{ css += proc(sh.cssRules); }catch(e){} }
+      const st = document.createElement('style'); st.id = 'sim-estilos-tarjeta'; st.textContent = css; document.head.appendChild(st);
+    }
+
+    function dibujarTarjeta(it){
+      const host = $('sim-tarjeta-host'); host.innerHTML = '';
+      const { cliente, prestamo } = construir(it);
+      conCliente(cliente, () => {
+        const d = obtenerDisenoTarjetaCredito();
+        host.appendChild(d === 'actual' ? crearTarjetaPrestamo(prestamo) : crearTarjetaPrestamoDiseno(prestamo, d));
+      });
+      pintarAbonos(prestamo, cliente);
+    }
+    function pintarAbonos(prestamo, cliente){
+      const cont = $('sim-abonos'); cont.innerHTML = '';
+      const gs = grupos(prestamo);
+      $('sim-btn-deshacer').style.display = gs.length ? 'block' : 'none';
+      if(!gs.length) return;
+      const t = document.createElement('div'); t.className = 'sim-ab-titulo'; t.textContent = 'Abonos registrados'; cont.appendChild(t);
+      gs.slice().reverse().forEach(partes => {
+        const f = document.createElement('div'); f.className = 'card sim-ab-fila';
+        const total = partes.reduce((a, q) => a + (Number(q.monto) || 0), 0);
+        const m = partes[0].aplicarA === 'mora' ? 'Posponer fecha' : (nombresAplicarA[partes[0].aplicarA] || 'Abono');
+        f.innerHTML = '<div><b></b><br><span></span></div><span>Ver recibo</span>';
+        f.querySelector('b').textContent = formatearPesos(total);
+        f.querySelectorAll('span')[0].textContent = fechaDiaCT(partes[0].fecha) + ' · ' + m;
+        f.addEventListener('click', () => abrirImagenCompartible({ canvas: canvasAbono(cliente, prestamo, partes), nombreArchivo: 'comprobante-simulado.png', titulo: 'Comprobante de abono' }));
+        cont.appendChild(f);
+      });
+    }
+
+    function mostrar(v){
+      vista = v;
+      $('sim-vista-lista').style.display = v === 'lista' ? 'flex' : 'none';
+      $('sim-vista-form').style.display = v === 'form' ? 'flex' : 'none';
+      $('sim-vista-detalle').style.display = v === 'detalle' ? 'flex' : 'none';
+      $('sim-vista-abono').style.display = v === 'abono' ? 'flex' : 'none';
+      $('sim-titulo').textContent = v === 'form' ? (itemActual ? 'Editar simulación' : 'Nuevo crédito') : (v === 'abono' ? 'Registrar abono' : 'Simular crédito');
+      window.scrollTo(0, 0);
+    }
+
+    function pintarLista(){
+      const cont = $('sim-lista'); const lista = cargar(); cont.innerHTML = '';
+      if(!lista.length){ cont.innerHTML = '<div class="sim-vacio">Aún no tienes simulaciones.<br>Toca “Simular crédito” para crear una de prueba.</div>'; return; }
+      lista.slice().reverse().forEach(it => {
+        const el = document.createElement('div'); el.className = 'card sim-item';
+        el.innerHTML = '<div class="sim-item-info"><div class="sim-item-nombre"></div><div class="sim-item-sub"></div></div><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+        el.querySelector('.sim-item-nombre').textContent = it.nombre;
+        el.querySelector('.sim-item-sub').textContent = formatearPesos(it.valor) + ' · ' + (it.tipo === 'solo_interes' ? 'Solo interés' : it.cuotas + ' cuotas') + ' · ' + (nombresFrecuencia[it.frecuencia] || it.frecuencia);
+        el.addEventListener('click', () => abrirDetalle(it.id));
+        cont.appendChild(el);
+      });
+    }
+
+    function abrirDetalle(id){
+      const it = cargar().find(x => x.id === id); if(!it) return;
+      itemActual = it; copiarEstilosTarjeta(); dibujarTarjeta(it); mostrar('detalle');
+    }
+
+    function abrirForm(it){
+      itemActual = it || null;
+      $('sim-tipo').value = it && it.tipo === 'solo_interes' ? 'solo_interes' : 'cuotas'; ajustarTipo();
+      $('sim-nombre').value = it ? it.nombre : '';
+      $('sim-documento').value = it ? (it.documento || '') : '';
+      $('sim-valor').value = it ? formatearMiles(String(it.valor)) : '';
+      $('sim-tasa').value = it ? String(it.tasa) : '';
+      $('sim-cuotas').value = it && it.tipo !== 'solo_interes' ? it.cuotas : '';
+      $('sim-frecuencia').value = it ? it.frecuencia : 'semanal';
+      $('sim-fecha').value = it ? it.fecha : claveFechaConOffset(0);
+      $('sim-btn-eliminar-form').style.display = it ? 'block' : 'none';
+      venimosDeDetalle = !!it; mostrar('form');
+    }
+
+    function eliminar(it){
+      mostrarConfirmacion('Eliminar cliente', 'Se eliminará esta simulación (' + it.nombre + '). No afecta tus datos reales.', 'Eliminar', () => {
+        guardar(cargar().filter(x => x.id !== it.id)); itemActual = null; $('sim-tarjeta-host').innerHTML = ''; pintarLista(); mostrar('lista');
+      });
+    }
+
+    function ajustarTipo(){ $('sim-campo-cuotas').style.display = $('sim-tipo').value === 'solo_interes' ? 'none' : ''; }
+    $('sim-tipo').addEventListener('change', ajustarTipo);
+    $('sim-btn-nuevo').addEventListener('click', () => abrirForm(null));
+    $('sim-valor').addEventListener('input', e => { const d = e.target.value.replace(/\D/g, ''); e.target.value = d ? formatearMiles(d) : ''; });
+    $('sim-btn-guardar').addEventListener('click', () => {
+      const nombre = $('sim-nombre').value.trim();
+      const valor = numeroDesdeCampo($('sim-valor').value);
+      const tasaTxt = $('sim-tasa').value.trim().replace(',', '.');
+      const tasa = tasaTxt === '' ? NaN : parseFloat(tasaTxt);
+      const soloI = $('sim-tipo').value === 'solo_interes';
+      const cuotas = soloI ? 1 : (parseInt($('sim-cuotas').value, 10) || 0);
+      const frecuencia = $('sim-frecuencia').value, fecha = $('sim-fecha').value;
+      if(!nombre){ alert('Escribe el nombre del cliente.'); $('sim-nombre').focus(); return; }
+      if(!(valor > 0)){ alert('Escribe el valor del préstamo.'); $('sim-valor').focus(); return; }
+      if(isNaN(tasa) || tasa < 0){ alert('Escribe el porcentaje de interés.'); $('sim-tasa').focus(); return; }
+      if(cuotas <= 0){ alert('Escribe el número de cuotas.'); $('sim-cuotas').focus(); return; }
+      if(!fecha){ alert('Selecciona la fecha del crédito.'); $('sim-fecha').focus(); return; }
+      const lista = cargar();
+      const datos = { nombre, documento: $('sim-documento').value.trim(), valor, tasa, cuotas, frecuencia, fecha, tipo: soloI ? 'solo_interes' : 'cuotas' };
+      let it;
+      if(itemActual){ it = Object.assign({}, itemActual, datos); const i = lista.findIndex(x => x.id === it.id); if(i !== -1) lista[i] = it; else lista.push(it); }
+      else{ it = Object.assign({ id: Date.now(), num: lista.reduce((m, x) => Math.max(m, x.num || 0), 0) + 1, pagos: [] }, datos); lista.push(it); }
+      guardar(lista); pintarLista();
+      if(itemActual) abrirDetalle(it.id); else { itemActual = null; mostrar('lista'); }
+    });
+    $('sim-btn-eliminar-form').addEventListener('click', () => { if(itemActual) eliminar(itemActual); });
+    $('sim-btn-eliminar').addEventListener('click', () => { if(itemActual) eliminar(itemActual); });
+    $('sim-btn-editar').addEventListener('click', () => { if(itemActual) abrirForm(itemActual); });
+    $('sim-btn-recibo').addEventListener('click', () => {
+      if(!itemActual) return; const { cliente, prestamo } = construir(itemActual);
+      abrirImagenCompartible({ canvas: conCliente(cliente, () => generarCanvasResumenPrestamo(prestamo, cliente)), nombreArchivo: 'resumen-credito.png', titulo: 'Resumen de crédito' });
+    });
+    $('sim-btn-plan').addEventListener('click', () => {
+      if(!itemActual) return; const { cliente, prestamo } = construir(itemActual);
+      abrirImagenCompartible({ canvas: conCliente(cliente, () => generarCanvasCronograma(prestamo, cliente)), nombreArchivo: 'plan-de-pagos.png', titulo: 'Plan de pagos' });
+    });
+
+    $('sim-ab-valor').addEventListener('input', e => { const d = e.target.value.replace(/\D/g, ''); e.target.value = d ? formatearMiles(d) : ''; });
+    $('sim-btn-abonar').addEventListener('click', () => {
+      if(!itemActual) return;
+      $('sim-ab-valor').value = ''; $('sim-ab-aplicar').value = 'capital_interes'; $('sim-ab-metodo').value = 'efectivo'; $('sim-ab-fecha').value = claveFechaConOffset(0);
+      mostrar('abono');
+    });
+    $('sim-ab-guardar').addEventListener('click', () => {
+      if(!itemActual) return;
+      const valor = numeroDesdeCampo($('sim-ab-valor').value);
+      if(!(valor > 0)){ alert('Escribe el valor del abono.'); $('sim-ab-valor').focus(); return; }
+      const modo = $('sim-ab-aplicar').value, metodo = $('sim-ab-metodo').value;
+      const fecha = $('sim-ab-fecha').value || claveFechaConOffset(0);
+      const iso = new Date(fecha + 'T00:00:00').toISOString();
+      const { cliente, prestamo } = construir(itemActual);
+      if(prestamo.estado === 'finalizado'){ alert('Este crédito ya está pagado por completo.'); return; }
+      if(prestamo.soloInteres && modo !== 'mora'){
+        const exceso = excesoAbonoSoloInteres(prestamo, valor, modo);
+        if(exceso > SI_TOLERANCIA){ alert('El valor excede lo que debe en ' + formatearPesos(exceso) + '. Lo máximo en "' + (nombresAplicarA[modo] || modo) + '" es ' + formatearPesos(deudaSegunModoSoloInteres(prestamo, modo)) + '.'); $('sim-ab-valor').focus(); return; }
+      }
+      const pendientes = (prestamo.plan || []).filter(c => pendienteDeCuota(prestamo, c) > 0);
+      const cuotaRef = pendientes[0] || prestamo.plan[prestamo.plan.length - 1];
+      const nuevos = [], base = Date.now();
+      if(modo === 'mora'){
+        nuevos.push({ id: base, cuota: cuotaRef.numero, fecha: iso, monto: valor, interesPagado: 0, capitalPagado: 0, aplicarA: 'mora', metodoPago: metodo, nota: '', concepto: '' });
+      }else{
+        const previo = cuotasPendientesAbono; // se presta un instante y se devuelve tal cual estaba
+        cuotasPendientesAbono = pendientes.length ? pendientes : [cuotaRef];
+        let reparto; try{ reparto = repartirAbonoEntreCuotas(prestamo, valor, modo); } finally { cuotasPendientesAbono = previo; }
+        reparto.forEach((parte, i) => nuevos.push({ lote: base, id: base + i, cuota: parte.cuota.numero, fecha: iso, monto: parte.monto, interesPagado: parte.interesPagado, capitalPagado: parte.capitalPagado, aplicarA: parte.aplicarA || modo, metodoPago: metodo, nota: '', concepto: '' }));
+        if(!nuevos.length) nuevos.push({ id: base, cuota: cuotaRef.numero, fecha: iso, monto: valor, interesPagado: 0, capitalPagado: modo === 'solo_capital' ? valor : 0, aplicarA: modo, metodoPago: metodo, nota: '', concepto: '' });
+      }
+      const lista = cargar(); const i = lista.findIndex(x => x.id === itemActual.id); if(i === -1) return;
+      lista[i].pagos = (lista[i].pagos || []).concat(nuevos); guardar(lista); itemActual = lista[i];
+      const act = construir(itemActual);
+      dibujarTarjeta(itemActual); mostrar('detalle');
+      abrirImagenCompartible({ canvas: canvasAbono(act.cliente, act.prestamo, nuevos), nombreArchivo: 'comprobante-simulado.png', titulo: 'Comprobante de abono' });
+    });
+    $('sim-btn-deshacer').addEventListener('click', () => {
+      if(!itemActual) return; const { prestamo } = construir(itemActual); const gs = grupos(prestamo); if(!gs.length) return;
+      const ultimo = gs[gs.length - 1];
+      mostrarConfirmacion('Deshacer abono', 'Se quitará el último abono simulado (' + formatearPesos(ultimo.reduce((a, q) => a + (Number(q.monto) || 0), 0)) + '). No afecta tus datos reales.', 'Deshacer', () => {
+        const ids = new Set(ultimo.map(q => q.id)); const lista = cargar(); const i = lista.findIndex(x => x.id === itemActual.id); if(i === -1) return;
+        lista[i].pagos = (lista[i].pagos || []).filter(q => !ids.has(q.id)); guardar(lista); itemActual = lista[i]; dibujarTarjeta(itemActual);
+      });
+    });
+
+    $('item-simular-credito').addEventListener('click', () => {
+      itemActual = null; pintarLista(); mostrar('lista');
+      screenAjustes.style.display = 'none'; scr.style.display = 'block'; bottomNav.style.display = 'none'; window.scrollTo(0, 0);
+    });
+    $('sim-btn-volver').addEventListener('click', () => {
+      if(vista === 'form'){ if(venimosDeDetalle && itemActual) mostrar('detalle'); else { itemActual = null; mostrar('lista'); } return; }
+      if(vista === 'abono'){ mostrar('detalle'); return; }
+      if(vista === 'detalle'){ itemActual = null; $('sim-tarjeta-host').innerHTML = ''; mostrar('lista'); return; }
+      scr.style.display = 'none'; screenAjustes.style.display = 'block'; window.scrollTo(0, 0);
+    });
+  })();
 
   // ---------- Modal "Registrar Movimiento" ----------
   const nuevoMovimientoCajaOverlay = document.getElementById('nuevo-movimiento-caja-overlay');
