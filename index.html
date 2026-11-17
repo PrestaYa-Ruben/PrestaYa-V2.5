@@ -30012,6 +30012,7 @@ html.fondo-congelado *:not(.confirm-modal-overlay):not(.confirm-modal-overlay *)
       ...(esMoraRecibo ? [['POR CONCEPTO DE:', 'Posponer fecha']] : []), // v1156
       ...(window.PY_MOSTRAR_TERMICO.abonadoA ? [['ABONADO A:', concepto]] : []), // v1144
       ...(adicional ? [['ABONO ADICIONAL:', pesos(adicional)]] : []),
+      ...(adicional && proximaCuotaPendiente(prestamo) ? [['VALOR PRÓXIMA CUOTA:', pesos(pendienteDeCuota(prestamo, proximaCuotaPendiente(prestamo)))]] : []), // v1164: el abono adicional ya descontó la cuota siguiente; se muestra lo que queda por pagar de ella
       ...(numeroCreditoCliente(prestamo) ? [['CRÉDITO:', '# ' + numeroCreditoCliente(prestamo)]] : []),
       ['FECHA DE ABONO:', ultimo ? fechaDiaCT(ultimo.fecha) : '—'],
       ...(esPagoInteres ? [] : [['CUOTA:', prestamo.soloInteres ? 'Sin plazo' : (cuotaRecibo + ' de ' + totalCuotas)]]), // v953 · v1059: el número de la cuota de ESE recibo (cuota 1 → 1 de 4); si el abono no completó ninguna, las cuotas pagadas
