@@ -29993,7 +29993,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
         : (ultimo.aplicarA === 'capital_interes' ? 'Capital e Interés' : (nombresAplicarA[ultimo.aplicarA] || 'Capital e Interés'))); // v978
     }
     // v960: ADICIONAL = lo que el cliente pagó por encima de lo que debía de la cuota (p. ej. cuota $150.000, paga $200.000 → $50.000)
-    let adicional = 0;
+    let adicional = 0, faltaCuota = 0, debiaCuota = 0; // v1167: debiaCuota = lo que correspondía pagar de la cuota en este abono; faltaCuota = lo que faltó para completarla
     if(ultimo && !prestamo.soloInteres && ultimo.aplicarA !== 'mora' && ultimo.concepto !== 'recargo_prorroga'){
       const c0 = Math.min.apply(null, partes.map(p => p.cuota).filter(n => n !== undefined && n !== null));
       const cuotaPlan0 = plan.find(c => c.numero === c0);
@@ -30001,9 +30001,12 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
         const previo = (prestamo.pagos || []).filter(p => p.cuota === c0 && p.aplicarA !== 'mora' && !partes.includes(p)).reduce((a, p) => a + (Number(p.monto) || 0), 0);
         const debia = Math.max(0, cuotaPlan0.total - previo);
         if(partes.some(p => p.cuota !== c0) || partes.length === 1) adicional = valor - debia;
+        debiaCuota = debia;
+        if(ultimo.concepto !== 'pago_interes' && !partes.some(p => p.cuota !== c0)) faltaCuota = debia - valor; // v1167: pagó menos de lo que correspondía
       }
     }
     if(!(adicional > 1)) adicional = 0;
+    if(!(faltaCuota > 1)) faltaCuota = 0;
     // v968: puntualidad — a tiempo si pagó antes, el día del vencimiento o 1 día después; si no, "Pago N día(s) tarde" (N = días pasados del día de gracia)
     let msgPuntual = '';
     if(ultimo && !prestamo.soloInteres && ultimo.aplicarA !== 'mora' && ultimo.concepto !== 'recargo_prorroga'){
@@ -30025,10 +30028,11 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     const filas = [
       ['NOMBRE:', nombreParaRecibo(cliente.nombre)], // v1054: el cliente primero, luego el abono · v1153
       ...filaDocumentoRecibo(cliente), // v1146
-      ['ABONO REALIZADO:', pesos(valor), 'monto'],
+      ['ABONO REALIZADO:', pesos(adicional ? valor - adicional : valor), 'monto'], // v1167: si pagó de más, aquí solo lo que correspondía; el resto va en ABONO ADICIONAL
       ...(esMoraRecibo ? [['POR CONCEPTO DE:', 'Posponer fecha']] : []), // v1156
       ...(window.PY_MOSTRAR_TERMICO.abonadoA ? [['ABONADO A:', concepto]] : []), // v1144
       ...(adicional ? [['ABONO ADICIONAL:', pesos(adicional)]] : []),
+      ...(faltaCuota ? [['FALTA PARA COMPLETAR:', pesos(faltaCuota)]] : []), // v1167: pagó menos de lo que correspondía a la cuota
       ...(adicional && proximaCuotaPendiente(prestamo) ? [['VALOR PRÓXIMA CUOTA:', pesos(pendienteDeCuota(prestamo, proximaCuotaPendiente(prestamo)))]] : []), // v1164: el abono adicional ya descontó la cuota siguiente; se muestra lo que queda por pagar de ella
       ...(numeroCreditoCliente(prestamo) ? [['CRÉDITO:', '# ' + numeroCreditoCliente(prestamo)]] : []),
       ['FECHA DE ABONO:', ultimo ? fechaDiaCT(ultimo.fecha) : '—'],
@@ -33275,10 +33279,13 @@ function dibujarComprobanteTermico(datos){
   // v963: los pagos de una cuota + lo que sobró en el MISMO pago y se aplicó a la(s) siguiente(s) cuota(s)
   // (cuota $350.000, paga $400.000 → el comprobante muestra $400.000, lo que el cliente pagó en ese momento)
   function partesComprobanteCuota(prestamo, numeroCuota){
-    const base = pagosDeCuota(prestamo, numeroCuota);
-    const lotes = new Set(base.filter(p => p.lote != null && p.aplicarA !== 'mora').map(p => p.lote));
-    if(!lotes.size) return base;
-    return (prestamo.pagos || []).filter(p => base.includes(p) || (p.lote != null && lotes.has(p.lote) && p.aplicarA !== 'mora'))
+    // v1166: el comprobante de una cuota muestra SOLO el último abono hecho a esa cuota (con lo que sobró de ese mismo pago hacia las siguientes),
+    // no la suma de los abonos anteriores de la misma cuota
+    const base = pagosDeCuota(prestamo, numeroCuota).slice().sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0) || String(a.fecha).localeCompare(String(b.fecha)));
+    if(!base.length) return base;
+    const ult = base[base.length - 1];
+    if(ult.lote == null || ult.aplicarA === 'mora') return [ult];
+    return (prestamo.pagos || []).filter(p => p === ult || (p.lote === ult.lote && p.aplicarA !== 'mora'))
       .slice().sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
   }
   function generarCanvasComprobante(prestamo, cuota, pagoEspecifico, opciones){
