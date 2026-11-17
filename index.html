@@ -30125,8 +30125,8 @@ function dibujarComprobanteTermico(datos){
     y += (cmp ? 40 : 44) + 10; // v1145: +10 de aire sobre PrestaYa
     plano.push(['marca', y]);
     y += cmp ? 27 : 30; plano.push(['titulo', y]);
-    if(datos.msgPuntual){ y += cmp ? 19 : 22; plano.push(['subTitulo', y, datos.msgPuntual]); if(datos.numeroComp){ y += cmp ? 21 : 25; plano.push(['comNo', y, datos.numeroComp]); if(datos.fechaHora){ y += 15; plano.push(['fechaHora', y, datos.fechaHora]); } } y += cmp ? 16 : 20; } // v969: puntualidad justo bajo "COMPROBANTE DE PAGO" · v1111: N.° de comprobante
-    else if(datos.numeroComp){ y += cmp ? 22 : 26; plano.push(['comNo', y, datos.numeroComp]); if(datos.fechaHora){ y += 15; plano.push(['fechaHora', y, datos.fechaHora]); } y += cmp ? 18 : 22; }
+    if(datos.msgPuntual){ y += cmp ? 19 : 22; plano.push(['subTitulo', y, datos.msgPuntual]); if(datos.numeroComp){ y += cmp ? 21 : 25; plano.push(['comNo', y, datos.numeroComp]); if(datos.fechaHora){ y += 14; plano.push(['fechaHora', y, datos.fechaHora]); } } y += cmp ? 16 : 20; } // v969: puntualidad justo bajo "COMPROBANTE DE PAGO" · v1111: N.° de comprobante
+    else if(datos.numeroComp){ y += cmp ? 22 : 26; plano.push(['comNo', y, datos.numeroComp]); if(datos.fechaHora){ y += 14; plano.push(['fechaHora', y, datos.fechaHora]); } y += cmp ? 18 : 22; }
     else y += cmp ? 27 : 31;
     plano.push(['guiones', y]); // v934: más aire bajo "COMPROBANTE DE PAGO"
     const yFilasIni = y;
@@ -30306,7 +30306,7 @@ function dibujarComprobanteTermico(datos){
         ctx.fillText('RECIBO No.  ' + e[2], W / 2, yy); ctx.restore();
       }
       else if(t === 'fechaHora'){ // v1156
-        ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.font = '12px ' + SANS; ctx.textAlign = 'center'; ctx.fillStyle = PIZARRA;
+        ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.font = '8px ' + SANS; ctx.textAlign = 'center'; ctx.fillStyle = PIZARRA; // v1158
         ctx.fillText(e[2], W / 2, yy); ctx.restore();
       }
       else if(t === 'correo'){ // v1113: "Info-PrestaYa@Outlook.com" con icono de sobre en blanco y negro, alineado con la línea de WhatsApp
