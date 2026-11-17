@@ -13908,14 +13908,14 @@ html.fondo-congelado *:not(.confirm-modal-overlay):not(.confirm-modal-overlay *)
           <option value="capital_interes" selected>Capital y interés</option>
           <option value="abono">Abono</option>
           <option value="solo_interes">Solo interés</option>
-          <option value="mora">Recargo por mora</option>
+          <option value="mora">Posponer fecha</option>
           <option value="solo_capital">Solo capital</option>
         </select>
       </div>
 
       <!-- NUEVO (a pedido, v517): concepto SOLO visual para recibos y comprobantes.
            No interviene en ningún cálculo (eso lo decide "Aplicar abono a"). -->
-      <div class="form-field sin-margen" style="margin-top:12px;">
+      <div class="form-field sin-margen" style="margin-top:12px;display:none;"><!-- v1159: oculto (no eliminado) -->
         <label class="field-label" for="select-concepto-abono">Concepto en el recibo</label>
         <select class="field-input field-select campo-concepto-abono" id="select-concepto-abono">
           <option value="auto" selected>Automático (según "Aplicar abono a")</option>
@@ -14288,7 +14288,7 @@ html.fondo-congelado *:not(.confirm-modal-overlay):not(.confirm-modal-overlay *)
         <option value="capital_interes">Capital y interés</option>
         <option value="abono">Abono</option>
         <option value="solo_interes">Solo interés</option>
-        <option value="mora">Recargo por mora</option>
+        <option value="mora">Posponer fecha</option>
         <option value="solo_capital">Solo capital</option>
       </select>
     </div>
