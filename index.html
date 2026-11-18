@@ -21853,6 +21853,10 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   });
   document.getElementById('input-monto-maximo-cliente').addEventListener('input', function(){
     this.value = formatearMiles(this.value);
+    // v1172: el tope se guarda MIENTRAS se escribe (antes solo al salir del campo con "change", y en el iPhone al cerrar el menú tocando afuera ese evento no siempre se dispara → el tope quedaba sin guardar y "no hacía nada")
+    if(!clienteEnDetalle) return;
+    clienteEnDetalle.montoMaximoValor = numeroDesdeCampo(this.value);
+    guardarClientes(clientesGuardados);
   });
   document.getElementById('input-monto-maximo-cliente').addEventListener('change', function(){
     if(!clienteEnDetalle) return;
@@ -24919,6 +24923,11 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
   function validarDatosPrestamo(datos){
     if(!datos.tipoInteres){ alert('Selecciona el tipo de interés.'); selectTipoInteres.focus(); return false; }
     if(datos.valor <= 0){ alert('Escribe el valor del préstamo.'); inputValorPrestamo.focus(); return false; }
+    // v1172: freno final del "Monto máximo a prestar" — no deja guardar un préstamo nuevo (o aumentar uno existente) por encima del tope del cliente
+    if(clienteEnDetalle && clienteEnDetalle.montoMaximoActivo && clienteEnDetalle.montoMaximoValor > 0 && datos.valor > clienteEnDetalle.montoMaximoValor){
+      const previo = prestamoEditandoId !== null ? ((prestamosGuardados.find(p => p.id === prestamoEditandoId) || {}).valor || 0) : 0;
+      if(datos.valor > previo){ alert('El monto máximo a prestar a este cliente es ' + formatearPesos(clienteEnDetalle.montoMaximoValor) + '.'); inputValorPrestamo.value = formatearMiles(clienteEnDetalle.montoMaximoValor); sincronizarInteresCuota(); inputValorPrestamo.focus(); return false; }
+    }
     if(datos.cuotas <= 0){ alert('Escribe el número de cuotas.'); inputCuotasPrestamo.focus(); return false; }
     // CORREGIDO: 0% ahora es un valor válido (préstamo sin intereses) — antes
     // "!(datos.tasa > 0)" rechazaba tanto el campo vacío como el 0 escrito
