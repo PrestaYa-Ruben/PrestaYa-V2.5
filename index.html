@@ -11955,6 +11955,9 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 #screen-simular-credito .sim-ab-fila{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 14px; cursor:pointer; }
 #screen-simular-credito .sim-ab-fila b{ font-size:16px; color:var(--text); }
 #screen-simular-credito .sim-ab-fila span{ font-size:13px; color:var(--text-secondary); }
+/* v1173: píldoras de filtro por fecha de la pantalla inicial, más grandes */
+html body #screen-inicio #tabs-rango-fechas{ gap:9px !important; }
+html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !important; font-size:16px !important; }
 </style>
 
 </head>
@@ -12201,6 +12204,8 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
       <button type="button" class="tab-button active" data-rango="hoy">Hoy</button>
       <button type="button" class="tab-button" data-rango="ayer">Ayer</button>
       <button type="button" class="tab-button" data-rango="7dias">Últimos 7 días</button>
+      <button type="button" class="tab-button" data-rango="quincena1">Quincena 1</button><!-- v1173 -->
+      <button type="button" class="tab-button" data-rango="quincena2">Quincena 2</button><!-- v1173 -->
       <button type="button" class="tab-button" data-rango="mes">Este mes</button>
       <button type="button" class="tab-button" data-rango="mesAnterior">Mes anterior</button>
       <button type="button" class="tab-button" data-rango="personalizado">Personalizado</button>
@@ -28467,6 +28472,13 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
     if(clave === 'mes'){
       const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
       return { inicio, fin: finDelDia(hoy) };
+    }
+    // v1173: el mes en curso dividido en dos — Quincena 1 = día 1 al 15; Quincena 2 = día 16 al último día del mes
+    if(clave === 'quincena1'){
+      return { inicio: new Date(hoy.getFullYear(), hoy.getMonth(), 1), fin: finDelDia(new Date(hoy.getFullYear(), hoy.getMonth(), 15)) };
+    }
+    if(clave === 'quincena2'){
+      return { inicio: new Date(hoy.getFullYear(), hoy.getMonth(), 16), fin: finDelDia(new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)) };
     }
     if(clave === 'mesAnterior'){
       const inicio = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
