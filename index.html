@@ -30527,7 +30527,7 @@ function dibujarComprobanteTermico(datos){
         ctx.font = fE; ctx.fillStyle = esNuevaFecha ? TINTA : AZUL; // v1135 · v1149
         let xe = X0;
         { // letra por letra (compatible con Safari)
-          for(const ch of e[2]){ ctx.fillText(ch, xe, yy); xe += limpia ? (ch === ' ' ? 7 : ancho(ch, fE) + 0.5) : ancho(ch, fE) - 0.5; }
+          for(const ch of e[2]){ ctx.fillText(ch, xe, yy); xe += limpia ? (ch === ' ' ? 7 : ancho(ch, fE) + 0.2) : ancho(ch, fE) - 0.5; }
         }
         ctx.fillStyle = TINTA;
         let xv = xe + 8; const disp = X1 - xv; // v1190: el ancho disponible cuenta el espaciado real
