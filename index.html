@@ -30278,7 +30278,7 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.c
     const esPagoInteres = !!(ultimo && ultimo.concepto === 'pago_interes');
     const esMoraRecibo = !!(ultimo && (ultimo.aplicarA === 'mora' || ultimo.concepto === 'recargo_prorroga')); // v1156
     const esAbonoCapital = !!(partes.length && partes.every(p => (Number(p.capitalPagado) || 0) > 0 && !(Number(p.interesPagado) > 0) && p.aplicarA !== 'mora')); // v1177: abono a solo capital → "COMPROBANTE DE ABONO" y etiquetas de abono
-    const usaPago = !!prestamo.soloInteres && !esAbonoCapital; // v1177: a solo interés se dice PAGO, salvo que sea un abono a capital
+    const usaPago = (!!prestamo.soloInteres && !esAbonoCapital) || esMoraRecibo; // v1183: también al posponer fecha se dice PAGO;  // v1177: a solo interés se dice PAGO, salvo que sea un abono a capital
     const filas = [
       ['NOMBRE:', nombreParaRecibo(cliente.nombre)], // v1054: el cliente primero, luego el abono · v1153
       ...filaDocumentoRecibo(cliente), // v1146
@@ -30290,17 +30290,21 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.c
       ...(adicional && proximaCuotaPendiente(prestamo) ? [['VALOR PRÓXIMA CUOTA:', pesos(pendienteDeCuota(prestamo, proximaCuotaPendiente(prestamo)))]] : []), // v1164: el abono adicional ya descontó la cuota siguiente; se muestra lo que queda por pagar de ella
       ...(numeroCreditoCliente(prestamo) ? [['CRÉDITO:', '# ' + numeroCreditoCliente(prestamo)]] : []),
       [usaPago ? 'FECHA DE PAGO:' : 'FECHA DE ABONO:', ultimo ? fechaDiaCT(ultimo.fecha) : '—'], // v1176
-      ...(esPagoInteres ? [] : [['CUOTA:', prestamo.soloInteres ? 'Sin plazo' : (cuotaRecibo + ' de ' + totalCuotas)]]), // v953 · v1059: el número de la cuota de ESE recibo (cuota 1 → 1 de 4); si el abono no completó ninguna, las cuotas pagadas
+      ...(esPagoInteres ? [] : [['CUOTAS PAGADAS:', prestamo.soloInteres ? 'Sin plazo' : (cuotaRecibo + ' de ' + totalCuotas)]]), // v953 · v1059: el número de la cuota de ESE recibo (cuota 1 → 1 de 4); si el abono no completó ninguna, las cuotas pagadas
       ...(obtenerReciboMostrarMetodo() ? [['MÉTODO DE PAGO:', ultimo ? ({ efectivo:'Efectivo', transferencia:'Transferencia' }[ultimo.metodoPago] || ultimo.metodoPago || 'Efectivo') : '—']] : []),
       ...(((mostrarReciboSaldo() || (totalCuotas > 0 && !prestamo.soloInteres && cuotaRecibo / totalCuotas >= 0.5)) && !ocultarSP) || creditoPagado || esPagoInteres || prestamo.soloInteres ? // v1115: el saldo restante sale solo al pagar el 50% o más de las cuotas; el interruptor lo fuerza siempre
          [['SALDO RESTANTE:', pesos(saldoReciboPrestamo(prestamo)), prestamo.soloInteres ? 'negrita' : undefined]] : []), // v1176: a solo interés el saldo va en negrita
-      ...(mostrarReciboProximo() && !ocultarSP ? [['PRÓXIMO PAGO:', (() => { const px = proximaCuotaPendiente(prestamo); return px ? fechaDiaCT(px.fechaISO) : 'Crédito al día'; })()]] : [])
+      ...(mostrarReciboProximo() && !ocultarSP ? [[esMoraRecibo ? 'NUEVA FECHA DE PAGO:' : 'PRÓXIMO PAGO:', (() => { const px = proximaCuotaPendiente(prestamo); return px ? (esMoraRecibo ? fechaDiaCT(px.fechaISO).toUpperCase() : fechaDiaCT(px.fechaISO)) : (esMoraRecibo ? 'CRÉDITO AL DÍA' : 'Crédito al día'); })()]] : [])
     ];
     const idRef = ultimo ? Number(ultimo.lote || ultimo.id) : 0; // v1111: N.° de comprobante estable (6 dígitos derivados del registro del abono)
     const numeroComp = idRef ? String(Math.floor(idRef / 1000) % 1000000).padStart(6, '0') : '';
     const tsRec = ultimo ? (idRef > 1e12 ? idRef : new Date(ultimo.fecha).getTime()) : 0;
     const fechaHora = (() => { const d = new Date(tsRec); if(!tsRec || isNaN(d)) return ''; let h = d.getHours(); const ap = h >= 12 ? 'pm' : 'am'; h = h % 12 || 12; return fechaDiaCT(d).replace(/^0/, '') + ' - ' + h + ':' + String(d.getMinutes()).padStart(2, '0') + ' ' + ap; })(); // v1156
-    return { filas, fechaHora, msgPuntual, titulo: esAbonoCapital ? 'COMPROBANTE DE ABONO' : undefined, numeroComp, creditoPagado, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos() };
+    if(esMoraRecibo){ // v1186: en posponer fecha, "PRÓXIMO PAGO" va justo debajo de "CUOTAS PAGADAS"
+      const iP = filas.findIndex(f => f && f[0] === 'NUEVA FECHA DE PAGO:'), iC = filas.findIndex(f => f && f[0] === 'CUOTAS PAGADAS:');
+      if(iP >= 0 && iC >= 0){ const [fp] = filas.splice(iP, 1); filas.splice(iC + (iP < iC ? 0 : 1), 0, fp); }
+    }
+    return { filas, fechaHora, msgPuntual, moraRecibo: esMoraRecibo, titulo: esAbonoCapital ? 'COMPROBANTE DE ABONO' : undefined, numeroComp, creditoPagado, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos() };
   }
   // El recibo que abre "Monto aprobado": el último abono del crédito
   function generarCanvasReciboTermico(prestamo){
@@ -30517,13 +30521,14 @@ function dibujarComprobanteTermico(datos){
       }
       else if(t === 'fila'){
         const f14 = '14px ' + ETQ;
-        ctx.font = f14; ctx.fillStyle = AZUL; // v1135 · v1149
+        const esNuevaFecha = e[2] === 'NUEVA FECHA DE PAGO:'; // v1187: en posponer fecha, el próximo pago se llama NUEVA FECHA DE PAGO (negro y negrita)
+        ctx.font = esNuevaFecha ? 'bold 14px ' + ETQ : f14; ctx.fillStyle = esNuevaFecha ? TINTA : AZUL; // v1135 · v1149
         { // v1154: letras de las etiquetas más juntas (se dibuja letra por letra con un avance menor; compatible con Safari)
-          const trk = ETQ === MONO ? -0.8 : -0.3; let xe = X0;
+          const trk = ETQ === MONO ? -1.2 : -0.5; let xe = X0; // v1190: letras y palabras de las etiquetas más juntas (antes -0.8 / -0.3)
           for(const ch of e[2]){ ctx.fillText(ch, xe, yy); xe += ancho(ch, f14) + trk; }
         }
         ctx.fillStyle = TINTA;
-        let xv = X0 + ancho(e[2], f14) + 8; const disp = X1 - xv;
+        let xv = X0 + ancho(e[2], f14) + (ETQ === MONO ? -1.2 : -0.5) * e[2].length + 8; const disp = X1 - xv; // v1190: el ancho disponible cuenta el espaciado reducido
         let fv = e[4] === 'monto' ? 'bold 16px ' + SANS : (e[4] === 'negrita' ? 'bold 15px ' + SANS : (e[4] === 'chico' ? '11.5px ' + SANS : '15px ' + SANS));
         let px = parseFloat(fv.match(/([\d.]+)px/)[1]);
         while(ancho(e[3], fv) > disp && px > 9){ px -= 0.5; fv = fv.replace(/[\d.]+px/, px + 'px'); }
@@ -30534,13 +30539,13 @@ function dibujarComprobanteTermico(datos){
         const verCop = !!window.PY_MOSTRAR_TERMICO.cop; // v1155
         const wValor = esCop ? ancho(txtCop, fv) + (verCop ? ancho(' cop', fCop) : 0) : anchoV(e[3], fv);
         if(esCop) xv = X1 - wValor;
-        const resalta = (e[2] === 'CUOTA:' && !creditoPagado && e[3] !== '—' && e[3] !== 'Sin plazo') || (creditoPagado && e[2] === 'SALDO RESTANTE:'); // v1136: en el térmico final del crédito el óvalo azul va en el saldo restante ($0) // v1127: en el térmico final del crédito (pagado) no va la píldora azul en el saldo restante
+        const resalta = (e[2] === 'CUOTAS PAGADAS:' && !datos.moraRecibo && !creditoPagado && e[3] !== '—' && e[3] !== 'Sin plazo') || (creditoPagado && e[2] === 'SALDO RESTANTE:'); // v1136: en el térmico final del crédito el óvalo azul va en el saldo restante ($0) // v1127: en el térmico final del crédito (pagado) no va la píldora azul en el saldo restante
         if(resalta){ ovaloManoAzul(ctx, xv - 8, xv + wValor + 8, yy - 4.5, 12); } // v1134: óvalo a mano alzada, el texto queda en tinta
         if(esCop){
-          ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.fillStyle = esTeal ? TEAL : TINTA;
+          ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.fillStyle = esTeal ? (datos.moraRecibo ? '#002D62' : TEAL) : TINTA; // v1186: en posponer fecha el pago realizado va en #002D62
           ctx.font = fv; ctx.fillText(txtCop, xv, yy); if(verCop){ ctx.font = fCop; ctx.fillText(' cop', xv + ancho(txtCop, fv), yy); } ctx.restore();
         }
-        else if(e[2] === 'CUOTA:' && /\d/.test(e[3])){ // v1135: solo los números de la cuota (4 y 6) en negrita; "de" normal
+        else if(e[2] === 'CUOTAS PAGADAS:' && /\d/.test(e[3])){ // v1135: solo los números de la cuota (4 y 6) en negrita; "de" normal
           const segs = e[3].split(/(\d+)/).filter(Boolean), fb = 'bold ' + fv; let tot = 0;
           segs.forEach(g => { tot += ancho(g, /\d/.test(g) ? fb : fv); });
           let xs = X1 - tot; ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
@@ -30548,6 +30553,7 @@ function dibujarComprobanteTermico(datos){
           ctx.restore();
         }
         else if(e[4] === 'doc'){ ctx.save(); ctx.font = '500 13px ' + SANS; ctx.fillStyle = PIZARRA; ctx.fillText(e[3], X1 - ancho(e[3], ctx.font), yy); ctx.restore(); } // v1146 · v1147: cédula en gris pizarra: documento bajo el nombre
+        else if(datos.moraRecibo && (e[2] === 'NUEVA FECHA DE PAGO:' || (e[2] === 'POR CONCEPTO DE:' && e[3] === 'Posponer fecha'))){ ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.font = 'bold ' + fv; ctx.fillStyle = e[2] === 'NUEVA FECHA DE PAGO:' ? TEAL : '#002D62'; ctx.fillText(e[3], X1 - ancho(e[3], 'bold ' + fv), yy); ctx.restore(); } // v1186: POSPONER FECHA en #002D62, la fecha del próximo pago en verde // v1184: en negrita, mayúscula y del color del valor pagado
         else if(e[2] === 'NOMBRE:'){ ctx.save(); ctx.font = 'bold ' + fv; ctx.fillStyle = TINTA; ctx.fillText(e[3], X1 - ancho(e[3], 'bold ' + fv), yy); ctx.restore(); } // v1135: nombre en negrita // v1055 · v1065: nombre en negro intenso, sin negrita
         else if(/\d/.test(e[3]) && !/Inter/.test(fv)) textoNum(e[3], xv, yy); // v934 · v984: cifras y puntos de miles más juntos
         else ctx.fillText(e[3], xv, yy);
@@ -33607,7 +33613,7 @@ function dibujarComprobanteTermico(datos){
       ['Cliente', nombreCliente],
       ['Monto del préstamo', formatearPesos(prestamo.valor)],
       ['Concepto', 'Recargo por mora'],
-      ['Cuota', cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas],
+      ['Cuotas pagadas', cuotasPagadasPrestamo(prestamo) + ' de ' + prestamo.cuotas],
       ['Valor abonado', formatearPesos(montoAbonado)],
       ['Método de pago', metodo],
       ['Fecha de pago', fechaTexto]
@@ -33627,7 +33633,7 @@ function dibujarComprobanteTermico(datos){
       // total, sin importar el número específico de cuota tocada por
       // este abono (así un abono que sobra hacia la siguiente cuota, sin
       // completarla, no la cuenta todavía).
-      ['Cuota', numeroCuotaReciboPago(prestamo, numerosCuota.length ? numerosCuota : [cuota.numero]) + ' de ' + prestamo.cuotas], // v738: la cuota de ESTE pago
+      ['Cuotas pagadas', numeroCuotaReciboPago(prestamo, numerosCuota.length ? numerosCuota : [cuota.numero]) + ' de ' + prestamo.cuotas], // v738: la cuota de ESTE pago
       // NUEVO: a pedido — el comprobante normal también puede mostrar el
       // método de pago (se oculta con el interruptor "Método de pago").
       ['Método de pago', metodo],
@@ -33641,7 +33647,7 @@ function dibujarComprobanteTermico(datos){
     // fila "Concepto" (Pago de intereses / Abono a capital).
     const conceptoSI = conceptoReciboSoloInteres(prestamo, pagosCuota);
     if(prestamo.soloInteres){
-      filas = filas.filter(f => !f || f[0] !== 'Cuota');
+      filas = filas.filter(f => !f || f[0] !== 'Cuotas pagadas');
       if(conceptoSI && !filas.some(f => f && f[0] === 'Concepto')){
         const iM = filas.findIndex(f => f && f[0] === 'Monto del préstamo');
         filas.splice(iM >= 0 ? iM + 1 : 1, 0, ['Concepto', conceptoSI]);
@@ -33663,7 +33669,7 @@ function dibujarComprobanteTermico(datos){
       filas = filas.filter(fila => !fila || fila[0] !== 'Método de pago');
     }
     if(!obtenerReciboMostrarCuota()){
-      filas = filas.filter(fila => !fila || (fila[0] !== 'Cuota' && fila[0] !== 'Recargo por la'));
+      filas = filas.filter(fila => !fila || (fila[0] !== 'Cuotas pagadas' && fila[0] !== 'Recargo por la'));
     }
 
     // RESTAURADO: el usuario pidió que el interruptor de Ajustes →
@@ -33692,7 +33698,7 @@ function dibujarComprobanteTermico(datos){
     })();
     if(numeroCreditoRecibo){
       const textoCredito = 'Crédito #' + numeroCreditoRecibo;
-      const filaDestino = filas.find(f => f && f[0] === 'Cuota') || filas.find(f => f && f[0] === 'Concepto');
+      const filaDestino = filas.find(f => f && f[0] === 'Cuotas pagadas') || filas.find(f => f && f[0] === 'Concepto');
       if(filaDestino) filaDestino[1] = filaDestino[1] + ' · ' + textoCredito;
       else filas.splice(1, 0, ['Crédito', '#' + numeroCreditoRecibo]);
     }
@@ -34565,7 +34571,7 @@ function dibujarComprobanteTermico(datos){
       // número específico de cuota tocada por este abono.
       const textoCuota = esAbono ? 'Abono' : (esRecargoMora ? cuotasPagadasPrestamo(prestamo) : numeroCuotaReciboPago(prestamo, [pago.cuota !== undefined ? pago.cuota : cuota.numero])) + ' de ' + prestamo.cuotas; // v738
       if(prestamo.soloInteres && !esRecargoMora) filas.push(['Concepto', conceptoAbono(pago) || conceptoReciboSoloInteres(prestamo, pago)]); // v528: sin "Cuota"
-      else filas.push(['Cuota', textoCuota]);
+      else filas.push(['Cuotas pagadas', textoCuota]);
     }
     if(obtenerReciboMostrarMetodo()){
       filas.push(['Método de pago', nombresMetodoPago[pago.metodoPago] || pago.metodoPago || 'Efectivo']);
@@ -37357,7 +37363,7 @@ function dibujarComprobanteTermico(datos){
       // una cuota específica — no debe mostrarse como si lo fueran.
       if(conceptoAbono(ultimo.pago)){
         filas.push(['Concepto', conceptoAbono(ultimo.pago)]); // v517
-        if(ultimo.pago.aplicarA !== 'mora' && ultimo.pago.aplicarA !== 'abono') filas.push(['Cuota', 'N.° ' + ultimo.pago.cuota + ' de ' + ultimo.prestamo.cuotas]);
+        if(ultimo.pago.aplicarA !== 'mora' && ultimo.pago.aplicarA !== 'abono') filas.push(['Cuotas pagadas', 'N.° ' + ultimo.pago.cuota + ' de ' + ultimo.prestamo.cuotas]);
       }else if(ultimo.pago.aplicarA === 'mora'){
         filas.push(['Concepto', 'Recargo por mora']);
       }else if(ultimo.pago.aplicarA === 'abono'){
