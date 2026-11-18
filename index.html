@@ -11968,6 +11968,14 @@ html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full:not(.lt
 .loan-progress-trozo.capital[data-capital]{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
 /* v1177 segmento azul de abono a capital en la tarjeta Océano */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.capital{ background:linear-gradient(180deg,#4DA3FF,#1E7CF2) !important; border:1.5px solid #1766C8 !important; color:#fff !important; box-shadow:none !important; }
+/* v1198: se quita (oculta, no eliminada) la sección "Resumen del abono" del formulario Agregar Abono */
+#screen-agregar-abono #resumen-final-abono{ display:none !important; }
+#vista-previa-abono-overlay{ -webkit-backdrop-filter:blur(14px) saturate(1.1) !important; backdrop-filter:blur(14px) saturate(1.1) !important; z-index:100000; }
+/* v1199 congelar fondo con vista previa */
+html.vp-abono-congelado, body.vp-abono-congelado{ overflow:hidden !important; overscroll-behavior:none; }
+body.vp-abono-congelado #screen-agregar-abono{ overflow:hidden !important; touch-action:none; }
+#vista-previa-abono-overlay{ overscroll-behavior:contain; touch-action:none; }
+#vista-previa-abono-overlay .img-scroll-comprobante{ touch-action:pan-y; overscroll-behavior:contain; }
 </style>
 
 </head>
@@ -14052,6 +14060,7 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.c
 
     </div>
 
+    <button type="button" class="btn-outline-share" id="btn-vista-previa-abono" style="width:100%; margin:6px 0 0;">Vista previa del comprobante</button><!-- v1198 -->
     <button type="button" class="primary-button btn-guardar-abono" id="btn-guardar-abono">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v10"></path><path d="M9.5 9.5c0-1.4 1.2-2.4 2.6-2.4 1.5 0 2.7.9 2.7 2.1 0 2.9-5.3 1.8-5.3 4.7 0 1.2 1.2 2.1 2.7 2.1 1.4 0 2.6-1 2.6-2.4"></path></svg>
       Registrar abono
@@ -17008,6 +17017,15 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.c
 <!-- ==========================================================
      VISOR DE IMAGEN DEL COMPROBANTE
      ========================================================== -->
+<!-- v1198: vista previa del comprobante ANTES de registrar el abono (no guarda nada) -->
+<div id="vista-previa-abono-overlay" class="confirm-modal-overlay" style="display:none;">
+  <div class="imagen-comprobante-card">
+    <div class="img-scroll-comprobante"><img id="vista-previa-abono-img" src="" alt="Vista previa del comprobante"></div>
+    <button type="button" class="primary-button" id="btn-vista-previa-registrar" style="width:100%; margin-top:14px;">Registrar abono</button>
+    <button type="button" class="btn-outline-share" id="btn-vista-previa-volver" style="width:100%; margin:10px 0 0;">Volver a editar</button>
+  </div>
+</div>
+
 <div id="imagen-comprobante-overlay" class="confirm-modal-overlay" style="display:none;">
   <div class="imagen-comprobante-card">
     <img id="imagen-comprobante-img" src="" alt="Comprobante de pago">
@@ -32603,6 +32621,75 @@ function dibujarComprobanteTermico(datos){
     cerrarAgregarAbono();
     if(datosComprobanteAbono) abrirMenuAbonoRegistrado(datosComprobanteAbono);
   });
+
+  // ---------- v1198: VISTA PREVIA del comprobante antes de registrar el abono (no guarda nada) ----------
+  // Trabaja sobre una COPIA del crédito: los pagos "virtuales" nunca tocan el crédito real.
+  const btnVistaPreviaAbono = document.getElementById('btn-vista-previa-abono');
+  const vistaPreviaAbonoOverlay = document.getElementById('vista-previa-abono-overlay');
+  function canvasVistaPreviaAbono(){
+    if(!prestamoEnDetalle) return null;
+    const cuotaInicial = cuotaSeleccionadaAbono();
+    if(!cuotaInicial) return null;
+    const valorIngresado = numeroDesdeCampo(inputValorAbono.value);
+    if(valorIngresado <= 0){ alert('Escribe el valor del abono.'); inputValorAbono.focus(); return null; }
+    if(!inputFechaAbono.value){ alert('Elige la fecha del pago.'); return null; }
+    const real = prestamosGuardados.find(p => p.id === prestamoEnDetalle.id);
+    if(!real) return null;
+    const modo = selectAplicarAbono.value;
+    if(real.soloInteres && modo !== 'mora'){
+      const exceso = excesoAbonoSoloInteres(real, valorIngresado, modo);
+      if(exceso > SI_TOLERANCIA){
+        alert('El valor excede lo que debe en ' + formatearPesos(exceso) + '. Lo máximo en "' + (nombresAplicarA[modo] || modo) + '" es ' + formatearPesos(deudaSegunModoSoloInteres(real, modo)) + '.');
+        inputValorAbono.focus();
+        return null;
+      }
+    }
+    const copia = JSON.parse(JSON.stringify(real));
+    if(!copia.pagos) copia.pagos = [];
+    const fechaISO = new Date(inputFechaAbono.value + 'T00:00:00').toISOString();
+    const metodo = selectMetodoPago.value, nota = inputNotaAbono.value.trim();
+    const conceptoSel = (((document.getElementById('select-concepto-abono') || {}).value) || '').replace('auto','');
+    const virtuales = [];
+    if(modo === 'mora'){
+      virtuales.push({ id: Date.now(), cuota: cuotaInicial.numero, fecha: fechaISO, monto: valorIngresado, interesPagado: 0, capitalPagado: 0, aplicarA: modo, metodoPago: metodo, nota, concepto: conceptoSel });
+    }else{
+      const lote = Date.now();
+      repartirAbonoEntreCuotas(copia, valorIngresado, modo).forEach((parte, i)=>{
+        virtuales.push({ lote, id: lote + i, cuota: parte.cuota.numero, fecha: fechaISO, monto: parte.monto, interesPagado: parte.interesPagado, capitalPagado: parte.capitalPagado, aplicarA: parte.aplicarA || modo, metodoPago: metodo, nota, concepto: conceptoSel });
+      });
+      if(!virtuales.length) virtuales.push({ id: Date.now(), cuota: cuotaInicial.numero, fecha: fechaISO, monto: valorIngresado, interesPagado: 0, capitalPagado: modo === 'solo_capital' ? valorIngresado : 0, aplicarA: modo, metodoPago: metodo, nota, concepto: conceptoSel });
+    }
+    virtuales.forEach(v => copia.pagos.push(v));
+    let saldado;
+    if(copia.soloInteres){ sincronizarPrestamoSoloInteres(copia); saldado = prestamoSoloInteresSaldado(copia); }
+    else saldado = (copia.plan || []).every(c => estaCuotaPagada(copia, c.numero));
+    copia.estado = saldado ? 'finalizado' : 'activo';
+    const cuotaImagen = (copia.plan || []).find(c => c.numero === virtuales[0].cuota) || cuotaInicial;
+    const original = generarCanvasComprobante(copia, cuotaImagen, virtuales);
+    if(!original) return null;
+    // Marca de agua "VISTA PREVIA" muy transparente, solo sobre la copia que se muestra (nunca en la imagen que se comparte)
+    const cv = document.createElement('canvas'); cv.width = original.width; cv.height = original.height;
+    const cx = cv.getContext('2d'); cx.drawImage(original, 0, 0);
+    cx.save(); cx.translate(cv.width / 2, cv.height / 2); cx.rotate(-Math.PI / 6);
+    cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillStyle = 'rgba(6,33,54,0.10)';
+    let tam = cv.width * 0.2; cx.font = '800 ' + tam + 'px Inter, -apple-system, sans-serif';
+    const objetivo = Math.hypot(cv.width, cv.height) * 0.62, medido = cx.measureText('VISTA PREVIA').width;
+    tam = tam * objetivo / medido; cx.font = '800 ' + tam + 'px Inter, -apple-system, sans-serif';
+    cx.fillText('VISTA PREVIA', 0, 0); cx.restore();
+    return cv;
+  }
+  btnVistaPreviaAbono.addEventListener('click', ()=>{
+    const cv = canvasVistaPreviaAbono();
+    if(!cv) return;
+    document.getElementById('vista-previa-abono-img').src = cv.toDataURL('image/png');
+    vistaPreviaAbonoOverlay.style.display = 'flex';
+    document.documentElement.classList.add('vp-abono-congelado'); document.body.classList.add('vp-abono-congelado'); // v1199
+  });
+  function cerrarVistaPreviaAbono(){ vistaPreviaAbonoOverlay.style.display = 'none'; document.getElementById('vista-previa-abono-img').src = ''; document.documentElement.classList.remove('vp-abono-congelado'); document.body.classList.remove('vp-abono-congelado'); }
+  vistaPreviaAbonoOverlay.addEventListener('touchmove', (e)=>{ if(!e.target.closest('.img-scroll-comprobante')) e.preventDefault(); }, {passive:false}); // v1199
+  document.getElementById('btn-vista-previa-volver').addEventListener('click', cerrarVistaPreviaAbono);
+  vistaPreviaAbonoOverlay.addEventListener('click', (e)=>{ if(e.target === vistaPreviaAbonoOverlay) cerrarVistaPreviaAbono(); });
+  document.getElementById('btn-vista-previa-registrar').addEventListener('click', ()=>{ cerrarVistaPreviaAbono(); btnGuardarAbono.click(); });
 
   // ---------- NUEVO: menú "Abono registrado" (Ver imagen / Compartir imagen) ----------
   const abonoRegistradoOverlay = document.getElementById('abono-registrado-overlay');
