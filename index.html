@@ -30522,13 +30522,15 @@ function dibujarComprobanteTermico(datos){
       else if(t === 'fila'){
         const f14 = '14px ' + ETQ;
         const esNuevaFecha = e[2] === 'NUEVA FECHA DE PAGO:'; // v1187: en posponer fecha, el próximo pago se llama NUEVA FECHA DE PAGO (negro y negrita)
-        ctx.font = esNuevaFecha ? 'bold 14px ' + ETQ : f14; ctx.fillStyle = esNuevaFecha ? TINTA : AZUL; // v1135 · v1149
-        { // v1154: letras de las etiquetas más juntas (se dibuja letra por letra con un avance menor; compatible con Safari)
-          const trk = ETQ === MONO ? -1.2 : -0.5; let xe = X0; // v1190: letras y palabras de las etiquetas más juntas (antes -0.8 / -0.3)
-          for(const ch of e[2]){ ctx.fillText(ch, xe, yy); xe += ancho(ch, f14) + trk; }
+        const limpia = ETQ === MONO; // v1191: las etiquetas de los comprobantes van en Inter (limpia), un poco más espaciada entre letras y con la misma separación entre palabras
+        const fE = limpia ? (esNuevaFecha ? '700 13px ' : '500 13px ') + SANS : (esNuevaFecha ? 'bold 14px ' + ETQ : f14);
+        ctx.font = fE; ctx.fillStyle = esNuevaFecha ? TINTA : AZUL; // v1135 · v1149
+        let xe = X0;
+        { // letra por letra (compatible con Safari)
+          for(const ch of e[2]){ ctx.fillText(ch, xe, yy); xe += limpia ? (ch === ' ' ? 7 : ancho(ch, fE) + 0.5) : ancho(ch, fE) - 0.5; }
         }
         ctx.fillStyle = TINTA;
-        let xv = X0 + ancho(e[2], f14) + (ETQ === MONO ? -1.2 : -0.5) * e[2].length + 8; const disp = X1 - xv; // v1190: el ancho disponible cuenta el espaciado reducido
+        let xv = xe + 8; const disp = X1 - xv; // v1190: el ancho disponible cuenta el espaciado real
         let fv = e[4] === 'monto' ? 'bold 16px ' + SANS : (e[4] === 'negrita' ? 'bold 15px ' + SANS : (e[4] === 'chico' ? '11.5px ' + SANS : '15px ' + SANS));
         let px = parseFloat(fv.match(/([\d.]+)px/)[1]);
         while(ancho(e[3], fv) > disp && px > 9){ px -= 0.5; fv = fv.replace(/[\d.]+px/, px + 'px'); }
@@ -30545,7 +30547,8 @@ function dibujarComprobanteTermico(datos){
           ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; ctx.fillStyle = esTeal ? (datos.moraRecibo ? '#002D62' : TEAL) : TINTA; // v1186: en posponer fecha el pago realizado va en #002D62
           ctx.font = fv; ctx.fillText(txtCop, xv, yy); if(verCop){ ctx.font = fCop; ctx.fillText(' cop', xv + ancho(txtCop, fv), yy); } ctx.restore();
         }
-        else if(e[2] === 'CUOTAS PAGADAS:' && /\d/.test(e[3])){ // v1135: solo los números de la cuota (4 y 6) en negrita; "de" normal
+        else if(e[2] === 'CUOTAS PAGADAS:' && !datos.moraRecibo && /\d/.test(e[3])){ // v1196: en posponer fecha los números van sin negrita
+ // v1135: solo los números de la cuota (4 y 6) en negrita; "de" normal
           const segs = e[3].split(/(\d+)/).filter(Boolean), fb = 'bold ' + fv; let tot = 0;
           segs.forEach(g => { tot += ancho(g, /\d/.test(g) ? fb : fv); });
           let xs = X1 - tot; ctx.save(); ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
@@ -33533,7 +33536,7 @@ function dibujarComprobanteTermico(datos){
   // Precarga la fuente del valor del comprobante: el canvas solo puede
   // usar una fuente que ya esté cargada cuando se dibuja.
   try{ if(document.fonts && document.fonts.load) document.fonts.load("800 68px PrestaYaMonto", "$0123456789."); }catch(err){}
-  try{ if(document.fonts && document.fonts.load){ document.fonts.load("400 14px PrestaYaMono"); document.fonts.load("700 15px PrestaYaMono"); } }catch(err){} // v1151: carga anticipada de la tipografía de los recibos
+  try{ if(document.fonts && document.fonts.load){  document.fonts.load("400 14px PrestaYaMono"); document.fonts.load("700 15px PrestaYaMono"); } }catch(err){} // v1151: carga anticipada de la tipografía de los recibos
 
   // v951: el comprobante de abono usa el nuevo diseño térmico; el anterior queda como generarCanvasComprobanteAnterior (sin uso)
   // v963: los pagos de una cuota + lo que sobró en el MISMO pago y se aplicó a la(s) siguiente(s) cuota(s)
