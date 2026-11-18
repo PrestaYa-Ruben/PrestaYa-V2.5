@@ -28808,7 +28808,7 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.c
         ${elementosBarraSoloInteres(prestamo).map(el => { if(!el.c) return `<span class="loan-progress-trozo capital" data-capital="${el.k}" role="button" aria-label="Abono a capital ${el.k + 1}">$</span>`; const c = el.c; const pagC = estaCuotaPagada(prestamo, c.numero), pctC = pctParcialCuota(prestamo, c); return `<span class="loan-progress-trozo${pagC ? ' pagado' : (cuotaVencida(prestamo, c) ? ' vencido' : '')}${pctC ? ' parcial' : ''}"${pctC ? ' style="--pp:' + pctC + '%" title="Abonado ' + pctC + '%"' : ''} data-cuota="${c.numero}" role="button" aria-label="Cuota ${c.numero}">${c.numero}</span>`; }).join('')}<!-- v1177: un segmento azul por cada abono a capital de un crédito a solo interés -->
       </div>
       <div class="loan-progress-pie"><!-- NUEVO (a pedido): total a pagar (izq.) y saldo pendiente (der.) bajo la barra -->
-        <div class="lpp-item"><span class="lpp-label">Total a pagar</span><span class="lpp-valor lpp-total">${formatearPesos(prestamo.totalAPagar || 0)}</span></div>
+        <div class="lpp-item"><span class="lpp-label">Total a pagar</span><span class="lpp-valor lpp-total">${formatearPesos(prestamo.soloInteres ? totalAPagarTarjetaSoloInteres(prestamo) : (prestamo.totalAPagar || 0))}</span></div>
         <div class="lpp-item lpp-centro"><span class="lpp-label">Ha pagado</span><span class="lpp-valor lpp-abonado">${formatearPesos(totalAbonado)}</span></div>
         <div class="lpp-item lpp-der"><span class="lpp-label">Debe</span><span class="lpp-valor lpp-saldo${saldo <= 0 ? ' lpp-saldo-cero' : ''}">${formatearPesos(saldo)}</span></div>
       </div>
@@ -29281,6 +29281,13 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.c
     plan.forEach((c, i) => { res.push({ c }); tras[i].forEach(x => res.push(x)); });
     return res;
   }
+  // v1182: "Total a pagar" de un crédito a solo interés en la tarjeta: capital que se debe + interés pendiente del periodo actual (no suma los intereses ya pagados)
+  function totalAPagarTarjetaSoloInteres(prestamo){
+    if(prestamo.estado === 'finalizado') return 0;
+    const cap = capitalPendienteSoloInteres(prestamo);
+    const px = proximaCuotaPendiente(prestamo);
+    return cap + (px ? pendienteDeCuota(prestamo, px) : 0);
+  }
   function mostrarGloboCapital(ancla, prestamo, indice){
     if(globoCuotaActual && globoCuotaActual.ancla === ancla){ cerrarGloboCuota(); return; }
     cerrarGloboCuota();
@@ -29589,7 +29596,7 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.c
           <div class="lto-tile t4"><span class="lto-ic">${IO.freq}</span><div class="lto-tx"><span class="lto-k">Frecuencia</span><b class="lto-pill">${frecuencia}</b></div></div>
         </div>
         <div class="lto-tot">
-          <div class="lto-tot-a">${IO.cartera}<div class="lto-tx"><span class="lto-k">Total a pagar</span><b class="lto-v">${formatearPesos(totalPagar)}</b></div></div>
+          <div class="lto-tot-a">${IO.cartera}<div class="lto-tx"><span class="lto-k">Total a pagar</span><b class="lto-v">${formatearPesos(prestamo.soloInteres ? totalAPagarTarjetaSoloInteres(prestamo) : totalPagar)}</b></div></div>
           <div class="lto-tot-b"><span class="lto-k">Valor cuotas</span><b class="lto-v">${formatearPesos(cuotaRealPrestamo(prestamo))}</b></div>
         </div>
         <div class="lto-pag" role="button" aria-label="Ver resumen del crédito">
