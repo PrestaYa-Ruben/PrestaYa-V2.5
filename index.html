@@ -11958,6 +11958,16 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 /* v1173: píldoras de filtro por fecha de la pantalla inicial, más grandes */
 html body #screen-inicio #tabs-rango-fechas{ gap:9px !important; }
 html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !important; font-size:16px !important; }
+/* v1177 segmento azul de abono a capital (crédito a solo interés) */
+html body .loan-progress-trozo.capital,
+html body.modo-oscuro .loan-progress-trozo.capital,
+html body:not(.modo-oscuro) .loan-progress-trozo.capital,
+html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-progress-trozo.capital,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-progress-trozo.capital,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-progress-trozo.capital{ background:linear-gradient(180deg,#4DA3FF,#1E7CF2) !important; color:#fff !important; font-size:9.5px !important; cursor:pointer; box-shadow:none !important; border-color:#1766C8 !important; }
+.loan-progress-trozo.capital[data-capital]{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
+/* v1177 segmento azul de abono a capital en la tarjeta Océano */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.capital{ background:linear-gradient(180deg,#4DA3FF,#1E7CF2) !important; border:1.5px solid #1766C8 !important; color:#fff !important; box-shadow:none !important; }
 </style>
 
 </head>
@@ -24243,6 +24253,18 @@ html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !impo
   }
   inputCuotasPrestamo.addEventListener('input', autocompletarInteresPorBloque);
   selectFrecuencia.addEventListener('change', autocompletarInteresPorBloque);
+  // v1180: préstamo NUEVO a solo interés — tasa por defecto: quincenal 5 %, mensual 10 % (sigue siendo editable a mano)
+  const TASA_SOLO_INTERES_POR_DEFECTO = { quincenal: 5, mensual: 10 };
+  function aplicarTasaSoloInteresPorDefecto(){
+    if(!formularioSoloInteres || prestamoEditandoId !== null) return;
+    const t = TASA_SOLO_INTERES_POR_DEFECTO[selectFrecuencia.value];
+    if(t === undefined) return;
+    inputTasaInteres.value = textoTasaSinCeros(t);
+    interesEditadoManualmente = false;
+    sincronizarInteresCuota();
+    if(typeof actualizarRecuadroSoloInteres === 'function') actualizarRecuadroSoloInteres();
+  }
+  selectFrecuencia.addEventListener('change', aplicarTasaSoloInteresPorDefecto);
 
   // Botón de flechas ↔: cambia cuál de los dos campos actúa como dato de
   // entrada (Modo 1: % Interés | Modo 2: Cuota deseada). El otro campo pasa
@@ -24619,6 +24641,7 @@ html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !impo
       modoInteresActivo = true; // el % de interés es el único dato de entrada
       aplicarModoInteresCuota();
     }
+    if(formularioSoloInteres && !interesEditadoManualmente) aplicarTasaSoloInteresPorDefecto(); // v1180
     actualizarRecuadroSoloInteres();
     if(typeof refrescarPlanSiAbierto === 'function') refrescarPlanSiAbierto();
     if(!formularioSoloInteres) actualizarNotaSimulacionSoloInteres(null);
@@ -25452,7 +25475,7 @@ html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !impo
   // v1146: documento del cliente bajo su nombre en los recibos ("C.C 94.472.769"); si no tiene documento registrado no se muestra nada
   function filaDocumentoRecibo(cli){
     const d = cli && cli.documento ? String(cli.documento).trim() : '';
-    if(!d) return [];
+    if(!d || !window.PY_MOSTRAR_CEDULA) return []; // v1177: la cédula no se muestra en lo que se comparte al cliente (poner window.PY_MOSTRAR_CEDULA = true para volver a verla)
     return [['', 'C.C ' + (/^[\d.\s]+$/.test(d) ? formatearMiles(d.replace(/\D/g, '')) : d), 'doc']];
   }
   function datosCabeceraTabla(prestamo, cliente, titulo){
@@ -25536,7 +25559,7 @@ html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !impo
     // ---- 1) Calcular el alto total del canvas ANTES de dibujar ----
     const altoHeader = 105;
     const filasInfo = [
-      ['Cliente', cliente ? cliente.nombre : '', 'Cédula', (cliente && cliente.documento) ? cliente.documento : '—'],
+      ['Cliente', cliente ? cliente.nombre : '', window.PY_MOSTRAR_CEDULA ? 'Cédula' : '', window.PY_MOSTRAR_CEDULA ? ((cliente && cliente.documento) ? cliente.documento : '—') : ''], // v1177
       ['Monto del préstamo', formatearPesos(prestamo.valor), 'Fecha del préstamo', formatearFechaCorta(new Date(prestamo.fecha + 'T00:00:00'))],
       ['Cuotas', prestamo.cuotas + ' × ' + formatearPesos(cuotaRealPrestamo(prestamo)), 'Modalidad de pago', NOMBRES_FRECUENCIA[prestamo.frecuencia] || prestamo.frecuencia]
     ];
@@ -25944,15 +25967,15 @@ html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !impo
       ['NOMBRE:', nombreParaRecibo(cli.nombre)], // v1153
       ...filaDocumentoRecibo(cli), // v1148: documento bajo el nombre también en este recibo
       // v1122: se retira la identificación de este térmico (docTxt se conserva por si se vuelve a mostrar)
-      ...(num ? [['CRÉDITO:', '# ' + num]] : []),
+      ...(prestamo.soloInteres ? [['CRÉDITO:', (num ? '# ' + num + ', solo a intereses' : 'A solo intereses')]] : (num ? [['CRÉDITO:', '# ' + num]] : [])), // v1174: a solo interés — con varios créditos '# 2 solo a intereses'; con uno solo 'A solo intereses'
       ['FECHA DEL CRÉDITO:', fFecha],
       ['N.° DE CUOTAS:', prestamo.soloInteres ? 'Sin plazo' : String(prestamo.cuotas || (prestamo.plan || []).length || 0)],
-      ['VALOR POR CUOTA:', formatearPesos(cuotaRealPrestamo(prestamo))],
+      [prestamo.soloInteres ? 'INTERÉS A PAGAR:' : 'VALOR POR CUOTA:', formatearPesos(cuotaRealPrestamo(prestamo))], // v1174
       ['FRECUENCIA DE PAGO:', (NOMBRES_FRECUENCIA[prestamo.frecuencia] || prestamo.frecuencia || '—').toUpperCase()]
     ];
     return dibujarComprobanteTermico({
       filas, creditoPagado: prestamo.estado === 'finalizado', codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos(),
-      titulo: 'COMPROBANTE DE CRÉDITO',
+      titulo: 'COMPROBANTE DEL CRÉDITO', // v1174
       gracias: '¡Gracias por elegirnos!' // v1120: mismo pie que los demás térmicos (agradecimiento + mensaje + WhatsApp + correo)
     });
   }
@@ -25982,7 +26005,7 @@ html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !impo
     // NUEVO: a pedido — documento del cliente (bajo su nombre) y número de
     // solicitud (encima de "CRÉDITO OTORGADO"). Solo se dibujan si existen.
     const documentoCliente = cliente && cliente.documento ? String(cliente.documento).trim() : '';
-    const textoDocumentoCliente = documentoCliente
+    const textoDocumentoCliente = (documentoCliente && window.PY_MOSTRAR_CEDULA) // v1177
       ? 'CC ' + (/^[\d.\s]+$/.test(documentoCliente) ? formatearMiles(documentoCliente.replace(/\D/g, '')) : documentoCliente)
       : '';
     const textoSolicitud = prestamo.codigo ? 'N.° solicitud ' + prestamo.codigo : '';
@@ -28782,7 +28805,7 @@ html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !impo
       </div>
       <div class="loan-progress-track loan-progress-segmentado${(prestamo.plan || []).length > 40 ? ' muchas' : ''}${(prestamo.plan || []).length > 16 ? ' nums-chicos' : ''}${(prestamo.plan || []).length > 30 ? ' sin-nums' : ''}">
         <div class="loan-progress-fill" style="width:${porcentajeProgreso}%; display:none;"></div>
-        ${(prestamo.plan || []).map(c => { const pagC = estaCuotaPagada(prestamo, c.numero), pctC = pctParcialCuota(prestamo, c); return `<span class="loan-progress-trozo${pagC ? ' pagado' : (cuotaVencida(prestamo, c) ? ' vencido' : '')}${pctC ? ' parcial' : ''}"${pctC ? ' style="--pp:' + pctC + '%" title="Abonado ' + pctC + '%"' : ''} data-cuota="${c.numero}" role="button" aria-label="Cuota ${c.numero}">${c.numero}</span>`; }).join('')}
+        ${elementosBarraSoloInteres(prestamo).map(el => { if(!el.c) return `<span class="loan-progress-trozo capital" data-capital="${el.k}" role="button" aria-label="Abono a capital ${el.k + 1}">$</span>`; const c = el.c; const pagC = estaCuotaPagada(prestamo, c.numero), pctC = pctParcialCuota(prestamo, c); return `<span class="loan-progress-trozo${pagC ? ' pagado' : (cuotaVencida(prestamo, c) ? ' vencido' : '')}${pctC ? ' parcial' : ''}"${pctC ? ' style="--pp:' + pctC + '%" title="Abonado ' + pctC + '%"' : ''} data-cuota="${c.numero}" role="button" aria-label="Cuota ${c.numero}">${c.numero}</span>`; }).join('')}<!-- v1177: un segmento azul por cada abono a capital de un crédito a solo interés -->
       </div>
       <div class="loan-progress-pie"><!-- NUEVO (a pedido): total a pagar (izq.) y saldo pendiente (der.) bajo la barra -->
         <div class="lpp-item"><span class="lpp-label">Total a pagar</span><span class="lpp-valor lpp-total">${formatearPesos(prestamo.totalAPagar || 0)}</span></div>
@@ -28881,6 +28904,7 @@ html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !impo
       card.insertAdjacentHTML('beforeend', selloRiesgoHTML());
     }
     // v653: globito con fecha y valor al tocar el número de cada cuota (diseño Actual)
+    card.querySelectorAll('.loan-progress-trozo[data-capital]').forEach(trozo => trozo.addEventListener('click', (e)=>{ e.stopPropagation(); mostrarGloboCapital(trozo, prestamo, Number(trozo.dataset.capital)); })); // v1177
     card.querySelectorAll('.loan-progress-trozo[data-cuota]').forEach(trozo => trozo.addEventListener('click', (e)=>{ e.stopPropagation(); mostrarGloboCuota(trozo, prestamo, Number(trozo.dataset.cuota)); }));
 
     return card;
@@ -29221,6 +29245,88 @@ html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !impo
     });
   }
 
+  // v1177: abonos a SOLO capital de un crédito a solo interés, agrupados por abono (lote), en orden de fecha
+  function lotesCapitalSoloInteres(prestamo){
+    if(!prestamo || !prestamo.soloInteres) return [];
+    const mapa = new Map();
+    (prestamo.pagos || []).forEach(p => {
+      if(!p || !p.fecha || p.aplicarA === 'mora') return;
+      const k = p.lote != null ? 'l' + p.lote : 'i' + p.id;
+      if(!mapa.has(k)) mapa.set(k, []);
+      mapa.get(k).push(p);
+    });
+    return Array.from(mapa.values())
+      .filter(g => g.every(p => (Number(p.capitalPagado) || 0) > 0 && !(Number(p.interesPagado) > 0)))
+      .sort((a, b) => (Number(a[0].id) || 0) - (Number(b[0].id) || 0) || String(a[0].fecha).localeCompare(String(b[0].fecha)));
+  }
+  // v1177/v1179: orden de la barra de progreso de un crédito a solo interés — cada abono a capital queda justo después
+  // de la última cuota que ya tenía un pago anterior a ese abono (no al final). Devuelve [{c}|{k}] (c = cuota del plan, k = índice del abono a capital)
+  function elementosBarraSoloInteres(prestamo){
+    const plan = prestamo.plan || [];
+    const grupos = lotesCapitalSoloInteres(prestamo);
+    if(!grupos.length) return plan.map(c => ({ c }));
+    const clave = p => { const d = new Date(p.fecha); d.setHours(0, 0, 0, 0); return [isNaN(d) ? 0 : d.getTime(), Number(p.id) || 0]; };
+    const antes = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);
+    const enGrupo = new Set(); grupos.forEach(g => g.forEach(p => enGrupo.add(p)));
+    const tras = plan.map(() => []); const alInicio = [];
+    grupos.forEach((g, k) => {
+      const kg = clave(g[0]); let ult = -1;
+      plan.forEach((c, i) => {
+        const hay = (prestamo.pagos || []).some(p => p && p.fecha && p.cuota === c.numero && !enGrupo.has(p) && antes(clave(p), kg));
+        if(hay) ult = i;
+      });
+      (ult < 0 ? alInicio : tras[ult]).push({ k });
+    });
+    const res = alInicio.slice();
+    plan.forEach((c, i) => { res.push({ c }); tras[i].forEach(x => res.push(x)); });
+    return res;
+  }
+  function mostrarGloboCapital(ancla, prestamo, indice){
+    if(globoCuotaActual && globoCuotaActual.ancla === ancla){ cerrarGloboCuota(); return; }
+    cerrarGloboCuota();
+    const grupo = lotesCapitalSoloInteres(prestamo)[indice];
+    if(!grupo) return;
+    const MES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const d = new Date(grupo[0].fecha), fTxt = isNaN(d) ? '—' : d.getDate() + '-' + MES[d.getMonth()];
+    const valor = grupo.reduce((a, p) => a + (Number(p.monto) || 0), 0);
+    const el = document.createElement('div');
+    el.className = 'globo-cuota globo-cuota-pagada' + (ancla.closest && ancla.closest('.ltd-oceano') ? ' globo-oceano' : '');
+    el.innerHTML = '<div class="globo-cuota-tit"></div><div class="globo-cuota-valor"></div><div class="globo-cuota-fecha"></div><i class="globo-cuota-flecha"></i>';
+    el.querySelector('.globo-cuota-tit').textContent = 'Abono a capital';
+    el.querySelector('.globo-cuota-fecha').textContent = 'Abonado el ' + fTxt;
+    el.querySelector('.globo-cuota-valor').textContent = formatearPesos(valor);
+    document.body.appendChild(el);
+    const r = ancla.getBoundingClientRect(), gw = el.offsetWidth, gh = el.offsetHeight, M = 8;
+    let x = Math.max(M, Math.min(r.left + r.width / 2 - gw / 2, window.innerWidth - gw - M));
+    let y = r.top - gh - 10, abajo = false;
+    if(y < M){ y = r.bottom + 10; abajo = true; }
+    el.style.left = x + 'px'; el.style.top = y + 'px';
+    el.classList.toggle('abajo', abajo);
+    el.querySelector('.globo-cuota-flecha').style.left = Math.max(14, Math.min(r.left + r.width / 2 - x, gw - 14)) + 'px';
+    const acc = document.createElement('div'); acc.className = 'globo-cuota-accion';
+    acc.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>';
+    el.insertBefore(acc, el.querySelector('.globo-cuota-flecha'));
+    el.style.cursor = 'pointer';
+    el.addEventListener('pointerdown', ()=>{ window.removeEventListener('scroll', cerrarGloboCuota, true); window.removeEventListener('resize', cerrarGloboCuota); });
+    el.addEventListener('click', (ev)=>{
+      ev.stopPropagation(); cerrarGloboCuota();
+      const cuotaRef = (prestamo.plan || []).find(c => c.numero === grupo[0].cuota) || { numero: grupo[0].cuota };
+      abrirImagenCompartible({
+        canvas: generarCanvasComprobante(prestamo, cuotaRef, grupo),
+        nombreArchivo: 'comprobante-' + (prestamo.codigo || 'abono') + '-capital' + (indice + 1) + '.png',
+        titulo: 'Comprobante de abono',
+        alCompartir: ()=> compartirComprobanteCuota(prestamo, cuotaRef, grupo)
+      });
+    });
+    ancla.classList.add('cuota-tocada');
+    requestAnimationFrame(()=> el.classList.add('visible'));
+    const fuera = ev => { if(!el.contains(ev.target) && ev.target !== ancla && !ancla.contains(ev.target)) cerrarGloboCuota(); };
+    globoCuotaActual = { el, ancla, fuera };
+    document.addEventListener('pointerdown', fuera, true);
+    window.addEventListener('scroll', cerrarGloboCuota, true);
+    window.addEventListener('resize', cerrarGloboCuota);
+  }
+
   function mostrarGloboCuota(ancla, prestamo, numero){
     if(globoCuotaActual && globoCuotaActual.ancla === ancla){ cerrarGloboCuota(); return; }
     cerrarGloboCuota();
@@ -29462,7 +29568,7 @@ html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !impo
         : (prestamo.cuotas || plan.length) + ' x ' + formatearPesos(cuotaRealPrestamo(prestamo));
       const estO = c => estaCuotaPagada(prestamo, c.numero) ? 'pagada' : (cuotaVencida(prestamo, c) ? 'vencida' : '');
       const segsO = (plan.length && plan.length <= 60)
-        ? '<div class="lto-segs">' + plan.map((c, i) => { const pp = pctParcialCuota(prestamo, c); return `<i class="lto-seg ${estO(c)}${pp ? ' parcial' : ''}" style="--i:${i}${pp ? ';--pp:' + pp + '%' : ''}" data-cuota="${c.numero}" role="button" aria-label="Cuota ${c.numero}">${c.numero}</i>`; }).join('') + '</div>'
+        ? '<div class="lto-segs">' + elementosBarraSoloInteres(prestamo).map((el, i) => { if(!el.c) return `<i class="lto-seg capital" style="--i:${i}" data-capital="${el.k}" role="button" aria-label="Abono a capital ${el.k + 1}">$</i>`; const c = el.c; const pp = pctParcialCuota(prestamo, c); return `<i class="lto-seg ${estO(c)}${pp ? ' parcial' : ''}" style="--i:${i}${pp ? ';--pp:' + pp + '%' : ''}" data-cuota="${c.numero}" role="button" aria-label="Cuota ${c.numero}">${c.numero}</i>`; }).join('') + '</div>' // v1177: un segmento azul por cada abono a capital (solo interés)
         : `<div class="lto-barra"><i style="width:${pct}%"></i></div>`;
       const cardO = document.createElement('div');
       cardO.className = 'card loan-card-full loan-card-' + estadoVisual + ' ltd ltd-oceano';
@@ -29513,8 +29619,18 @@ html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !impo
           while(v.scrollWidth > v.clientWidth + 0.5 && tam > 11 && guard++ < 50){ tam -= 0.5; v.style.setProperty('font-size', tam + 'px', 'important'); }
         });
       };
-      requestAnimationFrame(()=> requestAnimationFrame(ajustarO));
-      setTimeout(ajustarO, 350); setTimeout(ajustarO, 1200);
+      // v1180 · v1181: el texto de las casillas se reduce solo si no cabe en su casilla (en cualquier ancho de pantalla)
+      const ajustarPlanO = ()=>{
+        cardO.querySelectorAll('.lto-tile.t1 .lto-v, .lto-tile.t2 .lto-v, .lto-tile.t3 .lto-v, .lto-tile.t4 .lto-pill').forEach(v=>{ // v1181: las 4 casillas (monto aprobado, plan de pago, fecha de inicio y frecuencia)
+          v.style.setProperty('white-space', 'nowrap', 'important');
+          const caja = v.parentElement; if(!caja || !caja.clientWidth) return;
+          v.style.removeProperty('font-size');
+          let tam = parseFloat(getComputedStyle(v).fontSize), guard = 0;
+          while((v.scrollWidth > v.clientWidth + 0.5 || v.scrollWidth > caja.clientWidth + 0.5) && tam > 8 && guard++ < 60){ tam -= 0.5; v.style.setProperty('font-size', tam + 'px', 'important'); }
+        });
+      };
+      requestAnimationFrame(()=> requestAnimationFrame(()=>{ ajustarO(); ajustarPlanO(); }));
+      setTimeout(()=>{ ajustarO(); ajustarPlanO(); }, 350); setTimeout(()=>{ ajustarO(); ajustarPlanO(); }, 1200);
       // las cifras suben desde 0 hasta su valor al abrir la tarjeta (se omite si el celular pide reducir movimiento)
       if(!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)){
         const contablesO = Array.from(cardO.querySelectorAll('.lto-tile.t1 .lto-v, .lto-tot .lto-v, .lto-pag-v'));
@@ -29542,6 +29658,7 @@ html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !impo
       cardO.querySelector('.lto-tile.t1').addEventListener('click', (e)=>{ e.stopPropagation(); abrirReciboTermico(prestamo); });
       cardO.querySelector('.lto-pag').addEventListener('click', (e)=>{ e.stopPropagation(); abrirModalResumenCreditoCliente(prestamo); });
       // tocar un segmento muestra la información básica de esa cuota (número, valor y fecha)
+      cardO.querySelectorAll('.lto-seg[data-capital]').forEach(sg => sg.addEventListener('click', (e)=>{ e.stopPropagation(); mostrarGloboCapital(sg, prestamo, Number(sg.dataset.capital)); })); // v1177
       cardO.querySelectorAll('.lto-seg[data-cuota]').forEach(sg => sg.addEventListener('click', (e)=>{ e.stopPropagation(); mostrarGloboCuota(sg, prestamo, Number(sg.dataset.cuota)); }));
       if(cliente && cliente.alertaRiesgo && estadoVisual === 'vencido'){
         cardO.classList.add('con-sello-riesgo');
@@ -30079,6 +30196,7 @@ html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !impo
   }
   // v946: Code 128 subconjunto C (dos dígitos por símbolo): la mitad de símbolos → menos barras para el mismo número
   // v1144: a pedido se ocultan en los térmicos/comprobantes/recibos el código de barras, el mensaje de puntualidad ("Pagaste a tiempo" / "Pago N días tarde") y la fila "ABONADO A:". Ocultos, no borrados: poner true para volver a mostrarlos.
+  window.PY_MOSTRAR_CEDULA = false; // v1177
   window.PY_MOSTRAR_TERMICO = { codigoBarras: false, puntualidad: false, abonadoA: false, cop: false }; // v1155: cop oculto (poner cop:true para volver a mostrar "$ 125.000 cop")
   function code128C(digitos){
     let d = String(digitos); if(d.length % 2) d = '0' + d;
@@ -30152,28 +30270,30 @@ html body #screen-inicio #tabs-rango-fechas .tab-button{ padding:10px 19px !impo
     // v1059: cuota registrada como "Pago de interés" → el comprobante no muestra la cuota y siempre muestra el saldo pendiente
     const esPagoInteres = !!(ultimo && ultimo.concepto === 'pago_interes');
     const esMoraRecibo = !!(ultimo && (ultimo.aplicarA === 'mora' || ultimo.concepto === 'recargo_prorroga')); // v1156
+    const esAbonoCapital = !!(partes.length && partes.every(p => (Number(p.capitalPagado) || 0) > 0 && !(Number(p.interesPagado) > 0) && p.aplicarA !== 'mora')); // v1177: abono a solo capital → "COMPROBANTE DE ABONO" y etiquetas de abono
+    const usaPago = !!prestamo.soloInteres && !esAbonoCapital; // v1177: a solo interés se dice PAGO, salvo que sea un abono a capital
     const filas = [
       ['NOMBRE:', nombreParaRecibo(cliente.nombre)], // v1054: el cliente primero, luego el abono · v1153
       ...filaDocumentoRecibo(cliente), // v1146
-      ['ABONO REALIZADO:', pesos(adicional ? valor - adicional : valor), 'monto'], // v1167: si pagó de más, aquí solo lo que correspondía; el resto va en ABONO ADICIONAL
+      [usaPago ? 'PAGO REALIZADO:' : 'ABONO REALIZADO:', pesos(adicional ? valor - adicional : valor), 'monto'], // v1176: a solo interés → PAGO REALIZADO // v1167: si pagó de más, aquí solo lo que correspondía; el resto va en ABONO ADICIONAL
       ...(esMoraRecibo ? [['POR CONCEPTO DE:', 'Posponer fecha']] : []), // v1156
       ...(window.PY_MOSTRAR_TERMICO.abonadoA ? [['ABONADO A:', concepto]] : []), // v1144
       ...(adicional ? [['ABONO ADICIONAL:', pesos(adicional)]] : []),
       ...(faltaCuota ? [['FALTA PARA COMPLETAR:', pesos(faltaCuota)]] : []), // v1167: pagó menos de lo que correspondía a la cuota
       ...(adicional && proximaCuotaPendiente(prestamo) ? [['VALOR PRÓXIMA CUOTA:', pesos(pendienteDeCuota(prestamo, proximaCuotaPendiente(prestamo)))]] : []), // v1164: el abono adicional ya descontó la cuota siguiente; se muestra lo que queda por pagar de ella
       ...(numeroCreditoCliente(prestamo) ? [['CRÉDITO:', '# ' + numeroCreditoCliente(prestamo)]] : []),
-      ['FECHA DE ABONO:', ultimo ? fechaDiaCT(ultimo.fecha) : '—'],
+      [usaPago ? 'FECHA DE PAGO:' : 'FECHA DE ABONO:', ultimo ? fechaDiaCT(ultimo.fecha) : '—'], // v1176
       ...(esPagoInteres ? [] : [['CUOTA:', prestamo.soloInteres ? 'Sin plazo' : (cuotaRecibo + ' de ' + totalCuotas)]]), // v953 · v1059: el número de la cuota de ESE recibo (cuota 1 → 1 de 4); si el abono no completó ninguna, las cuotas pagadas
       ...(obtenerReciboMostrarMetodo() ? [['MÉTODO DE PAGO:', ultimo ? ({ efectivo:'Efectivo', transferencia:'Transferencia' }[ultimo.metodoPago] || ultimo.metodoPago || 'Efectivo') : '—']] : []),
       ...(((mostrarReciboSaldo() || (totalCuotas > 0 && !prestamo.soloInteres && cuotaRecibo / totalCuotas >= 0.5)) && !ocultarSP) || creditoPagado || esPagoInteres || prestamo.soloInteres ? // v1115: el saldo restante sale solo al pagar el 50% o más de las cuotas; el interruptor lo fuerza siempre
-         [['SALDO RESTANTE:', pesos(saldoReciboPrestamo(prestamo))]] : []),
+         [['SALDO RESTANTE:', pesos(saldoReciboPrestamo(prestamo)), prestamo.soloInteres ? 'negrita' : undefined]] : []), // v1176: a solo interés el saldo va en negrita
       ...(mostrarReciboProximo() && !ocultarSP ? [['PRÓXIMO PAGO:', (() => { const px = proximaCuotaPendiente(prestamo); return px ? fechaDiaCT(px.fechaISO) : 'Crédito al día'; })()]] : [])
     ];
     const idRef = ultimo ? Number(ultimo.lote || ultimo.id) : 0; // v1111: N.° de comprobante estable (6 dígitos derivados del registro del abono)
     const numeroComp = idRef ? String(Math.floor(idRef / 1000) % 1000000).padStart(6, '0') : '';
     const tsRec = ultimo ? (idRef > 1e12 ? idRef : new Date(ultimo.fecha).getTime()) : 0;
     const fechaHora = (() => { const d = new Date(tsRec); if(!tsRec || isNaN(d)) return ''; let h = d.getHours(); const ap = h >= 12 ? 'pm' : 'am'; h = h % 12 || 12; return fechaDiaCT(d).replace(/^0/, '') + ' - ' + h + ':' + String(d.getMinutes()).padStart(2, '0') + ' ' + ap; })(); // v1156
-    return { filas, fechaHora, msgPuntual, numeroComp, creditoPagado, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos() };
+    return { filas, fechaHora, msgPuntual, titulo: esAbonoCapital ? 'COMPROBANTE DE ABONO' : undefined, numeroComp, creditoPagado, codigo: String(prestamo.codigo || prestamo.id || ''), sinCodigo: ocultarCodigoEnRecibos() };
   }
   // El recibo que abre "Monto aprobado": el último abono del crédito
   function generarCanvasReciboTermico(prestamo){
@@ -30283,7 +30403,7 @@ function dibujarComprobanteTermico(datos){
     let trasDoc = false; // v1146
     filas.forEach((f, i) => {
       if(f[2] === 'doc'){ y += cmp ? 17 : 19; plano.push(['fila', y, '', f[1], 'doc']); trasDoc = true; return; }
-      const fuenteV = f[2] === 'monto' ? 'bold 16px ' + SANS : '15px ' + SANS;
+      const fuenteV = f[2] === 'monto' ? 'bold 16px ' + SANS : (f[2] === 'negrita' ? 'bold 15px ' + SANS : '15px ' + SANS);
       let lineasV = [f[1]];
       const wEt = ancho(f[0], '14px ' + ETQ) + 8;
       if(f[2] !== 'chico' && f[2] !== 'monto' && f[2] !== 'sub') lineasV = envolver(f[1], fuenteV, X1 - X0 - wEt);
@@ -30397,11 +30517,11 @@ function dibujarComprobanteTermico(datos){
         }
         ctx.fillStyle = TINTA;
         let xv = X0 + ancho(e[2], f14) + 8; const disp = X1 - xv;
-        let fv = e[4] === 'monto' ? 'bold 16px ' + SANS : (e[4] === 'chico' ? '11.5px ' + SANS : '15px ' + SANS);
+        let fv = e[4] === 'monto' ? 'bold 16px ' + SANS : (e[4] === 'negrita' ? 'bold 15px ' + SANS : (e[4] === 'chico' ? '11.5px ' + SANS : '15px ' + SANS));
         let px = parseFloat(fv.match(/([\d.]+)px/)[1]);
         while(ancho(e[3], fv) > disp && px > 9){ px -= 0.5; fv = fv.replace(/[\d.]+px/, px + 'px'); }
         ctx.font = fv; xv = X1 - anchoV(e[3], fv); // v1111: valores alineados a la derecha
-        const esTeal = ['ABONO REALIZADO:', 'VALOR PRESTADO:', 'MONTO DEL PRÉSTAMO:'].includes(e[2]); // v1148: también el valor prestado / monto del préstamo
+        const esTeal = ['ABONO REALIZADO:', 'PAGO REALIZADO:', 'VALOR PRESTADO:', 'MONTO DEL PRÉSTAMO:'].includes(e[2]); // v1148: también el valor prestado / monto del préstamo
         const esCop = (esTeal || e[2] === 'SALDO RESTANTE:') && /^\$/.test(e[3]); // v1147: "$ 158.000 cop"
         const txtCop = esCop ? '$ ' + e[3].replace(/^\$\s*/, '') : '', fCop = '12px ' + SANS;
         const verCop = !!window.PY_MOSTRAR_TERMICO.cop; // v1155
@@ -32560,8 +32680,8 @@ function dibujarComprobanteTermico(datos){
   // interruptores de "Comprobante de cada abono" (Detalle del Préstamo) /
   // Ajustes → Plantilla de recibo — antes forzaba ocultar Saldo pendiente
   // y Fecha próximo pago sin importar esos interruptores; ya no.
-  async function compartirComprobanteCuota(prestamo, cuota){
-    const canvas = generarCanvasComprobante(prestamo, cuota, null);
+  async function compartirComprobanteCuota(prestamo, cuota, partes){ // v1177: partes opcional (abono a capital)
+    const canvas = generarCanvasComprobante(prestamo, cuota, partes || null);
     if(!canvas){
       alert('No se pudo generar el comprobante. Intenta de nuevo.');
       return;
