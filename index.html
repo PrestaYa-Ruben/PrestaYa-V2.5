@@ -12041,6 +12041,9 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot{ 
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t1, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t3, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a{ border-right:0 !important; }
 /* v1222 rotulos de los datos superiores mas suaves (el valor queda como protagonista) */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-k, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-k, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-k{ color:#8590A5 !important; font-weight:600 !important; }
+/* v1229 saldo abonado en el globito de la cuota */
+.globo-cuota .globo-cuota-abonado{ margin-top:3px; font-size:12.5px; font-weight:700; color:#7FDCA4; line-height:1.2; white-space:nowrap; }
+.globo-cuota.globo-oceano .globo-cuota-abonado{ color:#1F9D61 !important; }
 </style>
 
 </head>
@@ -29444,6 +29447,15 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
     el.querySelector('.globo-cuota-tit').textContent = 'Cuota ' + numero;
     el.querySelector('.globo-cuota-fecha').textContent = etiqueta;
     el.querySelector('.globo-cuota-valor').textContent = formatearPesos(valor);
+    // v1229: si la cuota tiene un saldo abonado a favor (pago parcial), el globito lo muestra
+    if(!pagada){
+      const abonado = sumaAbonadaCuota(prestamo, numero);
+      if(abonado > 0){
+        const lineaAb = document.createElement('div'); lineaAb.className = 'globo-cuota-abonado';
+        lineaAb.textContent = 'Abonado ' + formatearPesos(abonado);
+        el.insertBefore(lineaAb, el.querySelector('.globo-cuota-fecha'));
+      }
+    }
     document.body.appendChild(el);
     const r = ancla.getBoundingClientRect(), gw = el.offsetWidth, gh = el.offsetHeight, M = 8;
     let x = r.left + r.width / 2 - gw / 2;
