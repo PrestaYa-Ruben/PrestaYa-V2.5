@@ -11976,6 +11976,71 @@ html.vp-abono-congelado, body.vp-abono-congelado{ overflow:hidden !important; ov
 body.vp-abono-congelado #screen-agregar-abono{ overflow:hidden !important; touch-action:none; }
 #vista-previa-abono-overlay{ overscroll-behavior:contain; touch-action:none; }
 #vista-previa-abono-overlay .img-scroll-comprobante{ touch-action:pan-y; overscroll-behavior:contain; }
+/* v1209 casillas sin cajon: solo informacion */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile.t1, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile.t2, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile.t3, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile.t4{ background:transparent !important; border:0 !important; box-shadow:none !important; border-radius:0 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid{ gap:2px 9px !important; }
+/* v1210 total a pagar / valor cuotas: solo texto */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b{ background:transparent !important; background-image:none !important; box-shadow:none !important; border:0 !important; border-radius:0 !important; clip-path:none !important; margin-left:0 !important; filter:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot{ margin:2px 10.5px 0 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a{ padding:6px 4px 6px 8px !important; color:#1F2A5A !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b{ padding:6px 8px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a > svg, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a .lto-ic{ display:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a .lto-tx{ border-left:0 !important; padding-left:0 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-k, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-v{ color:#1F2A5A !important; }
+/* v1210b */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b{ -webkit-mask-image:none !important; mask-image:none !important; padding:6px 8px 6px 62% !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b{ min-height:0 !important; }
+/* v1211 frecuencia solo texto */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pill{ background:transparent !important; border:0 !important; box-shadow:none !important; border-radius:0 !important; padding:0 !important; margin-top:2.9px !important; text-align:left !important; font-size:min(16.97px, 3.8568vw) !important; line-height:1 !important; font-weight:800 !important; text-transform:none !important; }
+/* v1212 total y valor cuotas con icono y mismo tamano que las otras casillas */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot{ display:grid !important; grid-template-columns:1fr 1fr; gap:2px 9px; margin:2px 10.5px 0 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b{ grid-area:auto !important; display:flex !important; flex-direction:row !important; align-items:center !important; justify-content:flex-start !important; gap:7px; padding:6.3px 8px !important; text-align:left !important; min-width:0; flex:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-ic{ display:flex !important; background:#1B365D; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-tx{ display:flex; flex-direction:column; min-width:0; flex:1; border:0 !important; padding:0 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-k{ font-size:min(12px, 2.7273vw) !important; text-align:left !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-v{ font-size:min(16.97px, 3.8568vw) !important; line-height:1 !important; margin-top:2.9px !important; text-align:left !important; white-space:nowrap; }
+/* v1212b */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a{ -webkit-mask-image:none !important; mask-image:none !important; padding:6.3px 8px !important; overflow:visible !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot{ overflow:visible !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a .lto-ic svg{ width:62% !important; height:62% !important; }
+/* v1212c mismos colores y peso que las otras casillas */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-k{ color:#4A5568 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-v{ color:#1A365D !important; font-weight:650 !important; }
+/* v1213 valores de las 4 casillas mas grandes; cabecera de un solo color */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t1 .lto-v{ font-size:min(21px, 4.77vw) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t2 .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t3 .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t4 .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-pill{ font-size:min(18.7px, 4.25vw) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-onda path:nth-child(1){ fill:#1A365D !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-onda path:nth-child(2){ display:none !important; }
+/* v1214 valores aun mas grandes */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t1 .lto-v{ font-size:min(25px, 5.68vw) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t2 .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t3 .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t4 .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-pill, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-v{ font-size:min(22.5px, 5.11vw) !important; }
+/* v1215 numero de credito mas pequeno */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-cred-n{ font-size:clamp(20px,6.4vw,29px) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-cred-n small{ font-size:.55em !important; }
+/* v1215b */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-cred-n{ font-size:clamp(16px,5vw,22px) !important; line-height:1.05 !important; }
+/* v1216 iconos sin recuadro */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-ic, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-ic, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile .lto-ic{ background:transparent !important; box-shadow:none !important; border:0 !important; border-radius:0 !important; color:#1A365D !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-ic svg, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-ic svg, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a .lto-ic svg{ width:100% !important; height:100% !important; color:#1A365D !important; stroke:#1A365D; }
+/* v1217 los 6 valores del mismo tamano */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t1 .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t2 .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t3 .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-pill, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-v{ font-size:min(25px, 5.68vw) !important; font-weight:650 !important; }
+/* v1218 iconos mas pequenos y borde de la barra de progreso mas suave */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-ic, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile .lto-ic, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-ic{ width:min(26px, 5.9vw) !important; height:min(26px, 5.9vw) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag{ border:1px solid #DDE3EE !important; box-shadow:none !important; }
+/* v1219 los 6 valores del mismo tamano que Debe / Ha pagado; Valor cuotas con otro color */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t1 .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t2 .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t3 .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-pill, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-v, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-v{ font-size:min(15.5px, 3.6vw) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-k, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-v{ color:#B45309 !important; }
+/* v1220 lineas divisoras muy sutiles entre los datos superiores */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b{ border-radius:0 !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t1, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t2, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t3, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t4{ border-bottom:1px solid rgba(26,54,93,.10) !important; padding-top:8px !important; padding-bottom:8px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t1, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t3, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a{ border-right:1px solid rgba(26,54,93,.10) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b{ padding-top:8px !important; padding-bottom:8px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid{ gap:0 9px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot{ gap:0 9px !important; margin-top:0 !important; }
+/* v1221 solo lineas horizontales */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t1, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-tile.t3, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a{ border-right:0 !important; }
+/* v1222 rotulos de los datos superiores mas suaves (el valor queda como protagonista) */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid .lto-k, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot .lto-k, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-k{ color:#8590A5 !important; font-weight:600 !important; }
 </style>
 
 </head>
@@ -29614,8 +29679,8 @@ body.vp-abono-congelado #screen-agregar-abono{ overflow:hidden !important; touch
           <div class="lto-tile t4"><span class="lto-ic">${IO.freq}</span><div class="lto-tx"><span class="lto-k">Frecuencia</span><b class="lto-pill">${frecuencia}</b></div></div>
         </div>
         <div class="lto-tot">
-          <div class="lto-tot-a">${IO.cartera}<div class="lto-tx"><span class="lto-k">Total a pagar</span><b class="lto-v">${formatearPesos(prestamo.soloInteres ? totalAPagarTarjetaSoloInteres(prestamo) : totalPagar)}</b></div></div>
-          <div class="lto-tot-b"><span class="lto-k">Valor cuotas</span><b class="lto-v">${formatearPesos(cuotaRealPrestamo(prestamo))}</b></div>
+          <div class="lto-tot-a"><span class="lto-ic">${IO.cartera}</span><div class="lto-tx"><span class="lto-k">Total a pagar</span><b class="lto-v">${formatearPesos(prestamo.soloInteres ? totalAPagarTarjetaSoloInteres(prestamo) : totalPagar)}</b></div></div>
+          <div class="lto-tot-b"><span class="lto-ic">${IO.billete}</span><div class="lto-tx"><span class="lto-k">Valor cuotas</span><b class="lto-v">${formatearPesos(cuotaRealPrestamo(prestamo))}</b></div></div>
         </div>
         <div class="lto-pag" role="button" aria-label="Ver resumen del crédito">
           <div class="lto-pag-fila"><div class="lto-pag-t"><span class="lto-hp-k">Debe</span><b class="lto-hp-v lto-pag-v">${formatearPesos(saldo)}</b></div><div class="lto-ha-pagado"><span class="lto-hp-k">Ha pagado</span><b class="lto-hp-v">${formatearPesos(abonado)}</b></div><div class="lto-pct" title="Cuotas pagadas">${pagadas}/${plan.length}</div></div>
@@ -29646,14 +29711,21 @@ body.vp-abono-congelado #screen-agregar-abono{ overflow:hidden !important; touch
       };
       // v1180 · v1181: el texto de las casillas se reduce solo si no cabe en su casilla (en cualquier ancho de pantalla)
       const ajustarPlanO = ()=>{
-        cardO.querySelectorAll('.lto-tile.t1 .lto-v, .lto-tile.t2 .lto-v, .lto-tile.t3 .lto-v, .lto-tile.t4 .lto-pill').forEach(v=>{ // v1181: las 4 casillas (monto aprobado, plan de pago, fecha de inicio y frecuencia)
+        cardO.querySelectorAll('.lto-tile.t1 .lto-v, .lto-tile.t2 .lto-v, .lto-tile.t3 .lto-v, .lto-tile.t4 .lto-pill, .lto-tot .lto-v').forEach(v=>{ // v1181 · v1217 · v1218: también total y cuotas; con piso de 16px y sin medir cuando la casilla aún no tiene su ancho real
           v.style.setProperty('white-space', 'nowrap', 'important');
-          const caja = v.parentElement; if(!caja || !caja.clientWidth) return;
+          const caja = v.parentElement; if(!caja || caja.clientWidth < 50) return; // v1218: si la medida es falsa (casilla aún sin ancho), no se reduce
           v.style.removeProperty('font-size');
           let tam = parseFloat(getComputedStyle(v).fontSize), guard = 0;
-          while((v.scrollWidth > v.clientWidth + 0.5 || v.scrollWidth > caja.clientWidth + 0.5) && tam > 8 && guard++ < 60){ tam -= 0.5; v.style.setProperty('font-size', tam + 'px', 'important'); }
+          while((v.scrollWidth > v.clientWidth + 0.5 || v.scrollWidth > caja.clientWidth + 0.5) && tam > 16 && guard++ < 40){ tam -= 0.5; v.style.setProperty('font-size', tam + 'px', 'important'); }
         });
+        // v1218: los 6 valores quedan siempre del mismo tamaño (el menor al que cabe el más largo)
+        const vsO = Array.from(cardO.querySelectorAll('.lto-tile.t1 .lto-v, .lto-tile.t2 .lto-v, .lto-tile.t3 .lto-v, .lto-tile.t4 .lto-pill, .lto-tot .lto-v'));
+        const tamsO = vsO.map(v => parseFloat(getComputedStyle(v).fontSize)).filter(n => n > 0);
+        if(tamsO.length){ const mO = Math.min.apply(null, tamsO); vsO.forEach(v => v.style.setProperty('font-size', mO + 'px', 'important')); } // v1219: parte de 15.5px (igual que Debe / Ha pagado)
       };
+      if(window.ResizeObserver){ try{ new ResizeObserver(()=>{ ajustarPlanO(); }).observe(cardO); }catch(_){} } // v1218: se recalcula si cambia el ancho de la tarjeta
+      if(document.fonts && document.fonts.ready){ document.fonts.ready.then(()=>{ ajustarPlanO(); }); } // v1218: y cuando termina de cargar la tipografía
+      setTimeout(()=>{ ajustarPlanO(); }, 2500);
       requestAnimationFrame(()=> requestAnimationFrame(()=>{ ajustarO(); ajustarPlanO(); }));
       setTimeout(()=>{ ajustarO(); ajustarPlanO(); }, 350); setTimeout(()=>{ ajustarO(); ajustarPlanO(); }, 1200);
       // las cifras suben desde 0 hasta su valor al abrir la tarjeta (se omite si el celular pide reducir movimiento)
@@ -30263,7 +30335,7 @@ body.vp-abono-congelado #screen-agregar-abono{ overflow:hidden !important; touch
         : (ultimo.aplicarA === 'capital_interes' ? 'Capital e Interés' : (nombresAplicarA[ultimo.aplicarA] || 'Capital e Interés'))); // v978
     }
     // v960: ADICIONAL = lo que el cliente pagó por encima de lo que debía de la cuota (p. ej. cuota $150.000, paga $200.000 → $50.000)
-    let adicional = 0, faltaCuota = 0, debiaCuota = 0; // v1167: debiaCuota = lo que correspondía pagar de la cuota en este abono; faltaCuota = lo que faltó para completarla
+    let adicional = 0, faltaCuota = 0, debiaCuota = 0, numCuotaFalta = 0, previoCuota = 0; // v1167: debiaCuota = lo que correspondía pagar de la cuota en este abono; faltaCuota = lo que faltó para completarla
     if(ultimo && !prestamo.soloInteres && ultimo.aplicarA !== 'mora' && ultimo.concepto !== 'recargo_prorroga'){
       const c0 = Math.min.apply(null, partes.map(p => p.cuota).filter(n => n !== undefined && n !== null));
       const cuotaPlan0 = plan.find(c => c.numero === c0);
@@ -30271,11 +30343,12 @@ body.vp-abono-congelado #screen-agregar-abono{ overflow:hidden !important; touch
         const previo = (prestamo.pagos || []).filter(p => p.cuota === c0 && p.aplicarA !== 'mora' && !partes.includes(p)).reduce((a, p) => a + (Number(p.monto) || 0), 0);
         const debia = Math.max(0, cuotaPlan0.total - previo);
         if(partes.some(p => p.cuota !== c0) || partes.length === 1) adicional = valor - debia;
-        debiaCuota = debia;
-        if(ultimo.concepto !== 'pago_interes' && !partes.some(p => p.cuota !== c0)) faltaCuota = debia - valor; // v1167: pagó menos de lo que correspondía
+        debiaCuota = debia; previoCuota = previo; // v1226: previo = lo ya abonado antes a esa cuota (quedó pendiente)
+        if(ultimo.concepto !== 'pago_interes' && !partes.some(p => p.cuota !== c0)) { faltaCuota = debia - valor; numCuotaFalta = c0; } // v1224: guarda cuál cuota quedó incompleta // v1167: pagó menos de lo que correspondía
       }
     }
     if(!(adicional > 1)) adicional = 0;
+    const pendientePagado = (adicional > 0 && previoCuota > 1 && debiaCuota > 1) ? debiaCuota : 0; // v1226: pagó lo que había quedado pendiente de la cuota anterior + la cuota siguiente
     if(!(faltaCuota > 1)) faltaCuota = 0;
     // v968: puntualidad — a tiempo si pagó antes, el día del vencimiento o 1 día después; si no, "Pago N día(s) tarde" (N = días pasados del día de gracia)
     let msgPuntual = '';
@@ -30300,11 +30373,11 @@ body.vp-abono-congelado #screen-agregar-abono{ overflow:hidden !important; touch
     const filas = [
       ['NOMBRE:', nombreParaRecibo(cliente.nombre)], // v1054: el cliente primero, luego el abono · v1153
       ...filaDocumentoRecibo(cliente), // v1146
-      [usaPago ? 'PAGO REALIZADO:' : 'ABONO REALIZADO:', pesos(adicional ? valor - adicional : valor), 'monto'], // v1176: a solo interés → PAGO REALIZADO // v1167: si pagó de más, aquí solo lo que correspondía; el resto va en ABONO ADICIONAL
+      [(usaPago || adicional > 0) ? 'PAGO RECIBIDO:' : 'ABONO RECIBIDO:', pesos(pendientePagado ? valor - pendientePagado : (adicional ? valor - adicional : valor)), 'monto'], // v1226: con pendiente pagado, aquí va lo pagado de la cuota actual // v1223: con abono adicional también se dice PAGO RECIBIDO // v1176: a solo interés → PAGO RECIBIDO // v1167: si pagó de más, aquí solo lo que correspondía; el resto va en ABONO ADICIONAL
       ...(esMoraRecibo ? [['POR CONCEPTO DE:', 'Posponer fecha']] : []), // v1156
       ...(window.PY_MOSTRAR_TERMICO.abonadoA ? [['ABONADO A:', concepto]] : []), // v1144
-      ...(adicional ? [['ABONO ADICIONAL:', pesos(adicional)]] : []),
-      ...(faltaCuota ? [['FALTA PARA COMPLETAR:', pesos(faltaCuota)]] : []), // v1167: pagó menos de lo que correspondía a la cuota
+      ...(pendientePagado ? [['PENDIENTE PAGADO:', pesos(pendientePagado)]] : (adicional ? [['ABONO ADICIONAL:', pesos(adicional)]] : [])), // v1226: si pagó lo que quedó pendiente + la cuota siguiente
+      ...(faltaCuota ? [[numCuotaFalta ? 'PENDIENTE DE CUOTA #' + numCuotaFalta + ':' : 'PENDIENTE DE CUOTA:', pesos(faltaCuota)]] : []), // v1167: pagó menos de lo que correspondía a la cuota
       ...(adicional && proximaCuotaPendiente(prestamo) ? [['VALOR PRÓXIMA CUOTA:', pesos(pendienteDeCuota(prestamo, proximaCuotaPendiente(prestamo)))]] : []), // v1164: el abono adicional ya descontó la cuota siguiente; se muestra lo que queda por pagar de ella
       ...(numeroCreditoCliente(prestamo) ? [['CRÉDITO:', '# ' + numeroCreditoCliente(prestamo)]] : []),
       [usaPago ? 'FECHA DE PAGO:' : 'FECHA DE ABONO:', ultimo ? fechaDiaCT(ultimo.fecha) : '—'], // v1176
@@ -30553,7 +30626,7 @@ function dibujarComprobanteTermico(datos){
         let px = parseFloat(fv.match(/([\d.]+)px/)[1]);
         while(ancho(e[3], fv) > disp && px > 9){ px -= 0.5; fv = fv.replace(/[\d.]+px/, px + 'px'); }
         ctx.font = fv; xv = X1 - anchoV(e[3], fv); // v1111: valores alineados a la derecha
-        const esTeal = ['ABONO REALIZADO:', 'PAGO REALIZADO:', 'VALOR PRESTADO:', 'MONTO DEL PRÉSTAMO:'].includes(e[2]); // v1148: también el valor prestado / monto del préstamo
+        const esTeal = ['ABONO RECIBIDO:', 'PAGO RECIBIDO:', 'VALOR PRESTADO:', 'MONTO DEL PRÉSTAMO:'].includes(e[2]); // v1148: también el valor prestado / monto del préstamo
         const esCop = (esTeal || e[2] === 'SALDO RESTANTE:') && /^\$/.test(e[3]); // v1147: "$ 158.000 cop"
         const txtCop = esCop ? '$ ' + e[3].replace(/^\$\s*/, '') : '', fCop = '12px ' + SANS;
         const verCop = !!window.PY_MOSTRAR_TERMICO.cop; // v1155
@@ -33612,7 +33685,7 @@ function dibujarComprobanteTermico(datos){
     if(etiqueta === 'Monto del préstamo') return 'billete';
     if(etiqueta === 'Referente a' || etiqueta === 'Recargo por la' || etiqueta === 'Concepto') return 'documento';
     if(etiqueta === 'Valor de la cuota' || etiqueta === 'Valor del préstamo' || etiqueta === 'Saldo pendiente') return 'valor';
-    if(etiqueta === 'Abono realizado' || etiqueta === 'Valor abonado') return 'billetera';
+    if(etiqueta === 'Abono recibido' || etiqueta === 'Valor abonado') return 'billetera';
     if(etiqueta === 'Método de pago') return 'tarjeta';
     if(etiqueta === 'Descuento aplicado') return 'valor';
     if(etiqueta === 'Modalidad de pago') return 'repetir'; // CORREGIDO: antes 'modalidad', dibujaba lo mismo que 'calendario'
@@ -33692,7 +33765,7 @@ function dibujarComprobanteTermico(datos){
     // REDISEÑADO (pedido explícito del usuario, con imagen de referencia):
     // nuevo diseño visual del comprobante. El caso normal (no mora, no
     // abono genérico) ahora muestra "Valor de la cuota" además del monto
-    // abonado, y usa la etiqueta "Abono realizado" en vez de "Valor
+    // abonado, y usa la etiqueta "Abono recibido" en vez de "Valor
     // abonado". "Estado" se adelantó para emparejarse con "Abono
     // realizado" (así esa fila usa las 2 columnas completas); "Modalidad
     // de pago" queda como última fila de esta base fija, y si el
@@ -33728,7 +33801,7 @@ function dibujarComprobanteTermico(datos){
       // método de pago (se oculta con el interruptor "Método de pago").
       ['Método de pago', metodo],
       ['Valor de la cuota', formatearPesos(cuotaRealPrestamo(prestamo))],
-      ['Abono realizado', formatearPesos(montoAbonado)],
+      ['Abono recibido', formatearPesos(montoAbonado)],
       ['Estado', todasLasCuotasCubiertasQuedaronPagadas ? 'Pagada' : 'Abono registrado'],
       ['Modalidad de pago', NOMBRES_FRECUENCIA[prestamo.frecuencia] || prestamo.frecuencia]
     ];
@@ -33814,7 +33887,7 @@ function dibujarComprobanteTermico(datos){
     // REDISEÑO COMPLETO DEL COMPROBANTE (pedido explícito del usuario,
     // con imagen de referencia como DISEÑO MAESTRO): encabezado azul con
     // el nombre del negocio y franja verde decorativa, check verde,
-    // "ABONO REALIZADO" + monto gigante sobre caja verde muy clara,
+    // "ABONO RECIBIDO" + monto gigante sobre caja verde muy clara,
     // píldora verde de puntualidad, tarjeta de datos de UNA columna
     // (ícono en cajita azul claro + etiqueta + valor), agradecimiento con
     // escudo y pie decorativo curvo azul/verde.
@@ -33825,7 +33898,7 @@ function dibujarComprobanteTermico(datos){
 
     // Campos que el nuevo diseño ya NO muestra como fila (el monto abonado
     // va en grande arriba; el resto se eliminó a pedido).
-    const ETIQUETAS_FUERA_DEL_DISENO = ['Monto del préstamo', 'Valor de la cuota', 'Abono realizado', 'Valor abonado', 'Estado', 'Modalidad de pago'];
+    const ETIQUETAS_FUERA_DEL_DISENO = ['Monto del préstamo', 'Valor de la cuota', 'Abono recibido', 'Valor abonado', 'Estado', 'Modalidad de pago'];
     filas = filas.filter(fila => fila && !ETIQUETAS_FUERA_DEL_DISENO.includes(fila[0]));
 
     const canvas = document.createElement('canvas');
@@ -33861,7 +33934,7 @@ function dibujarComprobanteTermico(datos){
     // ---------- Medidas (proporciones tomadas de la referencia) ----------
     const alturaHeader = 110;
     const hayPildora = !!resultadoPuntualidad;
-    const yEtiquetaAbono = alturaHeader + 47;   // línea base de "ABONO REALIZADO"
+    const yEtiquetaAbono = alturaHeader + 47;   // línea base de "ABONO RECIBIDO"
     const xCajaMonto = 59, anchoCajaMonto = W - 118, yCajaMonto = alturaHeader + 62, altoCajaMonto = 84;
     const altoPildora = 41;
     const yPildora = yCajaMonto + altoCajaMonto - 3; // se monta apenas sobre la caja, como en la referencia
@@ -33981,12 +34054,12 @@ function dibujarComprobanteTermico(datos){
     // ==================== 2) BLOQUE DEL ABONO ====================
     // A pedido: se retiró el círculo verde con el check y sus destellos.
 
-    // "ABONO REALIZADO"
+    // "ABONO RECIBIDO"
     ctx.fillStyle = colorTitulo;
     ctx.font = fuente(700, 17);   // A pedido: aún más pequeño (antes 21; al inicio 26)
     ctx.textAlign = 'center';
     // v518: si se eligio un 'Concepto en el recibo', ese texto reemplaza el titulo sobre el valor (solo visual)
-    ctx.fillText(conceptoAbono(ultimoPago) ? conceptoAbono(ultimoPago).toUpperCase() : (esRecargoMora ? 'RECARGO PAGADO' : (conceptoSI ? conceptoSI.toUpperCase() : 'ABONO REALIZADO')), centroX, yEtiquetaAbono); // v528: solo intereses
+    ctx.fillText(conceptoAbono(ultimoPago) ? conceptoAbono(ultimoPago).toUpperCase() : (esRecargoMora ? 'RECARGO PAGADO' : (conceptoSI ? conceptoSI.toUpperCase() : 'ABONO RECIBIDO')), centroX, yEtiquetaAbono); // v528: solo intereses
 
     // Caja verde muy clara + monto (el elemento más grande del comprobante)
     trazarRectRedondeado(ctx, xCajaMonto, yCajaMonto, anchoCajaMonto, altoCajaMonto, 30);
