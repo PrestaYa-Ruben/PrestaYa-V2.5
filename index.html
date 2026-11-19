@@ -11933,6 +11933,16 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.p
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.parcial .ltg-fill{ background:linear-gradient(90deg,#34B26A 0,#1F8A4C var(--pp),var(--ltg-seg) var(--pp),var(--ltg-seg) 100%) !important; }
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.parcial .ltk-disco,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.parcial .ltk-disco{ background:linear-gradient(0deg,#7FAAEE var(--pp),#fff var(--pp)) !important; border:3px solid #2F6FD6; color:#0E2A5C !important; text-shadow:none !important; }
+/* v1230: cuota vencida con abono parcial = ROJO en la barra de progreso */
+html body .loan-progress-trozo.vencida.parcial,
+html body.modo-oscuro .loan-progress-trozo.vencida.parcial,
+html body #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-progress-trozo.vencida.parcial,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-progress-trozo.vencida.parcial,
+html body:not(.modo-oscuro) #screen-detalle-cliente .card.loan-card-full:not(.ltd) .loan-progress-trozo.vencida.parcial{ background:#D92D20 !important; color:#fff !important; box-shadow:inset 0 0 0 1px #9B2C2C; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.vencida.parcial{ background:#C53030 !important; border-color:#9B2C2C !important; color:#fff !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.vencida.parcial .ltg-fill{ background:linear-gradient(180deg,#EE6A63,#C2382F) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.vencida.parcial .ltk-disco,
+html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.vencida.parcial .ltk-disco{ background:#C53030 !important; border-color:#8E2A24 !important; color:#fff !important; }
 /* v1168: Simular crédito */
 #screen-simular-credito .sim-cuerpo{ padding:14px 16px 40px; display:flex; flex-direction:column; gap:14px; }
 #screen-simular-credito #sim-vista-lista, #screen-simular-credito #sim-vista-form, #screen-simular-credito #sim-vista-detalle{ display:flex; flex-direction:column; gap:14px; }
@@ -12044,6 +12054,8 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
 /* v1229 saldo abonado en el globito de la cuota */
 .globo-cuota .globo-cuota-abonado{ margin-top:3px; font-size:12.5px; font-weight:700; color:#7FDCA4; line-height:1.2; white-space:nowrap; }
 .globo-cuota.globo-oceano .globo-cuota-abonado{ color:#1F9D61 !important; }
+.globo-cuota .globo-cuota-pendiente-ant{ margin-top:3px; font-size:12.5px; font-weight:700; color:#FF8A80; line-height:1.2; white-space:nowrap; }
+.globo-cuota.globo-oceano .globo-cuota-pendiente-ant{ color:#C53030 !important; }
 </style>
 
 </head>
@@ -29455,6 +29467,15 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
         lineaAb.textContent = 'Abonado ' + formatearPesos(abonado);
         el.insertBefore(lineaAb, el.querySelector('.globo-cuota-fecha'));
       }
+      // v1231: saldo pendiente de cuotas ANTERIORES (con abono parcial) se sigue mostrando en los globitos siguientes hasta cancelarlo
+      (prestamo.plan || []).filter(c => c.numero < numero && !estaCuotaPagada(prestamo, c.numero) && sumaAbonadaCuota(prestamo, c.numero) > 0).forEach(c => {
+        const pend = pendienteDeCuota(prestamo, c);
+        if(pend > 0){
+          const lineaP = document.createElement('div'); lineaP.className = 'globo-cuota-pendiente-ant';
+          lineaP.textContent = 'Pendiente cuota #' + c.numero + ': ' + formatearPesos(pend);
+          el.insertBefore(lineaP, el.querySelector('.globo-cuota-fecha'));
+        }
+      });
     }
     document.body.appendChild(el);
     const r = ancla.getBoundingClientRect(), gw = el.offsetWidth, gh = el.offsetHeight, M = 8;
@@ -30366,6 +30387,16 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
     const pendientePagado = (conPrevioYExceso && !proxParcial) ? debiaCuota : 0; // v1226: pagó lo que había quedado pendiente de la cuota anterior + la cuota siguiente completa
     const pagoTotalConParcial = conPrevioYExceso && proxParcial; // v1228: pagó el saldo + un abono parcial a la siguiente → PAGO RECIBIDO = total, ABONO ADICIONAL = lo que sobra, VALOR PRÓXIMA CUOTA = lo que falta
     if(!(faltaCuota > 1)) faltaCuota = 0;
+    // v1231: saldo pendiente de cuotas ANTERIORES (con abono parcial, aún sin cancelar) → se muestra en el comprobante de las cuotas siguientes
+    let pendAnteriores = [];
+    if(ultimo && !prestamo.soloInteres && ultimo.aplicarA !== 'mora' && ultimo.concepto !== 'recargo_prorroga' && ultimo.concepto !== 'pago_interes'){
+      const csP = partes.map(p => p.cuota).filter(n => n !== undefined && n !== null);
+      if(csP.length){
+        const c0P = Math.min.apply(null, csP);
+        pendAnteriores = plan.filter(c => c.numero < c0P && !estaCuotaPagada(prestamo, c.numero) && sumaAbonadaCuota(prestamo, c.numero) > 0)
+          .map(c => [c.numero, pendienteDeCuota(prestamo, c)]).filter(x => x[1] > 1);
+      }
+    }
     // v968: puntualidad — a tiempo si pagó antes, el día del vencimiento o 1 día después; si no, "Pago N día(s) tarde" (N = días pasados del día de gracia)
     let msgPuntual = '';
     if(ultimo && !prestamo.soloInteres && ultimo.aplicarA !== 'mora' && ultimo.concepto !== 'recargo_prorroga'){
@@ -30379,7 +30410,12 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
       }
     }
     if(!window.PY_MOSTRAR_TERMICO.puntualidad) msgPuntual = ''; // v1144
-    const cuotaRecibo = partes.length ? numeroCuotaReciboPago(prestamo, partes.map(p => p.cuota)) : pagadas;
+    let cuotaRecibo = partes.length ? numeroCuotaReciboPago(prestamo, partes.map(p => p.cuota)) : pagadas;
+    // v1234: con saldo atrasado, "cuotas pagadas" cuenta solo las cuotas COMPLETADAS (hasta la del recibo), no el número de la cuota
+    if(pendAnteriores.length && partes.length){
+      const tope = Math.max.apply(null, partes.map(p => p.cuota).filter(n => n !== undefined && n !== null));
+      cuotaRecibo = plan.filter(c => c.numero <= tope && estaCuotaPagada(prestamo, c.numero)).length;
+    }
     const ocultarSP = !!opciones.ocultarSaldoYProximo;
     // v1059: cuota registrada como "Pago de interés" → el comprobante no muestra la cuota y siempre muestra el saldo pendiente
     const esPagoInteres = !!(ultimo && ultimo.concepto === 'pago_interes');
@@ -30389,11 +30425,12 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
     const filas = [
       ['NOMBRE:', nombreParaRecibo(cliente.nombre)], // v1054: el cliente primero, luego el abono · v1153
       ...filaDocumentoRecibo(cliente), // v1146
-      [(usaPago || adicional > 0) ? 'PAGO RECIBIDO:' : 'ABONO RECIBIDO:', pesos(pagoTotalConParcial ? valor : (pendientePagado ? valor - pendientePagado : (adicional ? valor - adicional : valor))), 'monto'], // v1228 // v1226: con pendiente pagado, aquí va lo pagado de la cuota actual // v1223: con abono adicional también se dice PAGO RECIBIDO // v1176: a solo interés → PAGO RECIBIDO // v1167: si pagó de más, aquí solo lo que correspondía; el resto va en ABONO ADICIONAL
+      [(usaPago || adicional > 0 || pendAnteriores.length) ? 'PAGO RECIBIDO:' : 'ABONO RECIBIDO:', pesos(pagoTotalConParcial ? valor : (pendientePagado ? valor - pendientePagado : (adicional ? valor - adicional : valor))), 'monto'], // v1228 // v1226: con pendiente pagado, aquí va lo pagado de la cuota actual // v1223: con abono adicional también se dice PAGO RECIBIDO // v1176: a solo interés → PAGO RECIBIDO // v1167: si pagó de más, aquí solo lo que correspondía; el resto va en ABONO ADICIONAL
       ...(esMoraRecibo ? [['POR CONCEPTO DE:', 'Posponer fecha']] : []), // v1156
       ...(window.PY_MOSTRAR_TERMICO.abonadoA ? [['ABONADO A:', concepto]] : []), // v1144
       ...(pendientePagado ? [['PENDIENTE PAGADO:', pesos(pendientePagado)]] : (adicional ? [['ABONO ADICIONAL:', pesos(adicional)]] : [])), // v1226: si pagó lo que quedó pendiente + la cuota siguiente
-      ...(faltaCuota ? [[numCuotaFalta ? 'PENDIENTE DE CUOTA #' + numCuotaFalta + ':' : 'PENDIENTE DE CUOTA:', pesos(faltaCuota)]] : []), // v1167: pagó menos de lo que correspondía a la cuota
+      ...(faltaCuota && !pendAnteriores.length ? [[numCuotaFalta ? 'PENDIENTE DE CUOTA #' + numCuotaFalta + ':' : 'PENDIENTE DE CUOTA:', pesos(faltaCuota)]] : []), // v1167: pagó menos de lo que correspondía a la cuota
+      ...(pendAnteriores.length ? [['SALDO ATRASADO:', pesos(pendAnteriores.reduce((t, x) => t + x[1], 0) + faltaCuota)]] : []), // v1233: una sola fila con la SUMA de los saldos pendientes de cuotas anteriores
       ...(adicional && proximaCuotaPendiente(prestamo) ? [['VALOR PRÓXIMA CUOTA:', pesos(pendienteDeCuota(prestamo, proximaCuotaPendiente(prestamo)))]] : []), // v1164: el abono adicional ya descontó la cuota siguiente; se muestra lo que queda por pagar de ella
       ...(numeroCreditoCliente(prestamo) ? [['CRÉDITO:', '# ' + numeroCreditoCliente(prestamo)]] : []),
       [usaPago ? 'FECHA DE PAGO:' : 'FECHA DE ABONO:', ultimo ? fechaDiaCT(ultimo.fecha) : '—'], // v1176
@@ -32171,6 +32208,7 @@ function dibujarComprobanteTermico(datos){
   const resumenLinea2 = document.getElementById('resumen-linea-2');
   const resumenValor2 = document.getElementById('resumen-valor-2');
 
+  let listaAbonoFormulario = null, inicioAbonoNumero = null; // v1236: cuota tocada (globito) = donde empieza a aplicarse el pago
   let cuotasPendientesAbono = [];   // cuotas del préstamo que aún tienen saldo
   let indiceCuotaAbono = 0;         // cuota de referencia (fija) para mostrar Valor de la Cuota / Intereses
   let cantidadCuotasStepper = 1;    // cuántas veces se ha sumado el valor de la cuota con el stepper
@@ -32216,7 +32254,13 @@ function dibujarComprobanteTermico(datos){
     // "fantasma" de $0 (por eso un pago de 2 cuotas aparecía como 3). Ahora
     // un sobrante menor a medio centavo se considera cero.
     const RESIDUO_MINIMO = 0.005;
-    for(let i = 0; i < cuotasPendientesAbono.length && restante > RESIDUO_MINIMO; i++){
+    // v1236: si el abono se abrió tocando el globito de una cuota, el pago empieza en ESA cuota (las anteriores con saldo siguen pendientes)
+    let inicioReparto = 0;
+    if(inicioAbonoNumero && cuotasPendientesAbono === listaAbonoFormulario){
+      const k = cuotasPendientesAbono.findIndex(c => c.numero === inicioAbonoNumero);
+      if(k > 0) inicioReparto = k;
+    }
+    for(let i = inicioReparto; i < cuotasPendientesAbono.length && restante > RESIDUO_MINIMO; i++){
       const cuota = cuotasPendientesAbono[i];
 
       const yaAbonado = sumaAbonadaCuota(prestamo, cuota.numero);
@@ -32521,6 +32565,7 @@ function dibujarComprobanteTermico(datos){
     guardarReciboSaldo(false);
     sincronizarTogglesSaldoComprobante();
 
+    listaAbonoFormulario = cuotasPendientesAbono; inicioAbonoNumero = numeroCuotaPreseleccionada || null; // v1236
     indiceCuotaAbono = numeroCuotaPreseleccionada
       ? Math.max(cuotasPendientesAbono.findIndex(c => c.numero === numeroCuotaPreseleccionada), 0)
       : 0;
