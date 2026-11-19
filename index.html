@@ -30348,7 +30348,11 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
       }
     }
     if(!(adicional > 1)) adicional = 0;
-    const pendientePagado = (adicional > 0 && previoCuota > 1 && debiaCuota > 1) ? debiaCuota : 0; // v1226: pagó lo que había quedado pendiente de la cuota anterior + la cuota siguiente
+    const conPrevioYExceso = adicional > 0 && previoCuota > 1 && debiaCuota > 1; // v1228
+    const proxC = conPrevioYExceso ? proximaCuotaPendiente(prestamo) : null;
+    const proxParcial = !!(proxC && pendienteDeCuota(prestamo, proxC) < (proxC.total || 0) - 1); // v1228: la cuota siguiente quedó con un abono parcial
+    const pendientePagado = (conPrevioYExceso && !proxParcial) ? debiaCuota : 0; // v1226: pagó lo que había quedado pendiente de la cuota anterior + la cuota siguiente completa
+    const pagoTotalConParcial = conPrevioYExceso && proxParcial; // v1228: pagó el saldo + un abono parcial a la siguiente → PAGO RECIBIDO = total, ABONO ADICIONAL = lo que sobra, VALOR PRÓXIMA CUOTA = lo que falta
     if(!(faltaCuota > 1)) faltaCuota = 0;
     // v968: puntualidad — a tiempo si pagó antes, el día del vencimiento o 1 día después; si no, "Pago N día(s) tarde" (N = días pasados del día de gracia)
     let msgPuntual = '';
@@ -30373,7 +30377,7 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
     const filas = [
       ['NOMBRE:', nombreParaRecibo(cliente.nombre)], // v1054: el cliente primero, luego el abono · v1153
       ...filaDocumentoRecibo(cliente), // v1146
-      [(usaPago || adicional > 0) ? 'PAGO RECIBIDO:' : 'ABONO RECIBIDO:', pesos(pendientePagado ? valor - pendientePagado : (adicional ? valor - adicional : valor)), 'monto'], // v1226: con pendiente pagado, aquí va lo pagado de la cuota actual // v1223: con abono adicional también se dice PAGO RECIBIDO // v1176: a solo interés → PAGO RECIBIDO // v1167: si pagó de más, aquí solo lo que correspondía; el resto va en ABONO ADICIONAL
+      [(usaPago || adicional > 0) ? 'PAGO RECIBIDO:' : 'ABONO RECIBIDO:', pesos(pagoTotalConParcial ? valor : (pendientePagado ? valor - pendientePagado : (adicional ? valor - adicional : valor))), 'monto'], // v1228 // v1226: con pendiente pagado, aquí va lo pagado de la cuota actual // v1223: con abono adicional también se dice PAGO RECIBIDO // v1176: a solo interés → PAGO RECIBIDO // v1167: si pagó de más, aquí solo lo que correspondía; el resto va en ABONO ADICIONAL
       ...(esMoraRecibo ? [['POR CONCEPTO DE:', 'Posponer fecha']] : []), // v1156
       ...(window.PY_MOSTRAR_TERMICO.abonadoA ? [['ABONADO A:', concepto]] : []), // v1144
       ...(pendientePagado ? [['PENDIENTE PAGADO:', pesos(pendientePagado)]] : (adicional ? [['ABONO ADICIONAL:', pesos(adicional)]] : [])), // v1226: si pagó lo que quedó pendiente + la cuota siguiente
