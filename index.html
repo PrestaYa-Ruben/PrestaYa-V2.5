@@ -11985,7 +11985,9 @@ html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.lt
 html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas .loan-note-textarea{ font-size:13px !important; font-weight:500 !important; color:#5A6678 !important; }
 /* v1252: (extendido a toda la app, salvo modo oscuro) fondo exterior: gris frío con viñeta radial suave (centro #EBF0F5 → bordes #DFE6ED) */
 html body:not(.modo-oscuro) .app, html body:not(.modo-oscuro) #screen-detalle-cliente#screen-detalle-cliente{ background:radial-gradient(ellipse 120% 85% at 50% 42%, #EBF0F5 0%, #EBF0F5 38%, #DFE6ED 100%) !important; }
-html:not(.modo-oscuro-html) body:not(.modo-oscuro){ background-color:#DFE6ED; }
+/* v1277: la franja del título de TODAS las páginas lleva el mismo color del exterior (no en modo oscuro) */
+html body:not(.modo-oscuro) .app:not(.efc-modal) > .header:not(.efc-header){ background:#EBF0F5 !important; }
+html body:not(.modo-oscuro) #screen-nuevo-prestamo#screen-nuevo-prestamo > .header{ background:#EBF0F5 !important; }
 /* v1268 (se conserva): la página nunca se desborda en horizontal */
 /* v1274: la zona segura superior vuelve a aplicarse siempre (como antes de v1269) */
 :root{ --sat:env(safe-area-inset-top, 0px); }
