@@ -42498,6 +42498,7 @@ label[for=fDate]{color:var(--navy) !important;font-weight:800 !important;font-si
     Array.from(p.children).forEach((h, i) => {
       if(h.tagName === 'SCRIPT') return;
       const pos = getComputedStyle(h).position;
+      if(h.classList.contains('header') || h.tagName === 'HEADER') return; // v1278: la franja del título no se anima (evita el parpadeo en la zona de la hora)
       const cls = (pos === 'fixed') ? 'v700-funde' : 'v700-entra';
       h.classList.remove('v700-entra', 'v700-funde'); void h.offsetWidth;
       h.style.animationDelay = Math.min(i, 6) * 25 + 'ms';
