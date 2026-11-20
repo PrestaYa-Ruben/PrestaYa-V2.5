@@ -30481,12 +30481,14 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
     const esPagoInteres = !!(ultimo && ultimo.concepto === 'pago_interes');
     const esMoraRecibo = !!(ultimo && (ultimo.aplicarA === 'mora' || ultimo.concepto === 'recargo_prorroga')); // v1156
     const esAbonoCapital = !!(partes.length && partes.every(p => (Number(p.capitalPagado) || 0) > 0 && !(Number(p.interesPagado) > 0) && p.aplicarA !== 'mora')); // v1177: abono a solo capital → "COMPROBANTE DE ABONO" y etiquetas de abono
+    const esSoloInteresRecibo = !esMoraRecibo && partes.length > 0 && partes.every(p => p && p.aplicarA === 'solo_interes'); // v1261
     const usaPago = (!!prestamo.soloInteres && !esAbonoCapital) || esMoraRecibo; // v1183: también al posponer fecha se dice PAGO;  // v1177: a solo interés se dice PAGO, salvo que sea un abono a capital
     const filas = [
       ['NOMBRE:', nombreParaRecibo(cliente.nombre)], // v1054: el cliente primero, luego el abono · v1153
       ...filaDocumentoRecibo(cliente), // v1146
       [(usaPago || adicional > 0 || pendAnteriores.length) ? 'PAGO RECIBIDO:' : 'ABONO RECIBIDO:', pesos(pagoTotalConParcial ? valor : (pendientePagado ? valor - pendientePagado : (adicional ? valor - adicional : valor))), 'monto'], // v1228 // v1226: con pendiente pagado, aquí va lo pagado de la cuota actual // v1223: con abono adicional también se dice PAGO RECIBIDO // v1176: a solo interés → PAGO RECIBIDO // v1167: si pagó de más, aquí solo lo que correspondía; el resto va en ABONO ADICIONAL
       ...(esMoraRecibo ? [['POR CONCEPTO DE:', 'Posponer fecha']] : []), // v1156
+      ...(esSoloInteresRecibo ? [['POR CONCEPTO DE:', 'Pago de intereses']] : []), // v1261: abono registrado como solo interés
       ...(window.PY_MOSTRAR_TERMICO.abonadoA ? [['ABONADO A:', concepto]] : []), // v1144
       ...(pendientePagado ? [['PENDIENTE PAGADO:', pesos(pendientePagado)]] : (adicional ? [['ABONO ADICIONAL:', pesos(adicional)]] : [])), // v1226: si pagó lo que quedó pendiente + la cuota siguiente
       ...(faltaCuota && !pendAnteriores.length ? [[numCuotaFalta ? 'PENDIENTE DE CUOTA #' + numCuotaFalta + ':' : 'PENDIENTE DE CUOTA:', pesos(faltaCuota)]] : []), // v1167: pagó menos de lo que correspondía a la cuota
