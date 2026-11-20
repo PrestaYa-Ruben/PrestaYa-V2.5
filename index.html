@@ -168,6 +168,9 @@ body.acento-ambar{ --primary:#C28A00; --primary-dark:#9E7000; --primary-light:rg
    Android basado en Chromium, el motor de esta app. */
 body.texto-pequeno{ zoom:0.92; }
 body.texto-grande{ zoom:1.12; }
+/* v1271: con zoom en el body el tope de ancho de la app se compensa. Antes, con Texto pequeño (zoom .92) la app medía 460x.92 = 423 pt y dejaba franjas laterales en iPhone de 440 pt (y parpadeo al cambiar de página); ahora ocupa todo el ancho. */
+body.texto-pequeno{ --ancho-app:calc(460px / 0.92); }
+body.texto-grande{ --ancho-app:calc(460px / 1.12); }
 
 /* ==========================================================
    3. ESTILOS GLOBALES
@@ -194,7 +197,7 @@ a{ text-decoration:none; color:inherit; }
 
 /* Contenedor tipo app, centrado en pantallas grandes, full-width en móvil */
 .app{
-  max-width:460px;
+  max-width:var(--ancho-app, 460px);
   margin:0 auto;
   min-height:100vh;
   background:var(--background);
@@ -5082,7 +5085,7 @@ body:not(.modo-oscuro) #resumen-activos-cliente-overlay{ --success:#0B8F45; --wa
   left:50%;
   transform:translateX(-50%);
   width:100%;
-  max-width:460px;
+  max-width:var(--ancho-app, 460px);
   background:var(--background);
   padding:14px 14px calc(14px + env(safe-area-inset-bottom));
   box-shadow:0 -6px 20px rgba(20,30,60,0.08);
@@ -6098,7 +6101,7 @@ body.modo-oscuro .profile-card .profile-card-name{ color:var(--text); }
   left:50%;
   transform:translateX(-50%);
   width:100%;
-  max-width:460px;
+  max-width:var(--ancho-app, 460px);
   background:var(--surface);
   border-top:1px solid var(--border);
   display:flex;
