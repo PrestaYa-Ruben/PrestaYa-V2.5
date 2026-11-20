@@ -6,7 +6,7 @@
 /* v828: deteccion temprana de iPhone/iPad (antes de pintar), para activar las optimizaciones de scroll */
 (function(){ try{ var ua=navigator.userAgent||''; if(/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)){ document.documentElement.classList.add('ios'); window.__esIOS=true; } }catch(e){} })();
 </script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <script>
 /* v882: apertura suave tipo iOS — la app arranca transparente y se funde sobre la pantalla de arranque */
 (function(){ try{ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){ document.documentElement.classList.add('arrancando'); setTimeout(function(){ document.documentElement.classList.remove('arrancando'); }, 2500); } }catch(e){} })();
@@ -10558,6 +10558,8 @@ html.ios, html.ios body{ -webkit-text-size-adjust:100%; }
 html.ios body{ min-height:-webkit-fill-available; -webkit-touch-callout:none; overscroll-behavior-y:none; }
 html.ios input, html.ios textarea{ -webkit-user-select:text; user-select:text; -webkit-touch-callout:default; }
 html.ios .ios-16{ font-size:16px !important; }
+/* v1257: evita el zoom automático de iOS al enfocar campos (todo campo de texto >=16px) */
+html.ios input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=button]):not([type=submit]),html.ios select,html.ios textarea,html.ios .loan-note-textarea{ font-size:16px !important; }
 html.ios button, html.ios .nav-item{ touch-action:manipulation; }
 html.ios .header .back-btn svg{ width:28px; height:28px; stroke-width:2.6; }
 html.ios .header .back-btn{ margin-left:-6px; }
@@ -11934,11 +11936,11 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.parcial .ltk-disco,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.parcial .ltk-disco{ background:linear-gradient(0deg,#7FAAEE var(--pp),#fff var(--pp)) !important; border:3px solid #2F6FD6; color:#0E2A5C !important; text-shadow:none !important; }
 /* v1239: refuerzo del borde verde inferior (la regla global de bordes de 1px usa doble #id; se iguala para ganar) */
-#screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano{ border-left-width:2px !important; border-right-width:2px !important; border-left-color:#B3C3DE !important; border-right-color:#B3C3DE !important; border-bottom-width:4.5px !important; border-bottom-color:#2E9E45 !important; box-shadow:none !important; }
-body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano{ border-left-width:2px !important; border-right-width:2px !important; border-left-color:#B3C3DE !important; border-right-color:#B3C3DE !important; border-bottom-width:4.5px !important; border-bottom-color:#2E9E45 !important; box-shadow:none !important; }
+#screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano{ border-left-width:1.5px !important; border-right-width:1.5px !important; border-left-color:#B3C3DE !important; border-right-color:#B3C3DE !important; border-bottom-width:4.5px !important; border-bottom-color:#2E9E45 !important; box-shadow:0 7px 14px rgba(26,54,93,.15), 0 2px 4px rgba(26,54,93,.09) !important; }
+body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano{ border-left-width:1.5px !important; border-right-width:1.5px !important; border-left-color:#B3C3DE !important; border-right-color:#B3C3DE !important; border-bottom-width:4.5px !important; border-bottom-color:#2E9E45 !important; box-shadow:0 7px 14px rgba(26,54,93,.15), 0 2px 4px rgba(26,54,93,.09) !important; }
 /* v1245: franja del nombre ANCLADA: el marco (arriba y lados) es del mismo azul que la franja hasta su altura, y luego pasa al azul claro */
 #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano, body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano{ border-top-color:transparent !important; border-left-color:transparent !important; border-right-color:transparent !important;
-  background:linear-gradient(#EDF2F7,#EDF2F7) padding-box, linear-gradient(to bottom,#1A365D 0,#1A365D calc(var(--cabH,84px) - 8px),#B3C3DE calc(var(--cabH,84px) - 8px),#B3C3DE 100%) border-box !important; }
+  background:linear-gradient(#F6F8FB,#F6F8FB) padding-box, linear-gradient(to bottom,#1A365D 0,#1A365D calc(var(--cabH,84px) - 8px),#344E6B calc(var(--cabH,84px) - 8px),#344E6B 100%) border-box !important; }
 /* v1246: "Valor cuotas" en verde y menos espacio bajo el cajón de Notas */
 html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-k, html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-v{ color:#1E8A3C !important; }
 #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano{ padding-bottom:3px !important; }
@@ -11957,8 +11959,18 @@ html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.lt
 html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.parcial:not(.vencida){ background:linear-gradient(90deg,#008080 0,#008080 var(--pp),#EDF2F7 var(--pp),#EDF2F7 100%) !important; border-color:#008080 !important; color:#2D3748 !important; }
 /* v1249: sin efecto de pulsación en las cuotas vencidas (queda solo la entrada suave) */
 html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.vencida{ animation:ltoSegIn .38s cubic-bezier(.2,.8,.3,1) both !important; animation-delay:calc(var(--i) * 70ms) !important; }
+/* v1250: texto de las notas (leído y al escribir) más suave y de menor tamaño */
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas .loan-note-contenido span{ font-size:13px !important; font-weight:500 !important; color:#5A6678 !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas .loan-note-textarea{ font-size:13px !important; font-weight:500 !important; color:#5A6678 !important; }
+/* v1252: (extendido a toda la app, salvo modo oscuro) fondo exterior: gris frío con viñeta radial suave (centro #EBF0F5 → bordes #DFE6ED) */
+html body:not(.modo-oscuro) .app, html body:not(.modo-oscuro) #screen-detalle-cliente#screen-detalle-cliente{ background:radial-gradient(ellipse 120% 85% at 50% 42%, #EBF0F5 0%, #EBF0F5 38%, #DFE6ED 100%) !important; }
+html:not(.modo-oscuro-html) body:not(.modo-oscuro){ background-color:#DFE6ED; }
+/* v1253: cuerpo de la tarjeta #F6F8FB; cajón de pagos blanco con borde #E2E8F0 */
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano{ background-color:#F6F8FB !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-onda path:nth-child(3){ fill:#F6F8FB !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag{ background:#FFFFFF !important; border:1px solid #E2E8F0 !important; }
 /* v1238: bordes de la tarjeta Océano (borde fino claro + línea verde abajo + sombra suave) y Notas en verde suave, según imagen de referencia */
-html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano{ border:1.5px solid #CFD9EA !important; border-bottom:4.5px solid #2E9E45 !important; box-shadow:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano{ border:1.5px solid #CFD9EA !important; border-bottom:4.5px solid #2E9E45 !important; box-shadow:0 7px 14px rgba(26,54,93,.15), 0 2px 4px rgba(26,54,93,.09) !important; }
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag{ border-radius:8px !important; margin-top:24px !important; }
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pct{ font-size:min(12.9px, 2.93vw) !important; }
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas{ border-radius:8px !important; background:#E4F6E7 !important; background-image:none !important; border:1.5px solid #BFE4C7 !important; box-shadow:none !important; }
