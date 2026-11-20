@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <script>
 /* v828: deteccion temprana de iPhone/iPad (antes de pintar), para activar las optimizaciones de scroll */
-(function(){ try{ var ua=navigator.userAgent||''; if(/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)){ document.documentElement.classList.add('ios'); window.__esIOS=true; } }catch(e){} })();
+(function(){ try{ var ua=navigator.userAgent||''; if(/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)){ document.documentElement.classList.add('ios'); try{ if(window.navigator.standalone===true) document.documentElement.classList.add('pwa-instalada'); }catch(e){} window.__esIOS=true; } }catch(e){} })();
 </script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <script>
 /* v882: apertura suave tipo iOS — la app arranca transparente y se funde sobre la pantalla de arranque */
 (function(){ try{ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){ document.documentElement.classList.add('arrancando'); setTimeout(function(){ document.documentElement.classList.remove('arrancando'); }, 2500); } }catch(e){} })();
@@ -4177,7 +4177,7 @@ html.bloqueo-fondo, html.bloqueo-fondo body{ overscroll-behavior:none; } /* v745
   box-shadow:4px 0 20px rgba(20,30,60,0.18);
   transform:translateX(-100%);
   transition:transform .28s cubic-bezier(.4,0,.2,1);
-  padding:env(safe-area-inset-top) 0 16px;
+  padding:var(--sat, 0px) 0 16px;
   overflow-y:auto;
 }
 .menu-lateral-overlay.abierto .menu-lateral-panel{ transform:translateX(0); }
@@ -7761,7 +7761,7 @@ body:not(.modo-oscuro) #btn-simulador-header svg{ stroke:#1F7A3E !important; }
 #screen-tareas iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; background:#F5F6FA; }
 #btn-cerrar-tareas{
   position:absolute; z-index:2;
-  top:calc(env(safe-area-inset-top) + 10px);
+  top:calc(var(--sat, 0px) + 10px);
   left:calc(max(0px, (100vw - 560px) / 2) + 12px);
   width:44px; height:44px; border:none; border-radius:12px; padding:0;
   background:transparent; color:#151A2D;
@@ -10582,13 +10582,13 @@ html.ios button, html.ios .nav-item{ touch-action:manipulation; }
 html.ios .header .back-btn svg{ width:28px; height:28px; stroke-width:2.6; }
 html.ios .header .back-btn{ margin-left:-6px; }
 html.ios .header .back-btn:active{ transform:none; opacity:.45; }
-html body::before{ content:''; position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); background:#23305F; z-index:100000; pointer-events:none; }
-html body .header{ padding-top:calc(9px + env(safe-area-inset-top)) !important; }
-html body #screen-editar-fecha-cuota .header{ padding-top:calc(12px + env(safe-area-inset-top)) !important; }
+html body::before{ content:''; position:fixed; top:0; left:0; right:0; height:var(--sat, 0px); background:#23305F; z-index:100000; pointer-events:none; }
+html body .header{ padding-top:calc(9px + var(--sat, 0px)) !important; }
+html body #screen-editar-fecha-cuota .header{ padding-top:calc(12px + var(--sat, 0px)) !important; }
 /* v825 isla dinamica / notch: nada queda debajo de la barra de estado (env() vale 0 donde no hay muesca) */
-html body #screen-tareas{ box-sizing:border-box; padding-top:env(safe-area-inset-top); background:#23305F; }
-html body #recibo-termico-overlay .rt-full-cerrar{ top:calc(12px + env(safe-area-inset-top)); }
-html body .pin-bloqueo-contenido, html body #pin-bloqueo-overlay{ padding-top:env(safe-area-inset-top); box-sizing:border-box; }
+html body #screen-tareas{ box-sizing:border-box; padding-top:var(--sat, 0px); background:#23305F; }
+html body #recibo-termico-overlay .rt-full-cerrar{ top:calc(12px + var(--sat, 0px)); }
+html body .pin-bloqueo-contenido, html body #pin-bloqueo-overlay{ padding-top:var(--sat, 0px); box-sizing:border-box; }
 html.ios .bottom-nav{ padding-bottom:calc(5px + env(safe-area-inset-bottom)) !important; }
 html.ios .scroll-y, html.ios [id^="screen-"]{ -webkit-overflow-scrolling:touch; }
 /* indicador del gesto de volver (borde izquierdo) */
@@ -10661,7 +10661,7 @@ html body #btn-abrir-busqueda-clientes.buscador-fab{ transition:none !important;
 @media (prefers-reduced-motion: reduce){ html body #btn-abrir-busqueda-clientes.buscador-fab{ transition:none !important; } }
 /* v834 Tareas del Dia en iPhone: la pantalla respeta la zona segura (isla arriba, barra de gestos abajo) */
 html body #screen-tareas{ padding:0; background:#F5F6FA; }
-html body #screen-tareas iframe{ top:env(safe-area-inset-top, 0px); bottom:auto; height:calc(100% - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); }
+html body #screen-tareas iframe{ top:var(--sat, 0px); bottom:auto; height:calc(100% - var(--sat, 0px) - env(safe-area-inset-bottom, 0px)); }
 /* v835 Tarjeta del credito mas grande: texto y elementos escalan juntos (todos los disenos) */
 html body #screen-detalle-cliente .card.loan-card-full{ zoom:1.14; }
 @media (max-width:380px){ html body #screen-detalle-cliente .card.loan-card-full{ zoom:1.08; } }
@@ -11983,6 +11983,19 @@ html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.lt
 /* v1252: (extendido a toda la app, salvo modo oscuro) fondo exterior: gris frío con viñeta radial suave (centro #EBF0F5 → bordes #DFE6ED) */
 html body:not(.modo-oscuro) .app, html body:not(.modo-oscuro) #screen-detalle-cliente#screen-detalle-cliente{ background:radial-gradient(ellipse 120% 85% at 50% 42%, #EBF0F5 0%, #EBF0F5 38%, #DFE6ED 100%) !important; }
 html:not(.modo-oscuro-html) body:not(.modo-oscuro){ background-color:#DFE6ED; }
+/* v1268: el color exterior cubre TODO el lateral (también al hacer scroll) y la página nunca se encoge ni se desborda en horizontal */
+html:not(.modo-oscuro-html):not(:has(body.modo-oscuro)){ background-color:#DFE6ED; }
+/* v1269: la zona segura superior solo se aplica en la app instalada (pantalla de inicio). En Safari / navegador integrado el contenido ya empieza debajo de la barra nativa: antes se contaba dos veces y dejaba un hueco blanco arriba. */
+:root{ --sat:0px; }
+@media (display-mode: standalone){ :root{ --sat:env(safe-area-inset-top, 0px); } }
+html.pwa-instalada{ --sat:env(safe-area-inset-top, 0px); }
+html, body{ overflow-x:clip; max-width:100%; }
+/* v1270: Clientes — el área del buscador y de las píldoras de ruta usa el mismo fondo exterior (sin franja más clara) */
+html body:not(.modo-oscuro) #screen-clientes#screen-clientes .search-row, html body:not(.modo-oscuro) #screen-clientes#screen-clientes #chips-rutas-clientes{ background:transparent !important; background-image:none !important; }
+/* v1268: Agregar abono — la fila Fecha + Agregar nota ya no se sale de la pantalla en iPhone angostos */
+.fecha-nota-row > .form-field{ min-width:0; }
+.fecha-nota-row .field-with-icon, .fecha-nota-row .field-input{ min-width:0; max-width:100%; }
+.fecha-nota-row .add-note-btn{ flex-shrink:0; padding-left:11px; padding-right:11px; gap:5px; }
 /* v1253: cuerpo de la tarjeta #F6F8FB; cajón de pagos blanco con borde #E2E8F0 */
 html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano{ background-color:#F6F8FB !important; }
 html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-onda path:nth-child(3){ fill:#F6F8FB !important; }
