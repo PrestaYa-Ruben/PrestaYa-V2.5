@@ -10560,6 +10560,16 @@ html.ios input, html.ios textarea{ -webkit-user-select:text; user-select:text; -
 html.ios .ios-16{ font-size:16px !important; }
 /* v1257: evita el zoom automático de iOS al enfocar campos (todo campo de texto >=16px) */
 html.ios input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=button]):not([type=submit]),html.ios select,html.ios textarea,html.ios .loan-note-textarea{ font-size:16px !important; }
+/* v1258: Inicio — 4 tarjetas de estadísticas: más separación, sombra muy sutil y borde un poco más marcado */
+html body #screen-inicio #dashboard-tarjetas-inicio{ gap:11px !important; }
+html body:not(.modo-oscuro):not(.tinte-dashboard-activo) #screen-inicio #dashboard-tarjetas-inicio .stat-card{ border-width:1.5px !important; box-shadow:0 4px 8px rgba(35,45,80,.10), 0 1px 2px rgba(35,45,80,.08), inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -3px 4px rgba(0,0,0,0.06) !important; }
+html body:not(.modo-oscuro):not(.tinte-dashboard-activo) #screen-inicio #dashboard-tarjetas-inicio .stat-card.tinte-morado{ border-color:#9DB6E2 !important; }
+html body:not(.modo-oscuro):not(.tinte-dashboard-activo) #screen-inicio #dashboard-tarjetas-inicio .stat-card.tinte-ambar{ border-color:#D6BC80 !important; }
+html body:not(.modo-oscuro):not(.tinte-dashboard-activo) #screen-inicio #dashboard-tarjetas-inicio .stat-card.tinte-verde{ border-color:#8CC587 !important; }
+html body:not(.modo-oscuro):not(.tinte-dashboard-activo) #screen-inicio #dashboard-tarjetas-inicio .stat-card.tinte-rojo{ border-color:#DD9E9E !important; }
+/* v1259: Resumen del período — contenedores internos con borde más marcado */
+html body:not(.modo-oscuro) #screen-inicio#screen-inicio #tarjeta-total-prestado-recaudado#tarjeta-total-prestado-recaudado .loan-detail-item{ border:1.5px solid #8FB2D6 !important; }
+
 html.ios button, html.ios .nav-item{ touch-action:manipulation; }
 html.ios .header .back-btn svg{ width:28px; height:28px; stroke-width:2.6; }
 html.ios .header .back-btn{ margin-left:-6px; }
@@ -22901,6 +22911,7 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
     // quedaba vacía para siempre y no había ningún aviso — solo reiniciando
     // la app se recuperaba. Ahora se aísla en su propio try/catch: si falla,
     // se registra en la consola y se sigue con el resto sin interrumpir nada.
+    try{ if(typeof renderizarChipsRutas === 'function') renderizarChipsRutas(); }catch(e){ console.error(e); } // v1260: refresca la píldora "Sin asignar"
     try{
       actualizarContadoresFiltroClientes();
     }catch(err){
@@ -38497,12 +38508,18 @@ function dibujarComprobanteTermico(datos){
   }
 
   function renderizarChipsRutas(){
-    const opciones = [{ valor: null, nombre: 'Todas' }, ...rutasGuardadas.map(r => ({ valor: r, nombre: r }))];
+    const opcionesBase = [{ valor: null, nombre: 'Todas' }, ...rutasGuardadas.map(r => ({ valor: r, nombre: r }))];
+    // v1260: en Clientes, píldora "Sin asignar" (clientes sin ruta); solo aparece si hay alguno o si ya está activa
+    const hayClientesSinRuta = (typeof clientesGuardados !== 'undefined' && Array.isArray(clientesGuardados))
+      && clientesGuardados.some(c => !(c && c.ruta && String(c.ruta).trim()));
+    const sinAsignarActiva = !!(rutasFiltroActivas && rutasFiltroActivas.has(''));
 
     CONTENEDORES_CHIPS_RUTAS.forEach(id=>{
       const contenedor = document.getElementById(id);
       if(!contenedor) return;
       contenedor.innerHTML = '';
+      const opciones = (id === 'chips-rutas-clientes' && (hayClientesSinRuta || sinAsignarActiva))
+        ? [...opcionesBase, { valor: '', nombre: 'Sin asignar' }] : opcionesBase;
 
       opciones.forEach(opcion=>{
         const activa = opcion.valor === null ? !rutasFiltroActivas : (rutasFiltroActivas && rutasFiltroActivas.has(opcion.valor));
