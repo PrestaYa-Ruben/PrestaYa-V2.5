@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <script>
 /* v828: deteccion temprana de iPhone/iPad (antes de pintar), para activar las optimizaciones de scroll */
-(function(){ try{ var ua=navigator.userAgent||''; if(/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)){ document.documentElement.classList.add('ios'); try{ if(window.navigator.standalone===true) document.documentElement.classList.add('pwa-instalada'); }catch(e){} window.__esIOS=true; } }catch(e){} })();
+(function(){ try{ var ua=navigator.userAgent||''; if(/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)){ document.documentElement.classList.add('ios'); window.__esIOS=true; } }catch(e){} })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <script>
@@ -10602,8 +10602,6 @@ html.ios .scroll-y, html.ios [id^="screen-"]{ -webkit-overflow-scrolling:touch; 
 #screen-nuevo-prestamo .np-prefijo{ font-size:clamp(30px,9vw,36px); left:16px; transform:translateY(-48%); }
 /* v826 Sin franja azul: la barra de estado de iOS es clara (estilo default) y queda del mismo color que la barra superior */
 html body::before{ display:none !important; }
-/* v1273: franja fija, del color del encabezado, detrás de la hora/iconos del iPhone (solo app instalada: --sat > 0). Así, al cambiar de página nunca se asoma el fondo gris por esa zona. */
-html body::before{ display:block !important; content:''; position:fixed; top:0; left:0; right:0; height:var(--sat, 0px); background:var(--surface, #fff); z-index:99990; pointer-events:none; }
 html body #screen-tareas{ background:transparent; }
 /* v827 Barra superior solida y nitida: sin transparencia ni desenfoque, pegada a la barra de estado */
 html body .header, html body #screen-nuevo-prestamo .header{ background:var(--surface) !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; opacity:1 !important; filter:none !important; z-index:60; }
@@ -11988,12 +11986,9 @@ html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.lt
 /* v1252: (extendido a toda la app, salvo modo oscuro) fondo exterior: gris frío con viñeta radial suave (centro #EBF0F5 → bordes #DFE6ED) */
 html body:not(.modo-oscuro) .app, html body:not(.modo-oscuro) #screen-detalle-cliente#screen-detalle-cliente{ background:radial-gradient(ellipse 120% 85% at 50% 42%, #EBF0F5 0%, #EBF0F5 38%, #DFE6ED 100%) !important; }
 html:not(.modo-oscuro-html) body:not(.modo-oscuro){ background-color:#DFE6ED; }
-/* v1268: el color exterior cubre TODO el lateral (también al hacer scroll) y la página nunca se encoge ni se desborda en horizontal */
-html:not(.modo-oscuro-html):not(:has(body.modo-oscuro)){ background-color:#DFE6ED; }
-/* v1269: la zona segura superior solo se aplica en la app instalada (pantalla de inicio). En Safari / navegador integrado el contenido ya empieza debajo de la barra nativa: antes se contaba dos veces y dejaba un hueco blanco arriba. */
-:root{ --sat:0px; }
-@media (display-mode: standalone){ :root{ --sat:env(safe-area-inset-top, 0px); } }
-html.pwa-instalada{ --sat:env(safe-area-inset-top, 0px); }
+/* v1268 (se conserva): la página nunca se desborda en horizontal */
+/* v1274: la zona segura superior vuelve a aplicarse siempre (como antes de v1269) */
+:root{ --sat:env(safe-area-inset-top, 0px); }
 html, body{ overflow-x:clip; max-width:100%; }
 /* v1270: Clientes — el área del buscador y de las píldoras de ruta usa el mismo fondo exterior (sin franja más clara) */
 html body:not(.modo-oscuro) #screen-clientes#screen-clientes .search-row, html body:not(.modo-oscuro) #screen-clientes#screen-clientes #chips-rutas-clientes{ background:transparent !important; background-image:none !important; }
@@ -42501,7 +42496,6 @@ label[for=fDate]{color:var(--navy) !important;font-weight:800 !important;font-si
     Array.from(p.children).forEach((h, i) => {
       if(h.tagName === 'SCRIPT') return;
       const pos = getComputedStyle(h).position;
-      if(h.classList.contains('header') || h.tagName === 'HEADER' || pos === 'sticky') return; // v1272: la franja del título no se anima (antes se aclaraba y volvía a aparecer = parpadeo al cambiar de página)
       const cls = (pos === 'fixed') ? 'v700-funde' : 'v700-entra';
       h.classList.remove('v700-entra', 'v700-funde'); void h.offsetWidth;
       h.style.animationDelay = Math.min(i, 6) * 25 + 'ms';
