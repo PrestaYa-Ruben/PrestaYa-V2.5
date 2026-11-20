@@ -11933,6 +11933,39 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.p
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-cristal .ltg-seg.parcial .ltg-fill{ background:linear-gradient(90deg,#34B26A 0,#1F8A4C var(--pp),var(--ltg-seg) var(--pp),var(--ltg-seg) 100%) !important; }
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.parcial .ltk-disco,
 html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero .ltk-placa .ltk-paso.parcial .ltk-disco{ background:linear-gradient(0deg,#7FAAEE var(--pp),#fff var(--pp)) !important; border:3px solid #2F6FD6; color:#0E2A5C !important; text-shadow:none !important; }
+/* v1239: refuerzo del borde verde inferior (la regla global de bordes de 1px usa doble #id; se iguala para ganar) */
+#screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano{ border-left-width:2px !important; border-right-width:2px !important; border-left-color:#B3C3DE !important; border-right-color:#B3C3DE !important; border-bottom-width:4.5px !important; border-bottom-color:#2E9E45 !important; box-shadow:none !important; }
+body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano{ border-left-width:2px !important; border-right-width:2px !important; border-left-color:#B3C3DE !important; border-right-color:#B3C3DE !important; border-bottom-width:4.5px !important; border-bottom-color:#2E9E45 !important; box-shadow:none !important; }
+/* v1245: franja del nombre ANCLADA: el marco (arriba y lados) es del mismo azul que la franja hasta su altura, y luego pasa al azul claro */
+#screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano, body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano{ border-top-color:transparent !important; border-left-color:transparent !important; border-right-color:transparent !important;
+  background:linear-gradient(#EDF2F7,#EDF2F7) padding-box, linear-gradient(to bottom,#1A365D 0,#1A365D calc(var(--cabH,84px) - 8px),#B3C3DE calc(var(--cabH,84px) - 8px),#B3C3DE 100%) border-box !important; }
+/* v1246: "Valor cuotas" en verde y menos espacio bajo el cajón de Notas */
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-k, html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-v{ color:#1E8A3C !important; }
+#screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano{ padding-bottom:3px !important; }
+/* v1248: paleta Océano — azul marino #1A365D (encabezado/textos), verde azulado #008080 (valor cuotas, Notas, cuotas activas), gris #2D3748 (Debe y rótulos), verde #2F855A (Ha pagado), cuotas inactivas #EDF2F7 / #718096 */
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-cab{ background:#1A365D !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile .lto-k, html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a .lto-k{ color:#2D3748 !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile .lto-v, html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tile .lto-pill, html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-a .lto-v{ color:#1A365D !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-k, html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-v{ color:#008080 !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag-v{ color:#2D3748 !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-ha-pagado .lto-hp-v{ color:#2F855A !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas .lto-notas-tit, html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas .lto-notas-tit svg{ color:#008080 !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas .lto-notas-tit svg{ stroke:#008080 !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas{ background:#E3F1F1 !important; border-color:#B5D8D8 !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg:not(.pagada):not(.vencida):not(.parcial):not(.capital){ background:#EDF2F7 !important; background-image:none !important; border-color:#D5DDE8 !important; color:#718096 !important; box-shadow:none !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.pagada{ background:#008080 !important; background-image:none !important; border-color:#006666 !important; color:#fff !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.parcial:not(.vencida){ background:linear-gradient(90deg,#008080 0,#008080 var(--pp),#EDF2F7 var(--pp),#EDF2F7 100%) !important; border-color:#008080 !important; color:#2D3748 !important; }
+/* v1249: sin efecto de pulsación en las cuotas vencidas (queda solo la entrada suave) */
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-seg.vencida{ animation:ltoSegIn .38s cubic-bezier(.2,.8,.3,1) both !important; animation-delay:calc(var(--i) * 70ms) !important; }
+/* v1238: bordes de la tarjeta Océano (borde fino claro + línea verde abajo + sombra suave) y Notas en verde suave, según imagen de referencia */
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano{ border:1.5px solid #CFD9EA !important; border-bottom:4.5px solid #2E9E45 !important; box-shadow:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag{ border-radius:8px !important; margin-top:24px !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pct{ font-size:min(12.9px, 2.93vw) !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas{ border-radius:8px !important; background:#E4F6E7 !important; background-image:none !important; border:1.5px solid #BFE4C7 !important; box-shadow:none !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas .lto-notas-tit, html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas .lto-notas-tit svg{ color:#1E8A3C !important; }
+html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-notas .lto-notas-tit svg{ stroke:#1E8A3C !important; }
+/* v1239: sin zoom en ninguna pantalla (doble toque y pellizco) */
+html, body{ touch-action:manipulation; -webkit-text-size-adjust:100%; }
 /* v1230: cuota vencida con abono parcial = ROJO en la barra de progreso */
 html body .loan-progress-trozo.vencida.parcial,
 html body.modo-oscuro .loan-progress-trozo.vencida.parcial,
@@ -29756,6 +29789,10 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
         const tamsO = vsO.map(v => parseFloat(getComputedStyle(v).fontSize)).filter(n => n > 0);
         if(tamsO.length){ const mO = Math.min.apply(null, tamsO); vsO.forEach(v => v.style.setProperty('font-size', mO + 'px', 'important')); } // v1219: parte de 15.5px (igual que Debe / Ha pagado)
       };
+      // v1245: la franja del nombre se ancla a la tarjeta: el borde (arriba y lados) toma el color de la franja hasta su altura
+      const anclarCabO = () => { try{ const cb = cardO.querySelector('.lto-cab'); if(cb) cardO.style.setProperty('--cabH', (cb.offsetTop + cb.offsetHeight + 1) + 'px'); }catch(_){} };
+      anclarCabO(); requestAnimationFrame(anclarCabO); setTimeout(anclarCabO, 350); setTimeout(anclarCabO, 1200);
+      if(window.ResizeObserver){ try{ new ResizeObserver(()=>{ anclarCabO(); }).observe(cardO); }catch(_){} }
       if(window.ResizeObserver){ try{ new ResizeObserver(()=>{ ajustarPlanO(); }).observe(cardO); }catch(_){} } // v1218: se recalcula si cambia el ancho de la tarjeta
       if(document.fonts && document.fonts.ready){ document.fonts.ready.then(()=>{ ajustarPlanO(); }); } // v1218: y cuando termina de cargar la tipografía
       setTimeout(()=>{ ajustarPlanO(); }, 2500);
@@ -42259,6 +42296,8 @@ label[for=fDate]{color:var(--navy) !important;font-weight:800 !important;font-si
     }
     revisar(); // v737: los escuchadores se ponen/quitan desde revisar()
     // v963: sin zoom (pellizco / doble toque) mientras hay un modal abierto
+    // v1239: bloquear pellizco/zoom de iOS en toda la app
+    ['gesturestart','gesturechange','gestureend'].forEach(ev => document.addEventListener(ev, e => { if(e.cancelable) e.preventDefault(); }, { passive:false }));
     ['gesturestart','gesturechange'].forEach(ev => document.addEventListener(ev, e => { if(document.documentElement.classList.contains('bloqueo-fondo') && e.cancelable) e.preventDefault(); }, { passive:false }));
   })();
 
