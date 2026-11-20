@@ -10559,7 +10559,7 @@ html.ios body{ min-height:-webkit-fill-available; -webkit-touch-callout:none; ov
 html.ios input, html.ios textarea{ -webkit-user-select:text; user-select:text; -webkit-touch-callout:default; }
 html.ios .ios-16{ font-size:16px !important; }
 /* v1257: evita el zoom automático de iOS al enfocar campos (todo campo de texto >=16px) */
-html.ios input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=button]):not([type=submit]),html.ios select,html.ios textarea,html.ios .loan-note-textarea{ font-size:16px !important; }
+html.ios input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=button]):not([type=submit]):not(#select-tipo-interes):not(#input-valor-prestamo):not(#input-cuotas-prestamo):not(#select-frecuencia):not(#input-tasa-interes):not(#input-cuota-deseada):not(#input-fecha-credito):not(#input-primera-cuota):not(#input-segunda-cuota):not(#input-valor-abono):not(#select-aplicar-abono):not(#select-concepto-abono):not(#select-metodo-pago):not(#input-fecha-abono):not(#sim-input-porcentaje):not(#sim-input-valor),html.ios select:not(#select-tipo-interes):not(#input-valor-prestamo):not(#input-cuotas-prestamo):not(#select-frecuencia):not(#input-tasa-interes):not(#input-cuota-deseada):not(#input-fecha-credito):not(#input-primera-cuota):not(#input-segunda-cuota):not(#input-valor-abono):not(#select-aplicar-abono):not(#select-concepto-abono):not(#select-metodo-pago):not(#input-fecha-abono):not(#sim-input-porcentaje):not(#sim-input-valor),html.ios textarea,html.ios .loan-note-textarea{ font-size:16px !important; } /* v1262: los campos que ya eran >16px (p. ej. Valor a pagar 26px) conservan su tamaño */
 /* v1258: Inicio — 4 tarjetas de estadísticas: más separación, sombra muy sutil y borde un poco más marcado */
 html body #screen-inicio #dashboard-tarjetas-inicio{ gap:11px !important; }
 html body:not(.modo-oscuro):not(.tinte-dashboard-activo) #screen-inicio #dashboard-tarjetas-inicio .stat-card{ border-width:1.5px !important; box-shadow:0 4px 8px rgba(35,45,80,.10), 0 1px 2px rgba(35,45,80,.08), inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -3px 4px rgba(0,0,0,0.06) !important; }
@@ -30414,7 +30414,10 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
     const ultimo = partes[partes.length - 1];
     const pagadas = plan.filter(c => estaCuotaPagada(prestamo, c.numero)).length;
     const totalCuotas = plan.length || prestamo.cuotas || 0;
-    const creditoPagado = !prestamo.soloInteres && (prestamo.estado === 'finalizado' || (totalCuotas > 0 && pagadas >= totalCuotas));
+    // v1263: el sello también sale en créditos a solo interés cuando quedan saldados (estado finalizado), y en los demás si el saldo llegó a 0
+    const creditoPagado = prestamo.soloInteres
+      ? prestamo.estado === 'finalizado'
+      : (prestamo.estado === 'finalizado' || (totalCuotas > 0 && pagadas >= totalCuotas) || ((prestamo.totalAPagar || 0) > 0 && saldoPendientePrestamo(prestamo) <= 1));
     const pesos = v => formatearPesos(v);
     const valor = partes.reduce((a, p) => a + (Number(p.monto) || 0), 0);
     let concepto = '—';
