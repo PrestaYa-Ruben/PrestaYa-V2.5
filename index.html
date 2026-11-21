@@ -30467,7 +30467,21 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
       }
     }
     if(!(adicional > 1)) adicional = 0;
-    const conPrevioYExceso = adicional > 0 && previoCuota > 1 && debiaCuota > 1; // v1228
+    // v1279/v1280: el pago cubrió 2 o más cuotas completas (con los valores reales de cada cuota) → "PAGO RECIBIDO" = suma de esas cuotas completas, lo que sobra (abono parcial a la siguiente) = "ABONO ADICIONAL"; "cuotas pagadas" = total de cuotas ya pagadas del crédito
+    let multiExacto = false, multiPago = 0;
+    if(ultimo && !prestamo.soloInteres && ultimo.aplicarA !== 'mora' && ultimo.concepto !== 'recargo_prorroga' && ultimo.concepto !== 'pago_interes' && partes.every(p => p && p.aplicarA !== 'mora' && p.concepto !== 'pago_interes' && p.aplicarA !== 'solo_interes')){
+      const cu = Array.from(new Set(partes.map(p => p.cuota).filter(n => n !== undefined && n !== null)));
+      const comp = cu.filter(n => estaCuotaPagada(prestamo, n));
+      const resto = cu.filter(n => !estaCuotaPagada(prestamo, n));
+      if(comp.length >= 2 && resto.length <= 1){
+        let debiaTot = 0, okPlan = true;
+        comp.forEach(n => { const cp = plan.find(c => c.numero === n); if(!cp){ okPlan = false; return; } const prev = (prestamo.pagos || []).filter(p => p.cuota === n && p.aplicarA !== 'mora' && !partes.includes(p)).reduce((t, p) => t + (Number(p.monto) || 0), 0); debiaTot += Math.max(0, cp.total - prev); });
+        const sobra = valor - debiaTot;
+        const sobraPartes = partes.filter(p => resto.includes(p.cuota)).reduce((t, p) => t + (Number(p.monto) || 0), 0);
+        if(okPlan && Math.abs(sobra - sobraPartes) <= 1){ multiExacto = true; multiPago = debiaTot; adicional = sobra > 1 ? sobra : 0; }
+      }
+    }
+    const conPrevioYExceso = !multiExacto && adicional > 0 && previoCuota > 1 && debiaCuota > 1; // v1228
     const proxC = conPrevioYExceso ? proximaCuotaPendiente(prestamo) : null;
     const proxParcial = !!(proxC && pendienteDeCuota(prestamo, proxC) < (proxC.total || 0) - 1); // v1228: la cuota siguiente quedó con un abono parcial
     const pendientePagado = (conPrevioYExceso && !proxParcial) ? debiaCuota : 0; // v1226: pagó lo que había quedado pendiente de la cuota anterior + la cuota siguiente completa
@@ -30497,6 +30511,7 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
     }
     if(!window.PY_MOSTRAR_TERMICO.puntualidad) msgPuntual = ''; // v1144
     let cuotaRecibo = partes.length ? numeroCuotaReciboPago(prestamo, partes.map(p => p.cuota)) : pagadas;
+    if(multiExacto) cuotaRecibo = pagadas; // v1279
     // v1234: con saldo atrasado, "cuotas pagadas" cuenta solo las cuotas COMPLETADAS (hasta la del recibo), no el número de la cuota
     if(pendAnteriores.length && partes.length){
       const tope = Math.max.apply(null, partes.map(p => p.cuota).filter(n => n !== undefined && n !== null));
@@ -30512,7 +30527,7 @@ html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-grid 
     const filas = [
       ['NOMBRE:', nombreParaRecibo(cliente.nombre)], // v1054: el cliente primero, luego el abono · v1153
       ...filaDocumentoRecibo(cliente), // v1146
-      [(usaPago || adicional > 0 || pendAnteriores.length) ? 'PAGO RECIBIDO:' : 'ABONO RECIBIDO:', pesos(pagoTotalConParcial ? valor : (pendientePagado ? valor - pendientePagado : (adicional ? valor - adicional : valor))), 'monto'], // v1228 // v1226: con pendiente pagado, aquí va lo pagado de la cuota actual // v1223: con abono adicional también se dice PAGO RECIBIDO // v1176: a solo interés → PAGO RECIBIDO // v1167: si pagó de más, aquí solo lo que correspondía; el resto va en ABONO ADICIONAL
+      [(usaPago || adicional > 0 || pendAnteriores.length || multiExacto) ? 'PAGO RECIBIDO:' : 'ABONO RECIBIDO:', pesos(multiExacto ? multiPago : pagoTotalConParcial ? valor : (pendientePagado ? valor - pendientePagado : (adicional ? valor - adicional : valor))), 'monto'], // v1228 // v1226: con pendiente pagado, aquí va lo pagado de la cuota actual // v1223: con abono adicional también se dice PAGO RECIBIDO // v1176: a solo interés → PAGO RECIBIDO // v1167: si pagó de más, aquí solo lo que correspondía; el resto va en ABONO ADICIONAL
       ...(esMoraRecibo ? [['POR CONCEPTO DE:', 'Posponer fecha']] : []), // v1156
       ...(esSoloInteresRecibo ? [['POR CONCEPTO DE:', 'Pago de intereses']] : []), // v1261: abono registrado como solo interés
       ...(window.PY_MOSTRAR_TERMICO.abonadoA ? [['ABONADO A:', concepto]] : []), // v1144
