@@ -11961,7 +11961,7 @@ html body.modo-oscuro #screen-detalle-cliente .card.loan-card-full.ltd.ltd-acero
 body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano{ border-left-width:1.5px !important; border-right-width:1.5px !important; border-left-color:#B3C3DE !important; border-right-color:#B3C3DE !important; border-bottom-width:4.5px !important; border-bottom-color:#2E9E45 !important; box-shadow:0 7px 14px rgba(26,54,93,.15), 0 2px 4px rgba(26,54,93,.09) !important; }
 /* v1245: franja del nombre ANCLADA: el marco (arriba y lados) es del mismo azul que la franja hasta su altura, y luego pasa al azul claro */
 #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano, body.modo-oscuro #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano{ border-top-color:transparent !important; border-left-color:transparent !important; border-right-color:transparent !important;
-  background:linear-gradient(#F6F8FB,#F6F8FB) padding-box, linear-gradient(to bottom,#1A365D 0,#1A365D calc(var(--cabH,84px) - 8px),#344E6B calc(var(--cabH,84px) - 8px),#344E6B 100%) border-box !important; }
+  background:linear-gradient(#FFFFFF,#FFFFFF) padding-box, linear-gradient(to bottom,#1A365D 0,#1A365D calc(var(--cabH,84px) - 8px),#344E6B calc(var(--cabH,84px) - 8px),#344E6B 100%) border-box !important; }
 /* v1246: "Valor cuotas" en verde y menos espacio bajo el cajón de Notas */
 html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-k, html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-tot-b .lto-v{ color:#1E8A3C !important; }
 #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full:not(.ltd-moderna).ltd.ltd-oceano{ padding-bottom:3px !important; }
@@ -11988,6 +11988,10 @@ html body:not(.modo-oscuro) .app, html body:not(.modo-oscuro) #screen-detalle-cl
 /* v1277: la franja del título de TODAS las páginas lleva el mismo color del exterior (no en modo oscuro) */
 html body:not(.modo-oscuro) .app:not(.efc-modal) > .header:not(.efc-header){ background:#EBF0F5 !important; }
 html body:not(.modo-oscuro) #screen-nuevo-prestamo#screen-nuevo-prestamo > .header{ background:#EBF0F5 !important; }
+/* v1284: contenedor de la barra de progreso en beige muy sutil (antes azul suave v1282) (no en modo oscuro) */
+html body:not(.modo-oscuro) #screen-detalle-cliente#screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag{ background:#FDF7E9 !important; }
+/* v1292: ámbar más suave (#FDF7E9); v1291: fondo ámbar suave que contrasta con el azul marino y el verde azulado de la tarjeta; borde en la misma gama. Antes: borde repujado PAREJO más delgado: mismo tono (2px) en los 4 lados + línea oscura fina por fuera y clara por dentro; fondo plano */
+html body:not(.modo-oscuro) #screen-detalle-cliente#screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag{ border:2px solid #F2E7CC !important; box-shadow:0 0 0 1px #D8C59A, inset 0 0 0 1px #FFFDF7 !important; }
 /* v1268 (se conserva): la página nunca se desborda en horizontal */
 /* v1274: la zona segura superior vuelve a aplicarse siempre (como antes de v1269) */
 :root{ --sat:env(safe-area-inset-top, 0px); }
@@ -11998,9 +12002,9 @@ html body:not(.modo-oscuro) #screen-clientes#screen-clientes .search-row, html b
 .fecha-nota-row > .form-field{ min-width:0; }
 .fecha-nota-row .field-with-icon, .fecha-nota-row .field-input{ min-width:0; max-width:100%; }
 .fecha-nota-row .add-note-btn{ flex-shrink:0; padding-left:11px; padding-right:11px; gap:5px; }
-/* v1253: cuerpo de la tarjeta #F6F8FB; cajón de pagos blanco con borde #E2E8F0 */
-html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano{ background-color:#F6F8FB !important; }
-html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-onda path:nth-child(3){ fill:#F6F8FB !important; }
+/* v1253: cuerpo de la tarjeta blanco puro (v1281); cajón de pagos blanco con borde #E2E8F0 */
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano{ background-color:#FFFFFF !important; }
+html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-onda path:nth-child(3){ fill:#FFFFFF !important; }
 html body #screen-detalle-cliente#screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano .lto-pag{ background:#FFFFFF !important; border:1px solid #E2E8F0 !important; }
 /* v1238: bordes de la tarjeta Océano (borde fino claro + línea verde abajo + sombra suave) y Notas en verde suave, según imagen de referencia */
 html body #screen-detalle-cliente .card.loan-card-full.ltd.ltd-oceano{ border:1.5px solid #CFD9EA !important; border-bottom:4.5px solid #2E9E45 !important; box-shadow:0 7px 14px rgba(26,54,93,.15), 0 2px 4px rgba(26,54,93,.09) !important; }
